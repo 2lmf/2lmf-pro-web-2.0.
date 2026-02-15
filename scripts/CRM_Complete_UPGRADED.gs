@@ -262,7 +262,7 @@ function processInquiry(params) {
       MailApp.sendEmail(adminMailOptions);
       
       var total = items.reduce((sum, i) => sum + ((parseFloat(i.qty) || 0) * (parseFloat(i.price_sell) || 0)), 0);
-      logToCRM(inquiryId, name, email, phone, subject, total, params.color || "", "NOVO", itemsJson);
+      logToCRM(inquiryId, name, email, phone, subject, total, params.color || "", "NOVO", JSON.stringify(items));
     }
     
     return { result: 'success', id: inquiryId };
@@ -296,6 +296,7 @@ function onOpen() {
   ui.createMenu('2LMF CRM')
       .addItem('📥 Učitaj podatke (Desktop)', 'importInquiry')
       .addItem('✉️ Pošalji Ponudu (Desktop)', 'sendCustomOffer')
+      .addItem('📄 Pošalji Račun (Desktop)', 'sendCustomInvoice')
       .addSeparator()
       .addItem('🔢 Admin: Resetiraj Brojač', 'menuResetCounter')
       .addSeparator()
@@ -351,9 +352,13 @@ function setupMobileTriggers() {
   sheet.getRange("H5").setValue(false); // Default unchecked
   sheet.getRange("H6").setValue("(Status učitavanja)");
 
-  sheet.getRange("H7").setValue("👇 2. Klikni za Slanje");
+  sheet.getRange("H7").setValue("👇 2. Klikni za Ponudu");
   sheet.getRange("H8").insertCheckboxes();
-  sheet.getRange("H9").setValue("(Status slanja)");
+  sheet.getRange("H9").setValue("(Status slanja ponude)");
+  
+  sheet.getRange("H10").setValue("👇 3. Klikni za Račun");
+  sheet.getRange("H11").insertCheckboxes();
+  sheet.getRange("H12").setValue("(Status slanja računa)");
   
   // 2. CJENIK SETUP (MOBILE TRIGGER)
   var sheetCjenik = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("CJENIK");
@@ -392,11 +397,20 @@ function handleMobileEdit(e) {
     sheet.getRange("H9").setValue("⏳ Šaljem...");
     var success = sendCustomOffer(true); // true = mobile mode (no alerts)
     range.setValue(false); // Uncheck
-    if (success) sheet.getRange("H9").setValue("✅ Poslano!");
+    if (success) sheet.getRange("H9").setValue("✅ Ponuda Poslana!");
     else sheet.getRange("H9").setValue("❌ Prekinuto");
   }
 
-  // 3. SHARKPRO - ADD FROM CJENIK (I2)
+  // 3. SEND INVOICE (H11)
+  if (row === 11 && col === 8 && val === true) {
+    sheet.getRange("H12").setValue("⏳ Šaljem Račun...");
+    var success = sendCustomInvoice(true); // true = mobile mode
+    range.setValue(false); // Uncheck
+    if (success) sheet.getRange("H12").setValue("✅ Račun Poslan!");
+    else sheet.getRange("H12").setValue("❌ Prekinuto");
+  }
+
+  // 4. SHARKPRO - ADD FROM CJENIK (I2)
   if (sheet.getName() === "CJENIK") {
      if (row === 2 && col === 9 && val === true) {
        sheet.getRange("I3").setValue("⏳ Prebacujem...");
@@ -556,6 +570,62 @@ function sendCustomOffer(isMobile) {
   return true;
 }
 
+function sendCustomInvoice(isMobile) {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheetGen = ss.getSheetByName("Generator Ponuda");
+  var sheetLog = ss.getSheetByName("Upiti");
+  
+  if (!isMobile) {
+    var ui = SpreadsheetApp.getUi();
+    var response = ui.alert('Slanje Računa', 'Generiraj račun (neprofiskaliziran)?', ui.ButtonSet.YES_NO);
+    if (response == ui.Button.NO) return false;
+  }
+  
+  var name = sheetGen.getRange("B6").getValue();
+  var email = sheetGen.getRange("B7").getValue();
+  var color = sheetGen.getRange("B9").getValue();
+  var inquiryId = sheetGen.getRange("B3").getValue();
+  
+  if(!email) { setStatus("Greška: Nema emaila!"); return false; }
+  
+  var itemsData = sheetGen.getRange(11, 1, sheetGen.getLastRow() - 10, 6).getValues();
+  var items = [];
+  for (var i = 0; i < itemsData.length; i++) {
+    var row = itemsData[i];
+    if (!row[2]) continue;
+    items.push({
+      sku: row[1], name: row[2], qty: parseFloat(row[3]), unit: row[4],
+      price_sell: parseFloat(row[5]),
+      line_total: parseFloat(row[3]) * parseFloat(row[5])
+    });
+  }
+  
+  var isHidro = String(color || "").toUpperCase().indexOf("HIDRO") !== -1;
+  var htmlBody = generateHtml(items, name, false, inquiryId, color, isHidro, "Račun #"+inquiryId + " - 2LMF PRO");
+  
+  var pdfBlob = HtmlService.createHtmlOutput(htmlBody).setTitle("Racun").getAs('application/pdf');
+  pdfBlob.setName("Racun_" + inquiryId + ".pdf");
+
+  MailApp.sendEmail({
+    to: email,
+    subject: "Račun #" + inquiryId + " - 2LMF PRO",
+    htmlBody: htmlBody,
+    attachments: [pdfBlob],
+    name: "2LMF PRO"
+  });
+  
+  var data = sheetLog.getDataRange().getValues();
+  for (var i = 1; i < data.length; i++) {
+    if (data[i][1] == inquiryId) {
+      sheetLog.getRange(i + 1, 8).setValue("RAČUN POSLAN");
+      break;
+    }
+  }
+  
+  if (!isMobile) Browser.msgBox("Račun poslan na: " + email);
+  return true;
+}
+
 function setStatus(msg) {
    // Helper to show errors without blocking mobile
    try { SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Generator Ponuda").getRange("H9").setValue(msg); } catch(e){}
@@ -601,6 +671,7 @@ function generateHtml(items, name, isAutoReply, inquiryId, color, isHidro, subje
   var lightGray = "#f8f9fa";
 
   var title = isAutoReply ? "INFORMATIVNA PONUDA" : "PONUDA ZA PLAĆANJE";
+  if (subjectUpper.indexOf("RAČUN") !== -1) title = "RAČUN";
 
   // Use simple fonts for PDF and email reliability
   var fontStack = "'Segoe UI', Roboto, Arial, sans-serif";
