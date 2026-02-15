@@ -859,11 +859,11 @@
                 style="display:block; margin-bottom: 30px; color: var(--accent-orange); font-weight: 900; font-size: 1.1rem;">POŠALJITE
                 UPIT</span>
             <h2 style="margin-bottom: 30px;">Započnimo Vašu<br>priču danas.</h2>
-            <form class="contact-form">
-                <input type="text" placeholder="Vaše Ime i Prezime">
-                <input type="email" placeholder="E-mail Adresa">
-                <textarea rows="5" placeholder="Vaša Poruka / Opis Projekta"></textarea>
-                <button type="submit">POŠALJI PORUKU</button>
+            <form class="contact-form" id="contactForm">
+                <input type="text" id="contactName" placeholder="Vaše Ime i Prezime" required>
+                <input type="email" id="contactEmail" placeholder="E-mail Adresa" required>
+                <textarea id="contactMessage" rows="5" placeholder="Vaša Poruka / Opis Projekta" required></textarea>
+                <button type="submit" id="contactSubmitBtn">POŠALJI PORUKU</button>
             </form>
         </div>
         <div style="height:20px;"></div> <!-- Minimal spacer before hashtags -->
@@ -924,6 +924,56 @@
             document.querySelectorAll('.story-section.active .layer-bg').forEach(bg => {
                 bg.style.transform = `translateZ(-80px) translate(${-x / 2}px, ${-y / 2}px)`;
             });
+        });
+
+        // --- CONTACT FORM LOGIC ---
+        document.getElementById('contactForm')?.addEventListener('submit', function (e) {
+            e.preventDefault();
+            const btn = document.getElementById('contactSubmitBtn');
+            const originalText = btn.textContent;
+
+            const payload = {
+                type: 'contact',
+                name: document.getElementById('contactName').value,
+                email: document.getElementById('contactEmail').value,
+                message: document.getElementById('contactMessage').value
+            };
+
+            btn.disabled = true;
+            btn.textContent = "ŠALJEM...";
+            btn.style.background = "#555";
+
+            if (typeof google !== 'undefined' && google.script && google.script.run) {
+                google.script.run
+                    .withSuccessHandler(res => {
+                        btn.textContent = "POSLANO! ✅";
+                        btn.style.background = "#27ae60";
+                        document.getElementById('contactForm').reset();
+                        setTimeout(() => {
+                            btn.disabled = false;
+                            btn.textContent = originalText;
+                            btn.style.background = "";
+                        }, 3000);
+                    })
+                    .withFailureHandler(err => {
+                        alert("Greška pri slanju: " + err);
+                        btn.disabled = false;
+                        btn.textContent = originalText;
+                        btn.style.background = "";
+                    })
+                    .doPostManual(payload);
+            } else {
+                console.log("Local Test Mode - Payload:", payload);
+                setTimeout(() => {
+                    btn.textContent = "POSLANO! (Local) ✅";
+                    btn.style.background = "#27ae60";
+                    setTimeout(() => {
+                        btn.disabled = false;
+                        btn.textContent = originalText;
+                        btn.style.background = "";
+                    }, 2000);
+                }, 1000);
+            }
         });
     </script>
 

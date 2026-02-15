@@ -181,85 +181,108 @@ function processInquiry(params) {
   try {
     var name = params.name || "Kupac";
     var email = params.email;
-    var phone = params.phone;
+    var phone = params.phone || "-";
     var subject = params._subject || "Upit";
-    var itemsJson = params.items_json;
-    var items = JSON.parse(itemsJson);
+    var type = params.type || "calculator"; // 'calculator' or 'contact'
     
-    // Normalize items (Frontend uses .price, Backend expects .price_sell)
-    items = items.map(function(it) {
-      if (it.price !== undefined && it.price_sell === undefined) {
-        it.price_sell = it.price;
-      }
-      return it;
-    });
-
-    // Generate Unique ID (Sequential)
-    var inquiryId = getNextSequenceId();
+    var inquiryId;
+    var items = [];
     
-    // 0. ENRICH ITEMS (Calculate costs/profits)
-    items = enrichItemsWithCosts(items);
-    
-    // 1. Send Instant Notifications
-    var isHidro = String(subject || "").toUpperCase().indexOf("HIDRO") !== -1;
-    var customerHtml = generateHtml(items, name, true, inquiryId, params.color || "Sustav", isHidro, subject); // Pass subject
-    
-    // --- PDF ATTACHMENT TRY-CATCH ---
-    var pdfBlob = null;
-    try {
-      pdfBlob = HtmlService.createHtmlOutput(customerHtml)
-                      .setTitle("Ponuda " + inquiryId)
-                      .getAs('application/pdf');
-      pdfBlob.setName("Ponuda_" + inquiryId + ".pdf");
-    } catch (pdfErr) {
-      console.error("PDF Fail: " + pdfErr);
-    }
-
-    // Prepare Mail Options
-    var customerMailOptions = {
-      to: email,
-      subject: subject,
-      htmlBody: customerHtml,
-      name: "2LMF PRO"
-    };
-    if (pdfBlob) customerMailOptions.attachments = [pdfBlob];
-
-    // Notify Customer
-    if (params.type !== 'silent' && params.silent !== 'true') {
-        MailApp.sendEmail(customerMailOptions);
-    }
-    
-    // Notify Admin
-    var adminHtml = generateAdminHtml(items, name, email, phone, subject, customerHtml, params.location);
-    var adminMailOptions = {
-      to: "2lmf.info@gmail.com", 
-      subject: "🔔 NOVI UPIT: " + name + " (" + inquiryId + ")",
-      htmlBody: adminHtml
-    };
-    if (pdfBlob) adminMailOptions.attachments = [pdfBlob];
-    
-    MailApp.sendEmail(adminMailOptions);
-
-    // 2. Log to CRM Sheet
-    try {
-      var sheetId = SCRIPT_PROP.getProperty("SHEET_ID");
-      if (sheetId) {
-        var ss = SpreadsheetApp.openById(sheetId);
-        var sheetLog = ss.getSheetByName("Upiti");
-        if (sheetLog) {
-          var total = items.reduce((sum, i) => sum + ((parseFloat(i.qty) || 0) * (parseFloat(i.price_sell) || 0)), 0);
-          sheetLog.appendRow([new Date(), inquiryId, name, email, phone, subject, total, params.color || "", "NOVO", itemsJson]);
+    if (type === 'contact') {
+      // CONTACT FORM FLOW
+      inquiryId = getNextSequenceId("k");
+      var message = params.message || "-";
+      subject = "📧 [KONTAKT] " + name;
+      
+      // Notify Admin
+      var adminHtml = `<h3>Novi kontakt upit (${inquiryId})</h3>
+                       <p><b>Ime:</b> ${name}</p>
+                       <p><b>Email:</b> ${email}</p>
+                       <p><b>Poruka:</b><br>${message.replace(/\n/g, '<br>')}</p>`;
+                       
+      MailApp.sendEmail({
+        to: "2lmf.info@gmail.com", 
+        subject: "📩 NOVI KONTAKT UPIT: " + name + " (" + inquiryId + ")",
+        htmlBody: adminHtml
+      });
+      
+      // Log to CRM
+      logToCRM(inquiryId, name, email, phone, "Kontakt Forma", 0, "-", "NOVO", message);
+      
+    } else {
+      // CALCULATOR FLOW
+      var itemsJson = params.items_json;
+      items = JSON.parse(itemsJson);
+      
+      // Normalize items
+      items = items.map(function(it) {
+        if (it.price !== undefined && it.price_sell === undefined) {
+          it.price_sell = it.price;
         }
+        return it;
+      });
+
+      inquiryId = getNextSequenceId("u");
+      items = enrichItemsWithCosts(items);
+      
+      var isHidro = String(subject || "").toUpperCase().indexOf("HIDRO") !== -1;
+      var customerHtml = generateHtml(items, name, true, inquiryId, params.color || "Sustav", isHidro, subject);
+      
+      var pdfBlob = null;
+      try {
+        pdfBlob = HtmlService.createHtmlOutput(customerHtml)
+                        .setTitle("Ponuda " + inquiryId)
+                        .getAs('application/pdf');
+        pdfBlob.setName("Ponuda_" + inquiryId + ".pdf");
+      } catch (pdfErr) {
+        console.error("PDF Fail: " + pdfErr);
       }
-    } catch (err) {
-      console.error("CRM Log failed: " + err);
+
+      var customerMailOptions = {
+        to: email,
+        subject: subject,
+        htmlBody: customerHtml,
+        name: "2LMF PRO"
+      };
+      if (pdfBlob) customerMailOptions.attachments = [pdfBlob];
+
+      if (params.type !== 'silent' && params.silent !== 'true') {
+          MailApp.sendEmail(customerMailOptions);
+      }
+      
+      var adminHtml = generateAdminHtml(items, name, email, phone, subject, customerHtml, params.location);
+      var adminMailOptions = {
+        to: "2lmf.info@gmail.com", 
+        subject: "🔔 NOVI UPIT: " + name + " (" + inquiryId + ")",
+        htmlBody: adminHtml
+      };
+      if (pdfBlob) adminMailOptions.attachments = [pdfBlob];
+      
+      MailApp.sendEmail(adminMailOptions);
+      
+      var total = items.reduce((sum, i) => sum + ((parseFloat(i.qty) || 0) * (parseFloat(i.price_sell) || 0)), 0);
+      logToCRM(inquiryId, name, email, phone, subject, total, params.color || "", "NOVO", itemsJson);
     }
     
-    return { result: 'success', id: inquiryId, pdfAttached: !!pdfBlob };
+    return { result: 'success', id: inquiryId };
     
   } catch(error) {
     console.error("Inquiry CRASH: " + error);
     return { result: 'error', error: error.toString() };
+  }
+}
+
+function logToCRM(id, name, email, phone, subject, amount, color, status, rawData) {
+  try {
+    var sheetId = SCRIPT_PROP.getProperty("SHEET_ID");
+    if (!sheetId) return;
+    var ss = SpreadsheetApp.openById(sheetId);
+    var sheetLog = ss.getSheetByName("Upiti");
+    if (sheetLog) {
+      sheetLog.appendRow([new Date(), id, name, email, phone, subject, amount, color, status, rawData]);
+    }
+  } catch (err) {
+    console.error("CRM Log failed: " + err);
   }
 }
 
@@ -823,15 +846,25 @@ function ensureTrigger() {
 function autoReplyFollowUp() { processFollowUpQueue(); }
 
 // --- HELPER: SEQUENTIAL ID GENERATOR ---
-function getNextSequenceId() {
+function getNextSequenceId(prefix) {
+  prefix = prefix || "u"; 
   var lock = LockService.getScriptLock();
-  try { lock.waitLock(10000); } catch (e) { return "u" + Math.floor(Math.random() * 100000); }
+  try { lock.waitLock(10000); } catch (e) { return prefix + Math.floor(Math.random() * 100000); }
+  
   var userProp = PropertiesService.getScriptProperties();
-  var lastId = Number(userProp.getProperty('LAST_ID_SEQ')) || 0;
+  var propKey = (prefix === "k") ? 'LAST_SEQ_K' : 'LAST_SEQ_U';
+  
+  // Migration logic: if LAST_ID_SEQ exists and we are doing 'u', inherit it
+  if (prefix === "u" && !userProp.getProperty('LAST_SEQ_U') && userProp.getProperty('LAST_ID_SEQ')) {
+     userProp.setProperty('LAST_SEQ_U', userProp.getProperty('LAST_ID_SEQ'));
+  }
+  
+  var lastId = Number(userProp.getProperty(propKey)) || 0;
   var nextId = lastId + 1;
-  userProp.setProperty('LAST_ID_SEQ', nextId.toString());
+  userProp.setProperty(propKey, nextId.toString());
   lock.releaseLock();
-  return "u" + pad(nextId, 5);
+  
+  return prefix + pad(nextId, 5);
 }
 
 function pad(num, size) {
