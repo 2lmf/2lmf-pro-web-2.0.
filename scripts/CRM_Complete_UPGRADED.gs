@@ -81,8 +81,11 @@ function setupGeneratorLayout(sheet) {
   sheet.clear();
   // Header Info
   sheet.getRange("A1").setValue("GENERATOR PONUDA").setFontWeight("bold").setFontSize(16);
-  sheet.getRange("A3").setValue("Unesi ID Upita:");
+  sheet.getRange("A3").setValue("Unesi ID Upita (Pretraga):");
   sheet.getRange("B3").setBackground("#FFF2CC").setBorder(true, true, true, true, null, null);
+  
+  sheet.getRange("A4").setValue("Broj Ponude / Računa:");
+  sheet.getRange("B4").setBackground("#D9EAD3").setBorder(true, true, true, true, null, null);
   
   sheet.getRange("D3").setValue("Status:");
   sheet.getRange("E3").setFormula('=VLOOKUP(B3; Upiti!B:H; 7; FALSE)'); // Auto-status check
@@ -475,6 +478,7 @@ function importInquiry() {
   sheetGen.getRange("B6").setValue(rowData[2]); // Name
   sheetGen.getRange("B7").setValue(rowData[3]); // Email
   sheetGen.getRange("B8").setValue(rowData[4]); // Phone
+  sheetGen.getRange("B4").setValue(id);         // Set default Document ID to Inquiry ID
   sheetGen.getRange("B9").setValue(rowData[7]); // Color (Column H)
   
   // Parse JSON Items
@@ -510,6 +514,7 @@ function sendCustomOffer(isMobile) {
   }
   
   // Read Data
+  var inquiryId = sheetGen.getRange("B4").getValue(); // Use printed ID field
   var name = sheetGen.getRange("B6").getValue();
   var email = sheetGen.getRange("B7").getValue();
   var color = sheetGen.getRange("B9").getValue();
@@ -536,7 +541,6 @@ function sendCustomOffer(isMobile) {
   }
   
   // Generate PDF Content (Using same formatted function)
-  var inquiryId = sheetGen.getRange("B3").getValue();
   // Determine if it's a Hidroizolacija offer based on the inquiry ID or other criteria
   // For now, let's assume if the color field contains "HIDRO" it's a hidro offer.
   // A more robust solution might involve a dedicated field or parsing the items.
@@ -584,7 +588,8 @@ function sendCustomInvoice(isMobile) {
   var name = sheetGen.getRange("B6").getValue();
   var email = sheetGen.getRange("B7").getValue();
   var color = sheetGen.getRange("B9").getValue();
-  var inquiryId = sheetGen.getRange("B3").getValue();
+  var docId = sheetGen.getRange("B4").getValue();
+  var inquiryId = sheetGen.getRange("B3").getValue(); // For CRM logging
   
   if(!email) { setStatus("Greška: Nema emaila!"); return false; }
   
@@ -601,14 +606,14 @@ function sendCustomInvoice(isMobile) {
   }
   
   var isHidro = String(color || "").toUpperCase().indexOf("HIDRO") !== -1;
-  var htmlBody = generateHtml(items, name, false, inquiryId, color, isHidro, "Račun #"+inquiryId + " - 2LMF PRO");
+  var htmlBody = generateHtml(items, name, false, docId, color, isHidro, "Račun #"+docId + " - 2LMF PRO");
   
   var pdfBlob = HtmlService.createHtmlOutput(htmlBody).setTitle("Racun").getAs('application/pdf');
-  pdfBlob.setName("Racun_" + inquiryId + ".pdf");
+  pdfBlob.setName("Racun_" + docId + ".pdf");
 
   MailApp.sendEmail({
     to: email,
-    subject: "Račun #" + inquiryId + " - 2LMF PRO",
+    subject: "Račun #" + docId + " - 2LMF PRO",
     htmlBody: htmlBody,
     attachments: [pdfBlob],
     name: "2LMF PRO"
@@ -730,12 +735,12 @@ function generateHtml(items, name, isAutoReply, inquiryId, color, isHidro, subje
         var lineTotal = 0; if (item.line_total) lineTotal = item.line_total; else lineTotal = (parseFloat(item.qty) || 0) * (parseFloat(item.price_sell) || 0);
         var unitPrice = parseFloat(item.price_sell) || 0;
         var qtyFormatted = (parseFloat(item.qty) || 0).toLocaleString('hr-HR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-        html += "<tr><td class='td'>" + item.name + "</td><td class='td' style='text-align:center; white-space:nowrap;'>" + unitPrice.toLocaleString('hr-HR', {minimumFractionDigits: 2}) + " €</td><td class='td' style='text-align:center; white-space:nowrap;'>" + qtyFormatted + " " + (item.unit || "kom") + "</td><td class='td td-num'>" + lineTotal.toLocaleString('hr-HR', {minimumFractionDigits: 2}) + " €</td></tr>";
+        html += "<tr><td class='td'>" + item.name + "</td><td class='td' style='text-align:center; white-space:nowrap;'>" + unitPrice.toLocaleString('hr-HR', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " €</td><td class='td' style='text-align:center; white-space:nowrap;'>" + qtyFormatted + " " + (item.unit || "kom") + "</td><td class='td td-num'>" + lineTotal.toLocaleString('hr-HR', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " €</td></tr>";
     });
 
     html += "</tbody></table>" +
             "<div class='total-block'><div style='font-size:11px; font-weight:bold; margin-bottom:5px; color:" + darkColor + ";'>SVEUKUPNI IZNOS (MPC)</div>" +
-            "<div class='total-value'>" + rawTotal.toLocaleString('hr-HR', {minimumFractionDigits: 2}) + " €</div></div>" +
+            "<div class='total-value'>" + rawTotal.toLocaleString('hr-HR', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " €</div></div>" +
             "<div class='note'><b>Uvjeti kupnje:</b><br><ul style='margin-top:5px; padding-left:20px; margin-bottom:10px;'><li>Plaćanje: avans - uplatom na žiro račun</li><li>Minimalni iznos kupovine: 200,00 eur</li><li>Sve cijene su sa PDV-om*</li></ul>" +
             "<div style='font-size:11px; opacity:0.8;'>* Porezni obveznik nije u sustavu PDV-a, temeljem članka 90. Zakona o porezu na dodanu vrijednost</div></div>";
 
