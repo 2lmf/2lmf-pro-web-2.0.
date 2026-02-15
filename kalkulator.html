@@ -157,7 +157,47 @@
             .nav-links {
                 flex-wrap: wrap;
                 justify-content: center;
-                gap: 15px;
+                gap: 10px;
+            }
+
+            .nav-links a {
+                font-size: 0.7rem;
+                padding: 8px 12px;
+                background: rgba(255, 255, 255, 0.03);
+                border-radius: 6px;
+                border: 1px solid rgba(255, 255, 255, 0.05);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .brand-header {
+                padding: 15px 10px;
+            }
+
+            .logos-row {
+                gap: 20px;
+            }
+
+            .shark-brand-img {
+                height: 80px;
+            }
+
+            .lmf-brand {
+                font-size: 1rem;
+            }
+
+            .tagline {
+                font-size: 0.5rem;
+                letter-spacing: 3px;
+            }
+
+            .nav-links {
+                gap: 6px;
+            }
+
+            .nav-links a {
+                font-size: 0.65rem;
+                padding: 6px 8px;
             }
         }
 
@@ -272,6 +312,45 @@
             padding: 0 1rem;
             overflow-x: auto;
             scrollbar-width: none;
+            -webkit-overflow-scrolling: touch;
+            position: relative;
+        }
+
+        /* Mobile Scroll Indicator */
+        .v2-navbar::after {
+            content: '→';
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1rem;
+            color: var(--accent);
+            opacity: 0;
+            pointer-events: none;
+            transition: 0.3s;
+            animation: bounceRight 1.5s infinite;
+        }
+
+        @media (max-width: 768px) {
+            .v2-navbar::after {
+                opacity: 0.6;
+            }
+
+            .v2-navbar.scrolled::after {
+                opacity: 0;
+            }
+        }
+
+        @keyframes bounceRight {
+
+            0%,
+            100% {
+                transform: translateY(-50%) translateX(0);
+            }
+
+            50% {
+                transform: translateY(-50%) translateX(5px);
+            }
         }
 
         .v2-nav-container::-webkit-scrollbar {
@@ -299,6 +378,18 @@
             background: var(--accent);
             border-color: var(--accent);
             box-shadow: 0 0 15px var(--accent-glow);
+        }
+
+        @media (max-width: 600px) {
+            .v2-nav-item {
+                padding: 0.6rem 1rem;
+                font-size: 0.65rem;
+                border-radius: 8px;
+            }
+
+            .nav-home {
+                margin-right: 8px;
+            }
         }
 
         .nav-home {
@@ -582,6 +673,22 @@
             font-weight: 900;
         }
 
+        @media (max-width: 600px) {
+            .choice-pill {
+                padding: 8px 12px;
+                font-size: 0.65rem;
+            }
+
+            .step-card {
+                padding: 1rem;
+            }
+
+            .area-input {
+                font-size: 1.8rem;
+                width: 100px;
+            }
+        }
+
         .hydro-input-row {
             display: grid;
             grid-template-columns: 1fr 1.5fr 1.5fr;
@@ -607,6 +714,17 @@
             max-height: calc(100vh - 120px);
             overflow-y: auto;
             scrollbar-width: thin;
+            transition: all 0.3s ease;
+        }
+
+        @media (max-width: 1100px) {
+            .recap-sidebar {
+                position: relative;
+                top: 0;
+                max-height: none;
+                margin-top: 2rem;
+                padding: 1.2rem;
+            }
         }
 
         .recap-title {
@@ -2447,6 +2565,16 @@
         window.addEventListener('hashchange', checkHash);
         window.addEventListener('DOMContentLoaded', () => {
             checkHash();
+
+            // Mobile Nav Scroll Indicator Logic
+            const navCont = document.querySelector('.v2-nav-container');
+            const navBar = document.querySelector('.v2-navbar');
+            if (navCont && navBar) {
+                navCont.addEventListener('scroll', () => {
+                    if (navCont.scrollLeft > 20) navBar.classList.add('scrolled');
+                    else navBar.classList.remove('scrolled');
+                });
+            }
         });
     </script>
 </body>
