@@ -885,7 +885,7 @@ function syncPricesToWeb() {
     var ss = SpreadsheetApp.getActiveSpreadsheet(); var sheet = ss.getSheetByName("CJENIK");
     var data = sheet.getDataRange().getValues(); var priceMap = {};
     for (var i = 1; i < data.length; i++) { var sku = String(data[i][0]).trim(); if (sku) priceMap[sku] = data[i][4]; }
-    var owner = "2lmf"; var repo = "2lmf-pro"; var path = "items_data.js"; var branch = "gh-pages";
+    var owner = "2lmf"; var repo = "2lmf-pro-web-2.0"; var path = "scripts/items_data.js"; var branch = "master";
     var fileData = getGitHubFile(owner, repo, path, branch, token);
     var currentContent = Utilities.newBlob(Utilities.base64Decode(fileData.content)).getDataAsString();
     var updatedContent = updatePricesInJS(currentContent, priceMap);

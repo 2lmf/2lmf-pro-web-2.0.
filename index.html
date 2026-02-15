@@ -963,16 +963,27 @@
                     })
                     .doPostManual(payload);
             } else {
-                console.log("Local Test Mode - Payload:", payload);
-                setTimeout(() => {
-                    btn.textContent = "POSLANO! (Local) ✅";
+                fetch('https://script.google.com/macros/s/AKfycbx4TQ6cFNr8X-fNRHE0Ai571pAioDeny_mSSrTVQm3OHbTKOhfIEDiKDFM2shZ5zDFLrA/exec', {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    cache: 'no-cache',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams(payload)
+                }).then(() => {
+                    btn.textContent = "POSLANO! ✅";
                     btn.style.background = "#27ae60";
+                    document.getElementById('contactForm').reset();
                     setTimeout(() => {
                         btn.disabled = false;
                         btn.textContent = originalText;
                         btn.style.background = "";
-                    }, 2000);
-                }, 1000);
+                    }, 3000);
+                }).catch(err => {
+                    console.error("Fetch error:", err);
+                    alert("Greška pri slanju na GitHubu. Provjerite konzolu.");
+                    btn.disabled = false;
+                    btn.textContent = originalText;
+                });
             }
         });
     </script>
