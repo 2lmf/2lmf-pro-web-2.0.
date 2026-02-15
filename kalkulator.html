@@ -604,7 +604,9 @@
             border-radius: 20px;
             padding: 1.8rem;
             backdrop-filter: blur(15px);
-            height: fit-content;
+            max-height: calc(100vh - 120px);
+            overflow-y: auto;
+            scrollbar-width: thin;
         }
 
         .recap-title {
