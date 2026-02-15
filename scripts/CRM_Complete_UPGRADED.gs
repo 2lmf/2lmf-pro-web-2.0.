@@ -198,6 +198,7 @@ function processInquiry(params) {
       var adminHtml = `<h3>Novi kontakt upit (${inquiryId})</h3>
                        <p><b>Ime:</b> ${name}</p>
                        <p><b>Email:</b> ${email}</p>
+                       <p><b>Telefon:</b> ${phone}</p>
                        <p><b>Poruka:</b><br>${message.replace(/\n/g, '<br>')}</p>`;
                        
       MailApp.sendEmail({

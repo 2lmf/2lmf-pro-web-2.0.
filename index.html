@@ -862,6 +862,8 @@
             <form class="contact-form" id="contactForm">
                 <input type="text" id="contactName" placeholder="Vaše Ime i Prezime" required>
                 <input type="email" id="contactEmail" placeholder="E-mail Adresa" required>
+                <input type="tel" id="contactPhone" placeholder="Broj Mobitela" required>
+
                 <textarea id="contactMessage" rows="5" placeholder="Vaša Poruka / Opis Projekta" required></textarea>
                 <button type="submit" id="contactSubmitBtn">POŠALJI PORUKU</button>
             </form>
@@ -936,6 +938,7 @@
                 type: 'contact',
                 name: document.getElementById('contactName').value,
                 email: document.getElementById('contactEmail').value,
+                phone: document.getElementById('contactPhone').value,
                 message: document.getElementById('contactMessage').value
             };
 
