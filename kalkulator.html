@@ -1597,13 +1597,13 @@
                 if (hNum <= 103) clipsPerPost = 2;
                 else if (hNum >= 173) clipsPerPost = 4;
 
-                const clipSku = s.color === '7016' ? '1039' : '1040';
+                const clipSku = '1039';
                 items.push({ name: window.getPremiumName(clipSku, `PVC Spojnica (s vijkom), RAL 7016 ili 6005`), qty: (count + 1 + corners) * clipsPerPost, unit: 'kom', price: LIVE_PRICES.prices[clipSku] || 0.60, sku: clipSku });
 
                 // Sidreni vijci (4 po stupu s pločicom)
                 if (s.mount === 'plate') {
-                    const boltSku = '1045';
-                    items.push({ name: window.getPremiumName(boltSku, 'Sidreni vijak M8x80'), qty: (count + 1 + corners) * 4, unit: 'kom', price: LIVE_PRICES.prices[boltSku] || 0.85, sku: boltSku });
+                    const boltSku = '1040';
+                    items.push({ name: window.getPremiumName(boltSku, 'SIDRENI VIJAK ZN M10'), qty: (count + 1 + corners) * 4, unit: 'kom', price: LIVE_PRICES.prices[boltSku] || 0.85, sku: boltSku });
                 }
 
                 if (s.gate !== 'none') {
