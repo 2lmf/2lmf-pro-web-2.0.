@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="hr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Architect's Blueprint | 2LMF PRO Arhitektura</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Outfit:wght@300;400;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        .seo-footer {
+            background: #000;
+            padding: 40px 0;
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .seo-footer .hashtags {
+            font-size: 0.65rem;
+            font-style: italic;
+            opacity: 0.3;
+            line-height: 1.8;
+            color: #aaa;
+            letter-spacing: 1px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 40px;
+        }
+
+        :root {
+            --bg-dark: #020205;
+            --accent-orange: #e67e22;
+            --accent-cyan: #00f2ff;
+            --grid-color: rgba(255, 255, 255, 0.08);
+            /* Boosted visibility */
+            --line-color: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: white;
+            font-family: 'Outfit', sans-serif;
+            line-height: 1.6;
+            overflow-x: hidden;
+            padding-top: 100px;
+            /* Space for fixed nav */
+            /* Blueprint Grid Background */
+            background-image:
+                linear-gradient(var(--grid-color) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+
+        .container {
+            max-width: 1400px;
+            /* Increased from 1200px for consistency */
+            margin: 0 auto;
+            padding: 0 40px;
+        }
+
+        /* --- NAVIGATION --- */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 20px 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(2, 2, 5, 0.95);
+            backdrop-filter: blur(30px);
+            z-index: 2000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            box-sizing: border-box;
+        }
+
+        .nav-logos {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            /* Changed from center to flex-start */
+            gap: 5px;
+        }
+
+        .logos-row {
+            display: flex;
+            align-items: center;
+            gap: 50px;
+        }
+
+        /* --- VISIBILITY HIDDEN FOR SS LOGO PRESERVATION --- */
+        .shark-wrapper {
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .branding {
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .lmf-brand {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            color: #eee;
+            font-size: 1.25rem;
+            letter-spacing: 3px;
+        }
+
+        .lmf-brand span {
+            color: var(--accent-orange);
+        }
+
+        .shark-brand-img {
+            height: 110px;
+            /* Massive scaling as requested */
+            width: auto;
+            filter: drop_shadow(0 0 20px rgba(0, 242, 255, 0.4));
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            display: block;
+            margin: -10px 0;
+            /* Compensation for height to keep header slim */
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            color: var(--accent-orange);
+            text-decoration: none;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            transition: all 0.3s;
+            position: relative;
+            /* For the strike line */
+            padding: 5px 15px;
+            text-transform: uppercase;
+            font-weight: 400;
+            /* Subtle Weight as requested */
+        }
+
+        /* --- STRIKE HIGHLIGHT EFFECT --- */
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            width: 0;
+            height: 100%;
+            background: var(--accent-orange);
+            transform: translateY(-50%);
+            transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: -1;
+            opacity: 0.8;
+        }
+
+        .nav-links a:hover {
+            color: #fff;
+            /* White text on hover as requested */
+            transform: scale(1.05);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .tagline {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.6rem;
+            letter-spacing: 5px;
+            font-weight: 900;
+            text-align: left;
+            /* Changed from center to left */
+            width: 100%;
+            /* Ensure it takes full width of container */
+            padding-left: 2px;
+            /* Slight adjustment to align perfectly with brand text visual */
+        }
+
+        .tagline .arch {
+            color: var(--accent-orange);
+        }
+
+        .tagline .code {
+            color: var(--accent-cyan);
+        }
+
+        /* --- SHARPSHARK BUTTON COLORS --- */
+        .ss-sharp {
+            color: var(--accent-cyan);
+            transition: color 0.3s;
+        }
+
+        .ss-shark {
+            color: var(--accent-orange);
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover .ss-shark {
+            color: #fff;
+            /* Shark becomes white on hover */
+        }
+
+        .branding:hover .shark-brand-img {
+            transform: scale(1.05);
+        }
+
+        .tagline .arch {
+            color: var(--accent-orange);
+        }
+
+        .tagline .code {
+            color: var(--accent-cyan);
+        }
+
+        /* --- SHARPSHARK BUTTON COLORS --- */
+        .ss-sharp {
+            color: var(--accent-cyan);
+            transition: color 0.3s;
+        }
+
+        .ss-shark {
+            color: var(--accent-orange);
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover .ss-shark {
+            color: #fff;
+            /* Shark becomes white on hover */
+        }
+
+        /* Hero */
+        .hero {
+            padding: 100px 0;
+            position: relative;
+        }
+
+        .hero::before {
+            content: '01';
+            position: absolute;
+            top: 50px;
+            right: 0;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 15rem;
+            font-weight: 900;
+            color: var(--grid-color);
+            z-index: -1;
+        }
+
+        .label {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--accent-orange);
+            font-size: 0.8rem;
+            letter-spacing: 4px;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(2rem, 6vw, 4rem);
+            /* Reduced from 2.5rem, 8vw, 5rem */
+            line-height: 1.1;
+            margin-bottom: 30px;
+            font-weight: 400;
+        }
+
+        h1 b {
+            font-weight: 900;
+            color: var(--accent-orange);
+        }
+
+        .hero-desc {
+            max-width: 800px;
+            font-size: 1.2rem;
+            /* Reduced from 1.4rem */
+            font-weight: 300;
+            color: #aaa;
+        }
+
+        /* Services Grid */
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 40px;
+            margin: 100px 0;
+        }
+
+        .service-item {
+            border-left: 1px solid var(--line-color);
+            padding-left: 30px;
+            transition: all 0.4s;
+        }
+
+        .service-item:hover {
+            border-left: 1px solid var(--accent-orange);
+            transform: translateX(10px);
+        }
+
+        .service-item h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: white;
+        }
+
+        .service-item p {
+            color: #888;
+            font-size: 1rem;
+        }
+
+        /* Promo Box */
+        .promo-section {
+            background: rgba(230, 126, 34, 0.05);
+            border: 1px solid rgba(230, 126, 34, 0.2);
+            padding: 80px 60px;
+            border-radius: 2px;
+            position: relative;
+            margin-bottom: 150px;
+            clip-path: polygon(0 0, 100% 0, 100% 90%, 95% 100%, 0 100%);
+        }
+
+        .promo-section h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3.5rem;
+            /* Restored power scale for H2 on subpages too */
+            margin-bottom: 30px;
+        }
+
+        .promo-section p {
+            font-size: 1.2rem;
+            color: #ccc;
+            max-width: 800px;
+            margin-bottom: 40px;
+        }
+
+        .savings-badge {
+            display: inline-block;
+            background: var(--accent-orange);
+            color: white;
+            padding: 5px 15px;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            font-size: 0.7rem;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+        }
+
+        /* Bottom Details */
+        .details-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 100px;
+            margin-bottom: 150px;
+        }
+
+        .detail-block h4 {
+            font-family: 'Orbitron', sans-serif;
+            letter-spacing: 2px;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+            color: var(--accent-orange);
+        }
+
+        .detail-block ul {
+            list-style: none;
+        }
+
+        .detail-block li {
+            position: relative;
+            padding-left: 25px;
+            margin-bottom: 15px;
+            color: #ccc;
+        }
+
+        .detail-block li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 12px;
+            width: 10px;
+            height: 1px;
+            background: var(--accent-orange);
+        }
+
+        /* Footer CTA */
+        .footer-cta {
+            text-align: center;
+            padding: 150px 0;
+            border-top: 1px solid var(--line-color);
+        }
+
+        .cta-btn {
+            display: inline-block;
+            padding: 25px 60px;
+            background: white;
+            color: black;
+            text-decoration: none;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            letter-spacing: 3px;
+            transition: all 0.4s;
+            border: 1px solid white;
+        }
+
+        .cta-btn:hover {
+            background: var(--accent-orange);
+            color: white;
+            border-color: var(--accent-orange);
+            transform: scale(1.05);
+        }
+
+        @media (max-width: 900px) {
+            .details-grid {
+                grid-template-columns: 1fr;
+                gap: 50px;
+            }
+
+            .hero::before {
+                font-size: 8rem;
+            }
+
+            .promo-section {
+                padding: 40px 30px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <div class="nav-logos">
+            <div class="logos-row">
+                <a href="index.html" class="branding">
+                    <div class="lmf-brand">2LMF <span>PRO</span></div>
+                </a>
+                <a href="index.html" class="branding shark-wrapper">
+                    <img src="assets/sharpshark_blue_large.png" alt="SharpShark Digital" class="shark-brand-img">
+                </a>
+            </div>
+            <div class="tagline"><span class="arch">ARCHITECTURAL</span> <span class="code">CODE</span></div>
+        </div>
+        <div class="nav-links">
+            <a href="index.html">POČETNA</a>
+            <a href="architects_blueprint.html" style="color: #fff; opacity: 1;">ARHITEKTURA</a>
+            <a href="kalkulator.html">KATALOG</a>
+            <a href="blog_hub.html">ZNANJE</a>
+            <a href="digitalna_dominacija.html" class="ss-link"><span class="ss-sharp">SHARP</span><span
+                    class="ss-shark">SHARK</span></a>
+            <a href="index.html#kontakt">KONTAKT</a>
+        </div>
+    </nav>
+
+    <div class="container">
+
+        <section class="hero">
+            <span class="label">CORE ARCHITECTURE</span>
+            <h1>THE ARCHITECT'S<br><b>BLUEPRINT</b></h1>
+            <p class="hero-desc">Precizno projektiranje nije trošak, već najpametnija investicija u Vašu sutrašnjicu.
+                Svaki milimetar nacrta je sloj Vaše buduće uštede.</p>
+        </section>
+
+        <div class="services-grid">
+            <div class="service-item">
+                <span class="label">01</span>
+                <h3>Idejna rješenja</h3>
+                <p>Koncept, estetika i funkcionalnost prostora definirani prema Vašim specifičnim željama i potrebama.
+                </p>
+            </div>
+            <div class="service-item">
+                <span class="label">02</span>
+                <h3>Glavni projekti</h3>
+                <p>Kompletna tehnička dokumentacija stručno pripremljena za ishođenje građevinske dozvole po svim
+                    propisima.</p>
+            </div>
+            <div class="service-item">
+                <span class="label">03</span>
+                <h3>Izvedbeni projekti</h3>
+                <p>Detaljni nacrti za samu gradnju koji osiguravaju preciznu nabavu materijala bez suvišnih gubitaka.
+                </p>
+            </div>
+            <div class="service-item">
+                <span class="label">04</span>
+                <h3>Moderne fasade</h3>
+                <p>Specijalizirano projektiranje sustava ventiliranih fasada za vrhunski izgled i energetsku
+                    učinkovitost.</p>
+            </div>
+        </div>
+
+        <section class="promo-section">
+            <span class="savings-badge">EXCLUSIVE SAVINGS</span>
+            <h2>Izvedbeni projekt + materijal = <span style="color:var(--accent-orange)">Zajamčena ušteda</span></h2>
+            <p>Ukoliko se odlučite na izradu izvedbenog projekta kod nas, osiguravamo Vam direktan pristup veleprodajnim
+                cijenama za sve materijale iz naše ponude.</p>
+            <p style="font-size: 1rem; color: #888;">Umjesto kupovine kod velikih trgovaca ili u skladištima
+                građevinskog materijala (gdje plaćate pune maloprodajne marže), kod nas kroz projekt ostvarujete
+                direktne uštede na svim materijalima iz naše ponude (hidroizolacija, termoizolacija, ploče za
+                ventilirane fasade...).</p>
+        </section>
+
+        <div class="details-grid">
+            <div class="detail-block">
+                <h4>PROCES RADA</h4>
+                <ul>
+                    <li>Analiza lokacije i prostornih planova (Zagreb i cijela HR)</li>
+                    <li>Inicijalne konzultacije i definiranje budžeta</li>
+                    <li>Izrada 3D modela i vizualizacije prostora</li>
+                    <li>Koordinacija s inženjerima svih struka</li>
+                </ul>
+            </div>
+            <div class="detail-block">
+                <h4>ZAŠTO 2LMF PRO?</h4>
+                <ul>
+                    <li>Fokus na optimizaciju izolacijskih sustava</li>
+                    <li>Direktna veza između nacrta i nabave materijala</li>
+                    <li>Inženjerska optimizacija svakog sloja izolacije</li>
+                    <li>Besplatno savjetovanje u prvoj fazi projekta</li>
+                </ul>
+            </div>
+        </div>
+
+        <section class="footer-cta">
+            <span class="label">LEVEL UP YOUR PROJECT</span>
+            <h2 style="font-family:'Orbitron'; font-size: 2rem; margin-bottom: 50px;">Spremni za prvi nacrt?</h2>
+            <a href="index.html#kontakt" class="cta-btn">ZATRAŽI SASTANAK</a>
+        </section>
+
+    </div>
+
+    <!-- Footer -->
+    <div class="seo-footer">
+        <p class="hashtags">
+            #ventiliranefasade #fasada #hpl #vlaknocement #aluminij #podkonstrukcija #termo #termoizolacija
+            #najpovoljnije #beznaknade #freehosting #freehostingzauvijek #vrhunskakvaliteta #webshop #freewebshop
+            #sharpshark #sharpsharkdigital #besplatno #besplatniwebshop #3dpanel #2dpanel #panelograda #konfigurator
+            #fiskalizacija #rezervacijasmještaja #channelmanager #webdesign #SEO #konfiguratorograda
+            #najpovoljnijacijena #top #hidro #hidroizolacija #XPS #stirodur #TPO #PVC #bitumen #bitumenskaljepenka
+            #ljepenka #arhitektura #kalkulator #kalkulatorograda #kalkulatorfasada #građevinskikalkulator
+            #projektiranje #poliuretanPU #aluminijskaizolacija #zvučnaizolacija #osb #EPS #stiropor #bentonit
+            #polimercement #vuna #kamenavuna #konfiguratorograda #blog #manjenaknade #vasezauvijek
+        </p>
+    </div>
+
+    <div class="copyright-bar"
+        style="background:#000; color:#fff; text-align:center; padding:30px 0; font-weight:900; font-family:'Orbitron'; font-size:0.75rem; letter-spacing:3px; border-top:1px solid rgba(255,255,255,0.03);">
+        &copy; 2026. 2LMF <span style="color:var(--accent-orange)">PRO</span> j.d.o.o. ZAGREB, HRVATSKA
+    </div>
+
+</body>
+
+</html>

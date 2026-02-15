@@ -1,0 +1,1178 @@
+:root {
+    /* --- Industrial Light Palette (Matching 2lmf-pro.hr) --- */
+    --primary: #E67E22;
+    /* Safety Orange - Kept same */
+    --primary-dim: #D35400;
+    --primary-glow: rgba(230, 126, 34, 0.2);
+    /* Softer glow for light mode */
+
+    --bg-dark: #F4F4F4;
+    /* Light Grey (Site Body) */
+    --bg-panel: #FFFFFF;
+    /* White (Site Cards) */
+    --bg-input: #E2E8F0;
+    /* Light Steel Grey */
+
+    --text-main: #333333;
+    /* Dark Grey (Site Text) */
+    --text-muted: #64748B;
+    /* Slate Grey */
+    --text-dim: #94A3B8;
+
+    --border-light: rgba(0, 0, 0, 0.1);
+    /* Darker borders for visibility */
+    --border-active: #E67E22;
+
+    /* Typography */
+    --font-header: 'Chakra Petch', sans-serif;
+    --font-brand: 'Stencil', 'Stardos Stencil', serif;
+    --font-ui: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    /* MATCH MAIN SITE */
+
+    /* Metrics */
+    --radius-sm: 2px;
+    --radius-md: 4px;
+    --radius-lg: 12px;
+
+    --shadow-panel: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-glow: 0 0 10px rgba(230, 126, 34, 0.3);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    font-size: 16px;
+    /* FORCE BASE SIZE */
+}
+
+body {
+    font-family: var(--font-ui);
+    background-color: transparent;
+    /* Fix: Let .tech-background show through */
+    color: var(--text-main);
+    line-height: 1.6;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+    position: relative;
+}
+
+/* --- Tech Background --- */
+.tech-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    width: 100%;
+    height: 100%;
+    z-index: -9999;
+    /* Force behind everything */
+    background-color: var(--bg-dark);
+    /* Light Grey */
+
+    /* Subtle Grey Grid + Technical Drawings */
+    background-image:
+        url('assets/background-pattern.svg'),
+        linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+    background-size: 800px 800px, 50px 50px, 50px 50px;
+    background-position: center top, 0 0, 0 0;
+    opacity: 0.6;
+    /* Slight fade for the whole background layer if needed, or controlled in SVG */
+}
+
+/* --- Layout --- */
+.container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+}
+
+/* --- Header --- */
+/* --- Header (Standardized) --- */
+header {
+    background: #e67e22;
+    color: #fff;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    border-bottom: 4px solid black;
+    /* Added black separator line */
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    /* Tighter gap */
+}
+
+.nav-calculator {
+    background-color: #2C2C54;
+    /* Dark Blue-Purple */
+    color: #e67e22 !important;
+    /* Orange Text */
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-weight: 700;
+    transition: background-color 0.3s;
+    animation: blink-calc 2s infinite steps(1);
+    /* Instant change steps(1) */
+}
+
+@keyframes blink-calc {
+
+    0%,
+    50% {
+        background-color: #2C2C54;
+        color: #e67e22;
+    }
+
+    51%,
+    100% {
+        background-color: #000;
+        color: #e67e22;
+    }
+}
+
+.nav-calculator:hover {
+    background-color: #000;
+    color: #e67e22 !important;
+}
+
+.logo {
+    max-height: 90px;
+    /* Increased size */
+    width: auto;
+    display: block;
+}
+
+.header-tagline {
+    font-size: 1rem;
+    /* Reduced size */
+    font-weight: 700;
+    color: #000;
+    line-height: 1.2;
+    white-space: nowrap;
+}
+
+nav {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-top: 0;
+}
+
+nav>a {
+    color: #000;
+    text-decoration: none;
+    margin: 0 15px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    padding: 10px 0;
+    transition: color 0.3s;
+}
+
+nav a:hover {
+    color: #fff;
+}
+
+/* Dropdown Menu Styles */
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-btn {
+    background-color: transparent;
+    color: #000;
+    padding: 0 15px;
+    font-size: 1.1rem;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    font-family: inherit;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #FAE5D3;
+    /* Calculator Light Orange */
+    min-width: 200px;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    z-index: 1001;
+    border-radius: 4px;
+    top: 100%;
+    left: 0;
+}
+
+.dropdown-content a {
+    color: #000;
+    /* Black text */
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    font-size: 1rem;
+    font-weight: 700;
+    /* Bold */
+    text-align: left;
+    margin: 0;
+}
+
+.dropdown-content a:hover {
+    background-color: #000;
+    /* Black background on hover */
+    color: #e67e22;
+    /* Orange text on hover */
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.dropdown:hover .dropdown-btn {
+    color: #fff;
+    /* Match nav hover color */
+}
+
+/* --- Navigation --- */
+.module-nav {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 2.5rem;
+    flex-wrap: wrap;
+}
+
+.nav-btn {
+    background: #FFFFFF;
+    /* White for unselected */
+    border: 1px solid var(--border-light);
+    padding: 1rem 1.5rem;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-header);
+    font-weight: 600;
+    letter-spacing: 1px;
+    font-size: 1rem;
+    color: black;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    position: relative;
+    z-index: 10;
+    /* Block background */
+    overflow: hidden;
+    text-transform: uppercase;
+}
+
+.nav-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: var(--primary);
+    transform: scaleY(0);
+    transition: transform 0.3s ease;
+}
+
+.nav-btn:hover {
+    background: #F5CBA7;
+    /* Solid darker orange for hover */
+    color: black;
+    border-color: var(--primary);
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+}
+
+.nav-btn.disabled-module {
+    pointer-events: none;
+    cursor: not-allowed;
+    background: repeating-linear-gradient(45deg,
+            #e74c3c,
+            #e74c3c 10px,
+            #ffffff 10px,
+            #ffffff 20px);
+    border-color: #999;
+    color: #333;
+    font-weight: 700;
+}
+
+.nav-btn:hover::before {
+    transform: scaleY(1);
+}
+
+.nav-btn.active {
+    background: #FAE5D3;
+    /* Active = Light Orange */
+    color: black;
+    border-color: var(--primary);
+    box-shadow: var(--shadow-glow);
+    text-shadow: none;
+}
+
+.nav-btn.active::before {
+    transform: scaleY(1);
+}
+
+/* --- Cards & Panels --- */
+.calculator-card,
+.results-card {
+    background: #FFFFFF;
+    /* Ensure solid white opacity */
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-panel);
+    padding: 2.5rem;
+    margin-bottom: 2rem;
+    position: relative;
+    z-index: 10;
+    /* Ensure cards sit above background */
+}
+
+/* "Technical markings" on corners */
+.calculator-card::after,
+.results-card::after {
+    content: '';
+    position: absolute;
+    top: -1px;
+    right: -1px;
+    width: 20px;
+    height: 20px;
+    border-top: 2px solid var(--primary);
+    border-right: 2px solid var(--primary);
+}
+
+.calculator-card::before,
+.results-card::before {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: -1px;
+    width: 20px;
+    height: 20px;
+    border-bottom: 2px solid var(--primary);
+    border-left: 2px solid var(--primary);
+}
+
+/* --- Forms --- */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-family: var(--font-header);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    font-weight: 700;
+    /* Bold labels */
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 0.8rem;
+    background: #FAE5D3;
+    /* Solid Light Orange (No Transparency) */
+    /* Light orange like email input */
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-sm);
+    font-family: 'Courier New', monospace;
+    font-size: 1rem;
+    font-weight: 700;
+    /* Bold inputs */
+    color: black;
+    /* Black Text */
+    transition: all 0.2s;
+}
+
+.form-group select option {
+    font-weight: 700;
+    background: white;
+    /* Optional: keeps dropdown clean */
+    color: black;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(230, 126, 34, 0.15);
+}
+
+/* --- Buttons --- */
+/* --- Buttons --- */
+.calculate-btn {
+    width: 100%;
+    background: rgba(230, 126, 34, 0.15);
+    /* Light orange background */
+    color: black;
+    /* Black text */
+    padding: 1.2rem;
+    border: 3px solid var(--primary);
+    /* Thick orange border */
+    border-radius: var(--radius-sm);
+    font-family: var(--font-header);
+    font-size: 1.25rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 1rem;
+    position: relative;
+    /* clip-path removed as requested */
+}
+
+.calculate-btn:hover {
+    background: var(--primary);
+    /* Solid Orange on hover */
+    box-shadow: var(--shadow-glow);
+    transform: translateY(-2px);
+}
+
+.secondary-btn {
+    background: transparent;
+    border: 1px solid var(--text-muted);
+    padding: 0.8rem 1.6rem;
+    /* Increased padding */
+    border-radius: var(--radius-sm);
+    color: var(--text-muted);
+    font-family: var(--font-ui);
+    font-size: 1rem;
+    /* Increased font size */
+    font-weight: 600;
+    /* Slightly bolder */
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.secondary-btn:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+    background: rgba(230, 126, 34, 0.05);
+}
+
+/* --- Results --- */
+.hidden {
+    display: none;
+}
+
+.results-header {
+    display: flex;
+    flex-direction: column;
+    /* Stack vertically */
+    justify-content: center;
+    align-items: center;
+    /* Center align */
+    gap: 1.5rem;
+    /* Space between title and buttons */
+    border-bottom: 1px solid var(--border-light);
+    padding-bottom: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.action-buttons,
+.buttons-row {
+    display: flex;
+    justify-content: space-between;
+    /* Spread buttons */
+    width: 100%;
+    /* Full width */
+    gap: 1rem;
+    /* Gap between buttons */
+}
+
+.action-btn {
+    width: 120px;
+    /* Narrower width */
+    flex: 0 0 auto;
+    background: var(--primary);
+    /* Orange Background */
+    border: 3px solid var(--primary-dim);
+    /* Thick Border */
+    padding: 0.5rem 0.2rem;
+    /* Reduced padding */
+    border-radius: var(--radius-sm);
+    color: black;
+    /* Black Text */
+    font-family: var(--font-ui);
+    font-size: 1.5rem;
+    /* Larger icon */
+    font-weight: 700;
+    /* Bold */
+    cursor: pointer;
+    transition: all 0.2s;
+    text-transform: uppercase;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.action-btn .btn-text {
+    font-size: 0.7rem;
+    /* Smaller text */
+    line-height: 1.1;
+    margin-top: 2px;
+}
+
+.action-btn:hover {
+    background: var(--primary-dim);
+    border-color: black;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(230, 126, 34, 0.4);
+}
+
+.results-actions-container {
+    width: 100%;
+}
+
+.email-row {
+    width: 100%;
+    margin-top: 1rem;
+    display: flex;
+    justify-content: center;
+}
+
+.email-row .email-input {
+    width: 100%;
+    max-width: 220px;
+    /* Wider to span gaps */
+    text-align: center;
+    border: 3px solid black;
+    /* Black thick border */
+    /* Thick border */
+    padding: 0.5rem;
+    /* Kept reduced padding */
+    border-radius: var(--radius-sm);
+    background: rgba(230, 126, 34, 0.15);
+    /* Discrete light orange */
+    color: black;
+    font-family: var(--font-ui);
+    /* Match button font type */
+    font-size: 0.9rem;
+    /* Reverted to 0.9rem */
+    font-weight: 700;
+}
+
+.email-row .email-input::placeholder {
+    color: black;
+    opacity: 1;
+    /* Firefox */
+}
+
+.results-header h2 {
+    font-family: var(--font-header);
+    font-weight: 600;
+    color: var(--primary);
+    text-transform: uppercase;
+}
+
+.result-item {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 1rem;
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-light);
+    align-items: center;
+    transition: background 0.2s;
+}
+
+.result-item:hover {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.result-header-row {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: var(--text-muted);
+    font-family: var(--font-header);
+    font-size: 0.85rem;
+    font-weight: 700;
+    /* Bold Header */
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.5rem;
+    border-bottom: 2px solid var(--border-light);
+}
+
+.result-label {
+    color: var(--text-main);
+    font-weight: 700;
+    /* Bold Label */
+}
+
+.col-qty,
+.col-price,
+.col-total {
+    font-family: 'Courier New', monospace;
+    color: var(--text-muted);
+    font-weight: 700;
+    /* Bold Data */
+}
+
+.col-qty {
+    text-align: center;
+}
+
+.col-price,
+.col-total {
+    text-align: right;
+}
+
+.grand-total {
+    background: var(--primary);
+    /* Solid Orange */
+    border: 4px solid #D35400;
+    /* Darker orange thick border */
+    margin-top: 1.5rem;
+    color: black;
+    /* Black Text */
+    font-weight: 700;
+    /* Bold Text */
+    padding: 1.5rem;
+    /* Ensure padding matches previous */
+    border-radius: var(--radius-md);
+    /* Smooth corners */
+    transition: background 0.2s;
+}
+
+.grand-total:hover {
+    background: rgba(230, 126, 34, 0.25);
+    /* Light orange on hover */
+    cursor: default;
+}
+
+.note-copyright {
+    font-family: var(--font-header);
+    color: black;
+    font-weight: 700;
+    font-size: 1.3rem;
+    /* Match note-brand/calc size */
+}
+
+.grand-total .col-total {
+    color: black;
+    /* Override previous color */
+    font-weight: 700;
+    font-size: 1.2rem;
+}
+
+/* New Total Row Style to replace 'result-item grand-total' combination */
+.result-total-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 1rem;
+    padding: 1.5rem;
+    margin-top: 1.5rem;
+    border: 4px solid #D35400;
+    /* Darker orange thick border */
+    border-radius: var(--radius-md);
+    background: var(--primary);
+    /* Solid Orange */
+    align-items: center;
+    color: black;
+    /* Black Text */
+    font-weight: 700;
+    /* Bold Text */
+    transition: background 0.2s;
+}
+
+.result-total-row:hover {
+    background: rgba(230, 126, 34, 0.25);
+    cursor: default;
+}
+
+.result-total-row .col-total {
+    text-align: right;
+    font-family: 'Courier New', monospace;
+    color: black;
+    font-weight: 700;
+    font-size: 1.2rem;
+}
+
+/* --- Legacy Footer Block Completely Removed --- */
+
+/* --- Responsive --- */
+@media (max-width: 768px) {
+    .module-nav {
+        flex-direction: column;
+    }
+
+    .nav-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .result-item {
+        grid-template-columns: 1fr 1fr;
+        gap: 0.5rem;
+    }
+
+    .col-price {
+        display: none;
+    }
+
+    /* Simplify on mobile */
+    .col-total {
+        text-align: right;
+    }
+}
+
+/* --- Color Selection Buttons --- */
+.color-selection-row {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    justify-content: space-between;
+}
+
+.color-btn {
+    flex: 1;
+    /* Grow to fill space equally */
+    min-width: 0;
+    /* Allow flex item to shrink below content size if needed */
+    padding: 1rem 1rem;
+    /* Reduced padding for height */
+    border: 2px solid transparent;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-header);
+    font-weight: 700;
+    font-size: 1.1rem;
+    /* Larger font (V2 style) */
+    color: white;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s;
+    text-transform: uppercase;
+    position: relative;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    white-space: nowrap;
+    /* Keep on one line */
+}
+
+.color-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.color-btn.active {
+    border-color: var(--primary);
+    /* Orange border for selection */
+    box-shadow: 0 0 0 3px rgba(230, 126, 34, 0.4);
+    transform: scale(1.02);
+    z-index: 2;
+}
+
+/* RAL 7016 - Antracit siva */
+.btn-ral-7016 {
+    background-color: #383E42;
+}
+
+/* RAL 6005 - Mahovina zelena */
+.btn-ral-6005 {
+    background-color: #0B3D2E;
+}
+
+/* --- User Details Grid --- */
+.user-details-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.user-details-grid input::placeholder {
+    color: black;
+    opacity: 1;
+    /* Firefox adds a lower opacity by default */
+}
+
+@media (max-width: 600px) {
+    .user-details-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* --- Layout Selection Buttons (Fence) --- */
+.layout-btn {
+    flex: 1;
+    /* Equal width */
+    min-width: 0;
+    /* Allow shrink */
+    padding: 0;
+    border: 2px solid transparent;
+    border-radius: var(--radius-sm);
+    background: #fff;
+    /* Inactive: White */
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.layout-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.layout-btn.active {
+    border-color: var(--primary);
+    /* Orange border */
+    box-shadow: 0 0 0 3px rgba(230, 126, 34, 0.4);
+    transform: scale(1.02);
+    z-index: 2;
+    background: rgba(230, 126, 34, 0.15);
+    /* Active: Light Orange */
+}
+
+.layout-btn-text {
+    width: 100%;
+    padding: 1rem;
+    font-family: var(--font-header);
+    font-weight: 700;
+    text-transform: uppercase;
+    color: black;
+    text-align: center;
+}
+
+.layout-btn input {
+    width: 100%;
+    height: 100%;
+    padding: 1rem;
+    background: transparent;
+    border: none;
+    text-align: center;
+    font-family: var(--font-header);
+    font-weight: 700;
+    font-size: 1rem;
+    color: black;
+    outline: none;
+    text-transform: uppercase;
+}
+
+.layout-btn input::placeholder {
+    color: black;
+    /* Changed to Black as requested */
+    font-size: 0.8rem;
+    text-transform: none;
+    opacity: 1;
+    /* Firefox fix */
+}
+
+/* --- STANDARD FOOTER OVERRIDE --- */
+.main-footer {
+    background-color: #000000;
+    color: #b0b0b0;
+    padding: 2.5rem 0 1.5rem;
+    margin-top: 0;
+    border-top: 1px solid #333;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    /* FORCE STANDARD FONT */
+}
+
+/* --- Responsive Header Matches --- */
+@media (max-width: 768px) {
+    header {
+        flex-direction: column;
+        padding: 1rem;
+        text-align: center;
+    }
+
+    .logo-container {
+        flex-direction: column;
+        margin-bottom: 15px;
+    }
+
+    nav {
+        justify-content: center;
+    }
+
+    nav>a {
+        margin: 5px 10px;
+    }
+}
+
+.main-footer .container {
+    box-sizing: content-box;
+    /* Force match with main site's default model */
+    max-width: 1200px;
+    padding: 0 2rem;
+    margin: 0 auto;
+}
+
+.footer-content {
+    display: grid;
+    grid-template-columns: 1fr 0.8fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+    text-align: left;
+    align-items: start;
+}
+
+.footer-column {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    min-width: 0;
+}
+
+.footer-brand {
+    font-family: 'Stardos Stencil', cursive;
+    font-size: 2.5rem;
+    color: #e67e22;
+    margin-bottom: 0;
+    margin-top: -10px;
+    line-height: 1;
+    letter-spacing: 1px;
+    font-weight: 700;
+}
+
+.footer-logo {
+    max-height: 55px;
+    width: auto;
+    filter: brightness(0) invert(1);
+    margin-bottom: 1rem;
+    display: block;
+}
+
+.footer-desc {
+    color: #ccc;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin-bottom: 1.5rem;
+    margin-top: 1rem;
+    /* Restore browser default spacing */
+    font-weight: 700;
+}
+
+.company-details p {
+    margin: 0.5rem 0;
+    font-size: 0.95rem;
+    color: #ccc;
+}
+
+.footer-heading {
+    color: #e67e22;
+    text-transform: uppercase;
+    font-size: 1.2rem;
+    font-weight: 700;
+    font-family: 'Chakra Petch', sans-serif;
+    margin-bottom: 1rem;
+    margin-top: 1.2rem;
+    /* Revert global reset to match main site default h3 margin */
+    letter-spacing: 0.5px;
+    border: none;
+    padding: 0;
+}
+
+.contact-block {
+    margin-bottom: 1rem;
+}
+
+.contact-label {
+    display: block;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 0.2rem;
+    font-size: 1rem;
+}
+
+.contact-label .icon {
+    color: #e67e22;
+    margin-right: 0.5rem;
+}
+
+.contact-block p {
+    margin: 0;
+    color: #ccc;
+    font-size: 0.95rem;
+}
+
+.footer-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.footer-form input,
+.footer-form textarea {
+    background-color: #333;
+    border: 1px solid #444;
+    padding: 0.8rem 1rem;
+    color: white;
+    font-family: inherit;
+    font-size: 0.95rem;
+    width: 100%;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.footer-form input::placeholder,
+.footer-form textarea::placeholder {
+    color: #888;
+}
+
+.footer-form textarea {
+    resize: vertical;
+}
+
+.footer-form button {
+    background-color: #e67e22;
+    color: white;
+    border: none;
+    padding: 1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background 0.2s;
+    width: 100%;
+}
+
+.footer-form button:hover {
+    background-color: #d35400;
+}
+
+@media (max-width: 900px) {
+    .footer-content {
+        grid-template-columns: 1fr;
+        gap: 3rem;
+    }
+}
+
+/* --- Calculator Title Bar (Restored & Compact) --- */
+.main-header {
+    background: var(--primary);
+    border-bottom: 4px solid rgba(0, 0, 0, 0.1);
+    /* Reverted to original */
+    padding: 1.5rem 0;
+    /* Reduced padding for height */
+    margin-bottom: 3rem;
+    box-shadow: 0 4px 20px rgba(230, 126, 34, 0.4);
+    position: relative;
+    z-index: 99;
+}
+
+.main-header .container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.main-header h1 {
+    font-family: var(--font-brand);
+    font-weight: 700;
+    font-size: 2.5rem;
+    color: black;
+    text-shadow: none;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 0;
+
+    /* Flex alignment fix */
+    display: flex;
+    align-items: baseline;
+    justify-content: flex-start;
+    /* Changed to start */
+    gap: 0.7rem;
+}
+
+.main-header .highlight {
+    color: white;
+    font-family: var(--font-header);
+    font-weight: 600;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.main-header .subtitle {
+    color: black;
+    font-size: 1.3rem;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    margin-top: 5px;
+}
+
+/* --- Calculation Footer Note --- */
+.calc-footer-note {
+    text-align: center;
+    margin-top: 2.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px dashed rgba(0, 0, 0, 0.1);
+}
+
+.note-flex-container {
+    display: flex;
+    align-items: center;
+    /* Perfect vertical centering */
+    justify-content: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    line-height: 1;
+}
+
+.note-brand {
+    font-family: var(--font-brand);
+    color: var(--primary);
+    /* Orange */
+    font-weight: 700;
+    font-size: 1.3rem;
+}
+
+.note-calc {
+    font-family: var(--font-header);
+    color: black;
+    font-weight: 700;
+    font-size: 1.3rem;
+    text-transform: uppercase;
+}
+
+.note-copyright {
+    font-family: var(--font-header);
+    color: black;
+    font-weight: 700;
+    font-size: 1.3rem;
+}
+
+.calc-footer-note .small-note {
+    font-size: 0.85rem;
+    color: black;
+    margin-top: 0.3rem;
+    font-weight: 600;
+}
+
+/* Hashtags Style */
+.hashtags {
+    color: #7f8c8d;
+    font-size: 0.75rem;
+    margin-top: 25px;
+    font-style: italic;
+    line-height: 1.4;
+    text-align: center;
+    padding-bottom: 20px;
+}

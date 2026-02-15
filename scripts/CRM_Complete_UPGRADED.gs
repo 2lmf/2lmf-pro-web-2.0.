@@ -1,0 +1,905 @@
+// --- BUSINESS LOGIC: MATERIAL CONFIGURATION ---
+// Ovdje podesite nabavne faktore (u odnosu na MPC) i dobavljače.
+const MATERIAL_CONFIG = {
+  "XPS": { buy_factor: 0.80, supplier: "RAVA" }, // Margin 25%
+  "Kamena vuna": { buy_factor: 0.80, supplier: "RAVA" }, // Margin 25%
+  "TPO": { buy_factor: 0.77, supplier: "RAVA" }, // Margin 30%
+  "PVC": { buy_factor: 0.80, supplier: "RAVA" },
+  "Diamond": { buy_factor: 0.74, supplier: "RAVA" },
+  "Ruby": { buy_factor: 0.74, supplier: "RAVA" },
+  "Vapor": { buy_factor: 0.74, supplier: "RAVA" },
+  "Alu-Termo": { buy_factor: 0.74, supplier: "RAVA" },
+  "OSB": { buy_factor: 0.80, supplier: "RAVA" },
+  "Insta Stik": { buy_factor: 0.74, supplier: "RAVA" },
+  "Ethafoam": { buy_factor: 0.74, supplier: "RAVA" },
+  "PE Folija": { buy_factor: 0.70, supplier: "RAVA" },
+  "Čepasta": { buy_factor: 0.70, supplier: "RAVA" },
+  "Paropropusno": { buy_factor: 0.74, supplier: "RAVA" },
+  "EPS": { buy_factor: 0.80, supplier: "RAVA" },
+  "Žbuka": { buy_factor: 0.74, supplier: "RAVA" },
+  "Uniterm": { buy_factor: 0.74, supplier: "RAVA" },
+  "Grund": { buy_factor: 0.74, supplier: "RAVA" },
+  "Profil": { buy_factor: 0.74, supplier: "RAVA" },
+  "Mrežica": { buy_factor: 0.74, supplier: "RAVA" },
+  "2D panel": { buy_factor: 0.77, supplier: "Dobavljač Ograde" },
+  "3D panel": { buy_factor: 0.77, supplier: "Dobavljač Ograde" },
+  "Stup": { buy_factor: 0.77, supplier: "Dobavljač Ograde" },
+  "Pješačka vrata": { buy_factor: 0.77, supplier: "Dobavljač Ograde" },
+  "Spojnice": { buy_factor: 0.77, supplier: "Dobavljač Ograde" },
+  "Sidreni vijci": { buy_factor: 0.77, supplier: "Dobavljač Ograde" },
+  "Aquamat": { buy_factor: 0.77, supplier: "Isomat" },
+  "Isoflex": { buy_factor: 0.77, supplier: "Isomat" },
+  "AK-20": { buy_factor: 0.77, supplier: "Isomat" },
+  "Montaža": { buy_factor: 0.00, supplier: "-" }, 
+  "Usluga montaže": { buy_factor: 0.00, supplier: "-" }
+};
+
+// ==========================================
+// 2LMF PRO - CALCULATOR BACKEND & CRM
+// ==========================================
+
+// --- CONFIGURATION ---
+var SCRIPT_PROP = PropertiesService.getScriptProperties();
+
+// --- 1. SETUP SYSTEM (Run this once!) ---
+function setupCRM() {
+  // CONFIG: Existing Sheet ID
+  var EXISTING_ID = "1YmRZMeomWxAmfi6rsLN6qKrHrrAeHOnGVbnfsZXP3w4";
+  
+  // Link to existing sheet
+  var ss = SpreadsheetApp.openById(EXISTING_ID);
+  
+  // Store ID in Script Properties so other functions can find it
+  var SCRIPT_PROP = PropertiesService.getScriptProperties();
+  SCRIPT_PROP.setProperty("SHEET_ID", EXISTING_ID);
+  
+  // Setup "Upiti" (Inquiry Log) if not exists
+  var sheetLog = ss.getSheetByName("Upiti");
+  if (!sheetLog) {
+      sheetLog = ss.insertSheet("Upiti");
+      sheetLog.appendRow(["Datum", "ID", "Ime", "Email", "Telefon", "Modul", "Iznos (€)", "Boja", "Status", "JSON_Data"]);
+      sheetLog.setFrozenRows(1);
+      sheetLog.setColumnWidth(10, 50); 
+  }
+  
+  // Setup "Generator" (Offer Maker) if not exists
+  var sheetGen = ss.getSheetByName("Generator Ponuda");
+  if (!sheetGen) {
+      sheetGen = ss.insertSheet("Generator Ponuda");
+      setupGeneratorLayout(sheetGen);
+  } else {
+      // Optional: Refresh layout
+      setupGeneratorLayout(sheetGen);
+  }
+  
+  console.log("✅ SUSTAV USPJEŠNO POVEZAN SA STAROM TABLICOM!");
+  console.log("ID Tablice: " + EXISTING_ID);
+  console.log("LINK NA TABLICU: " + ss.getUrl());
+}
+
+function setupGeneratorLayout(sheet) {
+  sheet.clear();
+  // Header Info
+  sheet.getRange("A1").setValue("GENERATOR PONUDA").setFontWeight("bold").setFontSize(16);
+  sheet.getRange("A3").setValue("Unesi ID Upita:");
+  sheet.getRange("B3").setBackground("#FFF2CC").setBorder(true, true, true, true, null, null);
+  
+  sheet.getRange("D3").setValue("Status:");
+  sheet.getRange("E3").setFormula('=VLOOKUP(B3; Upiti!B:H; 7; FALSE)'); // Auto-status check
+  
+  // Customer Info Block
+  sheet.getRange("A5").setValue("Podaci o Kupcu (Učitano)");
+  sheet.getRange("A6").setValue("Ime:");
+  sheet.getRange("A7").setValue("Email:");
+  sheet.getRange("A8").setValue("Tel:");
+  sheet.getRange("A9").setValue("Boja:");
+  
+  // Item Table Header
+  sheet.getRange("A10:F10").setValues([["RB", "Šifra", "Opis Stavke", "Količina", "Jed. Mj.", "Cijena (€)"]]);
+  sheet.getRange("A10:F10").setBackground("#E67E22").setFontColor("black").setFontWeight("bold");
+  
+  // Instructions & Mobile Controls
+  sheet.getRange("H3").setValue("UPRAVLJANJE (MOBITEL):").setFontWeight("bold");
+  sheet.getRange("H4").setValue("👇 1. Klikni za Učitavanje");
+  sheet.getRange("H5").insertCheckboxes();
+  sheet.getRange("H6").setValue("(Status učitavanja)");
+
+  sheet.getRange("H7").setValue("👇 2. Klikni za Slanje");
+  sheet.getRange("H8").insertCheckboxes();
+  sheet.getRange("H9").setValue("(Status slanja)");
+}
+
+// --- 2. WEB APP HANDLER ---
+function doGet(e) {
+  var pricing = getLatestPricing();
+  var tmpl = HtmlService.createTemplateFromFile('Index');
+  tmpl.livePricing = JSON.stringify(pricing); // Inject into template
+  
+  return tmpl.evaluate()
+      .setTitle('2LMF PRO | Kalkulator')
+      .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+}
+
+function getLatestPricing() {
+  var ss = SpreadsheetApp.openById(SCRIPT_PROP.getProperty("SHEET_ID") || "1YmRZMeomWxAmfi6rsLN6qKrHrrAeHOnGVbnfsZXP3w4");
+  var sheet = ss.getSheetByName("CJENIK");
+  var result = { prices: {}, catalog: [] };
+  
+  if (sheet) {
+    var data = sheet.getDataRange().getValues();
+    // Preuzimamo zaglavlje da lociramo kolone ako se promijene, ali pretpostavljamo standard:
+    // A=SKU, B=Naziv, C=VPC, D=Nabavna MPC, E=Prodajna MPC, F=JM
+    for (var i = 1; i < data.length; i++) {
+      var sku = String(data[i][0] || "").trim();
+      var name = String(data[i][1] || "").trim();
+      var mpc = parseFloat(data[i][4]); // Column E: Prodajna MPC
+      var unit = String(data[i][9] || "kom").trim(); // Column J: Jedinica mjere
+      
+      if (sku && !isNaN(mpc)) {
+        result.prices[sku] = mpc;
+        result.catalog.push({
+          sku: sku,
+          name: name,
+          unit: unit,
+          price: mpc
+        });
+      }
+    }
+  }
+  return result;
+}
+
+function doPostManual(payload) {
+  // When called via google.script.run, we want a plain object return, not ContentOutput
+  return processInquiry(payload); 
+}
+
+function manualTriggerPermissions() {
+  var sheetId = PropertiesService.getScriptProperties().getProperty("SHEET_ID");
+  var ss = SpreadsheetApp.openById(sheetId);
+  var testMail = Session.getActiveUser().getEmail();
+  
+  MailApp.sendEmail(testMail, "2LMF: Provjera dozvola", "Slanje maila radi! Provjeravam tablicu: " + ss.getName());
+  
+  // Test PDF generation to trigger those permissions too
+  var blob = HtmlService.createHtmlOutput("<h1>PDF Test</h1>").getAs('application/pdf');
+  MailApp.sendEmail({
+    to: testMail,
+    subject: "2LMF: Test PDF",
+    body: "U privitku je testni PDF. Ako ga vidiš, sve dozvole su aktivne!",
+    attachments: [blob]
+  });
+  console.log("✅ Dozvole su aktivne!");
+}
+
+function doPost(e) {
+  var result = processInquiry(e.parameter);
+  return ContentService.createTextOutput(JSON.stringify(result)).setMimeType(ContentService.MimeType.JSON);
+}
+
+function processInquiry(params) {
+  try {
+    var name = params.name || "Kupac";
+    var email = params.email;
+    var phone = params.phone;
+    var subject = params._subject || "Upit";
+    var itemsJson = params.items_json;
+    var items = JSON.parse(itemsJson);
+    
+    // Normalize items (Frontend uses .price, Backend expects .price_sell)
+    items = items.map(function(it) {
+      if (it.price !== undefined && it.price_sell === undefined) {
+        it.price_sell = it.price;
+      }
+      return it;
+    });
+
+    // Generate Unique ID (Sequential)
+    var inquiryId = getNextSequenceId();
+    
+    // 0. ENRICH ITEMS (Calculate costs/profits)
+    items = enrichItemsWithCosts(items);
+    
+    // 1. Send Instant Notifications
+    var isHidro = String(subject || "").toUpperCase().indexOf("HIDRO") !== -1;
+    var customerHtml = generateHtml(items, name, true, inquiryId, params.color || "Sustav", isHidro, subject); // Pass subject
+    
+    // --- PDF ATTACHMENT TRY-CATCH ---
+    var pdfBlob = null;
+    try {
+      pdfBlob = HtmlService.createHtmlOutput(customerHtml)
+                      .setTitle("Ponuda " + inquiryId)
+                      .getAs('application/pdf');
+      pdfBlob.setName("Ponuda_" + inquiryId + ".pdf");
+    } catch (pdfErr) {
+      console.error("PDF Fail: " + pdfErr);
+    }
+
+    // Prepare Mail Options
+    var customerMailOptions = {
+      to: email,
+      subject: subject,
+      htmlBody: customerHtml,
+      name: "2LMF PRO"
+    };
+    if (pdfBlob) customerMailOptions.attachments = [pdfBlob];
+
+    // Notify Customer
+    if (params.type !== 'silent' && params.silent !== 'true') {
+        MailApp.sendEmail(customerMailOptions);
+    }
+    
+    // Notify Admin
+    var adminHtml = generateAdminHtml(items, name, email, phone, subject, customerHtml, params.location);
+    var adminMailOptions = {
+      to: "2lmf.info@gmail.com", 
+      subject: "🔔 NOVI UPIT: " + name + " (" + inquiryId + ")",
+      htmlBody: adminHtml
+    };
+    if (pdfBlob) adminMailOptions.attachments = [pdfBlob];
+    
+    MailApp.sendEmail(adminMailOptions);
+
+    // 2. Log to CRM Sheet
+    try {
+      var sheetId = SCRIPT_PROP.getProperty("SHEET_ID");
+      if (sheetId) {
+        var ss = SpreadsheetApp.openById(sheetId);
+        var sheetLog = ss.getSheetByName("Upiti");
+        if (sheetLog) {
+          var total = items.reduce((sum, i) => sum + ((parseFloat(i.qty) || 0) * (parseFloat(i.price_sell) || 0)), 0);
+          sheetLog.appendRow([new Date(), inquiryId, name, email, phone, subject, total, params.color || "", "NOVO", itemsJson]);
+        }
+      }
+    } catch (err) {
+      console.error("CRM Log failed: " + err);
+    }
+    
+    return { result: 'success', id: inquiryId, pdfAttached: !!pdfBlob };
+    
+  } catch(error) {
+    console.error("Inquiry CRASH: " + error);
+    return { result: 'error', error: error.toString() };
+  }
+}
+
+// --- 3. GOOGLE SHEETS MENU & MOBILE TRIGGERS ---
+
+function onOpen() {
+  var ui = SpreadsheetApp.getUi();
+  
+  // 1. CRM MENU
+  ui.createMenu('2LMF CRM')
+      .addItem('📥 Učitaj podatke (Desktop)', 'importInquiry')
+      .addItem('✉️ Pošalji Ponudu (Desktop)', 'sendCustomOffer')
+      .addSeparator()
+      .addItem('🔢 Admin: Resetiraj Brojač', 'menuResetCounter')
+      .addSeparator()
+      .addItem('📱 Instaliraj za Mobitel', 'setupMobileTriggers')
+      .addToUi();
+      
+  // 2. ADMIN SYNC MENU
+  ui.createMenu('2LMF ADMIN')
+      .addItem('Uputstva za sinkronizaciju', 'showSyncInstructions')
+      .addSeparator()
+      .addItem('🚀 Ažuriraj cijene na webu', 'syncPricesToWeb')
+      .addSeparator()
+      .addItem('➕ Dodaj označeno iz Cjenika u Ponudu', 'addItemsFromCjenik')
+      .addToUi();
+}
+
+function menuResetCounter() {
+    var ui = SpreadsheetApp.getUi();
+    var result = ui.prompt(
+      'Reset Brojača',
+      'Unesi broj od kojeg želiš da krene sljedeći upit (npr. 0 da krene od 1, ili 1000 da krene od 1001):',
+      ui.ButtonSet.OK_CANCEL);
+
+    if (result.getSelectedButton() == ui.Button.OK) {
+        var num = parseInt(result.getResponseText());
+        if (!isNaN(num)) {
+             PropertiesService.getScriptProperties().setProperty('LAST_ID_SEQ', num.toString());
+             ui.alert('Brojač postavljen na: ' + num + '. Sljedeći upit će biti: u' + pad(num+1, 5));
+        } else {
+             ui.alert('Greška: Nije unesen broj.');
+        }
+    }
+}
+
+function setupMobileTriggers() {
+  // Delete existing triggers first
+  var triggers = ScriptApp.getProjectTriggers();
+  for (var i = 0; i < triggers.length; i++) {
+    ScriptApp.deleteTrigger(triggers[i]);
+  }
+  
+  // Create new Installable Trigger for Edit
+  ScriptApp.newTrigger('handleMobileEdit')
+      .forSpreadsheet(SpreadsheetApp.getActive())
+      .onEdit()
+      .create();
+  
+  // DRAW UI (CHECKBOXES) AUTOMATICALLY
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Generator Ponuda");
+  sheet.getRange("H3").setValue("UPRAVLJANJE (MOBITEL):").setFontWeight("bold");
+  sheet.getRange("H4").setValue("👇 1. Klikni za Učitavanje");
+  sheet.getRange("H5").insertCheckboxes();
+  sheet.getRange("H5").setValue(false); // Default unchecked
+  sheet.getRange("H6").setValue("(Status učitavanja)");
+
+  sheet.getRange("H7").setValue("👇 2. Klikni za Slanje");
+  sheet.getRange("H8").insertCheckboxes();
+  sheet.getRange("H9").setValue("(Status slanja)");
+  
+  // 2. CJENIK SETUP (MOBILE TRIGGER)
+  var sheetCjenik = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("CJENIK");
+  if (sheetCjenik) {
+    sheetCjenik.getRange("I1").setValue("DODAJ U PONUDU:");
+    sheetCjenik.getRange("I2").insertCheckboxes();
+    sheetCjenik.getRange("I2").setValue(false);
+    sheetCjenik.getRange("I3").setValue("(Status prijenosa)");
+  }
+      
+  Browser.msgBox("✅ SPREMNO ZA MOBITEL! Kvačice su u 'Generator Ponuda' (H5, H8) i 'CJENIK' (I2).");
+}
+
+function handleMobileEdit(e) {
+  var range = e.range;
+  var sheet = range.getSheet();
+  
+  // Allow work only on specific sheets
+  var sheetName = sheet.getName();
+  if (sheetName !== "Generator Ponuda" && sheetName !== "CJENIK") return;
+  
+  var row = range.getRow();
+  var col = range.getColumn();
+  var val = range.getValue();
+  
+  // 1. LOAD DATA (H5)
+  if (row === 5 && col === 8 && val === true) {
+    sheet.getRange("H6").setValue("⏳ Učitavam...");
+    importInquiry();
+    range.setValue(false); // Uncheck
+    sheet.getRange("H6").setValue("✅ Učitano!");
+  }
+  
+  // 2. SEND OFFER (H8)
+  if (row === 8 && col === 8 && val === true) {
+    sheet.getRange("H9").setValue("⏳ Šaljem...");
+    var success = sendCustomOffer(true); // true = mobile mode (no alerts)
+    range.setValue(false); // Uncheck
+    if (success) sheet.getRange("H9").setValue("✅ Poslano!");
+    else sheet.getRange("H9").setValue("❌ Prekinuto");
+  }
+
+  // 3. SHARKPRO - ADD FROM CJENIK (I2)
+  if (sheet.getName() === "CJENIK") {
+     if (row === 2 && col === 9 && val === true) {
+       sheet.getRange("I3").setValue("⏳ Prebacujem...");
+       addItemsFromCjenik(true); // true = silent/mobile mode
+       range.setValue(false); // Uncheck
+       sheet.getRange("I3").setValue("✅ Prebačeno!");
+     }
+  }
+}
+
+function importInquiry() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheetGen = ss.getSheetByName("Generator Ponuda");
+  var sheetLog = ss.getSheetByName("Upiti");
+  
+  var idRaw = sheetGen.getRange("B3").getValue().toString().trim();
+  if (!idRaw) { setStatus("Greška: Unesite ID!"); return; }
+  
+  // --- ROBUST ID NORMALIZATION ---
+  // Goal: Convert inputs like "1", "u1", "U 1", "u00001" -> "u00001"
+  // Legacy inputs like "UPIT-5377" -> start with "UPIT-", preserve them.
+  
+  var id = idRaw;
+  var lower = idRaw.toLowerCase().replace(/\s/g, ''); // Remove spaces
+  
+  if (lower.startsWith("upit-")) {
+      // It's a legacy ID, allow it (maybe user wants to load old one)
+      id = "UPIT-" + lower.replace("upit-", ""); // Normalize casing if needed
+  } else if (lower.startsWith("u")) {
+      // Like "u1" or "u00001"
+      var numPart = parseInt(lower.substring(1));
+      if (!isNaN(numPart)) {
+          id = "u" + pad(numPart, 5);
+      }
+  } else {
+      // Just a number? "1", "55"
+      var numPart = parseInt(lower);
+      if (!isNaN(numPart)) {
+          id = "u" + pad(numPart, 5);
+      }
+  }
+
+  // Update cell with formatted ID so user sees what is being searched
+  sheetGen.getRange("B3").setValue(id);
+  
+  // Find ID in Log
+  var data = sheetLog.getDataRange().getValues();
+  var rowData = null;
+  
+  for (var i = 1; i < data.length; i++) {
+    // Exact match or Case-Insensitive match
+    // data[i][1] (The ID Column)
+    if (String(data[i][1]).toLowerCase() == id.toLowerCase()) {
+      rowData = data[i];
+      break;
+    }
+  }
+  
+  if (!rowData) { setStatus("Nije pronađeno (" + id + ")!"); return; }
+  
+  // Populate Customer Data
+  sheetGen.getRange("B6").setValue(rowData[2]); // Name
+  sheetGen.getRange("B7").setValue(rowData[3]); // Email
+  sheetGen.getRange("B8").setValue(rowData[4]); // Phone
+  sheetGen.getRange("B9").setValue(rowData[7]); // Color (Column H)
+  
+  // Parse JSON Items
+  var items = JSON.parse(rowData[9]); // Adjusted index (Column J)
+  
+  // Clear old items
+  sheetGen.getRange("A11:F50").clearContent();
+  
+  // Write new items
+  var output = [];
+  items.forEach((it, idx) => {
+    var sku = it.sku || ""; 
+    output.push([idx + 1, sku, it.name, it.qty, it.unit, it.price_sell]);
+  });
+  
+  if (output.length > 0) {
+    sheetGen.getRange(11, 1, output.length, 6).setValues(output);
+  }
+  
+  setStatus("Podaci učitani za " + id);
+}
+
+function sendCustomOffer(isMobile) {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheetGen = ss.getSheetByName("Generator Ponuda");
+  var sheetLog = ss.getSheetByName("Upiti");
+  
+  // Skip alert on mobile
+  if (!isMobile) {
+    var ui = SpreadsheetApp.getUi();
+    var response = ui.alert('Slanje Ponude', 'Sigurno?', ui.ButtonSet.YES_NO);
+    if (response == ui.Button.NO) return false;
+  }
+  
+  // Read Data
+  var name = sheetGen.getRange("B6").getValue();
+  var email = sheetGen.getRange("B7").getValue();
+  var color = sheetGen.getRange("B9").getValue();
+  
+  if(!email) { setStatus("Greška: Nema emaila!"); return false; }
+  
+  var itemsData = sheetGen.getRange(11, 1, sheetGen.getLastRow() - 10, 6).getValues();
+  
+  var items = [];
+  var totalAmount = 0;
+  
+  for (var i = 0; i < itemsData.length; i++) {
+    var row = itemsData[i];
+    if (!row[2]) continue; // Skip empty name
+    
+    items.push({
+      sku: row[1],
+      name: row[2],
+      qty: parseFloat(row[3]),
+      unit: row[4],
+      price_sell: parseFloat(row[5]),
+      line_total: parseFloat(row[3]) * parseFloat(row[5])
+    });
+  }
+  
+  // Generate PDF Content (Using same formatted function)
+  var inquiryId = sheetGen.getRange("B3").getValue();
+  // Determine if it's a Hidroizolacija offer based on the inquiry ID or other criteria
+  // For now, let's assume if the color field contains "HIDRO" it's a hidro offer.
+  // A more robust solution might involve a dedicated field or parsing the items.
+  var isHidro = String(color || "").toUpperCase().indexOf("HIDRO") !== -1;
+  var htmlBody = generateHtml(items, name, false, inquiryId, color, isHidro, "Službena Ponuda - 2LMF PRO");
+  
+  // PDF GENERATION
+  var pdfBlob = HtmlService.createHtmlOutput(htmlBody).setTitle("Ponuda").getAs('application/pdf');
+  pdfBlob.setName("Ponuda_" + inquiryId + ".pdf");
+
+  // SEND EMAIL
+  MailApp.sendEmail({
+    to: email,
+    subject: "Službena Ponuda - 2LMF PRO",
+    htmlBody: htmlBody,
+    attachments: [pdfBlob],
+    name: "2LMF PRO"
+  });
+  
+  // Update Status in Log
+  var id = sheetGen.getRange("B3").getValue();
+  var data = sheetLog.getDataRange().getValues();
+  for (var i = 1; i < data.length; i++) {
+    if (data[i][1] == id) {
+      sheetLog.getRange(i + 1, 8).setValue("POSLANO");
+      break;
+    }
+  }
+  
+  if (!isMobile) Browser.msgBox("Poslano na: " + email);
+  return true;
+}
+
+function setStatus(msg) {
+   // Helper to show errors without blocking mobile
+   try { SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Generator Ponuda").getRange("H9").setValue(msg); } catch(e){}
+   console.log(msg);
+}
+
+// --- UPGRADED HELPER: HTML GENERATOR (Shared) ---
+function generateHtml(items, name, isAutoReply, inquiryId, color, isHidro, subject) {
+    name = String(name || "Kupac"); // Sanitize to string to prevent substring error
+    var rawTotal = 0;
+    items.forEach(i => {
+         var q = parseFloat(i.qty) || 0;
+         var p = parseFloat(i.price_sell) || 0;
+         if(i.line_total) rawTotal += i.line_total;
+         else rawTotal += (q * p);
+    });
+
+  // --- HUB3 QR FORMAT (HRVHUB30) ---
+  var amountCents = (Math.round(rawTotal * 100)).toString();
+  var paddedAmount = ("000000000000000" + amountCents).substr(-15);
+  
+  var qrContent = "HRVHUB30\nEUR\n" + paddedAmount + "\n" + name.substring(0,30) + "\n-\n-\n2LMF PRO j.d.o.o.\nOrešje 7\n10090 Zagreb\nHR3123400091111213241\nHR00\n" + String(inquiryId || "Upit").substring(0, 22) + "\nOTHR\nUplata po ponudi";
+
+  // --- BASE64 QR FOR PDF RELIABILITY ---
+  var qrDataUri = "";
+  if (!isAutoReply) {
+    try {
+      var qrUrl = "https://quickchart.io/qr?size=250&text=" + encodeURIComponent(qrContent);
+      var qrBlob = UrlFetchApp.fetch(qrUrl).getBlob();
+      qrDataUri = "data:image/png;base64," + Utilities.base64Encode(qrBlob.getBytes());
+    } catch(e) {
+      console.log("QR Fetch failed: " + e);
+    }
+  }
+
+  var primaryColor = "#E67E22"; // Default Ograde (Orange)
+  var subjectUpper = String(subject || "").toUpperCase();
+  if (subjectUpper.indexOf("HIDRO") !== -1) primaryColor = "#007bff"; // Blue
+  else if (subjectUpper.indexOf("TERMO") !== -1) primaryColor = "#e74c3c"; // Red/Orange for Thermal
+  else if (subjectUpper.indexOf("FASADA") !== -1) primaryColor = "#27ae60"; // Green for Facades
+
+  var darkColor = "#000000"; 
+  var lightGray = "#f8f9fa";
+
+  var title = isAutoReply ? "INFORMATIVNA PONUDA" : "PONUDA ZA PLAĆANJE";
+
+  // Use simple fonts for PDF and email reliability
+  var fontStack = "'Segoe UI', Roboto, Arial, sans-serif";
+
+  var html = "<!DOCTYPE html><html><head>" +
+             "<style>" +
+             "body { margin:0; padding:0; background-color: " + (isAutoReply ? "#fff" : "#f8f9fa") + "; font-family: " + fontStack + "; }" +
+             ".container { max-width: 650px; margin: 0 auto; background: #ffffff; }" +
+             ".header { background: " + primaryColor + "; padding: 25px; text-align: center; border-bottom: 5px solid " + darkColor + "; }" +
+             ".logo-text { font-size: 38px; font-weight: bold; letter-spacing: 2px; color: " + darkColor + "; margin:0; text-transform: uppercase; }" +
+             ".sub-header { font-size: 10px; color: " + darkColor + "; margin-top: 5px; opacity: 0.9; letter-spacing: 1px; font-weight: bold; }" +
+             ".content { padding: 40px; }" +
+             ".title { color: " + primaryColor + "; font-size: 22px; margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 10px; font-weight: bold; }" +
+             ".table-wrapper { width: 100%; border-collapse: collapse; margin-bottom: 30px; }" +
+             ".th { background: " + primaryColor + "; color: " + darkColor + "; padding: 12px; font-size: 11px; font-weight: bold; text-align: left; border: 1px solid " + darkColor + "; text-transform: uppercase; }" +
+             ".td { padding: 12px; border: 1px solid #ddd; font-size: 13px; color: #333; }" +
+             ".td-num { text-align: right; font-weight: 600; white-space: nowrap; }" +
+             ".total-block { background: " + primaryColor + "; color: " + darkColor + "; padding: 20px; text-align: right; border: 2px solid " + darkColor + "; }" +
+             ".total-value { font-size: 24px; font-weight: bold; color: " + darkColor + "; }" +
+             ".footer { background: " + primaryColor + "; color: " + darkColor + "; padding: 30px 20px; font-size: 11px; text-align: center; line-height: 1.8; border-top: 5px solid " + darkColor + "; }" +
+             ".note { background: #fff8f0; border-left: 4px solid " + primaryColor + "; padding: 20px; font-size: 12px; margin-top: 30px; line-height: 1.6; }" +
+             ".qr-box { margin-top: 30px; text-align: center; border: 1px solid #eee; padding: 20px; border-radius: 10px; }" +
+             
+             // PDF SPECIFIC OVERRIDES
+             "@media print { " +
+               ".header { background: #fff !important; border-bottom: 2px solid #333 !important; } " +
+               ".th { background: #eee !important; color: #000 !important; } " +
+               ".total-block { background: #fff !important; border: 2px solid #333 !important; } " +
+               ".footer { background: #fff !important; border-top: 2px solid #333 !important; } " +
+             "} " + 
+             "</style></head><body>" +
+             "<div style='padding: 20px; max-width: 650px; margin: 0 auto; font-size: 14px; color: #333; line-height: 1.6;'>" +
+             "Poštovani <b>" + name + "</b>,<br>" + 
+             (isAutoReply ? 
+               "informativna ponuda za Vaš upit nalazi se niže u mailu.<br><br>" +
+               "Ukoliko Vam ponuda odgovara, javite se povratno na mail ili mobitel i poslati ćemo Vam službenu ponudu za plaćanje.<br><br>" +
+               "Vaš <b>2LMF PRO tim</b><br>" +
+               "Mobitel: +385 95 311 5007<br>" +
+               "Email: 2lmf.info@gmail.com" : 
+               "ispod se nalazi Vaša službena ponuda:") + 
+             "</div>" +
+             "<div class='container'>" +
+             "<div class='header'><h1 class='logo-text'>2LMF PRO</h1><div class='sub-header'>HIDRO & TERMO IZOLACIJA • FASADE • OGRADE</div></div>" +
+             "<div class='content'><h2 class='title'>" + title + " #" + inquiryId + "</h2>" +
+              (color ? 
+                "<div style='margin-bottom:25px; display:flex; align-items:center; background:#f9f9f9; padding:15px; border-radius:8px; border:1px solid #eee;'>" +
+                "<div style='width:35px; height:35px; background:" + primaryColor + "; border-radius:6px; margin-right:15px; border:2px solid #fff; box-shadow:0 1px 3px rgba(0,0,0,0.1);'></div>" +
+                "<div>" +
+                "<div style='font-size:10px; color:#888; text-transform:uppercase; letter-spacing:1px;'>" + (isHidro ? "Konfiguracija sustava" : "Odabrana opcija") + "</div>" +
+                "<div style='font-size:15px; font-weight:bold; color:#333;'>" + (isHidro ? color : (isNaN(parseInt(color)) ? color : ("RAL " + color))) + "</div>" +
+                "</div>" +
+                "</div>" : "") +
+             "<table class='table-wrapper'><thead><tr class='tr-h'><th class='th' style='width:40%'>STAVKA</th><th class='th' style='text-align:center;'>JED. CIJENA</th><th class='th' style='text-align:center;'>KOL.</th><th class='th' style='text-align:right;'>UKUPNO</th></tr></thead><tbody>";
+
+    items.forEach(function(item) {
+        var lineTotal = 0; if (item.line_total) lineTotal = item.line_total; else lineTotal = (parseFloat(item.qty) || 0) * (parseFloat(item.price_sell) || 0);
+        var unitPrice = parseFloat(item.price_sell) || 0;
+        var qtyFormatted = (parseFloat(item.qty) || 0).toLocaleString('hr-HR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+        html += "<tr><td class='td'>" + item.name + "</td><td class='td' style='text-align:center; white-space:nowrap;'>" + unitPrice.toLocaleString('hr-HR', {minimumFractionDigits: 2}) + " €</td><td class='td' style='text-align:center; white-space:nowrap;'>" + qtyFormatted + " " + (item.unit || "kom") + "</td><td class='td td-num'>" + lineTotal.toLocaleString('hr-HR', {minimumFractionDigits: 2}) + " €</td></tr>";
+    });
+
+    html += "</tbody></table>" +
+            "<div class='total-block'><div style='font-size:11px; font-weight:bold; margin-bottom:5px; color:" + darkColor + ";'>SVEUKUPNI IZNOS (MPC)</div>" +
+            "<div class='total-value'>" + rawTotal.toLocaleString('hr-HR', {minimumFractionDigits: 2}) + " €</div></div>" +
+            "<div class='note'><b>Uvjeti kupnje:</b><br><ul style='margin-top:5px; padding-left:20px; margin-bottom:10px;'><li>Plaćanje: avans - uplatom na žiro račun</li><li>Minimalni iznos kupovine: 200,00 eur</li><li>Sve cijene su sa PDV-om*</li></ul>" +
+            "<div style='font-size:11px; opacity:0.8;'>* Porezni obveznik nije u sustavu PDV-a, temeljem članka 90. Zakona o porezu na dodanu vrijednost</div></div>";
+
+    // QR Code logic: Using Base64 URI for PDF stability
+    if (!isAutoReply && qrDataUri) {
+        html += "<div class='qr-box'><img src='" + qrDataUri + "' style='width:150px;'>" +
+                "<div style='margin-top:10px; font-size:11px; color:#666; font-weight:bold;'>SKENIRAJ I PLATI (HUB3 STANDARD)</div></div>";
+    }
+
+    html += "</div><div class='footer'><div><b>2LMF PRO j.d.o.o.</b></div><div>Orešje 7, 10090 Zagreb | Telefon: +385 95 311 5007 | 2lmf.info@gmail.com</div>" +
+            "<div style='margin-top:15px; border-top:1px solid rgba(0,0,0,0.1); padding-top:15px;'>IBAN: <b>HR3123400091111213241</b> | © 2026 2LMF PRO</div></div></div></body></html>";
+    return html;
+}
+
+// --- HELPER: ENRICH ITEMS WITH COSTS (Backend Logic) ---
+function enrichItemsWithCosts(items) {
+  var sheetId = PropertiesService.getScriptProperties().getProperty("SHEET_ID");
+  if (!sheetId) return items; // Fallback
+  
+  var ss = SpreadsheetApp.openById(sheetId);
+  var sheet = ss.getSheetByName("CJENIK");
+  if (!sheet) return items; // Fallback if sheet missing
+  
+  // 1. Build Price list (Array for search + Map for direct lookup)
+  var sheetItems = [];
+  var priceMap = {};
+  
+  if (sheet) {
+      // COL A = SKU (Šifra)
+      // COL B = Name (Naziv)
+      // COL C = Nabavna BEZ PDV (Cost VPC) -> For Supplier
+      // COL D = Nabavna SA PDV (Cost MPC) -> For Profit calc
+      
+      var lastRow = sheet.getLastRow();
+      if (lastRow > 1) {
+          var data = sheet.getRange(2, 1, lastRow - 1, 4).getValues(); // Get cols A,B,C,D
+          
+          for (var i = 0; i < data.length; i++) {
+              var rowSku = String(data[i][0] || "").trim().toLowerCase();
+              var rowName = String(data[i][1] || "");
+              
+              var rowCostVPC = parseFloat(data[i][2]); // Col C
+              if (isNaN(rowCostVPC)) rowCostVPC = 0;
+
+              var rowCostMPC = parseFloat(data[i][3]); // Col D
+              if (isNaN(rowCostMPC)) rowCostMPC = 0;
+              
+              var priceObj = {
+                  sku: rowSku,
+                  name: rowName, 
+                  cost_vpc: rowCostVPC,
+                  cost_mpc: rowCostMPC,
+                  supplier: "Skladište" 
+              };
+              
+              sheetItems.push(priceObj);
+              if (rowSku) priceMap[rowSku] = priceObj;
+          }
+      }
+  }
+
+  // 2. Map Items
+  return items.map(function(item) {
+    var itemSku = String(item.sku || "").trim().toLowerCase(); 
+    var matchedData = null;
+    
+    // A. Try Exact SKU Match
+    if (itemSku && priceMap[itemSku]) {
+        matchedData = priceMap[itemSku];
+    }
+    
+    // Apply Data
+    if (matchedData) {
+        item.price_buy_vpc = matchedData.cost_vpc;
+        item.price_buy_mpc = matchedData.cost_mpc; 
+        item.supplier = matchedData.supplier;
+        if (!item.sku && matchedData.sku) item.sku = matchedData.sku.toUpperCase(); 
+    } else {
+        item.price_buy_vpc = 0;
+        item.price_buy_mpc = 0;
+        item.supplier = "Nepoznato";
+    }
+
+    // Profit = Sell Price (MPC) - Buy Price (MPC)
+    item.profit = item.price_sell - item.price_buy_mpc;
+    return item;
+  });
+}
+
+function generateAdminHtml(items, name, email, phone, subject, customerHtml, location) {
+  var totalProfit = 0;
+  items.forEach(function(it){ totalProfit += it.qty * it.profit; });
+
+  var html = "<style>" +
+             "@import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=Barlow:wght@400;600&display=swap');" +
+             "h2 { font-family: 'Chakra Petch', sans-serif; }" +
+             "</style>" +
+             "<div style='font-family: Arial, sans-serif; color: #333;'>" +
+             "<h2 style='color: #000000;'>📊 Novi upit (Interni pregled)</h2>" +
+             "<p><b>Kupac:</b> " + name + " (" + email + ") | <b>Tel:</b> " + phone + (location ? " | <b>Lokacija:</b> " + location : "") + "</p>" +
+             
+             "<hr style='border: 0; border-top: 2px solid #eee; margin: 20px 0;'>" +
+             "<h3>👀 Prikaz za Kupca</h3>" + 
+             (customerHtml || "<i>Nema prikaza (greška?)</i>") + 
+             "<hr style='border: 0; border-top: 2px solid #eee; margin: 20px 0;'>" +
+
+             "<h3>💰 Analiza Zarade (Sve cijene su s PDV-om)</h3>" +
+             "<table style='width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 30px;'>" +
+             "<tr style='background-color: #E67E22; color: #000000;'><th style='padding:8px;text-align:left;'>Artikl</th><th style='padding:8px;'>KOL.</th><th style='padding:8px;text-align:right;'>MPC / kom</th><th style='padding:8px;text-align:right;'>MPC Ukupno</th><th style='padding:8px;text-align:right;background:#2ecc71;color:black;'>Nabavna / kom</th><th style='padding:8px;text-align:right;background:#2ecc71;color:black;'>Nabavna Ukupno</th><th style='padding:8px;text-align:right;background:#d35400;color:white;'>ZARADA</th></tr>";
+
+  items.forEach(function(it) {
+    var u = it.unit || "";
+    html += "<tr>" +
+            "<td style='padding:8px;border:1px solid #ddd;'>" + it.name + "</td>" +
+            "<td style='padding:8px;border:1px solid #ddd;text-align:center;'>" + it.qty + " " + u + "</td>" +
+            "<td style='padding:8px;border:1px solid #ddd;text-align:right;'>" + it.price_sell.toLocaleString('hr-HR',{minimumFractionDigits:2, maximumFractionDigits:2}) + " €</td>" +
+            "<td style='padding:8px;border:1px solid #ddd;text-align:right;'>" + (it.qty * it.price_sell).toLocaleString('hr-HR',{minimumFractionDigits:2, maximumFractionDigits:2}) + " €</td>" +
+            "<td style='padding:8px;border:1px solid #ddd;text-align:right;'>" + it.price_buy_mpc.toLocaleString('hr-HR',{minimumFractionDigits:2, maximumFractionDigits:2}) + " €</td>" +
+            "<td style='padding:8px;border:1px solid #ddd;text-align:right;'>" + (it.qty * it.price_buy_mpc).toLocaleString('hr-HR',{minimumFractionDigits:2, maximumFractionDigits:2}) + " €</td>" +
+            "<td style='padding:8px;border:1px solid #ddd;text-align:right;font-weight:bold;'>" + (it.qty * it.profit).toLocaleString('hr-HR',{minimumFractionDigits:2, maximumFractionDigits:2}) + " €</td>" +
+            "</tr>";
+  });
+
+  html += "<tr style='font-weight:bold;background:#eee;'><td colspan='6' style='padding:8px;text-align:right;'>UKUPNO ZARADA:</td><td style='padding:8px;text-align:right;color:#d35400;font-size:16px;'>" + totalProfit.toLocaleString('hr-HR',{minimumFractionDigits:2, maximumFractionDigits:2}) + " €</td></tr></table>" +
+
+             "<h3>📦 Lista za Dobavljača (Nabavne cijene BEZ PDV-a)</h3>" +
+             "<table style='width: 100%; border-collapse: collapse; font-size: 13px;'>" +
+             "<tr style='background-color: #000000; color: #E67E22;'><th style='padding:8px;text-align:left;'>Artikl</th><th style='padding:8px;'>Količina</th><th style='padding:8px;text-align:right;'>Nabavna VPC / kom (bez PDV)</th><th style='padding:8px;text-align:center;'>Provjera</th></tr>";
+
+  items.forEach(function(it) {
+    var u = it.unit || "";
+    var vpcFmt = it.price_buy_vpc > 0 ? it.price_buy_vpc.toLocaleString('hr-HR',{minimumFractionDigits:2, maximumFractionDigits:2}) + " €" : "-";
+    html += "<tr><td style='padding:8px;border:1px solid #ddd;'>" + it.name + "</td><td style='padding:8px;border:1px solid #ddd;text-align:center;'>" + it.qty + " " + u + "</td><td style='padding:8px;border:1px solid #ddd;text-align:right;'>" + vpcFmt + "</td><td style='padding:8px;border:1px solid #ddd;text-align:center;'>[ ]</td></tr>";
+  });
+
+  html += "</table></div>";
+  return html;
+}
+
+function calculateTotal(items, field) {
+  var t = 0; items.forEach(function(it){ t += it.qty * it[field]; }); return t;
+}
+
+// --- FOLLOW UP & TRIGGER LOGIC (KEEP AS IS) ---
+function processFollowUpQueue() {
+  var props = PropertiesService.getScriptProperties();
+  var queueJSON = props.getProperty("FOLLOW_UP_QUEUE");
+  var queue = queueJSON ? JSON.parse(queueJSON) : [];
+  var now = new Date().getTime();
+  var newQueue = [];
+  for (var i = 0; i < queue.length; i++) {
+    var item = queue[i];
+    if (now - item.timestamp > 86400000) { sendFeedbackEmail(item.email, item.name); } 
+    else { newQueue.push(item); }
+  }
+  props.setProperty("FOLLOW_UP_QUEUE", JSON.stringify(newQueue));
+  ensureTrigger();
+}
+
+function queueFollowUp(email, name) {
+  var props = PropertiesService.getScriptProperties();
+  var queueJSON = props.getProperty("FOLLOW_UP_QUEUE");
+  var queue = queueJSON ? JSON.parse(queueJSON) : [];
+  queue.push({ email: email, name: name, timestamp: new Date().getTime() });
+  props.setProperty("FOLLOW_UP_QUEUE", JSON.stringify(queue));
+  ensureTrigger();
+}
+
+function sendFeedbackEmail(email, name) {
+  var body = "Poštovani,\n\nnedavno ste napravili informativni izračun za ogradu na našem kalkulatoru.\n\nVjerujem da ste primili ponudu " + (name ? ("(" + name + ") ") : "") + "na mail, pa me zanima odgovara li vam okvirna cijena?\n\n⚠️ Budući da se stanje lagera i dostupnost robe brzo mijenja, ovaj izračun (i trenutne cijene) možemo garantirati narednih 24 sata.\n\n✔️ Ako imate bilo kakvih pitanja u vezi materijala, montaže ili želite da Vam napravimo službenu ponudu s podacima za uplatu, samo odgovorite na ovaj mail s: 'MOŽE PONUDA'.\n\nLijep pozdrav,\n2LMF Tim";
+  MailApp.sendEmail({ to: email, subject: "Jeste li uspjeli pogledati ponudu? ⏳ - 2LMF PRO", body: body });
+}
+
+function ensureTrigger() {
+  if (ScriptApp.getProjectTriggers().length === 0) {
+    ScriptApp.newTrigger('processFollowUpQueue').timeBased().everyHours(1).create();
+  }
+}
+
+function autoReplyFollowUp() { processFollowUpQueue(); }
+
+// --- HELPER: SEQUENTIAL ID GENERATOR ---
+function getNextSequenceId() {
+  var lock = LockService.getScriptLock();
+  try { lock.waitLock(10000); } catch (e) { return "u" + Math.floor(Math.random() * 100000); }
+  var userProp = PropertiesService.getScriptProperties();
+  var lastId = Number(userProp.getProperty('LAST_ID_SEQ')) || 0;
+  var nextId = lastId + 1;
+  userProp.setProperty('LAST_ID_SEQ', nextId.toString());
+  lock.releaseLock();
+  return "u" + pad(nextId, 5);
+}
+
+function pad(num, size) {
+    var s = "000000000" + num;
+    return s.substr(s.length - size);
+}
+
+// --- ADMIN SYNC MENU ---
+function showSyncInstructions() {
+  var html = HtmlService.createHtmlOutput('<h3>Upute za GH_TOKEN:</h3><ol><li>Settings > Script Properties</li><li>Property: <b>GH_TOKEN</b></li><li>Value: (Vaš GitHub Token)</li></ol>').setWidth(400).setHeight(250);
+  SpreadsheetApp.getUi().showModalDialog(html, 'Postavke Sinkronizacije');
+}
+
+function syncPricesToWeb() {
+  var ui = SpreadsheetApp.getUi(); var SCRIPT_PROP = PropertiesService.getScriptProperties(); var token = SCRIPT_PROP.getProperty("GH_TOKEN");
+  if (!token) { ui.alert("Greška: Niste postavili GH_TOKEN."); return; }
+  try {
+    var ss = SpreadsheetApp.getActiveSpreadsheet(); var sheet = ss.getSheetByName("CJENIK");
+    var data = sheet.getDataRange().getValues(); var priceMap = {};
+    for (var i = 1; i < data.length; i++) { var sku = String(data[i][0]).trim(); if (sku) priceMap[sku] = data[i][4]; }
+    var owner = "2lmf"; var repo = "2lmf-pro"; var path = "items_data.js"; var branch = "gh-pages";
+    var fileData = getGitHubFile(owner, repo, path, branch, token);
+    var currentContent = Utilities.newBlob(Utilities.base64Decode(fileData.content)).getDataAsString();
+    var updatedContent = updatePricesInJS(currentContent, priceMap);
+    if (updatedContent === currentContent) { ui.alert("Cijene već usklađene."); return; }
+    updateGitHubFile(owner, repo, path, branch, updatedContent, fileData.sha, "Sync from Sheet", token);
+    ui.alert("✅ USPJEH! Cijene ažurirane na webu.");
+  } catch (e) { ui.alert("Greška: " + e.message); }
+}
+
+function updatePricesInJS(content, priceMap) {
+  var newContent = content;
+  for (var sku in priceMap) {
+    var newPrice = priceMap[sku];
+    var regex1 = new RegExp('(price:\\s*)\\d+\\.?\\d*(\\s*,\\s*sku:\\s*[\'"]' + sku + '[\'"])', 'g');
+    newContent = newContent.replace(regex1, '$1' + newPrice + '$2');
+    var regex2 = new RegExp('(sku:\\s*[\'"]' + sku + '[\'"][^{}]*price:\\s*)\\d+\\.?\\d*', 'g');
+    newContent = newContent.replace(regex2, '$1' + newPrice);
+    var regex3 = new RegExp('(p:\\s*)\\d+\\.?\\d*(\\s*,\\s*s:\\s*[\'"]' + sku + '[\'"])', 'g');
+    newContent = newContent.replace(regex3, '$1' + newPrice + '$2');
+    var regex4 = new RegExp('(s:\\s*[\'"]' + sku + '[\'"][^{}]*p:\\s*)\\d+\\.?\\d*', 'g');
+    newContent = newContent.replace(regex4, '$1' + newPrice);
+  }
+  return newContent;
+}
+
+function getGitHubFile(owner, repo, path, branch, token) {
+  var url = "https://api.github.com/repos/" + owner + "/" + repo + "/contents/" + path + "?ref=" + branch;
+  var res = UrlFetchApp.fetch(url, { "headers": { "Authorization": "token " + token } });
+  return JSON.parse(res.getContentText());
+}
+
+function updateGitHubFile(owner, repo, path, branch, content, sha, message, token) {
+  var url = "https://api.github.com/repos/" + owner + "/" + repo + "/contents/" + path;
+  var payload = { "message": message, "content": Utilities.base64Encode(content), "sha": sha, "branch": branch };
+  UrlFetchApp.fetch(url, { "method": "put", "headers": { "Authorization": "token " + token }, "contentType": "application/json", "payload": JSON.stringify(payload) });
+}
+
+function addItemsFromCjenik(isMobile) {
+  var ss = SpreadsheetApp.getActiveSpreadsheet(); var sheetCjenik = ss.getSheetByName("CJENIK"); var sheetGen = ss.getSheetByName("Generator Ponuda");
+  var data = sheetCjenik.getDataRange().getValues();
+  var itemsToAdd = [];
+  for (var i = 1; i < data.length; i++) {
+    var qty = parseFloat(data[i][6]);
+    if (!isNaN(qty) && qty > 0) {
+      itemsToAdd.push([sheetGen.getLastRow()-9, data[i][0], data[i][1], qty, "kom", data[i][4]]);
+      sheetCjenik.getRange(i + 1, 7).clearContent();
+    }
+  }
+  if (itemsToAdd.length > 0) sheetGen.getRange(sheetGen.getLastRow()+1, 1, itemsToAdd.length, 6).setValues(itemsToAdd);
+}

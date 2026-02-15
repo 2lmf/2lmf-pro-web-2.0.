@@ -1,0 +1,2437 @@
+<!DOCTYPE html>
+<html lang="hr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2LMF PRO | Infinite Calculator V2</title>
+    <!-- Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Outfit:wght@300;400;600&display=swap"
+        rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        /* --- BRANDING HEADER STYLES (From Index) --- */
+        .brand-header {
+            position: relative;
+            /* Not fixed */
+            width: 100%;
+            padding: 25px 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(2, 2, 5, 0.95);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            box-sizing: border-box;
+            z-index: 2001;
+            /* Above calculator nav */
+        }
+
+        .nav-logos {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            margin: 0 auto;
+            /* Center everything */
+        }
+
+        .logos-row {
+            display: flex;
+            align-items: center;
+            gap: 50px;
+        }
+
+        .branding {
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .lmf-brand {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            color: #eee;
+            font-size: 1.25rem;
+            letter-spacing: 3px;
+        }
+
+        .lmf-brand span {
+            color: var(--accent);
+            /* Use local var */
+        }
+
+        .shark-brand-img {
+            height: 110px;
+            width: auto;
+            filter: drop-shadow(0 0 20px rgba(0, 242, 255, 0.4));
+            display: block;
+            margin: -10px 0;
+        }
+
+        .tagline {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.6rem;
+            letter-spacing: 5px;
+            font-weight: 900;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .tagline .arch {
+            color: var(--accent);
+        }
+
+        .tagline .code {
+            color: #00F2FF;
+        }
+
+        /* --- NAV LINKS & SHARPSHARK BUTTON (Added) --- */
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            color: var(--accent);
+            text-decoration: none;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            transition: all 0.3s;
+            position: relative;
+            padding: 5px 15px;
+            text-transform: uppercase;
+            font-weight: 400;
+        }
+
+        .nav-links a:hover {
+            color: #fff;
+            transform: scale(1.05);
+        }
+
+        /* Strike Effect */
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            width: 0;
+            height: 100%;
+            background: var(--accent);
+            transform: translateY(-50%);
+            transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: -1;
+            opacity: 0.8;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* SharpShark Button Specifics */
+        .ss-sharp {
+            color: #00F2FF;
+            transition: color 0.3s;
+        }
+
+        .ss-shark {
+            color: var(--accent);
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover .ss-shark {
+            color: #fff;
+        }
+
+        @media (max-width: 1100px) {
+            .brand-header {
+                flex-direction: column;
+                gap: 20px;
+                padding: 20px 30px;
+            }
+
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 15px;
+            }
+        }
+
+        /* Hide input arrows */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+
+        :root {
+            --accent: #E67E22;
+            --accent-rgb: 230, 126, 34;
+            --accent-glow: rgba(var(--accent-rgb), 0.4);
+            --base-dark: #010103;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --nav-bg: rgba(5, 5, 10, 0.95);
+        }
+
+        .qty-group {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 4px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 4px;
+        }
+
+        .qty-input-v3 {
+            width: 40px;
+            padding: 4px;
+            font-size: 0.9rem;
+            height: 32px;
+            background: #000;
+            border: 1px solid #E67E22;
+            color: #E67E22 !important;
+            border-radius: 4px;
+            font-family: 'Outfit';
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .qty-unit-label {
+            font-size: 0.7rem;
+            color: #aaa;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 0 4px;
+            min-width: 30px;
+        }
+
+        .qty-arrows-v3 {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .qty-arrow-btn {
+            height: 15px;
+            width: 24px;
+            border: none;
+            background: #333;
+            color: #fff;
+            font-size: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 2px;
+        }
+
+        .qty-arrow-btn:hover {
+            background: #444;
+        }
+
+        body {
+            background: var(--base-dark);
+            color: #fff;
+            padding-top: 0;
+            /* REMOVED PADDING */
+            font-family: 'Outfit', sans-serif;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        /* --- NAVIGATION --- */
+        .v2-navbar {
+            position: sticky;
+            /* CHANGED FROM FIXED */
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: var(--nav-bg);
+            border-bottom: 1px solid var(--glass-border);
+            backdrop-filter: blur(15px);
+            z-index: 3000;
+            display: flex;
+            justify-content: center;
+            padding: 0.5rem 0;
+        }
+
+        .v2-nav-container {
+            display: flex;
+            gap: 1rem;
+            padding: 0 1rem;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+
+        .v2-nav-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        .v2-nav-item {
+            padding: 0.8rem 1.5rem;
+            color: #fff;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 900;
+            cursor: pointer;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .v2-nav-item.active {
+            color: #000;
+            background: var(--accent);
+            border-color: var(--accent);
+            box-shadow: 0 0 15px var(--accent-glow);
+        }
+
+        .nav-home {
+            text-decoration: none;
+            background: #00F2FF;
+            /* SharpShark Blue */
+            color: #E67E22;
+            /* Orange */
+            border-color: #00F2FF;
+            margin-right: 15px;
+            display: inline-block;
+            font-weight: 900;
+            box-shadow: 0 0 10px rgba(0, 242, 255, 0.2);
+        }
+
+        .nav-home:hover {
+            background: #00d2df;
+            color: #fff;
+            border-color: #00d2df;
+            box-shadow: 0 0 20px rgba(0, 242, 255, 0.5);
+            transform: scale(1.05);
+        }
+
+        /* --- LAYOUT --- */
+        .master-layout {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 2rem;
+            padding: 2rem;
+        }
+
+        @media (max-width: 1100px) {
+            .master-layout {
+                grid-template-columns: 1fr;
+                padding: 1rem;
+            }
+        }
+
+        /* --- PREVIEW STAGE --- */
+        .stage-container {
+            background: radial-gradient(circle at 50% 50%, #0a0a25, #000);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            height: 400px;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding-bottom: 40px;
+            box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.5);
+        }
+
+        .stage-watermark {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-family: 'Orbitron';
+            font-size: 0.6rem;
+            color: rgba(255, 255, 255, 0.1);
+            letter-spacing: 2px;
+        }
+
+        #dynamicStage.preview-stage {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column-reverse;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .layer-box {
+            width: 65%;
+            height: 42px;
+            border-radius: 8px;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Orbitron';
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform: scaleX(0);
+            opacity: 0;
+            text-align: center;
+            padding: 0 12px;
+            font-weight: 700;
+        }
+
+        .layer-box.active {
+            transform: scaleX(1);
+            opacity: 1;
+        }
+
+        .layer-concrete {
+            background: #2c2c2e;
+            border-color: #444;
+        }
+
+        .layer-blue {
+            background: var(--accent);
+            color: #000;
+            font-weight: bold;
+            border-color: #fff;
+        }
+
+        .layer-xps {
+            background: #bdf0ff;
+            color: #003d4d;
+            font-weight: bold;
+            border-color: #70d1ed;
+            box-shadow: 0 0 15px rgba(0, 123, 255, 0.4);
+        }
+
+        .layer-blue-shine {
+            background: #007bff;
+            color: #fff;
+            box-shadow: 0 0 15px rgba(0, 123, 255, 0.6);
+        }
+
+        .layer-red-shine {
+            background: #e74c3c;
+            color: #fff;
+            box-shadow: 0 0 15px rgba(231, 76, 60, 0.6);
+        }
+
+        .layer-transparent {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.2);
+            border-style: dashed;
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 0.6rem !important;
+        }
+
+        .layer-transparent.active {
+            color: var(--accent);
+            border-color: var(--accent);
+            background: rgba(var(--accent-rgb), 0.1);
+        }
+
+        /* --- CARDS & INPUTS --- */
+        .config-area {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .step-card {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: 0.3s;
+        }
+
+        .step-title {
+            font-family: 'Orbitron';
+            font-size: 0.7rem;
+            color: var(--accent);
+            margin-bottom: 1.2rem;
+            letter-spacing: 1px;
+            font-weight: 700;
+        }
+
+        .area-box {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .area-input {
+            background: none;
+            border: none;
+            font-family: 'Orbitron';
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: #fff;
+            width: 140px;
+            outline: none;
+        }
+
+        .system-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        @media (max-width: 600px) {
+            .system-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .system-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .system-card.active {
+            border-color: var(--accent);
+            background: rgba(var(--accent-rgb), 0.1);
+            box-shadow: 0 0 20px var(--accent-glow);
+        }
+
+        .config-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 900px) {
+            .config-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .config-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .system-card h4 {
+            font-family: 'Orbitron';
+            font-size: 0.75rem;
+            margin: 0 0 5px 0;
+            text-transform: none;
+        }
+
+        .system-card p {
+            font-size: 0.6rem;
+            color: #aaa;
+            margin: 0;
+            text-transform: none;
+        }
+
+        .option-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .choice-pill {
+            padding: 10px 18px;
+            border-radius: 8px;
+            border: 1px solid var(--glass-border);
+            font-size: 0.75rem;
+            cursor: pointer;
+            font-family: 'Orbitron';
+            transition: 0.2s;
+            white-space: nowrap;
+        }
+
+        .choice-pill:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .add-btn:hover {
+            background: var(--accent) !important;
+            color: #000 !important;
+            font-weight: 900;
+        }
+
+        .choice-pill.active {
+            background: var(--accent);
+            color: #000;
+            border-color: var(--accent);
+            font-weight: 900;
+        }
+
+        .hydro-input-row {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr 1.5fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        @media (max-width: 800px) {
+            .hydro-input-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* RECAP SIDEBAR */
+        .recap-sidebar {
+            position: sticky;
+            top: 100px;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 1.8rem;
+            backdrop-filter: blur(15px);
+            height: fit-content;
+        }
+
+        .recap-title {
+            font-family: 'Orbitron';
+            font-size: 0.85rem;
+            color: var(--accent);
+            border-bottom: 1px solid var(--glass-border);
+            padding-bottom: 1rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .item-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            max-height: 350px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .line-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+            padding-bottom: 8px;
+        }
+
+        .line-item .name {
+            font-size: 0.75rem;
+            color: #fff;
+            font-weight: 500;
+        }
+
+        .line-item .details {
+            font-size: 0.65rem;
+            color: #888;
+            margin-top: 2px;
+        }
+
+        .line-item .price {
+            font-family: 'Orbitron';
+            font-size: 0.75rem;
+            color: var(--accent);
+            white-space: nowrap;
+        }
+
+        .total-panel {
+            background: var(--accent);
+            color: #000;
+            padding: 1.5rem;
+            border-radius: 16px;
+            text-align: center;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .price-display {
+            display: block;
+            font-family: 'Orbitron';
+            font-size: 1.8rem;
+            font-weight: 900;
+        }
+
+        .submit-btn {
+            width: 100%;
+            background: #fff;
+            color: #000;
+            border: none;
+            padding: 1.2rem;
+            border-radius: 12px;
+            margin-top: 1.5rem;
+            font-family: 'Orbitron';
+            font-weight: 900;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(255, 255, 255, 0.2);
+        }
+
+        .custom-input.small {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            color: #fff;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            margin-bottom: 8px;
+            width: 100%;
+            box-sizing: border-box;
+            font-family: 'Outfit';
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .custom-input.small:focus {
+            border-color: var(--accent);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .module-view {
+            display: none;
+            animation: fadeIn 0.4s ease forwards;
+        }
+
+        .module-view.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- BRANDING HEADER (Scrolls Away) -->
+    <header class="brand-header">
+        <div class="nav-logos">
+            <div class="logos-row">
+                <a href="index.html" class="branding">
+                    <div class="lmf-brand">2LMF <span>PRO</span></div>
+                </a>
+                <a href="digitalna_dominacija.html" class="branding">
+                    <img src="assets/sharpshark_blue_large.png" alt="SharpShark" class="shark-brand-img">
+                </a>
+            </div>
+            <div class="tagline">
+                <span class="arch">ARCHITECTURAL</span> <span class="code">CODE</span>
+            </div>
+        </div>
+
+        <div class="nav-links">
+            <a href="index.html">POČETNA</a>
+            <a href="architects_blueprint.html">ARHITEKTURA</a>
+            <a href="kalkulator.html">KATALOG</a>
+            <a href="blog_hub.html">ZNANJE</a>
+            <a href="digitalna_dominacija.html"
+                style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px;">
+                <span class="ss-sharp">SHARP</span><span class="ss-shark">SHARK</span>
+            </a>
+            <a href="index.html#kontakt">KONTAKT</a>
+        </div>
+    </header>
+    <nav class="v2-navbar">
+        <div class="v2-nav-container">
+            <a href="index.html" class="v2-nav-item nav-home">🏠 Početna</a>
+            <div class="v2-nav-item" data-mod="ograde">🏗️ Ograde</div>
+            <div class="v2-nav-item" data-mod="hidro">💧 Hidro</div>
+            <div class="v2-nav-item" data-mod="fasade">🧱 Fasade</div>
+            <div class="v2-nav-item" data-mod="termo">🌡️ Termo</div>
+            <div class="v2-nav-item active" data-mod="katalog">🛒 Katalog</div>
+        </div>
+    </nav>
+
+    <main class="master-layout">
+        <div class="config-area">
+            <div class="stage-container">
+                <div class="stage-watermark">2LMF PRO ENGINE V2</div>
+                <div id="dynamicStage" class="preview-stage"></div>
+            </div>
+            <div id="ograde-view" class="module-view"></div>
+            <div id="hidro-view" class="module-view"></div>
+            <div id="fasade-view" class="module-view"></div>
+            <div id="termo-view" class="module-view"></div>
+            <div id="katalog-view" class="module-view active"></div>
+        </div>
+
+        <aside class="recap-sidebar">
+            <div class="recap-title"><span>REKAPITULACIJA</span><span id="activeModName"
+                    style="font-size:0.6rem; opacity:0.6;">OGRADE</span></div>
+            <div class="item-list" id="globalRecapItems">
+                <div class="line-item" style="opacity: 0.3;">Konfigurirajte sustav...</div>
+            </div>
+            <div class="contact-form-v2"
+                style="border-top:1px solid var(--glass-border); padding-top:1.5rem; margin-top:1rem;">
+                <h4
+                    style="font-family:'Orbitron'; font-size:0.65rem; color:var(--accent); margin-bottom:1rem; letter-spacing:1px;">
+                    KONTAKT PODACI</h4>
+                <input type="text" id="custName" placeholder="Ime i prezime" class="custom-input small">
+                <input type="email" id="custEmail" placeholder="Email adresa *" class="custom-input small" required>
+                <input type="tel" id="custPhone" placeholder="Broj mobitela *" class="custom-input small" required>
+                <input type="text" id="custAddress" placeholder="Lokacija gradnje" class="custom-input small">
+            </div>
+            <div class="total-panel" style="margin-top: 1.5rem;">
+                <span style="font-size: 0.6rem; opacity: 0.8; letter-spacing:1px;">SVEUKUPNI IZNOS (MPC)</span>
+                <span class="price-display" id="globalTotalPrice">??? €</span>
+                <small style="font-size: 0.5rem; opacity: 0.6;">Prikazano nakon slanja upita</small>
+            </div>
+            <button class="submit-btn" id="btnSubmitInquiry">POŠALJI UPIT I VIDI CIJENU</button>
+        </aside>
+    </main>
+
+    <!-- MODULE TEMPLATES -->
+    <template id="tpl-ograde">
+        <div class="config-flow">
+            <h3 style="font-family: 'Orbitron'; font-size: 0.8rem; margin-bottom: 1rem; color: var(--accent);">
+                ODABERITE TIP PANELA</h3>
+            <div class="system-grid" id="typeOptions">
+                <div class="system-card active" data-type="2d">
+                    <h4>2D PANELI</h4>
+                    <p>Professional (6/5/6)</p>
+                </div>
+                <div class="system-card" data-type="3d_5">
+                    <h4>3D PANELI (5mm)</h4>
+                    <p>Essential (Premium)</p>
+                </div>
+                <div class="system-card" data-type="3d_4">
+                    <h4>3D PANELI (4mm)</h4>
+                    <p>Standard (Economy)</p>
+                </div>
+            </div>
+
+            <div class="config-grid">
+                <div class="step-card">
+                    <div class="step-title">📏 VISINA PANELA</div>
+                    <div class="option-group" id="heightOptions">
+                        <div class="choice-pill" data-height="83">83cm</div>
+                        <div class="choice-pill" data-height="103">103cm</div>
+                        <div class="choice-pill active" data-height="123">123cm</div>
+                        <div class="choice-pill" data-height="143">143cm</div>
+                        <div class="choice-pill" data-height="153">153cm</div>
+                        <div class="choice-pill" data-height="163">163cm</div>
+                        <div class="choice-pill" data-height="173">173cm</div>
+                        <div class="choice-pill" data-height="183">183cm</div>
+                        <div class="choice-pill" data-height="203">203cm</div>
+                    </div>
+                </div>
+                <div class="step-card">
+                    <div class="step-title">🎨 BOJA (RAL)</div>
+                    <div class="option-group" id="colorOptions">
+                        <div class="choice-pill active" data-color="7016">Antracit (7016)</div>
+                        <div class="choice-pill" data-color="6005">Zelena (6005)</div>
+                    </div>
+                </div>
+                <div class="step-card">
+                    <div class="step-title">🏗️ VRSTA STUPOVA (60x60mm)</div>
+                    <div id="selectedPostInfo"
+                        style="font-size: 0.6rem; opacity: 0.8; margin-bottom: 1rem; min-height: 12px; font-family: 'Orbitron'; font-weight: 700; color: var(--accent);">
+                        Pretražujem bazu...</div>
+                    <div class="option-group" id="mountOptions" style="margin-bottom: 1.5rem;">
+                        <div class="choice-pill active" data-mount="plate">S pločicom</div>
+                        <div class="choice-pill" data-mount="concrete">Za beton</div>
+                    </div>
+                    <div id="postLengthBox"
+                        style="margin-top: 1rem; padding: 0.8rem; background: rgba(230, 126, 34, 0.1); border: 1px dashed var(--accent); border-radius: 8px; display: flex; justify-content: space-between; align-items: center; clear: both;">
+                        <span style="font-size: 0.7rem; font-family: 'Orbitron'; color: var(--accent);">DULJINA
+                            STUPA:</span>
+                        <span id="resPostLength"
+                            style="font-family: 'Orbitron'; font-weight: 900; color: #fff; font-size: 1rem;">---
+                            cm</span>
+                    </div>
+                </div>
+                <div class="step-card">
+                    <div class="step-title">📐 DUŽINA OGRADE (m')</div>
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <input type="number" class="area-input" id="fenceLength" value="25" min="1">
+                        <span style="font-family:'Orbitron'; font-size:1rem; color:#888;">M'</span>
+                    </div>
+                </div>
+                <div class="step-card">
+                    <div class="step-title">🗺️ IZGLED OGRADE</div>
+                    <div style="display: flex; gap: 1rem; align-items: center;">
+                        <div class="option-group" id="layoutOptions" style="margin: 0; flex: 1;">
+                            <div class="choice-pill active" id="pillRavna" data-layout="straight"
+                                style="width: 100%; text-align: center;">Ravna</div>
+                        </div>
+                        <div id="cornerInputContainer" class="choice-pill"
+                            style="flex: 1; display: flex; align-items: center; gap: 10px; cursor: pointer; border: 1px solid var(--glass-border); padding: 5px 12px; border-radius: 8px;">
+                            <span
+                                style="font-size: 0.7rem; font-family: 'Orbitron'; white-space: nowrap; color: #fff;">KUTOVI:</span>
+                            <input type="number" class="area-input" id="fenceCorners" value="0" min="0"
+                                style="width: 60px; background: transparent; border: none; font-family: 'Orbitron'; color: var(--accent); font-weight: 700; font-size: 1.5rem; padding: 0; outline: none;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step-card" style="margin-top: 1rem;">
+                <div class="step-title">🚪 DVORIŠNA VRATA (kom)</div>
+                <div class="option-group" id="gateOptions">
+                    <div class="choice-pill active" data-gate="none">Bez vrata</div>
+                    <div class="choice-pill" data-gate="100x100">100x100cm</div>
+                    <div class="choice-pill" data-gate="100x120">100x120cm</div>
+                    <div class="choice-pill" data-gate="100x150">100x150cm</div>
+                    <div class="choice-pill" data-gate="100x170">100x170cm</div>
+                    <div class="choice-pill" data-gate="100x200">100x200cm</div>
+                </div>
+            </div>
+
+            <div class="step-card installation-card" id="installationCard"
+                style="margin-top: 1rem; display: flex; flex-direction: column; gap: 0.2rem; transition: all 0.3s ease; border: 1px solid var(--glass-border); padding: 0.8rem 1.2rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                    <div style="font-family: 'Orbitron'; font-size: 0.8rem; color: var(--accent); font-weight: 600;">
+                        🚜 USLUGA MONTAŽE</div>
+                    <div id="toggleInstallation" class="choice-pill no-select"
+                        style="min-width: 80px; text-align: center; border-radius: 8px; cursor: pointer; border: 1px solid var(--glass-border); font-family: 'Orbitron'; font-size: 0.75rem;">
+                        STATUS: <span class="status-indicator"
+                            style="font-weight: 800; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem;">NE</span>
+                    </div>
+                </div>
+                <p
+                    style="font-size: 0.7rem; color: #fff; font-style: italic; margin: 0; opacity: 1; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 0.2rem;">
+                    * Iznos montaže je informativnog karaktera i vrijedi za Zagreb i okolicu do 20km.
+                </p>
+            </div>
+        </div>
+    </template>
+
+    <template id="tpl-hidro">
+        <div class="config-flow">
+            <h3 class="step-title">💧 ODABERITE SUSTAV</h3>
+            <div class="system-grid">
+                <div class="system-card active" data-system="membrane-roof">
+                    <h4>TPO/PVC membrana</h4>
+                </div>
+                <div class="system-card" data-system="bitumen-roof">
+                    <h4>Bitumen ravni krov</h4>
+                    <p>Diamond P4 sustav</p>
+                </div>
+                <div class="system-card" data-system="bitumen-foundation">
+                    <h4>Bitumen temelji</h4>
+                    <p>Ruby V4 + čepasta</p>
+                </div>
+                <div class="system-card" data-system="pvc-foundation">
+                    <h4>PVC temelji</h4>
+                    <p>BSL folija sustav</p>
+                </div>
+                <div class="system-card" data-system="polymer">
+                    <h4>Polimercement</h4>
+                    <p>Aquamat Elastic</p>
+                </div>
+                <div class="system-card" data-system="liquid-rubber">
+                    <h4>Poliuretan, tekuća guma</h4>
+                    <p>Isoflex PU 500</p>
+                </div>
+            </div>
+            <div class="hydro-input-row">
+                <div class="step-card">
+                    <div class="step-title">📐 POVRŠINA (m²)</div>
+                    <div class="area-box"><input type="number" class="area-input" id="hydroArea" value="50"><span
+                            style="font-family:'Orbitron'; font-size:0.7rem; color:#888;">m²</span></div>
+                </div>
+                <!-- XPS card moved up to be next to area for foundation systems -->
+                <div id="xpsContainer" class="step-card" style="grid-column: span 2;">
+                    <div class="step-title">🌡️ DODATNA IZOLACIJA (XPS)</div>
+                    <div class="option-group" id="hydroXpsOptions">
+                        <div class="choice-pill active" data-xps="0">Bez</div>
+                        <div class="choice-pill" data-xps="2">2cm</div>
+                        <div class="choice-pill" data-xps="3">3cm</div>
+                        <div class="choice-pill" data-xps="4">4cm</div>
+                        <div class="choice-pill" data-xps="5">5cm</div>
+                        <div class="choice-pill" data-xps="6">6cm</div>
+                        <div class="choice-pill" data-xps="8">8cm</div>
+                        <div class="choice-pill" data-xps="10">10cm</div>
+                        <div class="choice-pill" data-xps="12">12cm</div>
+                        <div class="choice-pill" data-xps="15">15cm</div>
+                        <div class="choice-pill" data-xps="20">20cm</div>
+                    </div>
+                </div>
+            </div>
+            <div class="hydro-input-row" style="margin-top:1rem;">
+                <div id="membraneOptions" class="step-card">
+                    <div class="step-title">🛡️ TIP MEMBRANE</div>
+                    <div class="option-group" id="hydroMatOptions">
+                        <div class="choice-pill active" data-val="tpo">TPO (bijela)</div>
+                        <div class="choice-pill" data-val="pvc">PVC (siva)</div>
+                    </div>
+                </div>
+                <div id="thicknessOptions" class="step-card">
+                    <div class="step-title">📏 DEBLJINA (mm)</div>
+                    <div class="option-group" id="hydroThickOptions">
+                        <div class="choice-pill active" data-val="1.5">1.5</div>
+                        <div class="choice-pill" id="pill-18" data-val="1.8">1.8</div>
+                        <div class="choice-pill" id="pill-20" data-val="2.0">2.0</div>
+                    </div>
+                </div>
+                <div id="geoContainer" class="step-card">
+                    <div class="step-title">⚖️ GRAMAŽA GEOTEKSTILA</div>
+                    <div class="option-group" id="hydroGeoOptions">
+                        <div class="choice-pill active" data-geo="200">200g</div>
+                        <div class="choice-pill" data-geo="300">300g</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="tpl-fasade">
+        <div class="config-flow">
+            <h3 class="step-title">🧱 ODABERITE TIP FASADE (ETICS)</h3>
+            <div class="system-grid">
+                <div class="system-card active" data-type="etics-eps">
+                    <h4>ETICS EPS</h4>
+                    <p>Standardna izolacija</p>
+                </div>
+                <div class="system-card" data-type="etics-wool">
+                    <h4>ETICS VUNA</h4>
+                    <p>Protupožarna izolacija</p>
+                </div>
+                <div class="system-card" data-type="etics-xps">
+                    <h4>ETICS XPS</h4>
+                    <p>Za cokl i temelje</p>
+                </div>
+                <div class="system-card" data-type="ventilated">
+                    <h4>VENTILIRANA FASADA</h4>
+                    <p>Moderni sustav obloge</p>
+                </div>
+            </div>
+            <div class="hydro-input-row">
+                <div class="step-card">
+                    <div class="step-title">📐 POVRŠINA (m²)</div>
+                    <div class="area-box">
+                        <input type="number" class="area-input" id="fasadeArea" value="150">
+                        <span style="font-family:'Orbitron'; font-size:0.7rem; color:#888;">m²</span>
+                    </div>
+                </div>
+                <div class="step-card" id="fasadeThick" style="grid-column: span 2;">
+                    <div class="step-title">📏 DEBLJINA IZOLACIJE (cm)</div>
+                    <div class="option-group">
+                        <div class="choice-pill active" data-val="5">5</div>
+                        <div class="choice-pill" data-val="8">8</div>
+                        <div class="choice-pill" data-val="10">10</div>
+                        <div class="choice-pill" data-val="12">12</div>
+                        <div class="choice-pill" data-val="14">14</div>
+                        <div class="choice-pill" data-val="15">15</div>
+                        <div class="choice-pill" data-val="20">20</div>
+                    </div>
+                </div>
+            </div>
+            <div id="fasadeFinishCard" class="step-card" style="margin-top:1rem;">
+                <div class="step-title" id="fasadeFinishTitle">🎨 ZAVRŠNA OBRADA</div>
+                <div class="option-group" id="fasadeFinishOptions">
+                    <!-- Options injected dynamically -->
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="tpl-termo">
+        <div class="config-flow">
+            <h3 class="step-title">🌡️ ODABERITE TIP IZOLACIJE</h3>
+            <div class="system-grid">
+                <div class="system-card active" data-type="xps-floor">
+                    <h4>XPS podovi</h4>
+                    <p>Podrumske ploče / podovi</p>
+                </div>
+                <div class="system-card" data-type="xps-foundation">
+                    <h4>XPS temelji</h4>
+                    <p>Izolacija temelja</p>
+                </div>
+                <div class="system-card" data-type="roof-wool">
+                    <h4>Krov</h4>
+                    <p>Kamena vuna 035</p>
+                </div>
+                <div class="system-card" data-type="floating-floor">
+                    <h4>Plivajući pod</h4>
+                    <p>XPS + ethafoam + OSB</p>
+                </div>
+                <div class="system-card" data-type="osb">
+                    <h4>OSB ploče (2500x675mm)</h4>
+                    <p>Samo ploče</p>
+                </div>
+            </div>
+            <div class="hydro-input-row">
+                <div class="step-card">
+                    <div class="step-title">📐 POVRŠINA (m²)</div>
+                    <div class="area-box">
+                        <input type="number" class="area-input" id="termoArea" value="50">
+                        <span style="font-family:'Orbitron'; font-size:0.7rem; color:#888;">m²</span>
+                    </div>
+                </div>
+                <div class="step-card" id="termoThicknessCard" style="grid-column: span 2;">
+                    <div class="step-title">📏 DEBLJINA IZOLACIJE (cm)</div>
+                    <div class="option-group" id="termoThickOptions">
+                        <div class="choice-pill" data-val="2">2</div>
+                        <div class="choice-pill" data-val="3">3</div>
+                        <div class="choice-pill" data-val="4">4</div>
+                        <div class="choice-pill active" data-val="5">5</div>
+                        <div class="choice-pill" data-val="6">6</div>
+                        <div class="choice-pill" data-val="8">8</div>
+                        <div class="choice-pill" data-val="10">10</div>
+                        <div class="choice-pill" data-val="12">12</div>
+                        <div class="choice-pill" data-val="15">15</div>
+                        <div class="choice-pill" data-val="20">20</div>
+                    </div>
+                </div>
+                <!-- Moved OSB Thick row -->
+                <div id="osbThickRow" class="step-card" style="display:none; grid-column: span 2;">
+                    <div class="step-title">📏 DEBLJINA OSB PLOČE (mm) - 2500x675mm</div>
+                    <div class="option-group" id="osbThickOptions" style="justify-content: space-between;">
+                        <div class="choice-pill" style="flex: 1; text-align: center;" data-val="12">12</div>
+                        <div class="choice-pill active" style="flex: 1; text-align: center;" data-val="15">15</div>
+                        <div class="choice-pill" style="flex: 1; text-align: center;" data-val="18">18</div>
+                        <div class="choice-pill" style="flex: 1; text-align: center;" data-val="22">22</div>
+                    </div>
+                </div>
+            </div>
+            <div class="hydro-input-row" id="termoExtraRow" style="margin-top:1rem;">
+                <div class="step-card" style="grid-column: span 3;">
+                    <div class="step-title" id="extrasTitle">➕ DODACI ZA IZOLACIJU</div>
+                    <div class="option-group" id="termoExtras">
+                        <div class="choice-pill active" id="pill-insta" data-val="stik">Insta Stik ljepilo (PU)</div>
+                        <div class="choice-pill" id="pill-osb-toggle" data-val="osb">Dodaj OSB ploče</div>
+                        <div class="choice-pill" id="pill-alu-toggle" data-val="alu">Alu-Termo REFLECTIX®</div>
+                        <div class="choice-pill" id="pill-pe-toggle" data-val="pe">PE Folija (cijena u katalogu)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+    </template>
+
+    <template id="tpl-katalog">
+        <div class="config-flow">
+            <div class="catalog-header" style="text-align: center; margin-bottom: 2rem;">
+                <h3 style="font-family: 'Orbitron'; font-size: 1.5rem; color: var(--accent); margin-bottom: 0.5rem;">
+                    <span style="color:#fff;">2LMF</span> <span style="color:#E67E22;">PRO</span> PAMETNI KATALOG
+                </h3>
+                <p style="font-size: 0.8rem; opacity: 0.7;">Pregledajte cijenu i dodajte artikle u listu</p>
+            </div>
+            <div class="search-container" style="max-width: 600px; margin: 0 auto 2rem;">
+                <input type="text" class="custom-input small" id="catalogSearch"
+                    placeholder="Pretraži artikle (npr. ogradni panel, XPS...)" style="font-size: 1rem; padding: 1rem;">
+            </div>
+            <div class="category-tabs" id="categoryTabs"
+                style="display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center; margin-bottom: 2rem;">
+                <!-- Categories will be injected -->
+            </div>
+            <div id="loading" class="loader" style="display:none;"></div>
+            <div class="product-grid" id="productGrid"
+                style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem;">
+                <!-- Products will be injected -->
+            </div>
+        </div>
+    </template>
+
+    <script>
+        // --- 1. CORE DATA & PRICING ---
+        let activeModule = 'ograde', systemItems = [], manualItems = [], isAuthorized = false;
+
+        window.hydroState = {
+            config: { system: "membrane-roof", area: 50, material: "tpo", thickness: "1.5", geoWeight: "200", xps: 5 },
+            skuMap: {
+                xps: { "2": "2001", "3": "2002", "4": "2003", "5": "2004", "6": "2005", "8": "2006", "10": "2007", "12": "2008", "15": "2009", "20": "2011" },
+                tpo_15: "2113", tpo_18: "2114", tpo_20: "2115",
+                pvc_krov: "2112", pvc_temelji: "2111",
+                geo_200: "2124", geo_300: "2125",
+                fimizol: "2131", ruby: "2118", diamond_baza: "2132", diamond_gray: "2117",
+                pu_primer: "2129", pu_500: "2130", aqua: "2128", cepasta: "2123"
+            }
+        };
+
+        window.termoState = {
+            config: { system: 'xps-floor', area: 50, thickness: 5, insta: true, osb: false, osbThickness: 15, alu: false, pe: false },
+            skuMap: {
+                xps: { 2: "2001", 3: "2002", 4: "2003", 5: "2004", 6: "2005", 8: "2006", 10: "2007", 12: "2008", 15: "2009", 20: "2011" },
+                wool: { 5: "3006", 8: "3005", 10: "3001", 12: "3002", 14: "3003", 15: "3004" },
+                osb: { 12: "3010", 15: "3007", 18: "3008", 22: "3009" },
+                insta_stik: "2010",
+                alu_reflectix: "3011",
+                ethafoam: "3012",
+                vapor_al: "2121",
+                pe: "3014",
+                cepasta: "2123"
+            }
+        };
+
+
+        const THEMES = {
+            ograde: { accent: '#E67E22', rgb: '230, 126, 34' },
+            hidro: { accent: '#007bff', rgb: '0, 123, 255' },
+            termo: { accent: '#e74c3c', rgb: '231, 76, 60' },
+            fasade: { accent: '#27ae60', rgb: '39, 174, 96' },
+            katalog: { accent: '#E67E22', rgb: '230, 126, 34' }
+        };
+
+        // Initialize LIVE_PRICES with fallback for local development
+        let LIVE_PRICES;
+        try {
+            const serverInjection = '<?= livePricing ?>';
+            if (serverInjection.includes('livePricing')) throw new Error("Local Mode");
+            LIVE_PRICES = JSON.parse(serverInjection);
+        } catch (e) {
+            console.warn("Running locally. Using embedded fallback data...");
+
+            // EMBEDDED LOCAL DATA (To avoid external script loading issues)
+            const localPrices = {
+                // --- TERMOIZOLACIJA (XPS) ---
+                xps: {
+                    2: { price: 2.5312500000000004, sku: "2001", name: "Ravatherm XPS, 2cm" },
+                    3: { price: 3.515625, sku: "2002", name: "Ravatherm XPS: 3cm" },
+                    4: { price: 4.6875, sku: "2003", name: "Ravatherm XPS: 4cm" },
+                    5: { price: 5.859375, sku: "2004", name: "Ravatherm XPS: 5cm" },
+                    6: { price: 7.03125, sku: "2005", name: "Ravatherm XPS: 6cm" },
+                    8: { price: 9.375, sku: "2006", name: "Ravatherm XPS: 8cm" },
+                    10: { price: 11.71875, sku: "2007", name: "Ravatherm XPS: 10cm" },
+                    12: { price: 14.0625, sku: "2008", name: "Ravatherm XPS: 12cm" },
+                    15: { price: 18.984375, sku: "2009", name: "Ravatherm XPS: 15cm" }
+                },
+
+                // --- KAMENA VUNA ---
+                wool_facade: {
+                    5: { price: 9.75, sku: "3006", name: "Kamena vuna, 5cm, fasadna" },
+                    8: { price: 11.375, sku: "3005", name: "Kamena vuna, 8cm, fasadna" },
+                    10: { price: 14.137500000000001, sku: "3001", name: "Kamena vuna, 10cm, fasadna" },
+                    12: { price: 16.965, sku: "3002", name: "Kamena vuna, 12cm, fasadna" },
+                    14: { price: 19.7925, sku: "3003", name: "Kamena vuna, 14cm, fasadna" },
+                    15: { price: 21.2875, sku: "3004", name: "Kamena vuna, 15cm, fasadna" }
+                },
+
+                // --- HIDROIZOLACIJA (Membrane & Bitumen) ---
+                membranes: {
+                    tpo_15: { price: 9.01875, sku: "2113", name: "FLAG TPO EP/PR 1,5 mm, krovna folija (bijela)" },
+                    tpo_18: { price: 11.2125, sku: "2114", name: "FLAG TPO EP/PR 1,8 mm, krovna folija (bijela)" },
+                    tpo_20: { price: 12.675, sku: "2115", name: "FLAG TPO EP/PR 2,0 mm, krovna folija (bijela)" },
+                    pvc_temelji: { price: 6.3375, sku: "2111", name: "FLAG BSL (PVC) 1,5 mm, folija za temelje" },
+                    pvc_krov: { price: 8.9375, sku: "2112", name: "FLAG SR (PVC) 1,5 mm, krovna folija" },
+                    cepasta: { price: 1.54375, sku: "2123", name: "ČEPASTA FOLIJA" },
+                    geotextile_200: { price: 0.8125, sku: "2124", name: "Geotekstil, 200g" },
+                    geotextile_300: { price: 0.9750000000000001, sku: "2125", name: "Geotekstil, 300g" }
+                },
+
+                bitumen: {
+                    diamond_p4: { price: 4.978125, sku: "2117", name: "RAVAPROOF Diamond P 4, SBS, Polyester, s posipom, sivi" },
+                    ruby_v4: { price: 3.7125000000000004, sku: "2118", name: "RAVAPROOF Ruby V-4" },
+                    sapphire_g3: { price: 2.0250000000000004, sku: "2119", name: "RAVAPROOF Sapphire G3" },
+                    sapphire_g4: { price: 2.7, sku: "2120", name: "RAVAPROOF Sapphire G4" },
+                    vapor_al: { price: 4.7250000000000005, sku: "2121", name: "RAVAPROOF Vapor Al-35 (3,5mm) , SBS" }
+                },
+
+                // --- FASADE (ETICS) ---
+                facade_etics: {
+                    glue_eps: { price: 0.36, sku: "4101", name: "LJEPILO ZA EPS 25 KG" },
+                    glue_armor: { price: 0.39, sku: "4109", name: "UNITERM 25 KG" },
+                    mesh: { price: 1.125, sku: "4104", name: "STAKLENA MREŽICA PRIMAFAS 160" },
+                    grund: { price: 2.8349999999999995, sku: "4105", name: "MINERALKVARC GRUND OBOJENI 65 15 L KANTI" },
+                    plaster_silicat: { price: 1.875, sku: "4108", name: "SILIKATNA ŽBUKA Z 1000 (1.5 MM) 25 KG" },
+                    dowel: { price: 0.36, sku: "4107", name: "PRIČVRSNICA PTV 200 MM" },
+                    profile_pvc: { price: 0.5399999999999999, sku: "4103", name: "PROFIL PVC 2,50 M+MREŽICA 10X15" },
+                    profile_alu: { price: 3.7350000000000003, sku: "4106", name: "PROFIL AL COKL 15 CM (0,8 MM) 2,50 M" },
+                    eps_base_cm: { price: 8.805, sku: "4102", name: "EPS F 1000X500X150 (TR150)" }
+                },
+
+                // --- PANEL OGRADE ---
+                fence: {
+                    // 2D PANELI
+                    panel_2d: {
+                        83: { price: 25.675, sku: "1001", name: "Ogradni panel 2D 830x2500 6/5/6" },
+                        103: { price: 28.925, sku: "1002", name: "Ogradni panel 2D 1030x2500 6/5/6" },
+                        123: { price: 33.8, sku: "1003", name: "Ogradni panel 2D 1230x2500 6/5/6" },
+                        143: { price: 38.68, sku: "1004", name: "Ogradni panel 2D 1430x2500 6/5/6" },
+                        163: { price: 43.88, sku: "1005", name: "Ogradni panel 2D 1630x2500 6/5/6" },
+                        183: { price: 48.75, sku: "1006", name: "Ogradni panel 2D 1830x2500 6/5/6" },
+                        203: { price: 54.6, sku: "1007", name: "Ogradni panel 2D 2030x2500 6/5/6" }
+                    },
+
+                    // 3D PANELI (5mm)
+                    panel_3d_5: {
+                        83: { price: 18.904615384615386, sku: "1018", name: "Ogradni panel 3D 830x2500 5/5" },
+                        103: { price: 22.2, sku: "1009", name: "Ogradni panel 3D 1030x2500 5/5" },
+                        123: { price: 26.104615384615386, sku: "1011", name: "Ogradni panel 3D 1230x2500 5/5" },
+                        153: { price: 33, sku: "1013", name: "Ogradni panel 3D 1530x2500 5/5" },
+                        173: { price: 35.70461538461539, sku: "1015", name: "Ogradni panel 3D 1730x2500 5/5" },
+                        203: { price: 42.6, sku: "1017", name: "Ogradni panel 3D 2030x2500 5/5" }
+                    },
+
+                    // 3D PANELI (4mm)
+                    panel_3d_4: {
+                        83: { price: 12.304615384615383, sku: "1019", name: "Ogradni panel 3D 830x2500 4/4" },
+                        103: { price: 13.799999999999999, sku: "1008", name: "Ogradni panel 3D 1030x2500 4/4" },
+                        123: { price: 15.904615384615385, sku: "1010", name: "Ogradni panel 3D 1230x2500 4/4" },
+                        153: { price: 20.4, sku: "1012", name: "Ogradni panel 3D 1530x2500 4/4" },
+                        173: { price: 22.8, sku: "1014", name: "Ogradni panel 3D 1730x2500 4/4" },
+                        203: { price: 26.704615384615384, sku: "1016", name: "Ogradni panel 3D 2030x2500 4/4" }
+                    },
+
+                    // Stupovi (sa pločicom)
+                    posts: {
+                        85: { price: 11.375, sku: "1020", name: "Stup sa pločicom 0,85 m" },
+                        105: { price: 12.675, sku: "1021", name: "Stup sa pločicom 1,05 m" },
+                        125: { price: 14.3, sku: "1022", name: "Stup sa pločicom 1,25 m" },
+                        145: { price: 16.900000000000002, sku: "1023", name: "Stup sa pločicom 1,45 m" },
+                        155: { price: 16.900000000000002, sku: "1024", name: "Stup sa pločicom 1,55 m" },
+                        165: { price: 19.825, sku: "1025", name: "Stup sa pločicom 1,65 m" },
+                        175: { price: 19.825, sku: "1026", name: "Stup sa pločicom 1,75 m" },
+                        185: { price: 22.75, sku: "1027", name: "Stup sa pločicom 1,85 m" },
+                        205: { price: 22.75, sku: "1028", name: "Stup sa pločicom 2,05 m" }
+                    },
+
+                    // Stupovi (za beton)
+                    posts_concrete: {
+                        150: { price: 13, sku: "1029", name: "Stup za beton 1,5 m" },
+                        175: { price: 14.625, sku: "1030", name: "Stup za beton 1,75 m" },
+                        200: { price: 16.25, sku: "1031", name: "Stup za beton 2,00 m" },
+                        230: { price: 18.2, sku: "1032", name: "Stup za beton 2,30 m" },
+                        250: { price: 21.45, sku: "1033", name: "Stup za beton 2,50 m" }
+                    },
+
+                    // Vrata
+                    gate_prices: {
+                        '1000x1000': { plate: { p: 266.5, s: '1034' }, concrete: { p: 266.5, s: '1034' } },
+                        '1000x1200': { plate: { p: 315.25, s: '1035' }, concrete: { p: 315.25, s: '1035' } },
+                        '1000x1500': { plate: { p: 390, s: '1036' }, concrete: { p: 390, s: '1036' } },
+                        '1000x1700': { plate: { p: 448.5, s: '1037' }, concrete: { p: 448.5, s: '1037' } },
+                        '1000x2000': { plate: { p: 513.5, s: '1038' }, concrete: { p: 513.5, s: '1038' } }
+                    },
+
+                    set_spojnica: { price: 0.5850000000000001, sku: "1039", name: "PVC Spojnica (s vijkom)" },
+                    anker_vijci: { price: 0.6299999999999999, sku: "1040", name: "SIDRENI VIJAK ZN M10" },
+                    zastita_ok: { price: 44.85, sku: "1041", name: "ZAŠTITA OD POGLEDA, REBRASTA, 26 m?" },
+                    pricvrsnica_traka: { price: 0.7475000000000002, sku: "1042", name: "PVC PRIČVRSNICA ZA TRAKU" },
+                    montaza_plate: { price: 31.25, sku: "1043", name: "montaža na parapet/m'" },
+                    montaza_concrete: { price: 43.75, sku: "1044", name: "montaža u beton/m'" }
+                },
+
+                // --- KEMIJA I OSTALO ---
+                chemicals: {
+                    insta_stik: { price: 10.293750000000001, sku: "2010", name: "Dow Insta Stik, za pištolj" },
+                    ak20: { price: 0.44999999999999996, sku: "2122", name: "Isomat AK 20" },
+                    aquamat_elastic: { price: 1.9500000000000002, sku: "2128", name: "Isomat Aquamat Elastic sivi, 35kg (A+B komp)" },
+                    pu_primer: { price: 12.025, sku: "2129", name: "Isomat PU pimer, 5kg" },
+                    isoflex_pu500: { price: 7.6375, sku: "2130", name: "Isomat: Isoflex PU500, bijeli, (poliuretan)" },
+                    fimizol: { price: 21.9375, sku: "2131", name: "FIMIZOL, 9L, bitumenski premaz" }
+                },
+
+                others: {
+                    tpo_lim: { price: 42.25, sku: "2126", name: "TPO LIM (2 X 1m)" },
+                    pvc_lim: { price: 39, sku: "2127", name: "PVC LIM (2 X 1m)" },
+                    bentoshield: { price: 6.90625, sku: "2116", name: "Bentoshiled MAX5 (bentonit, bentonitna traka)" },
+                    osb_12: { price: 5.94, sku: "3010", name: "OSB ploče 12mm (2500 x 675mm)" },
+                    osb_15: { price: 7.425, sku: "3007", name: "OSB ploče 15mm (2500 x 675mm)" },
+                    osb_18: { price: 8.91, sku: "3008", name: "OSB ploče 18mm (2500 x 675mm)" },
+                    osb_22: { price: 10.89, sku: "3009", name: "OSB ploče 22mm (2500 x 675mm)" }
+                },
+                new_products: {
+                    reflectix: { price: 0, sku: "3011", name: "SEALED AIR REFLECTIX® (alu izolacija)" },
+                    ethafoam: { price: 0, sku: "3012", name: "Ethafoam 2222 (izolacija od udarnog zvuka u podu)" }
+                }
+            };
+
+            LIVE_PRICES = { prices: {}, catalog: [] };
+
+            const processObj = (obj, category = 'ostalo') => {
+                for (const key in obj) {
+                    const val = obj[key];
+                    if (val && val.sku && val.price !== undefined) {
+                        LIVE_PRICES.prices[val.sku] = val.price;
+                        LIVE_PRICES.catalog.push({
+                            sku: val.sku,
+                            name: val.name,
+                            price: val.price,
+                            unit: 'kom', // Default unit
+                            category: category // Assign category from parent key
+                        });
+                    } else if (typeof val === 'object') {
+                        // Map parent keys to broader categories
+                        let nextCat = category;
+                        if (key === 'fence' || key === 'ograde') nextCat = 'ograde';
+                        else if (key === 'membranes' || key === 'bitumen' || key === 'chemicals') nextCat = 'hidro';
+                        else if (key === 'xps' || key === 'wool_facade' || key === 'new_products') nextCat = 'termo';
+                        else if (key === 'facade_etics') nextCat = 'fasade';
+
+                        processObj(val, nextCat);
+                    }
+                }
+            };
+            processObj(localPrices);
+        }
+
+        const APIBridge = {
+            async sendOffer(userData, items, moduleName) {
+                return new Promise((resolve, reject) => {
+                    if (typeof google !== 'undefined' && google.script && google.script.run) {
+                        google.script.run
+                            .withSuccessHandler((res) => {
+                                console.log("Server success:", res);
+                                if (res.result === 'error') {
+                                    alert("Greška na serveru: " + res.error);
+                                    reject(res.error);
+                                } else {
+                                    const msg = res.pdfAttached ? "Upit poslan s PDF-om!" : "Upit poslan (HTML mail, PDF nije uspio).";
+                                    alert("✅ " + msg + "\nID: " + res.id);
+                                    resolve(res);
+                                }
+                            })
+                            .withFailureHandler((err) => {
+                                console.error("Server failure:", err);
+                                alert("Kritična greška u komunikaciji: " + err.message);
+                                reject(err);
+                            })
+                            .doPostManual({
+                                email: userData.email, name: userData.name, phone: userData.phone, location: userData.location,
+                                color: (activeModule === 'hidro') ? (document.querySelector('#hidro-view .system-card.active h4')?.textContent || "Hidroizolacija") : "Standard",
+                                _subject: `Upit V2 [${moduleName.toUpperCase()}]`, items_json: JSON.stringify(items), source: 'CalculatorV2'
+                            });
+                    } else {
+                        console.warn("Google Script environment not detected (Local Test).");
+                        resolve({ success: true, local: true });
+                    }
+                });
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initNavigation();
+            setupInquiryLogic();
+            const hash = window.location.hash.replace('#', '');
+            const validModules = ['ograde', 'hidro', 'fasade', 'termo', 'katalog'];
+            const defaultMod = validModules.includes(hash) ? hash : 'katalog';
+
+            document.querySelectorAll('.v2-nav-item').forEach(n => {
+                if (n.dataset.mod === defaultMod) n.classList.add('active');
+                else n.classList.remove('active');
+            });
+
+            loadModule(defaultMod);
+        });
+
+        function initNavigation() {
+            document.querySelectorAll('.v2-nav-item').forEach(item => {
+                item.onclick = () => { document.querySelectorAll('.v2-nav-item').forEach(n => n.classList.remove('active')); item.classList.add('active'); loadModule(item.dataset.mod); };
+            });
+        }
+
+        function loadModule(modId) {
+            activeModule = modId; const theme = THEMES[modId] || THEMES.ograde;
+            document.documentElement.style.setProperty('--accent', theme.accent);
+            document.documentElement.style.setProperty('--accent-rgb', theme.rgb);
+            document.getElementById('activeModName').textContent = modId.toUpperCase();
+            document.querySelectorAll('.module-view').forEach(v => v.classList.remove('active'));
+
+            // Sklanjanje vizualizatora za Katalog (robunije)
+            const viz = document.querySelector('.stage-container');
+            if (viz) {
+                if (modId === 'katalog') viz.style.setProperty('display', 'none', 'important');
+                else viz.style.setProperty('display', 'flex', 'important');
+            }
+
+            const target = document.getElementById(`${modId}-view`);
+            if (target) {
+                target.classList.add('active'); target.innerHTML = document.getElementById(`tpl-${modId}`)?.innerHTML || '';
+                if (modId === 'ograde') initUIOgrade();
+                if (modId === 'hidro') initUIHydro();
+                if (modId === 'termo') initUITermo();
+                if (modId === 'fasade') initUIFasade();
+                if (modId === 'katalog') initUIKatalog();
+            }
+        }
+
+        window.updateGlobalCart = (items, isSystemUpdate = false) => {
+            if (isSystemUpdate) systemItems = items;
+
+            // Izolacija košarice: U katalogu prikazuj samo ručno dodane stavke
+            const itemsToDisplay = (activeModule === 'katalog') ? manualItems : [...systemItems, ...manualItems];
+
+            const container = document.getElementById('globalRecapItems');
+            const totalDisplay = document.getElementById('globalTotalPrice');
+            const format = (n) => new Intl.NumberFormat('hr-HR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n);
+
+            if (itemsToDisplay.length === 0) {
+                container.innerHTML = '<div class="line-item" style="opacity:0.3">' + (activeModule === 'katalog' ? 'Košarica je prazna...' : 'Konfigurirajte sustav...') + '</div>';
+                totalDisplay.textContent = '0,00 €';
+                return;
+            }
+
+            let total = 0;
+            container.innerHTML = itemsToDisplay.map((it, idx) => {
+                const itemTotal = Math.round(it.total * 100) / 100;
+                total += itemTotal;
+                const isManual = manualItems.some(m => m === it);
+                const removeBtn = isManual ? `<span class="remove-item" onclick="removeFromManualCart(${manualItems.indexOf(it)})" style="cursor:pointer; color:#e74c3c; margin-left:8px; font-weight:bold;">&times;</span>` : '';
+
+                let qtyDisplay = `${format(it.qty)} ${it.unit}`;
+                if (it.manualInput && it.manualUnit) {
+                    qtyDisplay = `${format(it.manualInput)} ${it.manualUnit} (${format(it.qty)} ${it.unit})`;
+                }
+
+                return `
+                    <div class="line-item">
+                        <div style="flex:1;">
+                            <div class="name">${it.name}${removeBtn}</div>
+                            <div class="details">${qtyDisplay} x ${isAuthorized ? format(it.price) : '???'} €</div>
+                        </div>
+                        <div class="price">${isAuthorized ? format(itemTotal) : '???'} €</div>
+                    </div>`;
+            }).join('');
+            totalDisplay.textContent = isAuthorized ? format(total) + ' €' : '??? €';
+        };
+
+        window.removeFromManualCart = (index) => {
+            manualItems.splice(index, 1);
+            window.updateGlobalCart(systemItems);
+        };
+
+        function setupInquiryLogic() {
+            document.getElementById('btnSubmitInquiry').onclick = async () => {
+                const data = { name: document.getElementById('custName').value, email: document.getElementById('custEmail').value, phone: document.getElementById('custPhone').value, location: document.getElementById('custAddress').value };
+                if (!data.email || !data.phone) return alert("Molimo unesite email i broj mobitela.");
+                isAuthorized = true;
+                const fullCart = [...systemItems, ...manualItems];
+                window.updateGlobalCart(systemItems, true); // Refresh UI with prices
+                await APIBridge.sendOffer(data, fullCart, activeModule);
+                alert("Upit je poslan!");
+            };
+        }
+
+        // Global Helpers for Consistency
+        window.getPremiumName = (sku, fallback) => {
+            const item = (LIVE_PRICES.catalog || []).find(p => p.sku === sku);
+            return item ? item.name : fallback;
+        };
+        window.adjQty = (btn, dir) => {
+            const group = btn.closest('.qty-group');
+            const input = group.querySelector('.qty-input-v3');
+            let val = parseFloat(input.value) || 0;
+            let step = parseFloat(input.getAttribute('step'));
+            if (isNaN(step)) step = 1;
+            val = dir > 0 ? val + step : Math.max(0, val - step);
+            input.value = (Math.round(val * 100) / 100).toString();
+            input.dispatchEvent(new Event('input', { bubbles: true }));
+        };
+
+        function initUIOgrade() {
+            const v = document.getElementById('ograde-view'), s = { length: 25, height: "123", type: "2d", color: "7016", mount: "plate", corners: 0, gate: "none" };
+            const skuMap = {
+                '2d': { 83: "1001", 103: "1002", 123: "1003", 143: "1004", 163: "1005", 183: "1006", 203: "1007" },
+                '3d_5': { 83: "1018", 103: "1009", 123: "1011", 153: "1013", 173: "1015", 203: "1017" },
+                '3d_4': { 83: "1019", 103: "1008", 123: "1010", 153: "1012", 173: "1014", 203: "1016" },
+                'posts': { 83: "1020", 103: "1021", 123: "1022", 143: "1023", 153: "1024", 163: "1025", 173: "1026", 183: "1027", 203: "1028" },
+                'posts_concrete': { 83: "1029", 103: "1029", 123: "1030", 143: "1031", 153: "1031", 163: "1032", 173: "1032", 183: "1033", 203: "1033" },
+                'gates': { "100x100": "1034", "100x120": "1035", "100x150": "1036", "100x170": "1037", "100x200": "1038" }
+            };
+
+            const update = () => {
+                const count = Math.ceil(s.length / 2.5);
+                const pSku = skuMap[s.type][s.height] || (s.type === '2d' ? '1003' : '1011');
+                const postSku = (s.mount === 'plate' ? skuMap.posts[s.height] : skuMap.posts_concrete[s.height]) || '1024';
+                const corners = parseInt(s.corners) || 0;
+
+                const items = [
+                    {
+                        name: window.getPremiumName(pSku, `Ogradni panel ${s.type === '2d' ? '2D 6/5/6' : '3D ' + s.type.split('_')[1] + '/' + s.type.split('_')[1]} ${s.height}0x2500 RAL 7016 ili 6005`),
+                        qty: count, unit: 'kom', price: LIVE_PRICES.prices[pSku] || 35, sku: pSku
+                    },
+                    {
+                        name: window.getPremiumName(postSku, `Stup ${s.mount === 'plate' ? 'sa pločicom' : 'za betoniranje'} RAL 7016 ili 6005 d=${s.mount === 'plate' ? (s.height === '83' ? '0.85' : s.height === '103' ? '1.05' : s.height === '123' ? '1.25' : s.height === '143' ? '1.45' : s.height === '153' ? '1.55' : s.height === '163' ? '1.65' : s.height === '173' ? '1.75' : s.height === '183' ? '1.85' : '2.05') : (s.height === '83' ? '1.50' : s.height === '103' ? '1.50' : s.height === '123' ? '1.75' : s.height === '143' ? '2.00' : s.height === '153' ? '2.00' : s.height === '163' ? '2.30' : s.height === '173' ? '2.30' : s.height === '183' ? '2.50' : '2.50')}m`),
+                        qty: count + 1 + corners,
+                        unit: 'kom',
+                        price: LIVE_PRICES.prices[postSku] || 18,
+                        sku: postSku
+                    }
+                ];
+
+                // Spojnice
+                let clipsPerPost = 3;
+                const hNum = parseInt(s.height);
+                if (hNum <= 103) clipsPerPost = 2;
+                else if (hNum >= 173) clipsPerPost = 4;
+
+                const clipSku = s.color === '7016' ? '1039' : '1040';
+                items.push({ name: window.getPremiumName(clipSku, `PVC Spojnica (s vijkom), RAL 7016 ili 6005`), qty: (count + 1 + corners) * clipsPerPost, unit: 'kom', price: LIVE_PRICES.prices[clipSku] || 0.60, sku: clipSku });
+
+                // Sidreni vijci (4 po stupu s pločicom)
+                if (s.mount === 'plate') {
+                    const boltSku = '1045';
+                    items.push({ name: window.getPremiumName(boltSku, 'Sidreni vijak M8x80'), qty: (count + 1 + corners) * 4, unit: 'kom', price: LIVE_PRICES.prices[boltSku] || 0.85, sku: boltSku });
+                }
+
+                if (s.gate !== 'none') {
+                    const gSku = skuMap.gates[s.gate];
+                    items.push({ name: window.getPremiumName(gSku, `Pješačka vrata ${s.gate} RAL 7016 ili 6005`), qty: 1, unit: 'kom', price: LIVE_PRICES.prices[gSku] || 350, sku: gSku });
+                }
+
+                let instToggle = v.querySelector('#toggleInstallation');
+                if (instToggle && instToggle.classList.contains('active')) {
+                    const instSku = s.mount === 'plate' ? '1043' : '1044';
+                    items.push({ name: window.getPremiumName(instSku, s.mount === 'plate' ? 'Montaža na parapet/m\'' : 'Montaža u beton/m\''), qty: s.length, unit: 'm\'', price: LIVE_PRICES.prices[instSku] || 0, sku: instSku });
+                }
+
+                window.updateGlobalCart(items.map(i => ({ ...i, total: Math.round(i.qty * i.price * 100) / 100 })), true);
+
+                // Update Post Info Box
+                const postInfo = v.querySelector('#selectedPostInfo');
+                const postLen = v.querySelector('#resPostLength');
+                if (postInfo) {
+                    const pData = (s.mount === 'plate' ? skuMap.posts[s.height] : skuMap.posts_concrete[s.height]) || '1024';
+                    postInfo.textContent = `Odabrano: Stup ${s.mount === 'plate' ? 'sa pločicom' : 'za beton'} (SKU: ${pData})`;
+                }
+                if (postLen) {
+                    const mappedH = { "83": 85, "103": 105, "123": 125, "143": 145, "153": 155, "163": 165, "173": 175, "183": 185, "203": 205 };
+                    const concreteH = { "83": 150, "103": 150, "123": 175, "143": 200, "153": 200, "163": 230, "173": 230, "183": 250, "203": 250 };
+                    postLen.textContent = `${s.mount === 'plate' ? mappedH[s.height] : concreteH[s.height]} cm`;
+                }
+
+                // Corners & Installation UI Polish
+                const pillRavna = v.querySelector('#pillRavna');
+                const cornerContainer = v.querySelector('#cornerInputContainer');
+                const cornerInp = v.querySelector('#fenceCorners');
+                const instCard = v.querySelector('#installationCard');
+                instToggle = v.querySelector('#toggleInstallation');
+
+                if (pillRavna && cornerContainer && cornerInp) {
+                    const hasCorners = s.corners > 0;
+                    pillRavna.classList.toggle('active', !hasCorners);
+                    cornerContainer.classList.toggle('active', hasCorners);
+                    if (hasCorners) {
+                        cornerContainer.style.background = 'var(--accent)';
+                        cornerContainer.querySelector('span').style.color = '#000';
+                        cornerInp.style.color = '#fff';
+                    } else {
+                        cornerContainer.style.background = '';
+                        cornerContainer.querySelector('span').style.color = '';
+                        cornerInp.style.color = '';
+                    }
+                }
+
+                if (instCard && instToggle) {
+                    const isInst = instToggle.classList.contains('active');
+                    instCard.style.background = isInst ? 'rgba(230, 126, 34, 0.1)' : '';
+                    instCard.style.borderColor = isInst ? 'var(--accent)' : '';
+                    instCard.style.boxShadow = isInst ? '0 0 15px rgba(230, 126, 34, 0.4)' : '';
+                }
+
+                // Visualizer
+                const stage = document.getElementById('dynamicStage'); stage.innerHTML = '';
+                const vWrapper = document.createElement('div');
+                const soilH = 50;
+                vWrapper.style = `display:flex; align-items:flex-end; gap:3px; height:240px; position:relative; overflow-x:auto; padding:20px 20px ${soilH}px 20px; border-bottom:1px solid #333; width:100%; justify-content:center; background: rgba(0,0,0,0.2); transition: 0.3s;`;
+
+                const postColor = s.color == '7016' ? '#2c3e50' : '#05392d';
+                const panelColor = s.color == '7016' ? 'rgba(44, 62, 80, 0.9)' : 'rgba(5, 57, 45, 0.9)';
+                const scale = 0.45;
+                const heightPX = parseInt(s.height) * scale;
+                const panelWidthPX = 250 * scale;
+                const gateWidthPX = 100 * scale;
+
+                // Add Soil Layer
+                const soil = document.createElement('div');
+                soil.style = `position:absolute; bottom:0; left:0; width:100%; height:${soilH}px; background:linear-gradient(to bottom, rgba(230,126,34,0.1), rgba(0,0,0,0.3)); border-top:2px solid var(--accent); z-index:0;`;
+                vWrapper.appendChild(soil);
+
+                const createPost = () => {
+                    const p = document.createElement('div');
+                    const isConcrete = s.mount === 'concrete';
+                    const burialPX = isConcrete ? (50 * scale) : 0;
+                    const totalPostHeight = heightPX + burialPX;
+                    // vWrapper has padding-bottom: soilH, which is the ground line.
+                    // margin-bottom: 0 stays at ground line. 
+                    // margin-bottom: -burialPX sinks the post into the soil.
+                    p.style = `width:8px; background:${postColor}; height:${totalPostHeight}px; border-radius:1px; position:relative; flex-shrink:0; z-index:2; border:1px solid rgba(255,255,255,0.1); margin-bottom: -${burialPX}px; transition: 0.3s;`;
+                    return p;
+                };
+
+                const createPanel = (gh = null) => {
+                    const isGate = gh !== null;
+                    const hVal = isGate ? parseInt(gh.split('x')[1]) : parseInt(s.height);
+                    const panH = hVal * scale;
+                    const p = document.createElement('div');
+                    const w = isGate ? gateWidthPX : panelWidthPX;
+
+                    // Panels always sit ON the ground (padding-bottom stays at 0 offset)
+                    p.style = `width:${w}px; height:${panH}px; border:1px solid ${panelColor}; position:relative; flex-shrink:0; z-index:1; display:flex; flex-direction:column; background:transparent; margin-bottom: 0px; transition: 0.3s;`;
+
+                    if (isGate) {
+                        p.style.borderWidth = '2px'; p.style.borderColor = postColor;
+                        p.style.background = 'rgba(255,255,255,0.05)';
+                        const hnd = document.createElement('div');
+                        hnd.style = "position:absolute; right:5px; top:45%; width:3px; height:12px; background:#aaa; border-radius:1px;";
+                        p.appendChild(hnd);
+                        p.style.backgroundImage = `repeating-linear-gradient(90deg, transparent, transparent 8px, ${panelColor} 9px), repeating-linear-gradient(0deg, transparent, transparent 8px, ${panelColor} 9px)`;
+                    } else if (s.type === '2d') {
+                        const rowH = 20 * scale;
+                        p.style.backgroundImage = `repeating-linear-gradient(90deg, transparent, transparent 10px, ${panelColor} 11px), repeating-linear-gradient(0deg, transparent, transparent ${rowH - 1}px, ${panelColor} ${rowH}px)`;
+                    } else {
+                        const h = parseInt(s.height);
+                        let pattern = ['B', 'F', 'B'];
+                        if (h === 83) pattern = ['B', 'F', 'F', 'F', 'B'];
+                        if (h === 103) pattern = ['B', 'F', 'F', 'F', 'F', 'B'];
+                        if (h === 123) pattern = ['B', 'F', 'F', 'F', 'F', 'F', 'B'];
+                        if (h === 153) pattern = ['B', 'F', 'F', 'F', 'B', 'F', 'F', 'F', 'B'];
+                        if (h === 173) pattern = ['B', 'F', 'F', 'F', 'F', 'B', 'F', 'F', 'F', 'B'];
+                        if (h === 203) pattern = ['B', 'F', 'F', 'B', 'F', 'F', 'F', 'B', 'F', 'F', 'F', 'B'];
+                        const vWire = document.createElement('div');
+                        vWire.style = `position:absolute; inset:0; background:repeating-linear-gradient(90deg, transparent, transparent 10px, ${panelColor} 11px); pointer-events:none;`;
+                        p.appendChild(vWire);
+                        pattern.forEach(type => {
+                            const row = document.createElement('div');
+                            if (type === 'B') {
+                                row.style = `height:6px; flex-shrink:0; display:flex; flex-direction:column; justify-content:space-around; background:rgba(0,0,0,0.1); width:100%; padding:1px 0;`;
+                                for (let l = 0; l < 3; l++) {
+                                    const line = document.createElement('div');
+                                    line.style = `height:1px; background:${panelColor}; opacity:0.7;`;
+                                    row.appendChild(line);
+                                }
+                            } else {
+                                row.style = `flex:1; border-bottom:1px solid rgba(255,255,255,0.05); width:100%;`;
+                            }
+                            p.appendChild(row);
+                        });
+                    }
+                    return p;
+                };
+
+                const displayCount = Math.min(count, 4);
+                stage.appendChild(vWrapper);
+
+                const half = Math.floor(displayCount / 2);
+                vWrapper.appendChild(createPost());
+                for (let i = 0; i < displayCount; i++) {
+                    if (s.gate !== 'none' && i === half) {
+                        vWrapper.appendChild(createPanel(s.gate));
+                        vWrapper.appendChild(createPost());
+                    }
+                    vWrapper.appendChild(createPanel());
+                    vWrapper.appendChild(createPost());
+                }
+            };
+
+            const setupListeners = () => {
+                v.querySelectorAll('.system-card').forEach(c => c.onclick = () => {
+                    v.querySelectorAll('.system-card').forEach(x => x.classList.remove('active')); c.classList.add('active');
+                    s.type = c.dataset.type;
+                    const pills = v.querySelectorAll('#heightOptions .choice-pill');
+                    // Height rules: 
+                    // 2D: 83, 103, 123, 143, 163, 183, 203
+                    // 3D: 83, 103, 123, 153, 173, 203
+                    let allowed = [];
+                    if (s.type === '2d') {
+                        allowed = ["83", "103", "123", "143", "163", "183", "203"];
+                    } else {
+                        allowed = ["83", "103", "123", "153", "173", "203"];
+                    }
+                    pills.forEach(p => p.style.display = allowed.includes(p.dataset.height) ? 'flex' : 'none');
+                    if (!allowed.includes(s.height)) {
+                        s.height = allowed[0];
+                        pills.forEach(p => p.classList.toggle('active', p.dataset.height === s.height));
+                    }
+                    update();
+                });
+
+                v.querySelectorAll('.choice-pill').forEach(p => p.onclick = () => {
+                    p.parentElement.querySelectorAll('.choice-pill').forEach(x => x.classList.remove('active')); p.classList.add('active');
+                    if (p.dataset.height) s.height = p.dataset.height;
+                    if (p.dataset.color) s.color = p.dataset.color;
+                    if (p.dataset.mount) s.mount = p.dataset.mount;
+                    if (p.dataset.gate) s.gate = p.dataset.gate;
+                    update();
+                });
+
+                v.querySelector('#pillRavna').onclick = () => {
+                    s.corners = 0; v.querySelector('#fenceCorners').value = 0;
+                    v.querySelector('#pillRavna').classList.add('active');
+                    update();
+                };
+
+                v.querySelector('#fenceLength').oninput = (e) => { s.length = parseFloat(e.target.value) || 0; update(); };
+                v.querySelector('#fenceCorners').oninput = (e) => {
+                    s.corners = parseInt(e.target.value) || 0;
+                    if (s.corners > 0) v.querySelector('#pillRavna').classList.remove('active');
+                    else v.querySelector('#pillRavna').classList.add('active');
+                    update();
+                };
+
+                if (v.querySelector('#toggleInstallation')) {
+                    v.querySelector('#toggleInstallation').onclick = (e) => {
+                        const btn = v.querySelector('#toggleInstallation');
+                        const active = btn.querySelector('.status-indicator').textContent === 'DA';
+                        btn.querySelector('.status-indicator').textContent = active ? 'NE' : 'DA';
+                        btn.classList.toggle('active');
+                        update();
+                    };
+                }
+            };
+
+            setupListeners();
+
+            // Initial Filter Heights for 2D (Run immediately)
+            if (v) {
+                const pills = v.querySelectorAll('#heightOptions .choice-pill');
+                const allowed = ["83", "103", "123", "143", "163", "183", "203"];
+                pills.forEach(p => p.style.display = allowed.includes(p.dataset.height) ? 'flex' : 'none');
+            }
+
+            update();
+        }
+
+        function initUIFasade() {
+            const v = document.getElementById('fasade-view'), s = { system: 'etics-eps', area: 150, thickness: 15, finish: 'silicat' };
+            const update = () => {
+                const a = s.area, items = [];
+                const getP = (sku) => LIVE_PRICES.prices[sku] || 0;
+
+                if (s.system === 'etics-eps') {
+                    // 1. EPS Izolacija
+                    const epsSku = '4102'; // EPS F 150mm standard
+                    items.push({ name: window.getPremiumName(epsSku, `EPS F 1000x500x${s.thickness}0mm (TR150)`), qty: a * 1.05, unit: 'm2', price: getP(epsSku), sku: epsSku });
+                    items.push({ name: window.getPremiumName('4101', "Ljepilo za EPS 25 kg (ljepljenje)"), qty: Math.ceil(a * 5 / 25), unit: 'kom', price: getP('4101'), sku: '4101' });
+                    items.push({ name: window.getPremiumName('4103', "Profil PVC 2,50 m+mrežica 10x15"), qty: Math.ceil(a * 0.4 / 2.5), unit: 'kom', price: getP('4103'), sku: '4103' });
+                    items.push({ name: window.getPremiumName('4104', "Staklena mrežica Primafas 160"), qty: a * 1.1, unit: 'm2', price: getP('4104'), sku: '4104' });
+                    items.push({ name: window.getPremiumName('4105', "Mineralkvarc grund obojeni 15 L"), qty: Math.ceil(a / 70), unit: 'kom', price: getP('4105'), sku: '4105' });
+                    items.push({ name: window.getPremiumName('4106', "Profil AL cokl 15 cm 2,50 m"), qty: Math.ceil(Math.sqrt(a) * 0.5), unit: 'kom', price: getP('4106'), sku: '4106' });
+                    items.push({ name: window.getPremiumName('4107', "Pričvrsnica PTV 200 mm"), qty: a * 6, unit: 'kom', price: getP('4107'), sku: '4107' });
+                    items.push({ name: window.getPremiumName('4108', "Silikatna žbuka Z 1000 (1.5 mm) 25 KG"), qty: Math.ceil(a * 2.5 / 25), unit: 'kom', price: getP('4108'), sku: '4108' });
+                    items.push({ name: window.getPremiumName('4109', "Uniterm 25 kg (armiranje)"), qty: Math.ceil(a * 5 / 25), unit: 'kom', price: getP('4109'), sku: '4109' });
+                } else if (s.system === 'etics-wool') {
+                    let isoSku = { 5: "3006", 8: "3005", 10: "3001", 12: "3002", 14: "3003", 15: "3004", 20: "3005" }[s.thickness] || "3001";
+                    items.push({ name: window.getPremiumName(isoSku, `Kamena vuna ${s.thickness}cm (fasada)`), qty: a * 1.05, unit: 'm2', price: getP(isoSku), sku: isoSku });
+                    items.push({ name: window.getPremiumName('4101', "Ljepilo za vunu (ljepljenje)"), qty: Math.ceil(a * 6 / 25), unit: 'kom', price: getP('4101'), sku: '4101' });
+                    items.push({ name: window.getPremiumName('4109', "Uniterm (armiranje)"), qty: Math.ceil(a * 5 / 25), unit: 'kom', price: getP('4109'), sku: '4109' });
+                    items.push({ name: window.getPremiumName('4104', "Staklena mrežica Primafas 160"), qty: a * 1.1, unit: 'm2', price: getP('4104'), sku: '4104' });
+                    items.push({ name: window.getPremiumName('4108', "Grund / Žbuka sustav"), qty: Math.ceil(a * 3 / 25), unit: 'kom', price: getP('4108'), sku: '4108' });
+                } else if (s.system === 'ventilated') {
+                    const claddingNames = { 'hpl': 'HPL Ploča', 'vlaknocement': 'Vlaknocementna obloga', 'aluminij': 'Aluminijska panelna obloga' };
+                    items.push({ name: `${claddingNames[s.finish] || 'Obloga'} (ventilirana)`, qty: a * 1.05, unit: 'm2', price: 65, sku: 'VENT_01' });
+                    items.push({ name: "Alu podkonstrukcija L/T profili", qty: a, unit: 'm2', price: 25, sku: 'VENT_02' });
+                    items.push({ name: "Kamena vuna ventilirana 12cm", qty: a * 1.05, unit: 'm2', price: 12, sku: 'VENT_03' });
+                } else {
+                    // XPS etics
+                    items.push({ name: `XPS ${s.thickness}cm (etics)`, qty: a * 1.05, unit: 'm2', price: getP('2007'), sku: '2007' });
+                    items.push({ name: "Ljepilo i mrežica sustav", qty: a, unit: 'm2', price: 15, sku: '4101' });
+                }
+
+                window.updateGlobalCart(items.map(i => ({ ...i, total: Math.round(i.qty * i.price * 100) / 100 })), true);
+                const stage = document.getElementById('dynamicStage'); stage.innerHTML = '';
+                const layers = [{ name: "Zid", class: "layer-concrete" }];
+                if (s.system === 'ventilated') {
+                    layers.push({ name: "Vuna", class: "layer-red-shine" }, { name: "Podkonstrukcija", class: "layer-transparent active" }, { name: "Fasadna obloga", class: "layer-blue" });
+                } else {
+                    layers.push({ name: "Ljepilo", class: "layer-transparent active" }, { name: "Izolacija", class: s.system === 'etics-wool' ? "layer-red-shine" : "layer-xps" }, { name: "Gletanje + mrežica", class: "layer-blue-shine" }, { name: "Završna žbuka", class: "layer-blue" });
+                }
+                layers.forEach((l, i) => { const d = document.createElement('div'); d.className = `layer-box ${l.class}`; d.textContent = l.name; stage.appendChild(d); setTimeout(() => d.classList.add('active'), i * 80); });
+            };
+
+            const updateUI = () => {
+                const isVent = s.system === 'ventilated';
+                v.querySelector('#fasadeThick').style.display = isVent ? 'none' : 'block';
+                v.querySelector('#fasadeFinishTitle').textContent = isVent ? '✨ ZAVRŠNA OBLOGA' : '🎨 ZAVRŠNA OBRADA';
+
+                const optGroup = v.querySelector('#fasadeFinishOptions');
+                if (isVent) {
+                    optGroup.innerHTML = `
+                        <div class="choice-pill ${s.finish === 'hpl' ? 'active' : ''}" data-finish="hpl">HPL</div>
+                        <div class="choice-pill ${s.finish === 'vlaknocement' ? 'active' : ''}" data-finish="vlaknocement">Vlaknocement</div>
+                        <div class="choice-pill ${s.finish === 'aluminij' ? 'active' : ''}" data-finish="aluminij">Aluminij</div>
+                    `;
+                } else {
+                    optGroup.innerHTML = `<div class="choice-pill active" data-finish="silicat">Silikatna žbuka Profi (1.5mm)</div>`;
+                    s.finish = 'silicat';
+                }
+
+                optGroup.querySelectorAll('.choice-pill').forEach(p => p.onclick = () => {
+                    optGroup.querySelectorAll('.choice-pill').forEach(x => x.classList.remove('active'));
+                    p.classList.add('active');
+                    s.finish = p.dataset.finish;
+                    update();
+                });
+
+                if (!isVent) {
+                    const thickPills = v.querySelectorAll('#fasadeThick .choice-pill');
+                    if (s.system === 'etics-wool') {
+                        thickPills.forEach(p => p.style.display = [5, 8, 10, 12, 14, 15, 20].includes(parseInt(p.dataset.val)) ? 'flex' : 'none');
+                    } else {
+                        thickPills.forEach(p => p.style.display = 'flex');
+                    }
+                }
+            };
+
+            v.querySelectorAll('.system-card').forEach(c => c.onclick = () => {
+                v.querySelectorAll('.system-card').forEach(x => x.classList.remove('active')); c.classList.add('active');
+                s.system = c.dataset.type;
+                if (s.system === 'ventilated') s.finish = 'hpl';
+                updateUI();
+                update();
+            });
+
+            v.querySelector('#fasadeArea').oninput = (e) => { s.area = parseFloat(e.target.value) || 0; update(); };
+
+            v.querySelectorAll('#fasadeThick .choice-pill').forEach(p => p.onclick = () => {
+                v.querySelectorAll('#fasadeThick .choice-pill').forEach(x => x.classList.remove('active'));
+                p.classList.add('active');
+                s.thickness = parseInt(p.dataset.val);
+                update();
+            });
+
+            updateUI();
+            update();
+        }
+
+        // --- TERMO UI ---
+        function initUITermo() {
+            const v = document.getElementById('termo-view'), s = window.termoState.config;
+
+            const updateUIState = () => {
+                const isWool = (s.system === 'roof-wool');
+                const isFloor = (s.system === 'floating-floor');
+                const isOsbOnly = (s.system === 'osb');
+
+                v.querySelector('#termoExtraRow').style.display = (isWool || isFloor || s.system.startsWith('xps')) ? 'flex' : 'none';
+                v.querySelector('#pill-osb-toggle').style.display = 'none'; // OSB has dedicated card
+                v.querySelector('#pill-alu-toggle').style.display = isWool ? 'flex' : 'none';
+                v.querySelector('#pill-pe-toggle').style.display = (isWool || isFloor || s.system.startsWith('xps')) ? 'flex' : 'none';
+                v.querySelector('#pill-insta').style.display = (isWool || isOsbOnly) ? 'none' : 'flex';
+
+                // Set defaults on system change
+                if (s._prevSys !== s.system) {
+                    if (s.system === 'xps-foundation' || s.system === 'xps-floor') {
+                        s.insta = true; // Default Insta Stik ON for these
+                        s.pe = false;
+                    } else if (s.system === 'roof-wool') {
+                        s.pe = false; // Default PE OFF for Krov
+                        s.insta = false;
+                    }
+                }
+                s._prevSys = s.system;
+
+                const osbThickCard = v.querySelector('#osbThickRow');
+                const extraCard = v.querySelector('#termoExtraRow');
+
+                if (isOsbOnly) {
+                    osbThickCard.style.display = 'block';
+                    osbThickCard.style.marginTop = '0';
+                    osbThickCard.style.gridColumn = 'span 2';
+                    v.querySelector('#termoThicknessCard').style.display = 'none';
+                    extraCard.style.display = 'none';
+                } else if (isWool) {
+                    osbThickCard.style.display = s.osb ? 'block' : 'none';
+                    osbThickCard.style.marginTop = '0';
+                    osbThickCard.style.gridColumn = 'span 1';
+                    v.querySelector('#termoThicknessCard').style.display = 'block';
+                    v.querySelector('#termoThicknessCard').style.gridColumn = s.osb ? 'span 1' : 'span 2';
+                    extraCard.style.display = 'flex';
+                    extraCard.style.gridColumn = 'span 3';
+                } else if (isFloor) {
+                    // Plivajući pod: Row 1 Surface + XPS, Row 2 OSB ONLY
+                    osbThickCard.style.display = 'block';
+                    osbThickCard.style.marginTop = '1rem';
+                    osbThickCard.style.gridColumn = 'span 3'; // Full width for OSB row
+                    v.querySelector('#termoThicknessCard').style.display = 'block';
+                    v.querySelector('#termoThicknessCard').style.gridColumn = 'span 2';
+
+                    extraCard.style.display = 'none'; // Hide extras for floating floor
+
+                    // Match heights and layout
+                    osbThickCard.style.minHeight = '140px';
+
+                    // Match heights and layout
+                    osbThickCard.style.minHeight = '140px';
+                    extraCard.style.minHeight = '140px';
+
+                    // Move extraCard next to osbThickCard
+                    osbThickCard.parentElement.appendChild(extraCard);
+                } else {
+                    osbThickCard.style.display = 'none';
+                    v.querySelector('#termoThicknessCard').style.display = 'block';
+                    v.querySelector('#termoThicknessCard').style.gridColumn = 'span 2';
+                    extraCard.style.display = 'flex';
+                    extraCard.style.gridColumn = 'span 3';
+                    extraCard.style.marginTop = '1rem';
+                }
+
+                v.querySelectorAll('#termoThickOptions .choice-pill').forEach(p => {
+                    const val = parseInt(p.dataset.val);
+                    if (isWool) p.style.display = [5, 8, 10, 12, 14, 15].includes(val) ? 'flex' : 'none';
+                    else if (isOsbOnly) p.style.display = 'none';
+                    else p.style.display = 'flex'; // Enable XPS for floor systems including floating-floor
+                });
+
+                const thickCard = v.querySelector('#termoThicknessCard');
+                thickCard.style.display = isOsbOnly ? 'none' : 'block';
+                thickCard.querySelector('.step-title').textContent = isFloor ? 'DEBLJINA XPS BAZE (cm)' : 'DEBLJINA IZOLACIJE (cm)';
+
+                v.querySelector('#pill-osb-toggle').classList.toggle('active', s.osb);
+                v.querySelector('#pill-alu-toggle').classList.toggle('active', s.alu);
+                const pePill = v.querySelector('#pill-pe-toggle');
+                pePill.classList.toggle('active', s.pe);
+                pePill.style.background = s.pe ? '' : 'rgba(255,255,255,0.05)';
+                pePill.style.borderColor = s.pe ? '' : 'rgba(255,255,255,0.1)';
+
+                v.querySelector('#pill-insta').classList.toggle('active', s.insta);
+            };
+
+            v.querySelectorAll('.system-card').forEach(card => card.onclick = () => {
+                v.querySelectorAll('.system-card').forEach(c => c.classList.remove('active')); card.classList.add('active');
+                s.system = card.dataset.type;
+                if (s.system === 'floating-floor') s.osb = true;
+                updateUIState();
+                updateTermoAll();
+            });
+
+            v.querySelectorAll('.choice-pill').forEach(p => p.onclick = () => {
+                const parentId = p.parentElement.id;
+                if (parentId === 'termoExtras') {
+                    if (p.id === 'pill-osb-toggle') s.osb = !s.osb;
+                    else if (p.id === 'pill-alu-toggle') s.alu = !s.alu;
+                    else if (p.id === 'pill-pe-toggle') s.pe = !s.pe;
+                    else if (p.id === 'pill-insta') s.insta = !s.insta;
+                } else if (parentId === 'osbThickOptions') {
+                    p.parentElement.querySelectorAll('.choice-pill').forEach(x => x.classList.remove('active'));
+                    p.classList.add('active');
+                    s.osbThickness = parseInt(p.dataset.val);
+                } else {
+                    p.parentElement.querySelectorAll('.choice-pill').forEach(x => x.classList.remove('active'));
+                    p.classList.add('active');
+                    if (p.dataset.val) s.thickness = parseInt(p.dataset.val);
+                }
+                updateUIState();
+                updateTermoAll();
+            });
+
+            v.querySelector('#termoArea').oninput = (e) => { s.area = parseFloat(e.target.value) || 0; updateTermoAll(); };
+
+            // Initialize active pills
+            v.querySelectorAll('#termoThickOptions .choice-pill').forEach(p => {
+                p.classList.toggle('active', parseInt(p.dataset.val) === s.thickness);
+            });
+            v.querySelectorAll('#osbThickOptions .choice-pill').forEach(p => {
+                p.classList.toggle('active', parseInt(p.dataset.val) === s.osbThickness);
+            });
+
+            updateUIState();
+            updateTermoAll();
+        }
+
+        function updateTermoAll() {
+            const t = window.termoState, c = t.config, items = [], a = c.area;
+            const getP = (sku) => LIVE_PRICES.prices[sku] || 0;
+            const stage = document.getElementById('dynamicStage'); stage.innerHTML = '';
+            const layers = [{ name: "Podloga", class: "layer-concrete" }];
+            const isFloorOrFoundation = (c.system === 'xps-floor' || c.system === 'xps-foundation');
+
+            if (isFloorOrFoundation) {
+                // Insta Stik - Permanent in live for floors/foundation (Blue if ON, Gray if OFF)
+                layers.push({ name: "Insta Stik Ljepilo", class: c.insta ? "layer-blue-shine" : "layer-transparent" });
+                if (c.insta) {
+                    const instaSku = t.skuMap.insta_stik;
+                    const qty = Math.ceil(a / 12);
+                    items.push({ name: window.getPremiumName(instaSku, "Insta Stik ljepilo (PU)"), qty: qty, unit: "kom", price: getP(instaSku), sku: instaSku });
+                }
+            } else if (c.insta && c.system !== 'roof-wool') {
+                const instaSku = t.skuMap.insta_stik;
+                const qty = Math.ceil(a / 12);
+                items.push({ name: window.getPremiumName(instaSku, "Insta Stik ljepilo (PU)"), qty: qty, unit: "kom", price: getP(instaSku), sku: instaSku });
+            }
+
+            if (c.system === 'xps-foundation') {
+                items.push({ name: window.getPremiumName(t.skuMap.cepasta, "Čepasta folija (temelji)"), qty: a * 1.1, unit: "m2", price: getP(t.skuMap.cepasta), sku: t.skuMap.cepasta });
+            }
+
+            if (c.system === 'roof-wool') {
+                const sku = t.skuMap.wool[c.thickness];
+                items.push({ name: window.getPremiumName(sku, `Kamena vuna ${c.thickness}cm (krov)`), qty: a * 1.05, unit: "m2", price: getP(sku), sku: sku });
+                items.push({ name: window.getPremiumName(t.skuMap.vapor_al, "RAVAPROOF Vapor Al-35 (parna brana)"), qty: a * 1.15, unit: "m2", price: getP(t.skuMap.vapor_al), sku: t.skuMap.vapor_al });
+
+                layers.push({ name: "Parna brana Vapor AL", class: "layer-red-shine" });
+
+                // Alu-Termo Reflectix
+                layers.push({ name: "Alu-Termo Reflectix", class: c.alu ? "layer-blue-shine" : "layer-transparent" });
+                if (c.alu) {
+                    items.push({ name: window.getPremiumName(t.skuMap.alu_reflectix, "Alu-Termo REFLECTIX® izolacija"), qty: a * 1.1, unit: "m2", price: getP(t.skuMap.alu_reflectix), sku: t.skuMap.alu_reflectix });
+                }
+
+                // PE Folija
+                layers.push({ name: "PE Folija", class: c.pe ? "layer-red-shine active" : "layer-transparent" });
+                if (c.pe) {
+                    items.push({ name: window.getPremiumName(t.skuMap.pe, "PE Folija (cijena u katalogu)"), qty: a, unit: "m2", price: getP(t.skuMap.pe), sku: t.skuMap.pe });
+                }
+
+                layers.push({ name: "Kamena vuna 035", class: "layer-red-shine" });
+                layers.push({ name: "Paropropusno-vodonepropusna folija", class: "layer-blue-shine active" });
+
+                if (c.osb) {
+                    const sku = t.skuMap.osb[c.osbThickness];
+                    items.push({ name: window.getPremiumName(sku, `OSB ploča ${c.osbThickness}mm`), qty: a * 1.05, unit: "m2", price: getP(sku), sku: sku });
+                    layers.push({ name: `OSB Ploča ${c.osbThickness}mm`, class: "layer-red-shine" });
+                }
+            } else if (c.system === 'floating-floor') {
+                const xpsSku = t.skuMap.xps[c.thickness];
+                items.push({ name: window.getPremiumName(xpsSku, `Ravatherm XPS ${c.thickness}cm (baza)`), qty: a * 1.05, unit: "m2", price: getP(xpsSku), sku: xpsSku });
+                layers.push({ name: "XPS Izolacija", class: "layer-blue-shine" });
+
+                items.push({ name: window.getPremiumName(t.skuMap.ethafoam, "Ethafoam 2222 (zvuk)"), qty: a * 1.1, unit: "m2", price: getP(t.skuMap.ethafoam), sku: t.skuMap.ethafoam });
+                layers.push({ name: "Ethafoam Zvuk", class: "layer-red-shine" });
+
+                const osbSku = t.skuMap.osb[c.osbThickness];
+                items.push({ name: window.getPremiumName(osbSku, `OSB ploča ${c.osbThickness}mm`), qty: a * 1.05, unit: "m2", price: getP(osbSku), sku: osbSku });
+                layers.push({ name: `OSB Ploča ${c.osbThickness}mm`, class: "layer-red-shine" });
+            } else if (c.system === 'osb') {
+                const sku = t.skuMap.osb[c.osbThickness];
+                items.push({ name: window.getPremiumName(sku, `OSB ploča ${c.osbThickness}mm`), qty: a * 1.05, unit: "m2", price: getP(sku), sku: sku });
+                layers.push({ name: "OSB Ploča", class: "layer-red-shine" });
+            } else {
+                const sku = t.skuMap.xps[c.thickness];
+                items.push({ name: window.getPremiumName(sku, `Ravatherm XPS ${c.thickness}cm`), qty: a * 1.05, unit: "m2", price: getP(sku), sku: sku });
+                layers.push({ name: "XPS Izolacija", class: "layer-blue-shine" });
+            }
+            if (c.system === 'xps-foundation') {
+                layers.push({ name: "Čepasta Folija", class: "layer-red-shine active" });
+            }
+
+            // PE Folija is now only in items for other systems, or in visualizer for krov
+            if (c.pe && c.system !== 'roof-wool') {
+                items.push({ name: window.getPremiumName(t.skuMap.pe, "PE Folija (cijena u katalogu)"), qty: a, unit: "m2", price: getP(t.skuMap.pe), sku: t.skuMap.pe });
+            }
+
+            window.updateGlobalCart(items.map(it => ({ ...it, total: Math.round(it.qty * it.price * 100) / 100 })), true);
+            layers.forEach((l, i) => { const d = document.createElement('div'); d.className = `layer-box ${l.class}`; d.textContent = l.name; stage.appendChild(d); setTimeout(() => d.classList.add('active'), i * 80); });
+        }
+
+        // --- KATALOG UI ---
+        function initUIKatalog() {
+            const v = document.getElementById('katalog-view');
+            const products = LIVE_PRICES.catalog || [];
+
+            const parseUnit = (u, name = '') => {
+                let m = 1, label = 'kom';
+                const lower = u.toLowerCase();
+                const nLower = name.toLowerCase();
+
+                // 1. OSB Logic (1 ploča = 1.6875 m2)
+                if (nLower.includes('osb')) {
+                    m = 1.6875;
+                    label = 'kom';
+                    return { m, label, unit: 'm2' };
+                }
+
+                // 2. XPS Logic (based on user request & name)
+                if (nLower.includes('xps')) {
+                    const thickMatch = nLower.match(/(\d+)cm/);
+                    if (thickMatch) {
+                        const t = parseInt(thickMatch[1]);
+                        const xpsMap = { 2: 15, 3: 10.5, 4: 7.5, 5: 6, 6: 5.25, 8: 3.75, 10: 3, 12: 2.25, 15: 1.5, 20: 1.5 };
+                        m = xpsMap[t] || 1;
+                        label = 'paket';
+                        return { m, label, unit: 'm2' };
+                    }
+                }
+
+                // 3. Roll/Package with numbers (e.g., "rola, 42m2", "vreća, 25kg")
+                const numMatch = u.match(/([\d.]+)\s*(m2|kg|l|m)/);
+                if (numMatch) {
+                    m = parseFloat(numMatch[1]);
+                    const rawLabel = u.split(',')[0].trim();
+                    label = rawLabel || 'kom';
+                    return { m, label, unit: numMatch[2] };
+                }
+
+                // 4. Fallback
+                if (lower.includes('m2')) return { m: 1, label: 'm2', unit: 'm2' };
+                if (lower.includes('kg')) return { m: 1, label: 'kg', unit: 'kg' };
+                return { m: 1, label: 'kom', unit: 'kom' };
+            };
+
+            const render = (filter = '', cat = 'all') => {
+                const grid = v.querySelector('#productGrid');
+                grid.innerHTML = '';
+                const filtered = products.filter(p => {
+                    const searchStr = (p.name + p.sku).toLowerCase();
+                    const matchesSearch = searchStr.includes(filter.toLowerCase());
+
+                    if (cat === 'all') return matchesSearch;
+
+                    // New Category Logic
+                    if (p.category) {
+                        return matchesSearch && (p.category === cat || (cat === 'hidro' && (p.category === 'hidro' || p.category === 'membranes' || p.category === 'bitumen')));
+                    }
+
+                    // Fallback for items without category (should not happen with new logic but safe to keep)
+                    const pName = p.name.toLowerCase();
+                    if (cat === 'ograde') return matchesSearch && (pName.includes('ograd') || pName.includes('stup') || pName.includes('panel'));
+                    if (cat === 'hidro') return matchesSearch && (pName.includes('tpo') || pName.includes('pvc') || pName.includes('membran') || pName.includes('bitumen'));
+                    if (cat === 'termo') return matchesSearch && (pName.includes('xps') || pName.includes('vuna') || pName.includes('osb') || pName.includes('folija'));
+                    if (cat === 'fasade') return matchesSearch && (pName.includes('žbuka') || pName.includes('ljepilo') || pName.includes('etik') || pName.includes('mrežic'));
+                    return matchesSearch;
+                });
+
+                filtered.forEach(p => {
+                    const price = p.price || 0;
+                    const uMeta = parseUnit(p.unit, p.name);
+                    const card = document.createElement('div');
+                    card.className = 'system-card';
+                    card.style = 'text-align:left; display:flex; flex-direction:column; gap:6px; padding:1rem; border-color: rgba(255,215,0,0.1);';
+
+                    const packInfo = uMeta.m > 1 ? `<div style="font-size:0.7rem; color:#aaa; font-weight:600;">Pakiranje: ${uMeta.m.toLocaleString('hr-HR', { minimumFractionDigits: 2 })} ${uMeta.unit}</div>` : '';
+
+                    card.innerHTML = `
+                        <div style="font-size:0.6rem; color:#E67E22; font-family:'Orbitron'; opacity:0.8;">SKU: ${p.sku}</div>
+                        <h4 style="margin:0; font-size:0.85rem; line-height:1.2; color:#fff; min-height:2.4em;">${p.name}</h4>
+                        ${packInfo}
+                        <div style="font-family:'Orbitron'; font-size:1rem; font-weight:900; color:#E67E22; margin-top:auto;">
+                            ${price.toFixed(2)} € <small style="font-size:0.65rem; opacity:0.6; font-family:'Outfit'; font-weight:400; color:#fff;">/ ${uMeta.unit}</small>
+                        </div>
+                        <div class="qty-group">
+                            <input type="number" class="qty-input-v3" value="1" step="any">
+                            <span class="qty-unit-label">${uMeta.label}</span>
+                            
+                            <div class="qty-arrows-v3">
+                                <button class="qty-arrow-btn" onclick="adjQty(this, 1)">▲</button>
+                                <button class="qty-arrow-btn" onclick="adjQty(this, -1)">▼</button>
+                            </div>
+
+                            <button class="choice-pill add-btn" style="height:32px; padding:0 8px; background:#E67E22; color:#000; border:none; border-radius:4px; font-family:'Orbitron'; font-size:0.65rem; font-weight:900; cursor:pointer; flex:1; margin-left:4px;" onclick="addToManualCart('${p.sku}', \`${p.name}\`, ${price}, '${uMeta.unit}', this, ${uMeta.m}, '${uMeta.label}')">DODAJ</button>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+            };
+
+            const renderCats = () => {
+                const tabs = v.querySelector('#categoryTabs');
+                const cats = ['all', 'ograde', 'hidro', 'termo', 'fasade'];
+                const labels = { all: 'SVI', ograde: 'OGRADE', hidro: 'HIDRO', termo: 'TERMO', fasade: 'FASADE' };
+                tabs.innerHTML = cats.map(c => `<div class="choice-pill ${c === 'all' ? 'active' : ''}" data-cat="${c}">${labels[c]}</div>`).join('');
+                tabs.querySelectorAll('.choice-pill').forEach(btn => {
+                    btn.onclick = () => {
+                        tabs.querySelectorAll('.choice-pill').forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                        render(v.querySelector('#catalogSearch').value, btn.dataset.cat);
+                    };
+                });
+            };
+
+            v.querySelector('#catalogSearch').oninput = (e) => render(e.target.value, v.querySelector('#categoryTabs .active').dataset.cat);
+
+            window.addToManualCart = (sku, name, price, unit, btn, multiplier, manualLabel) => {
+                const input = btn.parentElement.querySelector('.qty-input-v3');
+                const qValue = parseFloat(input.value) || 1;
+                const totalQty = qValue * multiplier;
+
+                const existing = manualItems.find(i => i.sku === sku);
+                if (existing) {
+                    existing.manualInput += qValue;
+                    existing.qty = existing.manualInput * multiplier;
+                    existing.total = Math.round(existing.qty * existing.price * 100) / 100;
+                } else {
+                    manualItems.push({
+                        sku, name, price, unit,
+                        qty: totalQty,
+                        manualInput: qValue,
+                        manualUnit: manualLabel,
+                        total: Math.round(totalQty * price * 100) / 100
+                    });
+                }
+                window.updateGlobalCart(systemItems);
+
+                const oldText = btn.textContent;
+                btn.textContent = "DODANO!";
+                btn.style.background = "#27ae60";
+                setTimeout(() => { btn.textContent = oldText; btn.style.background = ""; }, 800);
+            };
+
+            renderCats();
+            render();
+            window.updateGlobalCart(systemItems);
+        }
+
+        function getPrice(skuKey) {
+            const h = window.hydroState;
+            const sku = (h && h.skuMap && h.skuMap[skuKey]) ? h.skuMap[skuKey] : skuKey;
+            return LIVE_PRICES.prices[sku] || 0;
+        }
+
+        function initUIHydro() {
+            const s = window.hydroState.config, v = document.getElementById('hidro-view');
+            v.querySelectorAll('.system-card').forEach(card => card.onclick = () => {
+                v.querySelectorAll('.system-card').forEach(c => c.classList.remove('active')); card.classList.add('active'); s.system = card.dataset.system;
+                const isMembrane = (s.system === 'membrane-roof');
+                const hasGeo = (s.system === 'membrane-roof' || s.system === 'pvc-foundation');
+                const hasXps = (s.system === 'membrane-roof' || s.system === 'bitumen-foundation' || s.system === 'pvc-foundation');
+
+                v.querySelector('#membraneOptions').style.display = isMembrane ? 'block' : 'none';
+                v.querySelector('#thicknessOptions').style.display = isMembrane ? 'block' : 'none';
+                v.querySelector('#geoContainer').style.display = hasGeo ? 'block' : 'none';
+                v.querySelector('#xpsContainer').style.display = hasXps ? 'block' : 'none';
+                if (!hasXps) s.xps = 0;
+
+                updateHydroAll();
+            });
+            v.querySelectorAll('.choice-pill').forEach(p => p.onclick = () => {
+                p.parentElement.querySelectorAll('.choice-pill').forEach(x => x.classList.remove('active')); p.classList.add('active');
+                if (p.dataset.val) {
+                    if (p.textContent.includes('TPO') || p.textContent.includes('PVC')) {
+                        s.material = p.dataset.val;
+                        const t18 = v.querySelector('#pill-18'), t20 = v.querySelector('#pill-20');
+                        if (s.material === 'pvc') { [t18, t20].forEach(el => el.style.display = 'none'); s.thickness = "1.5"; v.querySelector('#hydroThickOptions [data-val="1.5"]').classList.add('active'); }
+                        else { [t18, t20].forEach(el => el.style.display = 'block'); }
+                    } else s.thickness = p.dataset.val;
+                }
+                if (p.dataset.geo) s.geoWeight = p.dataset.geo; if (p.dataset.xps !== undefined) s.xps = parseInt(p.dataset.xps);
+                updateHydroAll();
+            });
+            v.querySelector('#hydroArea').oninput = (e) => { s.area = parseFloat(e.target.value) || 0; updateHydroAll(); };
+
+            // Set default XPS active pill
+            const xpsPills = v.querySelectorAll('#hydroXpsOptions .choice-pill');
+            xpsPills.forEach(p => {
+                p.classList.toggle('active', parseInt(p.dataset.xps) === s.xps);
+            });
+
+            updateHydroAll();
+        }
+
+        function updateHydroAll() {
+            const h = window.hydroState, c = h.config, items = [], a = c.area;
+            const geoPrice = getPrice(`geo_${c.geoWeight}`);
+
+            if (c.system === "membrane-roof") {
+                items.push({ name: window.getPremiumName(h.skuMap[`geo_${c.geoWeight}`], `Geotekstil ${c.geoWeight}g (donji)`), qty: a * 1.1, unit: "m2", price: geoPrice, sku: h.skuMap[`geo_${c.geoWeight}`] }, { name: window.getPremiumName(h.skuMap[`geo_${c.geoWeight}`], `Geotekstil ${c.geoWeight}g (gornji)`), qty: a * 1.1, unit: "m2", price: geoPrice, sku: h.skuMap[`geo_${c.geoWeight}`] });
+                if (c.xps > 0) {
+                    const xpsSku = h.skuMap.xps[c.xps];
+                    items.push({ name: window.getPremiumName(xpsSku, `Ravatherm XPS ${c.xps}cm`), qty: a * 1.05, unit: "m2", price: getPrice(xpsSku), sku: xpsSku });
+                }
+                const mKey = c.material === 'pvc' ? 'pvc_krov' : `tpo_${c.thickness.replace('.', '')}`;
+                const mSku = h.skuMap[mKey];
+                items.push({ name: window.getPremiumName(mSku, `${c.material.toUpperCase()} membrana`), qty: a * 1.15, unit: "m2", price: getPrice(mKey), sku: mSku });
+            } else if (c.system === "bitumen-roof") {
+                items.push({ name: window.getPremiumName(h.skuMap.fimizol, "Bitumenski premaz"), qty: a * 0.3, unit: "l", price: getPrice('fimizol'), sku: h.skuMap.fimizol }, { name: window.getPremiumName(h.skuMap.diamond_baza, "Bitumenska traka Diamond P4 (baza)"), qty: a * 1.15, unit: "m2", price: getPrice('diamond_baza'), sku: h.skuMap.diamond_baza }, { name: window.getPremiumName(h.skuMap.diamond_gray, "Bitumenska traka Diamond P4 gray (posip)"), qty: a * 1.15, unit: "m2", price: getPrice('diamond_gray'), sku: h.skuMap.diamond_gray });
+            } else if (c.system === "bitumen-foundation") {
+                items.push({ name: window.getPremiumName(h.skuMap.fimizol, "Bitumenski premaz"), qty: a * 0.3, unit: "l", price: getPrice('fimizol'), sku: h.skuMap.fimizol }, { name: window.getPremiumName(h.skuMap.ruby, "Bitumenska traka Ruby V-4"), qty: a * 1.15, unit: "m2", price: getPrice('ruby'), sku: h.skuMap.ruby });
+                if (c.xps > 0) {
+                    const xpsSku = h.skuMap.xps[c.xps];
+                    items.push({ name: window.getPremiumName(xpsSku, `XPS ${c.xps}cm`), qty: a * 1.05, unit: "m2", price: getPrice(xpsSku), sku: xpsSku });
+                }
+                items.push({ name: window.getPremiumName(h.skuMap.cepasta, "Čepasta folija"), qty: a * 1.15, unit: "m2", price: getPrice('cepasta'), sku: h.skuMap.cepasta });
+            } else if (c.system === "pvc-foundation") {
+                items.push({ name: window.getPremiumName(h.skuMap[`geo_${c.geoWeight}`], `Geotekstil ${c.geoWeight}g (donji)`), qty: a * 1.1, unit: "m2", price: geoPrice, sku: h.skuMap[`geo_${c.geoWeight}`] }, { name: window.getPremiumName(h.skuMap.pvc_temelji, "PVC BSL 1.5mm (temelji)"), qty: a * 1.15, unit: "m2", price: getPrice('pvc_temelji'), sku: h.skuMap.pvc_temelji }, { name: window.getPremiumName(h.skuMap[`geo_${c.geoWeight}`], `Geotekstil ${c.geoWeight}g (gornji)`), qty: a * 1.1, unit: "m2", price: geoPrice, sku: h.skuMap[`geo_${c.geoWeight}`] });
+                if (c.xps > 0) {
+                    const xpsSku = h.skuMap.xps[c.xps];
+                    items.push({ name: window.getPremiumName(xpsSku, `XPS ${c.xps}cm`), qty: a * 1.05, unit: "m2", price: getPrice(xpsSku), sku: xpsSku });
+                }
+                items.push({ name: window.getPremiumName(h.skuMap.cepasta, "Čepasta folija"), qty: a * 1.15, unit: "m2", price: getPrice('cepasta'), sku: h.skuMap.cepasta });
+            } else if (c.system === "liquid-rubber") {
+                items.push({ name: window.getPremiumName(h.skuMap.pu_primer, "PU primer 100"), qty: a * 0.2, unit: "kg", price: getPrice('pu_primer'), sku: h.skuMap.pu_primer }, { name: window.getPremiumName(h.skuMap.pu_500, "Isoflex PU 500 premaz"), qty: a * 1.5, unit: "kg", price: getPrice('pu_500'), sku: h.skuMap.pu_500 });
+            } else if (c.system === "polymer") { items.push({ name: window.getPremiumName(h.skuMap.aqua, "Aquamat Elastic"), qty: a * 3.5, unit: "kg", price: getPrice('aqua'), sku: h.skuMap.aqua }); }
+            window.updateGlobalCart(items.map(i => {
+                const total = Math.round(i.qty * (i.price || 0) * 100) / 100;
+                return { ...i, total };
+            }), true);
+
+            // UI Highlight
+            const xpsCont = document.getElementById('xpsContainer');
+            if (xpsCont) {
+                const isActive = c.xps > 0 && xpsCont.style.display !== 'none';
+                xpsCont.style.background = isActive ? 'rgba(0, 123, 255, 0.1)' : '';
+                xpsCont.style.borderColor = isActive ? 'var(--accent)' : '';
+            }
+
+            const stage = document.getElementById('dynamicStage'); stage.innerHTML = '';
+            const layers = []; const b = "layer-blue-shine";
+            // SYSTEM LAYERS
+            if (c.system === "membrane-roof") {
+                layers.push({ name: "Beton", class: "layer-concrete" }, { name: "Geotekstil", class: b });
+                layers.push({ name: "XPS izolacija", class: c.xps > 0 ? "layer-blue-shine" : "layer-transparent" });
+                layers.push({ name: "Geotekstil", class: b }, { name: `${c.material.toUpperCase()} membrana`, class: b });
+            } else if (c.system === "bitumen-roof") {
+                layers.push({ name: "Beton", class: "layer-concrete" }, { name: "Bitumenski premaz", class: b }, { name: "Bitumenska traka Diamond P4", class: b }, { name: "Bitumenska traka Diamond P4 gray", class: b });
+            } else if (c.system === "bitumen-foundation") {
+                layers.push({ name: "Beton", class: "layer-concrete" }, { name: "Bitumenski premaz", class: b }, { name: "Bitumenska traka Ruby V-4", class: b });
+                layers.push({ name: "XPS izolacija", class: c.xps > 0 ? "layer-blue-shine" : "layer-transparent" });
+                layers.push({ name: "Čepasta folija", class: b });
+            } else if (c.system === "pvc-foundation") {
+                layers.push({ name: "Beton", class: "layer-concrete" }, { name: "Geotekstil", class: b }, { name: "PVC folija", class: b }, { name: "Geotekstil", class: b });
+                layers.push({ name: "XPS izolacija", class: c.xps > 0 ? "layer-blue-shine" : "layer-transparent" });
+                layers.push({ name: "Čepasta folija", class: b });
+            } else if (c.system === "liquid-rubber") {
+                layers.push({ name: "Beton", class: "layer-concrete" }, { name: "PU primer", class: b }, { name: "Isoflex PU 500 premaz", class: b });
+            } else if (c.system === "polymer") {
+                layers.push({ name: "Beton", class: "layer-concrete" }, { name: "Aquamat Elastic", class: b });
+            }
+
+            layers.forEach((l, i) => { const d = document.createElement('div'); d.className = `layer-box ${l.class}`; d.textContent = l.name; stage.appendChild(d); setTimeout(() => d.classList.add('active'), i * 80); });
+        }
+
+        // --- CENTRAL INITIALIZATION ---
+        function checkHash() {
+            const h = window.location.hash.replace('#', '') || 'katalog';
+            activeModule = h;
+
+            // Highlight nav
+            document.querySelectorAll('.nav-link').forEach(l => {
+                l.classList.remove('active');
+                if (l.getAttribute('href') === '#' + h) l.classList.add('active');
+            });
+
+            // Show proper view
+            document.querySelectorAll('.module-view').forEach(v => v.classList.remove('active'));
+            const viewId = h === 'fasade' ? 'fasade-view' :
+                h === 'termo' ? 'termo-view' :
+                    h === 'hidro' ? 'hidro-view' :
+                        h === 'katalog' ? 'katalog-view' : 'ograde-view';
+
+            const v = document.getElementById(viewId);
+            if (v) v.classList.add('active');
+
+            // Apply Theme
+            const t = THEMES[h] || THEMES.ograde;
+            document.documentElement.style.setProperty('--accent', t.accent);
+            document.documentElement.style.setProperty('--accent-rgb', t.rgb);
+
+            // Init specific UI
+            if (h === 'fasade') initUIFasade();
+            else if (h === 'termo') initUITermo();
+            else if (h === 'hidro') initUIHydro();
+            else if (h === 'katalog') initUIKatalog();
+            else initUIOgrade();
+        }
+
+        window.addEventListener('hashchange', checkHash);
+        window.addEventListener('DOMContentLoaded', () => {
+            checkHash();
+        });
+    </script>
+</body>
+
+</html>

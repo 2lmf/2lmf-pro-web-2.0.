@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="hr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SHARPSHARK | ROI Kalkulator</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Outfit:wght@300;400;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --accent-orange: #E67E22;
+            --accent-cyan: #00F2FF;
+            --bg-dark: #020205;
+            --card-bg: rgba(15, 15, 20, 0.7);
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.05);
+            --safe: #22c55e;
+            --danger: #ef4444;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: var(--bg-dark);
+            color: #8a8a8a;
+            font-family: 'Outfit', sans-serif;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        /* --- NAVIGATION --- */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 20px 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(2, 2, 5, 0.95);
+            backdrop-filter: blur(30px);
+            z-index: 2000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            box-sizing: border-box;
+        }
+
+        .nav-logos {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .logos-row {
+            display: flex;
+            align-items: center;
+            gap: 50px;
+        }
+
+        .branding {
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .lmf-brand {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            color: #eee;
+            font-size: 1.25rem;
+            letter-spacing: 3px;
+        }
+
+        .lmf-brand span {
+            color: var(--accent-orange);
+        }
+
+        .shark-brand-img {
+            height: 110px;
+            width: auto;
+            filter: drop-shadow(0 0 20px rgba(0, 242, 255, 0.4));
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            display: block;
+            margin: -10px 0;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            color: var(--accent-orange);
+            text-decoration: none;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            transition: all 0.3s;
+            position: relative;
+            padding: 5px 15px;
+            text-transform: uppercase;
+            font-weight: 400;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            width: 0;
+            height: 100%;
+            background: var(--accent-orange);
+            transform: translateY(-50%);
+            transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: -1;
+            opacity: 0.8;
+        }
+
+        .nav-links a:hover {
+            color: #fff;
+            transform: scale(1.05);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .tagline {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.6rem;
+            letter-spacing: 5px;
+            font-weight: 900;
+            text-align: center;
+        }
+
+        .tagline .arch {
+            color: var(--accent-orange);
+        }
+
+        .tagline .code {
+            color: var(--accent-cyan);
+        }
+
+        /* --- HEADER SS COLORS --- */
+        .ss-sharp {
+            color: var(--accent-cyan);
+            transition: color 0.3s;
+        }
+
+        .ss-shark {
+            color: var(--accent-orange);
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover .ss-shark {
+            color: #fff;
+        }
+
+        /* --- CALCULATOR SECTION --- */
+        .calc-section {
+            padding: 180px 20px 100px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            background:
+                radial-gradient(circle at 10% 10%, rgba(255, 255, 255, 0.03), transparent 40%),
+                radial-gradient(circle at 90% 90%, rgba(230, 126, 34, 0.05), transparent 40%);
+        }
+
+        .calc-wrapper {
+            background: var(--card-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            padding: 50px;
+            max-width: 600px;
+            width: 100%;
+            position: relative;
+            box-shadow: 0 50px 100px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(20px);
+        }
+
+        .calc-wrapper h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2rem;
+            text-align: center;
+            margin-bottom: 40px;
+            color: #fff;
+            text-transform: none;
+            /* Changed to Sentence Case */
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+            color: #94a3b8;
+            font-family: 'Orbitron', sans-serif;
+            letter-spacing: 1px;
+        }
+
+        .input-wrap {
+            position: relative;
+        }
+
+        input {
+            width: 100%;
+            background: #000;
+            border: 1px solid var(--glass-border);
+            padding: 15px;
+            border-radius: 12px;
+            color: white;
+            font-size: 1.1rem;
+            outline: none;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            border-color: var(--accent-orange);
+        }
+
+        .unit {
+            position: absolute;
+            right: 15px;
+            top: 18px;
+            color: #64748b;
+            font-size: 0.8rem;
+            pointer-events: none;
+        }
+
+        .btn-main {
+            width: 100%;
+            background: var(--accent-orange);
+            color: #000;
+            padding: 18px;
+            border-radius: 12px;
+            border: none;
+            font-weight: 800;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(230, 126, 34, 0.2);
+            font-family: 'Orbitron', sans-serif;
+            letter-spacing: 1px;
+            margin-top: 20px;
+        }
+
+        .btn-main:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(230, 126, 34, 0.4);
+            background: #fff;
+        }
+
+        .result-box {
+            margin-top: 40px;
+            padding: 30px;
+            border-radius: 20px;
+            border: 2px dashed var(--danger);
+            background: rgba(239, 68, 68, 0.05);
+            display: none;
+            text-align: center;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .res-val {
+            font-size: 3rem;
+            font-weight: 900;
+            display: block;
+            color: var(--danger);
+            font-family: 'Orbitron', sans-serif;
+            margin: 10px 0;
+        }
+
+        .lead-capture {
+            display: none;
+            margin-top: 40px;
+            padding-top: 40px;
+            border-top: 1px solid var(--glass-border);
+            text-align: center;
+            animation: fadeIn 0.8s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* CONTACT SECTION REPLACEMENT */
+        .contact-section-replacement {
+            padding: 120px 20px;
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .inquiry-btn {
+            display: inline-block;
+            padding: 25px 60px;
+            background: #000;
+            color: var(--accent-orange);
+            text-decoration: none;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            font-size: 1.2rem;
+            letter-spacing: 4px;
+            border: 2px solid var(--accent-orange);
+            border-radius: 50px;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 0 30px rgba(230, 126, 34, 0.2);
+            text-transform: uppercase;
+        }
+
+        .inquiry-btn:hover {
+            background: var(--accent-cyan);
+            color: var(--accent-orange);
+            box-shadow: 0 25px 50px rgba(0, 242, 255, 0.4);
+            transform: scale(1.05) translateY(-5px);
+            border-color: var(--accent-cyan);
+        }
+
+        /* --- IMPRESSUM & FOOTER --- */
+        .impressum-section {
+            text-align: center;
+            padding: 60px 20px;
+            background: #050508;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .impressum-section h4 {
+            font-family: 'Orbitron', sans-serif;
+            color: white;
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+            letter-spacing: 2px;
+            font-weight: 700;
+        }
+
+        .impressum-section h4 span {
+            color: var(--accent-orange);
+        }
+
+        .impressum-section p {
+            margin: 0 0 10px;
+            color: #888;
+            font-size: 0.9rem;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .seo-footer {
+            background: #020205;
+            padding: 40px 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.03);
+            text-align: center;
+        }
+
+        .seo-footer .hashtags {
+            font-size: 0.65rem;
+            font-style: italic;
+            opacity: 0.3;
+            line-height: 1.8;
+            color: #aaa;
+            letter-spacing: 1px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 40px;
+        }
+
+        .copyright-bar {
+            background: #000;
+            color: #fff;
+            text-align: center;
+            padding: 30px 0;
+            font-weight: 900;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.75rem;
+            letter-spacing: 3px;
+            border-top: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        .copyright-bar span {
+            color: var(--accent-orange);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- NAVIGATION -->
+    <nav>
+        <div class="nav-logos">
+            <div class="logos-row">
+                <a href="index.html" class="branding">
+                    <div class="lmf-brand">2LMF <span>PRO</span></div>
+                </a>
+                <a href="index.html" class="branding">
+                    <img src="assets/sharpshark_blue_large.png" class="shark-brand-img" alt="SharpShark"
+                        onerror="this.src='https://via.placeholder.com/150x60/000000/00F2FF?text=SHARPSHARK'">
+                </a>
+            </div>
+            <div class="tagline">
+                <span class="arch">ARCHITECTURAL</span> <span class="code">CODE</span>
+            </div>
+        </div>
+
+        <div class="nav-links">
+            <a href="index.html">POČETNA</a>
+            <a href="architects_blueprint.html">ARHITEKTURA</a>
+            <a href="kalkulator.html">KATALOG</a>
+            <a href="blog_hub.html">ZNANJE</a>
+            <a href="digitalna_dominacija.html"
+                style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px;">
+                <span class="ss-sharp">SHARP</span><span class="ss-shark">SHARK</span>
+            </a>
+            <a href="index.html#kontakt">KONTAKT</a>
+        </div>
+    </nav>
+
+    <!-- CALCULATOR SECTION -->
+    <section class="calc-section">
+        <div class="calc-wrapper">
+            <h1>Dijagnoza poslovanja:<br><span style="color:var(--danger)">Koliko eura poklanjate?</span></h1>
+
+            <div class="input-group">
+                <label>BROJ APARTMANA / JEDINICA</label>
+                <div class="input-wrap">
+                    <input type="number" id="units" value="2" min="1">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>PROSJEČNA POPUNJENOST (DANI)</label>
+                <div class="input-wrap">
+                    <input type="number" id="days" value="70">
+                    <span class="unit">noćenja/sezoni</span>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>PROSJEČNA CIJENA NOĆENJA</label>
+                <div class="input-wrap">
+                    <input type="number" id="price" value="100">
+                    <span class="unit">€ / noć</span>
+                </div>
+            </div>
+
+            <button class="btn-main" onclick="calculate()">POKAŽI MI BROJKE</button>
+
+            <div id="result" class="result-box">
+                <span
+                    style="color: #94a3b8; font-size: 0.9rem; text-transform: uppercase; font-weight: 700; font-family: 'Orbitron';">GODIŠNJE
+                    POKLANJATE PORTALIMA:</span>
+                <span id="loss-val" class="res-val">0 €</span>
+                <p style="font-size: 0.8rem; margin-top: 10px; color: #64748b;">*Izračun na bazi minimalno 15%
+                    provizije.</p>
+            </div>
+
+            <div id="lead" class="lead-capture">
+                <h3 style="font-family: 'Orbitron'; color: var(--safe); margin-bottom: 20px;">Besplatni plan uštede
+                    (PDF) 📈</h3>
+                <p style="font-size: 0.9rem; margin: 0 0 20px; color: #aaa;">Šaljemo vam personalizirani PDF: Kako
+                    svesti proviziju na 0% uz OIB fiskalizaciju.</p>
+
+                <input type="text" id="lead-name" placeholder="Vaše ime i prezime" style="margin-bottom: 10px;">
+                <input type="email" id="lead-email" placeholder="Vaša e-mail adresa" style="margin-bottom: 15px;">
+
+                <button class="btn-main"
+                    style="background: var(--safe); box-shadow: 0 10px 30px rgba(34, 197, 94, 0.3); color: #fff;"
+                    onclick="submitLead()">PREUZMI PDF VODIČ</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- KONTAKT SEKCIJA REPLACEMENT -->
+    <div class="contact-section-replacement">
+        <h2 style="font-family: 'Orbitron', sans-serif; font-size: 3rem; color: #fff; margin-bottom: 20px;">Započnimo
+            Vašu priču.</h2>
+        <p style="font-size: 1.2rem; color: #aaa; margin-bottom: 50px;">Kliknite na gumb ispod i pošaljite nam detalje
+            Vašeg projekta.</p>
+        <a href="index.html#kontakt" class="inquiry-btn">POŠALJITE UPIT</a>
+    </div>
+
+    <!-- IMPRESSUM -->
+    <div class="impressum-section">
+        <h4>2LMF <span>PRO</span> j.d.o.o.</h4>
+        <p>Orešje 7 ◼ 10090 Zagreb ◼ Hrvatska</p>
+        <p>OIB: 29766043828 ◼ MB: 081477933</p>
+        <p>IBAN: HR3123400091111213241</p>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="seo-footer">
+        <p class="hashtags">
+            #ventiliranefasade #fasada #hpl #vlaknocement #aluminij #podkonstrukcija #termo #termoizolacija
+            #najpovoljnije #beznaknade #freehosting #freehostingzauvijek #vrhunskakvaliteta #webshop #freewebshop
+            #sharpshark #sharpsharkdigital #besplatno #besplatniwebshop #3dpanel #2dpanel #panelograda #konfigurator
+            #fiskalizacija #rezervacijasmještaja #channelmanager #webdesign #SEO #konfiguratorograda
+            #najpovoljnijacijena #top #hidro #hidroizolacija #XPS #stirodur #TPO #PVC #bitumen #bitumenskaljepenka
+            #ljepenka #arhitektura #kalkulator #kalkulatorograda #kalkulatorfasada #građevinskikalkulator
+            #projektiranje #poliuretanPU #aluminijskaizolacija #zvučnaizolacija #osb #EPS #stiropor #bentonit
+            #polimercement #vuna #kamenavuna #konfiguratorograda #blog #manjenaknade #vasezauvijek
+        </p>
+    </div>
+
+    <div class="copyright-bar">
+        &copy; 2026. 2LMF <span>PRO</span> j.d.o.o. ZAGREB, HRVATSKA
+    </div>
+
+    <script>
+        function calculate() {
+            const u = document.getElementById('units').value;
+            const d = document.getElementById('days').value;
+            const p = document.getElementById('price').value;
+
+            const loss = Math.round(u * d * p * 0.15);
+
+            document.getElementById('loss-val').innerText = loss.toLocaleString('hr-HR') + ' €';
+            document.getElementById('result').style.display = 'block';
+            document.getElementById('lead').style.display = 'block';
+
+            // Scroll to results
+            setTimeout(() => {
+                document.getElementById('result').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 300);
+        }
+
+        function submitLead() {
+            const name = document.getElementById('lead-name').value;
+            const email = document.getElementById('lead-email').value;
+
+            if (!name || !email) {
+                alert('Molimo unesite barem ime i email.');
+                return;
+            }
+
+            alert('Hvala ' + name + '! PDF vodič je poslan na ' + email + '. Kontaktirat ćemo vas uskoro.');
+        }
+    </script>
+</body>
+
+</html>
