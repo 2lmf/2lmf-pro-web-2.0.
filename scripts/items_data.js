@@ -139,7 +139,7 @@ const prices = {
         aquamat_elastic: { price: 1.9500000000000002, sku: "2128", name: "Isomat Aquamat Elastic sivi, 35kg (A+B komp)" },
         pu_primer: { price: 12.025, sku: "2129", name: "Isomat PU pimer, 5kg" },
         isoflex_pu500: { price: 7.6375, sku: "2130", name: "Isomat: Isoflex PU500, bijeli, (poliuretan)" },
-        fimizol: { price: 21.9375, sku: "2131", name: "FIMIZOL, 9L, bitumenski premaz" }
+        fimizol: { price: 24.94375, sku: "2131", name: "FIMIZOL, 9L, bitumenski premaz" }
     },
 
     others: {
@@ -149,11 +149,11 @@ const prices = {
         osb_12: { price: 5.94, sku: "3010", name: "OSB plo?e 12mm (2500 x 675mm)" },
         osb_15: { price: 7.425, sku: "3007", name: "OSB plo?e 15mm (2500 x 675mm)" },
         osb_18: { price: 8.91, sku: "3008", name: "OSB plo?e 18mm (2500 x 675mm)" },
-        osb_22: { price: 10.89, sku: "3009", name: "OSB ploče 22mm (2500 x 675mm)" }
+        osb_22: { price: 10.889999999999999, sku: "3009", name: "OSB plo?e 22mm (2500 x 675mm)" }
     },
     new_products: {
-        reflectix: { price: 0, sku: "3011", name: "SEALED AIR REFLECTIX® (alu izolacija)" },
-        ethafoam: { price: 0, sku: "3012", name: "Ethafoam 2222 (izolacija od udarnog zvuka u podu)" }
+        reflectix: { price: 3.5875, sku: "3011", name: "SEALED AIR REFLECTIX? (alu izolacija)" },
+        ethafoam: { price: 1.9500000000000002, sku: "3012", name: "Ethafoam 2222 (izolacija od udarnog zvuka u podu)" }
     }
 };
 
