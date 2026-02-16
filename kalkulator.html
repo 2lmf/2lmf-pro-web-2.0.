@@ -12,6 +12,30 @@
     <!-- FontAwesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
+    <!-- GOOGLE ADS CONVERSION TRACKING (gtag.js) -->
+    <!-- Replace AW-XXXXXXXXXX with your actual Conversion ID -->
+    <!-- Replace AW-XXXXXXXXXX/YYYYYYYYYYYY with your actual Conversion Label -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=AW-XXXXXXXXXX"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'AW-XXXXXXXXXX');
+
+        function gtag_report_conversion(url) {
+            var callback = function () {
+                if (typeof (url) != 'undefined') {
+                    window.location = url;
+                }
+            };
+            gtag('event', 'conversion', {
+                'send_to': 'AW-XXXXXXXXXX/YYYYYYYYYYYY',
+                'event_callback': callback
+            });
+            return false;
+        }
+    </script>
+
     <style>
         /* --- BRANDING HEADER STYLES (From Index) --- */
         .brand-header {
@@ -1529,6 +1553,13 @@
                                 } else {
                                     const msg = res.pdfAttached ? "Upit poslan s PDF-om!" : "Upit poslan (HTML mail, PDF nije uspio).";
                                     alert("✅ " + msg + "\nID: " + res.id);
+
+                                    // GOOGLE ADS CONVERSION TRIGGER
+                                    if (typeof gtag_report_conversion === 'function') {
+                                        console.log("SharkAds: Tracking successful conversion...");
+                                        gtag_report_conversion();
+                                    }
+
                                     resolve(res);
                                 }
                             })
@@ -1548,6 +1579,13 @@
                             body: new URLSearchParams(payload)
                         }).then(() => {
                             alert("✅ Upit je poslan! (GitHub Mode)");
+
+                            // GOOGLE ADS CONVERSION TRIGGER
+                            if (typeof gtag_report_conversion === 'function') {
+                                console.log("SharkAds: Tracking successful conversion (GitHub Mode)...");
+                                gtag_report_conversion();
+                            }
+
                             resolve({ result: 'success' });
                         }).catch(err => {
                             console.error("Fetch error:", err);
