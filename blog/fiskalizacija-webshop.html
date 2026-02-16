@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="hr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Shop i Fiskalizacija | 2LMF PRO Blog</title>
+    <meta name="description"
+        content="Želite Web Shop, ali vas plaši fiskalizacija? Saznajte kako legalno prodavati online bez mjesečnih troškova za blagajnu.">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Outfit:wght@300;400;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-dark: #020205;
+            --accent-orange: #E67E22;
+            --accent-cyan: #00F2FF;
+            --line-color: rgba(255, 255, 255, 0.1);
+            --card-bg: rgba(255, 255, 255, 0.03);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: white;
+            font-family: 'Outfit', sans-serif;
+            line-height: 1.6;
+            padding-top: 100px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 40px;
+        }
+
+        /* --- NAVIGATION --- */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 20px 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(2, 2, 5, 0.95);
+            backdrop-filter: blur(30px);
+            z-index: 2000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .nav-logos {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 5px;
+        }
+
+        .logos-row {
+            display: flex;
+            align-items: center;
+            gap: 50px;
+        }
+
+        .branding {
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .lmf-brand {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            color: #eee;
+            font-size: 1.25rem;
+            letter-spacing: 3px;
+        }
+
+        .lmf-brand span {
+            color: var(--accent-orange);
+        }
+
+        .tagline {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.6rem;
+            letter-spacing: 5px;
+            font-weight: 900;
+        }
+
+        .tagline .arch {
+            color: var(--accent-orange);
+        }
+
+        .tagline .code {
+            color: var(--accent-cyan);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            color: var(--accent-orange);
+            text-decoration: none;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            padding: 5px 15px;
+            text-transform: uppercase;
+        }
+
+        /* --- ARTICLE STYLE --- */
+        .article-header {
+            padding: 60px 0;
+            border-bottom: 1px solid var(--line-color);
+            margin-bottom: 60px;
+        }
+
+        .label {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--accent-orange);
+            font-size: 0.8rem;
+            letter-spacing: 4px;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3rem;
+            line-height: 1.2;
+            margin-bottom: 20px;
+        }
+
+        .meta {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.7rem;
+            color: #666;
+            letter-spacing: 2px;
+        }
+
+        .content {
+            font-size: 1.1rem;
+            color: #ccc;
+        }
+
+        .content h2,
+        .content h3 {
+            font-family: 'Orbitron', sans-serif;
+            color: white;
+            margin: 40px 0 20px;
+        }
+
+        .content p {
+            margin-bottom: 25px;
+        }
+
+        .content ul,
+        .content ol {
+            margin-bottom: 25px;
+            padding-left: 20px;
+        }
+
+        .content li {
+            margin-bottom: 10px;
+        }
+
+        .content strong {
+            color: var(--accent-orange);
+        }
+
+        .featured-img {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+            border: 1px solid var(--line-color);
+            margin-bottom: 40px;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--accent-orange);
+            text-decoration: none;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.8rem;
+            margin-bottom: 40px;
+            transition: gap 0.3s;
+        }
+
+        .back-link:hover {
+            gap: 15px;
+        }
+
+        /* --- FOOTER --- */
+        .seo-footer {
+            padding: 60px 0;
+            text-align: center;
+            border-top: 1px solid var(--line-color);
+            margin-top: 100px;
+        }
+
+        .hashtags {
+            font-size: 0.65rem;
+            font-style: italic;
+            opacity: 0.3;
+            line-height: 1.8;
+            color: #aaa;
+            letter-spacing: 1px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .copyright {
+            background: #000;
+            color: #fff;
+            text-align: center;
+            padding: 30px 0;
+            font-weight: 900;
+            font-family: 'Orbitron';
+            font-size: 0.75rem;
+            letter-spacing: 3px;
+            border-top: 1px solid rgba(255, 255, 255, 0.03);
+        }
+    </style>
+</head>
+
+<body>
+    <nav>
+        <div class="nav-logos">
+            <div class="logos-row">
+                <a href="../index.html" class="branding">
+                    <div class="lmf-brand">2LMF <span>PRO</span></div>
+                </a>
+            </div>
+            <div class="tagline"><span class="arch">ARCHITECTURAL</span> <span class="code">CODE</span></div>
+        </div>
+        <div class="nav-links">
+            <a href="../index.html">POČETNA</a>
+            <a href="../blog_hub.html">ZNANJE</a>
+            <a href="../index.html#kontakt">KONTAKT</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <a href="../blog_hub.html" class="back-link"><i class="fas fa-arrow-left"></i> POVRATAK NA HUB</a>
+
+        <header class="article-header">
+            <span class="label">DIGITAL TRANSFORMATION</span>
+            <h1>Želite Web Shop, ali vas plaši Fiskalizacija? Evo rješenja od 0€ mjesečno.</h1>
+            <div class="meta">OBJAVLJENO: 3. VELJAČA 2026. | AUTOR: SHARPSHARK DIGITAL</div>
+        </header>
+
+        <div class="content">
+            <img src="https://images.unsplash.com/photo-1563013544-824ae1b704d3?auto=format&fit=crop&w=1200&q=80"
+                alt="Web Shop Concept" class="featured-img">
+
+            <h3>Uvod: Mit o skupom Web Shopu</h3>
+            <p>Mnogi mali poduzetnici odustaju od prodaje online jer misle da im treba skupa oprema, komplicirani
+                programeri i mjesečno plaćanje za "fiskalne blagajne".</p>
+            <p>Istina je drugačija. Ako prodajete vino, sir, ulje ili rukotvorine, <strong>zakon vam omogućuje
+                    jednostavan i jeftin način rada</strong>, samo ako znate kako posložiti proces.</p>
+
+            <h3>Problem: "Zašto je to tako komplicirano?"</h3>
+            <p>Ako radite s gotovinom, morate imati fiskalnu blagajnu u trenutku prodaje. Ali, kod Web Shopa većina
+                kupaca plaća <strong>transakcijski</strong> (uplatom na račun, internet bankarstvom).</p>
+            <p>Tu dolazimo do ključne razlike: **Transakcijski račun = Nije potrebna fiskalizacija u trenutku klika.**
+                Račun se može izdati naknadno, nakon što vidite uplatu.</p>
+
+            <h3>Rješenje: Model "Narudžba -> Ponuda -> Račun"</h3>
+            <p>Umjesto da plaćate skupe skripte koje automatski fiskaliziraju svaku sitnicu, predlažemo model koji
+                koriste pametni mali biznisi:</p>
+
+            <ol>
+                <li><strong>Web Shop kao "Katalog":</strong> Kupac ubaci proizvode u košaricu i klikne "Završi
+                    narudžbu".</li>
+                <li><strong>Sustav šalje "Ponudu":</strong> Kupac na email automatski dobiva Ponudu sa svim podacima za
+                    plaćanje i 2D bar kodom.</li>
+                <li><strong>Plaćanje:</strong> Kupac skenira kod i plaća mobitelom.</li>
+                <li><strong>Izdavanje Računa:</strong> Vi vidite uplatu i kroz besplatne servise jednim klikom pošaljete
+                    fiskalizirani račun.</li>
+            </ol>
+
+            <h3>Zašto je ovo bolje?</h3>
+            <ul>
+                <li><strong>Trošak 0 €/mj:</strong> Ne trebate plaćati mjesečni najam "web blagajne".</li>
+                <li><strong>Manje grešaka:</strong> Imate potpunu kontrolu nad procesom izdavanja računa.</li>
+                <li><strong>100% Legalno:</strong> Model je potpuno usklađen s hrvatskim zakonima.</li>
+            </ul>
+
+            <h3>Zaključak</h3>
+            <p>Digitalizacija ne mora značiti nove troškove. Znači samo pametnije poslovanje. Ako želite web shop koji
+                radi za vas, a ne vi za njega – istražite naša **SharpShark** rješenja.</p>
+        </div>
+    </div>
+
+    <footer class="seo-footer">
+        <p class="hashtags">
+            #ventiliranefasade #fasada #hpl #vlaknocement #aluminij #podkonstrukcija #termo #termoizolacija
+            #najpovoljnije #beznaknade #freehosting #freehostingzauvijek #vrhunskakvaliteta #webshop #freewebshop
+            #sharpshark #sharpsharkdigital #besplatno #besplatniwebshop #3dpanel #2dpanel #panelograda #konfigurator
+            #fiskalizacija #rezervacijasmještaja #channelmanager #webdesign #SEO #konfiguratorograda
+            #najpovoljnijacijena #top #hidro #hidroizolacija #XPS #stirodur #TPO #PVC #bitumen #bitumenskaljepenka
+            #ljepenka #arhitektura #kalkulator #kalkulatorograda #kalkulatorfasada #građevinskikalkulator
+            #projektiranje #poliuretanPU #aluminijskaizolacija #zvučnaizolacija #osb #EPS #stiropor #bentonit
+            #polimercement #vuna #kamenavuna #konfiguratorograda #blog #manjenaknade #vasezauvijek
+            #digitalnadominacija #webdizajn #customsoftware #pametnikalkulator #izvedbeniprojekt #usteda
+            #googleads #marketing #2lmfpro #arhitektonskistudio #gradnja2026
+        </p>
+    </footer>
+
+    <div class="copyright">
+        &copy; 2026. 2LMF <span style="color:var(--accent-orange)">PRO</span> j.d.o.o. ZAGREB, HRVATSKA
+    </div>
+</body>
+
+</html>

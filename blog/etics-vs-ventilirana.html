@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="hr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ETICS vs. Ventilirana fasada | 2LMF PRO Blog</title>
+    <meta name="description"
+        content="Klasična fasada (ETICS) ili ventilirana fasada? Saznajte razlike u cijeni, ljetnom komforu i trajnosti.">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Outfit:wght@300;400;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-dark: #020205;
+            --accent-orange: #E67E22;
+            --accent-cyan: #00F2FF;
+            --line-color: rgba(255, 255, 255, 0.1);
+            --card-bg: rgba(255, 255, 255, 0.03);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: white;
+            font-family: 'Outfit', sans-serif;
+            line-height: 1.6;
+            padding-top: 100px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 40px;
+        }
+
+        /* --- NAVIGATION --- */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 20px 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(2, 2, 5, 0.95);
+            backdrop-filter: blur(30px);
+            z-index: 2000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .nav-logos {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 5px;
+        }
+
+        .logos-row {
+            display: flex;
+            align-items: center;
+            gap: 50px;
+        }
+
+        .branding {
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .lmf-brand {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            color: #eee;
+            font-size: 1.25rem;
+            letter-spacing: 3px;
+        }
+
+        .lmf-brand span {
+            color: var(--accent-orange);
+        }
+
+        .tagline {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.6rem;
+            letter-spacing: 5px;
+            font-weight: 900;
+        }
+
+        .tagline .arch {
+            color: var(--accent-orange);
+        }
+
+        .tagline .code {
+            color: var(--accent-cyan);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            color: var(--accent-orange);
+            text-decoration: none;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            padding: 5px 15px;
+            text-transform: uppercase;
+        }
+
+        /* --- ARTICLE STYLE --- */
+        .article-header {
+            padding: 60px 0;
+            border-bottom: 1px solid var(--line-color);
+            margin-bottom: 60px;
+        }
+
+        .label {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--accent-orange);
+            font-size: 0.8rem;
+            letter-spacing: 4px;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3rem;
+            line-height: 1.2;
+            margin-bottom: 20px;
+        }
+
+        .meta {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.7rem;
+            color: #666;
+            letter-spacing: 2px;
+        }
+
+        .content {
+            font-size: 1.1rem;
+            color: #ccc;
+        }
+
+        .content h2,
+        .content h3 {
+            font-family: 'Orbitron', sans-serif;
+            color: white;
+            margin: 40px 0 20px;
+        }
+
+        .content p {
+            margin-bottom: 25px;
+        }
+
+        .content ul {
+            margin-bottom: 25px;
+            padding-left: 20px;
+        }
+
+        .content li {
+            margin-bottom: 10px;
+        }
+
+        .content strong {
+            color: var(--accent-orange);
+        }
+
+        .featured-img {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+            border: 1px solid var(--line-color);
+            margin-bottom: 40px;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--accent-orange);
+            text-decoration: none;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.8rem;
+            margin-bottom: 40px;
+            transition: gap 0.3s;
+        }
+
+        .back-link:hover {
+            gap: 15px;
+        }
+
+        /* --- FOOTER --- */
+        .seo-footer {
+            padding: 60px 0;
+            text-align: center;
+            border-top: 1px solid var(--line-color);
+            margin-top: 100px;
+        }
+
+        .hashtags {
+            font-size: 0.65rem;
+            font-style: italic;
+            opacity: 0.3;
+            line-height: 1.8;
+            color: #aaa;
+            letter-spacing: 1px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .copyright {
+            background: #000;
+            color: #fff;
+            text-align: center;
+            padding: 30px 0;
+            font-weight: 900;
+            font-family: 'Orbitron';
+            font-size: 0.75rem;
+            letter-spacing: 3px;
+            border-top: 1px solid rgba(255, 255, 255, 0.03);
+        }
+    </style>
+</head>
+
+<body>
+    <nav>
+        <div class="nav-logos">
+            <div class="logos-row">
+                <a href="../index.html" class="branding">
+                    <div class="lmf-brand">2LMF <span>PRO</span></div>
+                </a>
+            </div>
+            <div class="tagline"><span class="arch">ARCHITECTURAL</span> <span class="code">CODE</span></div>
+        </div>
+        <div class="nav-links">
+            <a href="../index.html">POČETNA</a>
+            <a href="../blog_hub.html">ZNANJE</a>
+            <a href="../index.html#kontakt">KONTAKT</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <a href="../blog_hub.html" class="back-link"><i class="fas fa-arrow-left"></i> POVRATAK NA HUB</a>
+
+        <header class="article-header">
+            <span class="label">FACADE CHOICE</span>
+            <h1>Fasada: Klasična (ETICS) ili ventilirana? Vodič za pametan odabir</h1>
+            <div class="meta">OBJAVLJENO: 11. SIJEČANJ 2026. | AUTOR: 2LMF PRO</div>
+        </header>
+
+        <div class="content">
+            <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1200&q=80"
+                alt="Building Facade" class="featured-img">
+
+            <p>Kada dođe vrijeme za obnovu fasade ili gradnju novog objekta, većina klijenata se nađe pred dilemom:
+                odabrati provjerenu "klasičnu" fasadu (ETICS) ili investirati u modernu ventiliranu fasadu?</p>
+
+            <p>U 2LMF PRO u ponudi imamo sustave za obje vrste fasada. Kako bismo vam olakšali odluku, pripremili smo
+                detaljnu usporedbu prednosti i troškova.</p>
+
+            <h3>1. ETICS (Kontaktna fasada) – Kraljica omjera cijene i kvalitete</h3>
+            <p>Ovo je sustav koji viđate na 90% obiteljskih kuća. Sastoji se od izolacijskih ploča (kamena vuna ili
+                stiropor) koje se lijepe direktno na zid, armiraju mrežicom i završavaju dekorativnom žbukom.</p>
+            <ul>
+                <li><strong>Ključne prednosti:</strong> Izvrsna toplinska izolacija zimi, monolitan sustav bez prekida,
+                    brza izvedba i neograničen izbor boja.</li>
+                <li><strong>Cijena:</strong> Financijski najpovoljnija opcija ("Best Buy"). Idealno za standardne
+                    stambene objekte.</li>
+            </ul>
+
+            <h3>2. Ventilirana fasada – "Mercedes" među fasadama</h3>
+            <p>Ovaj sustav se smatra premium rješenjem. Ključna razlika je u <strong>zračnom sloju</strong> između
+                izolacije i završne obloge (HPL, vlaknocement, aluminij).</p>
+            <ul>
+                <li><strong>Ključne prednosti:</strong>
+                    <ul>
+                        <li><strong>Ljetni komfor:</strong> Efekt dimnjaka odvodi vrućinu, unutrašnjost ostaje hladna
+                            bez klime.</li>
+                        <li><strong>Zdravlje objekta:</strong> Kontinuirano provjetravanje sprječava vlagu i plijesan.
+                        </li>
+                        <li><strong>Trajnost:</strong> Završne ploče su otporne na ekstremne vremenske uvjete i udarce.
+                        </li>
+                    </ul>
+                </li>
+                <li><strong>Cijena:</strong> Viša početna investicija, ali nula troškova održavanja idućih 50 godina.
+                </li>
+            </ul>
+
+            <h3>Zaključak</h3>
+            <p>Planirate fasadu? Ključno je odabrati sustav koji odgovara Vašim dugoročnim ciljevima i budžetu. 2LMF PRO
+                tim stoji Vam na raspolaganju za stručno savjetovanje i preciznu kalkulaciju materijala.</p>
+        </div>
+    </div>
+
+    <footer class="seo-footer">
+        <p class="hashtags">
+            #ventiliranefasade #fasada #hpl #vlaknocement #aluminij #podkonstrukcija #termo #termoizolacija
+            #najpovoljnije #beznaknade #freehosting #freehostingzauvijek #vrhunskakvaliteta #webshop #freewebshop
+            #sharpshark #sharpsharkdigital #besplatno #besplatniwebshop #3dpanel #2dpanel #panelograda #konfigurator
+            #fiskalizacija #rezervacijasmještaja #channelmanager #webdesign #SEO #konfiguratorograda
+            #najpovoljnijacijena #top #hidro #hidroizolacija #XPS #stirodur #TPO #PVC #bitumen #bitumenskaljepenka
+            #ljepenka #arhitektura #kalkulator #kalkulatorograda #kalkulatorfasada #građevinskikalkulator
+            #projektiranje #poliuretanPU #aluminijskaizolacija #zvučnaizolacija #osb #EPS #stiropor #bentonit
+            #polimercement #vuna #kamenavuna #konfiguratorograda #blog #manjenaknade #vasezauvijek
+            #digitalnadominacija #webdizajn #customsoftware #pametnikalkulator #izvedbeniprojekt #usteda
+            #googleads #marketing #2lmfpro #arhitektonskistudio #gradnja2026
+        </p>
+    </footer>
+
+    <div class="copyright">
+        &copy; 2026. 2LMF <span style="color:var(--accent-orange)">PRO</span> j.d.o.o. ZAGREB, HRVATSKA
+    </div>
+</body>
+
+</html>

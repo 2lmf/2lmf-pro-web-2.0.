@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="hr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kamena vuna vs. stiropor EPS | 2LMF PRO Blog</title>
+    <meta name="description"
+        content="Saznajte zašto struka uvijek bira kamenu vunu ispred stiropora. Usporedba protupožarnosti, paropropusnosti i zvučne izolacije.">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Outfit:wght@300;400;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-dark: #020205;
+            --accent-orange: #E67E22;
+            --accent-cyan: #00F2FF;
+            --line-color: rgba(255, 255, 255, 0.1);
+            --card-bg: rgba(255, 255, 255, 0.03);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: white;
+            font-family: 'Outfit', sans-serif;
+            line-height: 1.6;
+            padding-top: 100px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 40px;
+        }
+
+        /* --- NAVIGATION --- */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 20px 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(2, 2, 5, 0.95);
+            backdrop-filter: blur(30px);
+            z-index: 2000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .nav-logos {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 5px;
+        }
+
+        .logos-row {
+            display: flex;
+            align-items: center;
+            gap: 50px;
+        }
+
+        .branding {
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .lmf-brand {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            color: #eee;
+            font-size: 1.25rem;
+            letter-spacing: 3px;
+        }
+
+        .lmf-brand span {
+            color: var(--accent-orange);
+        }
+
+        .tagline {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.6rem;
+            letter-spacing: 5px;
+            font-weight: 900;
+        }
+
+        .tagline .arch {
+            color: var(--accent-orange);
+        }
+
+        .tagline .code {
+            color: var(--accent-cyan);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            color: var(--accent-orange);
+            text-decoration: none;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            padding: 5px 15px;
+            text-transform: uppercase;
+        }
+
+        /* --- ARTICLE STYLE --- */
+        .article-header {
+            padding: 60px 0;
+            border-bottom: 1px solid var(--line-color);
+            margin-bottom: 60px;
+        }
+
+        .label {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--accent-orange);
+            font-size: 0.8rem;
+            letter-spacing: 4px;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3rem;
+            line-height: 1.2;
+            margin-bottom: 20px;
+        }
+
+        .meta {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.7rem;
+            color: #666;
+            letter-spacing: 2px;
+        }
+
+        .content {
+            font-size: 1.1rem;
+            color: #ccc;
+        }
+
+        .content h2,
+        .content h3 {
+            font-family: 'Orbitron', sans-serif;
+            color: white;
+            margin: 40px 0 20px;
+        }
+
+        .content p {
+            margin-bottom: 25px;
+        }
+
+        .content ul {
+            margin-bottom: 25px;
+            padding-left: 20px;
+        }
+
+        .content li {
+            margin-bottom: 10px;
+        }
+
+        .content strong {
+            color: var(--accent-orange);
+        }
+
+        .featured-img {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+            border: 1px solid var(--line-color);
+            margin-bottom: 40px;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 40px 0;
+            background: var(--card-bg);
+            border: 1px solid var(--line-color);
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 15px;
+            text-align: left;
+            border: 1px solid var(--line-color);
+        }
+
+        .comparison-table th {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.8rem;
+            color: var(--accent-orange);
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--accent-orange);
+            text-decoration: none;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.8rem;
+            margin-bottom: 40px;
+            transition: gap 0.3s;
+        }
+
+        .back-link:hover {
+            gap: 15px;
+        }
+
+        /* --- FOOTER --- */
+        .seo-footer {
+            padding: 60px 0;
+            text-align: center;
+            border-top: 1px solid var(--line-color);
+            margin-top: 100px;
+        }
+
+        .hashtags {
+            font-size: 0.65rem;
+            font-style: italic;
+            opacity: 0.3;
+            line-height: 1.8;
+            color: #aaa;
+            letter-spacing: 1px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .copyright {
+            background: #000;
+            color: #fff;
+            text-align: center;
+            padding: 30px 0;
+            font-weight: 900;
+            font-family: 'Orbitron';
+            font-size: 0.75rem;
+            letter-spacing: 3px;
+            border-top: 1px solid rgba(255, 255, 255, 0.03);
+        }
+    </style>
+</head>
+
+<body>
+    <nav>
+        <div class="nav-logos">
+            <div class="logos-row">
+                <a href="../index.html" class="branding">
+                    <div class="lmf-brand">2LMF <span>PRO</span></div>
+                </a>
+            </div>
+            <div class="tagline"><span class="arch">ARCHITECTURAL</span> <span class="code">CODE</span></div>
+        </div>
+        <div class="nav-links">
+            <a href="../index.html">POČETNA</a>
+            <a href="../blog_hub.html">ZNANJE</a>
+            <a href="../index.html#kontakt">KONTAKT</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <a href="../blog_hub.html" class="back-link"><i class="fas fa-arrow-left"></i> POVRATAK NA HUB</a>
+
+        <header class="article-header">
+            <span class="label">INSULATION GUIDE</span>
+            <h1>Kamena vuna vs. stiropor EPS: Zašto struka uvijek bira vunu?</h1>
+            <div class="meta">OBJAVLJENO: 22. SIJEČANJ 2026. | AUTOR: 2LMF PRO</div>
+        </header>
+
+        <div class="content">
+            <img src="https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=1200&q=80"
+                alt="Insulation Materials" class="featured-img">
+
+            <p>Kada se krene u energetsku obnovu ili gradnju kuće, jedno od najčešćih pitanja investitora je:
+                <em>"Hoćemo li staviti stiropor EPS ili kamenu vunu?"</em></p>
+
+            <p>Činjenica je da je stiropor u startu jeftiniji materijal. No, fasada se ne radi za jednu ili dvije
+                sezone; ona se radi jednom u 30 godina. Kada taj trošak podijelite na desetljeća korištenja, razlika u
+                cijeni postaje zanemariva, a razlika u kvaliteti života – ogromna.</p>
+
+            <p>U 2LMF PRO uvijek savjetujemo klijentima da gledaju dugoročno. Evo 3 ključna razloga zašto je kamena vuna
+                superioran izbor za vaš dom.</p>
+
+            <h3>1. Sigurnost na prvom mjestu: Vuna ne gori!</h3>
+            <p>Ovo je argument broj jedan. Kamena vuna spada u <strong>klasu negorivosti A1</strong>. Ona se proizvodi
+                od vulkanskih stijena (bazalta) i tali na temperaturama iznad 1000°C.</p>
+            <p>U slučaju požara, stiropor se topi i može ispuštati dim, dok kamena vuna djeluje kao protupožarna
+                barijera koja sprječava širenje vatre. Kada obučete kuću u vunu, doslovno ste joj navukli vatrogasno
+                odijelo.</p>
+
+            <h3>2. "Kuća mora disati" (Paropropusnost)</h3>
+            <p>Često čujete izraz da kuća mora "disati". To ne znači da vjetar puše kroz zidove, već da vlaga iz
+                unutrašnjosti može izaći van.</p>
+            <ul>
+                <li><strong>Stiropor EPS</strong> je paronepropustan. On zatvara kuću slično kao plastična vrećica. Ako
+                    ventilacija nije savršena, ta vlaga ostaje unutra i stvara idealne uvjete za gljivice i plijesan.
+                </li>
+                <li><strong>Kamena vuna</strong> je visoko paropropusna. Ona dopušta vlagi da prođe kroz zid i izađe
+                    van, čime se drastično smanjuje rizik od kondenzacije.</li>
+            </ul>
+
+            <h3>3. Zvučna izolacija i trajnost</h3>
+            <p>Stiropor je vrlo lagan materijal i loš zvučni izolator. Kamena vuna je gusta, vlaknasta i teška. Ona
+                fizički "upija" zvučne valove, stvarajući oazu mira u vašem domu.</p>
+
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Karakteristika</th>
+                        <th>Stiropor EPS</th>
+                        <th>Kamena Vuna</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Protupožarnost</td>
+                        <td>Gori (E klasa)</td>
+                        <td><strong>Negoriva (A1 klasa)</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Paropropusnost</td>
+                        <td>Niska</td>
+                        <td><strong>Visoka (Zid diše)</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Zvučna izolacija</td>
+                        <td>Slaba</td>
+                        <td><strong>Izvrsna</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Zaključak</h3>
+            <p>Fasada od kamene vune je inicijalno skuplja investicija, ali nudi sigurnost, zdraviju mikroklimu i mir.
+                Ako gradite kuću za sebe i svoju obitelj, kamena vuna je jedini beskompromisan izbor.</p>
+        </div>
+    </div>
+
+    <footer class="seo-footer">
+        <p class="hashtags">
+            #ventiliranefasade #fasada #hpl #vlaknocement #aluminij #podkonstrukcija #termo #termoizolacija
+            #najpovoljnije #beznaknade #freehosting #freehostingzauvijek #vrhunskakvaliteta #webshop #freewebshop
+            #sharpshark #sharpsharkdigital #besplatno #besplatniwebshop #3dpanel #2dpanel #panelograda #konfigurator
+            #fiskalizacija #rezervacijasmještaja #channelmanager #webdesign #SEO #konfiguratorograda
+            #najpovoljnijacijena #top #hidro #hidroizolacija #XPS #stirodur #TPO #PVC #bitumen #bitumenskaljepenka
+            #ljepenka #arhitektura #kalkulator #kalkulatorograda #kalkulatorfasada #građevinskikalkulator
+            #projektiranje #poliuretanPU #aluminijskaizolacija #zvučnaizolacija #osb #EPS #stiropor #bentonit
+            #polimercement #vuna #kamenavuna #konfiguratorograda #blog #manjenaknade #vasezauvijek
+            #digitalnadominacija #webdizajn #customsoftware #pametnikalkulator #izvedbeniprojekt #usteda
+            #googleads #marketing #2lmfpro #arhitektonskistudio #gradnja2026
+        </p>
+    </footer>
+
+    <div class="copyright">
+        &copy; 2026. 2LMF <span style="color:var(--accent-orange)">PRO</span> j.d.o.o. ZAGREB, HRVATSKA
+    </div>
+</body>
+
+</html>
