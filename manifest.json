@@ -1,0 +1,47 @@
+{
+    "name": "2LMF PRO Kalkulator",
+    "short_name": "2LMF",
+    "description": "Kalkulator za ograde, fasade, hidroizolaciju i izolaciju. Saznajte točnu cijenu odmah.",
+    "start_url": "/kalkulator.html",
+    "scope": "/",
+    "display": "standalone",
+    "orientation": "portrait-primary",
+    "background_color": "#010103",
+    "theme_color": "#E67E22",
+    "lang": "hr",
+    "icons": [
+        {
+            "src": "/icons/icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/icons/icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ],
+    "categories": [
+        "business",
+        "utilities"
+    ],
+    "shortcuts": [
+        {
+            "name": "Ograde",
+            "url": "/kalkulator.html#ograde",
+            "description": "Kalkulator za panel ograde"
+        },
+        {
+            "name": "Fasade",
+            "url": "/kalkulator.html#fasade",
+            "description": "Kalkulator za ETICS fasade"
+        },
+        {
+            "name": "Hidroizolacija",
+            "url": "/kalkulator.html#hidro",
+            "description": "Kalkulator za hidroizolaciju"
+        }
+    ]
+}

@@ -15,6 +15,14 @@
     <meta property="og:image" content="https://2lmf-pro.hr/assets/sharpshark_blue_large.png">
     <meta property="og:url" content="https://2lmf-pro.hr/kalkulator.html">
     <meta property="og:type" content="website">
+    <!-- PWA -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#E67E22">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="2LMF">
+    <link rel="apple-touch-icon" href="/icons/icon-192.png">
     <!-- Fonts -->
     <link
         href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Outfit:wght@300;400;600&display=swap"
@@ -2625,6 +2633,136 @@
             }
         });
     </script>
+    <!-- SHARPSHARK FOOTER -->
+    <footer style="
+        margin-top: 4rem;
+        padding: 2rem 1rem;
+        border-top: 1px solid rgba(255,255,255,0.06);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.8rem;
+        background: rgba(0,0,0,0.3);
+    ">
+        <a href="https://www.2lmf-pro.hr/digitalna_dominacija.html" target="_blank" style="
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            opacity: 0.7;
+            transition: opacity 0.3s;
+        " onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'">
+            <img src="assets/sharpshark_real_logo.png" alt="SharpShark Digital"
+                style="height: 36px; width: auto; filter: drop-shadow(0 0 8px rgba(0,242,255,0.3));">
+            <span style="
+                font-family: 'Orbitron', sans-serif;
+                font-size: 0.6rem;
+                letter-spacing: 3px;
+                color: #aaa;
+                text-transform: uppercase;
+            ">Powered by <span style="color: #00F2FF;">SharpShark</span> Digital</span>
+        </a>
+        <p style="
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.65rem;
+            color: rgba(255,255,255,0.2);
+            margin: 0;
+            letter-spacing: 1px;
+        ">© 2026 2LMF PRO j.d.o.o. · Sva prava pridržana</p>
+    </footer>
+
+    <!-- PWA INSTALL PROMPT BANNER -->
+    <div id="pwa-install-banner" style="
+        display: none;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(135deg, #1a1a2e, #16213e);
+        border-top: 1px solid #E67E22;
+        padding: 1rem 1.5rem;
+        z-index: 9999;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        box-shadow: 0 -4px 20px rgba(230, 126, 34, 0.2);
+    ">
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <span style="font-size: 1.5rem;">📱</span>
+            <div>
+                <div
+                    style="font-family: 'Orbitron', sans-serif; font-size: 0.7rem; color: #E67E22; font-weight: 700; letter-spacing: 1px;">
+                    INSTALIRAJ APLIKACIJU</div>
+                <div style="font-family: 'Outfit', sans-serif; font-size: 0.75rem; color: #aaa; margin-top: 2px;">Brži
+                    pristup kalkulatoru, radi i offline</div>
+            </div>
+        </div>
+        <div style="display: flex; gap: 8px; flex-shrink: 0;">
+            <button id="pwa-install-btn" style="
+                background: #E67E22;
+                color: #000;
+                border: none;
+                padding: 0.6rem 1.2rem;
+                border-radius: 8px;
+                font-family: 'Orbitron', sans-serif;
+                font-size: 0.65rem;
+                font-weight: 900;
+                cursor: pointer;
+                letter-spacing: 1px;
+            ">INSTALIRAJ</button>
+            <button id="pwa-dismiss-btn" style="
+                background: transparent;
+                color: #666;
+                border: 1px solid #333;
+                padding: 0.6rem 0.8rem;
+                border-radius: 8px;
+                font-size: 0.8rem;
+                cursor: pointer;
+            ">✕</button>
+        </div>
+    </div>
+
+    <!-- PWA SERVICE WORKER & INSTALL LOGIC -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(reg => console.log('[PWA] SW registriran:', reg.scope))
+                    .catch(err => console.warn('[PWA] SW greška:', err));
+            });
+        }
+
+        let deferredPrompt;
+        const banner = document.getElementById('pwa-install-banner');
+        const installBtn = document.getElementById('pwa-install-btn');
+        const dismissBtn = document.getElementById('pwa-dismiss-btn');
+        const dismissed = localStorage.getItem('pwa-install-dismissed');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            if (!dismissed) banner.style.display = 'flex';
+        });
+
+        installBtn && installBtn.addEventListener('click', async () => {
+            if (!deferredPrompt) return;
+            banner.style.display = 'none';
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            deferredPrompt = null;
+        });
+
+        dismissBtn && dismissBtn.addEventListener('click', () => {
+            banner.style.display = 'none';
+            localStorage.setItem('pwa-install-dismissed', '1');
+        });
+
+        window.addEventListener('appinstalled', () => {
+            banner.style.display = 'none';
+        });
+    </script>
+
 </body>
 
 </html>
