@@ -114,6 +114,15 @@ function setupGeneratorLayout(sheet) {
 
 // --- 2. WEB APP HANDLER ---
 function doGet(e) {
+  // 1. Check for API actions (e.g., from Web Kalkulator)
+  if (e.parameter.action === 'get_prices') {
+    var pricing = getLatestPricing();
+    // Return flat prices object as expected by kalkulator.js
+    return ContentService.createTextOutput(JSON.stringify(pricing.prices))
+        .setMimeType(ContentService.MimeType.JSON);
+  }
+
+  // 2. Default: Show HTML UI for Sheet Admin
   var pricing = getLatestPricing();
   var tmpl = HtmlService.createTemplateFromFile('Index');
   tmpl.livePricing = JSON.stringify(pricing); // Inject into template
