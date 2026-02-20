@@ -1338,6 +1338,9 @@
                         Object.assign(LIVE_PRICES.prices, liveData);
                         console.log("✅ Live prices active!", liveData);
                         showLiveIndicator();
+
+                        // If we are already initialized, refresh the active module
+                        if (activeModule) loadModule(activeModule);
                     }
                 }
             } catch (e) {
@@ -1644,10 +1647,10 @@
             }
         };
 
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
             initNavigation();
             setupInquiryLogic();
-            initPriceFetch(); // Trigger live price fetch
+            await initPriceFetch(); // Wait for prices!
             const hash = window.location.hash.replace('#', '');
             const validModules = ['ograde', 'hidro', 'fasade', 'termo', 'katalog'];
             const defaultMod = validModules.includes(hash) ? hash : 'katalog';
