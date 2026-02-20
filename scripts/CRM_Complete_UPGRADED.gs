@@ -1002,20 +1002,49 @@ function showSyncInstructions() {
 }
 
 function syncPricesToWeb() {
-  var ui = SpreadsheetApp.getUi(); var SCRIPT_PROP = PropertiesService.getScriptProperties(); var token = SCRIPT_PROP.getProperty("GH_TOKEN");
-  if (!token) { ui.alert("Greška: Niste postavili GH_TOKEN."); return; }
+  var ui = SpreadsheetApp.getUi(); 
+  var SCRIPT_PROP = PropertiesService.getScriptProperties(); 
+  var token = SCRIPT_PROP.getProperty("GH_TOKEN");
+  
+  if (!token) { 
+    ui.alert("Greška: Niste postavili GH_TOKEN u Script Properties."); 
+    return; 
+  }
+  
+  // Configizable via Script Properties, with defaults
+  var owner = SCRIPT_PROP.getProperty("GH_OWNER") || "2lmf";
+  var repo = SCRIPT_PROP.getProperty("GH_REPO") || "2lmf-pro-web-2.0.";
+  var path = SCRIPT_PROP.getProperty("GH_PATH") || "scripts/items_data.js";
+  var branch = SCRIPT_PROP.getProperty("GH_BRANCH") || "master";
+
   try {
-    var ss = SpreadsheetApp.getActiveSpreadsheet(); var sheet = ss.getSheetByName("CJENIK");
-    var data = sheet.getDataRange().getValues(); var priceMap = {};
-    for (var i = 1; i < data.length; i++) { var sku = String(data[i][0]).trim(); if (sku) priceMap[sku] = data[i][4]; }
-    var owner = "2lmf"; var repo = "2lmf-pro-web-2.0"; var path = "scripts/items_data.js"; var branch = "master";
+    var ss = SpreadsheetApp.getActiveSpreadsheet(); 
+    var sheet = ss.getSheetByName("CJENIK");
+    if (!sheet) { ui.alert("Greška: List 'CJENIK' nije pronađen."); return; }
+    
+    var data = sheet.getDataRange().getValues(); 
+    var priceMap = {};
+    for (var i = 1; i < data.length; i++) { 
+      var sku = String(data[i][0]).trim(); 
+      if (sku) priceMap[sku] = data[i][4]; 
+    }
+    
     var fileData = getGitHubFile(owner, repo, path, branch, token);
     var currentContent = Utilities.newBlob(Utilities.base64Decode(fileData.content)).getDataAsString();
     var updatedContent = updatePricesInJS(currentContent, priceMap);
-    if (updatedContent === currentContent) { ui.alert("Cijene već usklađene."); return; }
-    updateGitHubFile(owner, repo, path, branch, updatedContent, fileData.sha, "Sync from Sheet", token);
-    ui.alert("✅ USPJEH! Cijene ažurirane na webu.");
-  } catch (e) { ui.alert("Greška: " + e.message); }
+    
+    if (updatedContent === currentContent) { 
+      ui.alert("Cijene su već usklađene s webom."); 
+      return; 
+    }
+    
+    updateGitHubFile(owner, repo, path, branch, updatedContent, fileData.sha, "Sync prices from Sheet", token);
+    ui.alert("✅ USPJEH! Cijene su ažurirane na GitHubu (" + branch + ").");
+    
+  } catch (e) { 
+    ui.alert("Greška pri sinkronizaciji:\n" + e.message + "\n\nProvjerite GH_TOKEN i putanju: " + owner + "/" + repo + "/" + path); 
+    console.error("Sync Error: " + e.message);
+  }
 }
 
 function updatePricesInJS(content, priceMap) {
@@ -1036,8 +1065,23 @@ function updatePricesInJS(content, priceMap) {
 
 function getGitHubFile(owner, repo, path, branch, token) {
   var url = "https://api.github.com/repos/" + owner + "/" + repo + "/contents/" + path + "?ref=" + branch;
-  var res = UrlFetchApp.fetch(url, { "headers": { "Authorization": "token " + token } });
-  return JSON.parse(res.getContentText());
+  try {
+    var res = UrlFetchApp.fetch(url, { 
+      "headers": { "Authorization": "token " + token },
+      "muteHttpExceptions": true 
+    });
+    
+    var code = res.getResponseCode();
+    if (code !== 200) {
+      var err = JSON.parse(res.getContentText());
+      throw new Error("GitHub API Error (" + code + "): " + (err.message || "Nepoznata greška") + 
+                      "\nProvjerite putanju: " + owner + "/" + repo + "/" + path + " na grani '" + branch + "'");
+    }
+    
+    return JSON.parse(res.getContentText());
+  } catch (e) {
+    throw e;
+  }
 }
 
 function updateGitHubFile(owner, repo, path, branch, content, sha, message, token) {
