@@ -14,7 +14,7 @@ const prices = {
         8: { price: 10.125, sku: "2006", name: "Ravatherm XPS: 8cm" },
         10: { price: 12.65625, sku: "2007", name: "Ravatherm XPS: 10cm" },
         12: { price: 15.187500000000002, sku: "2008", name: "Ravatherm XPS: 12cm" },
-        15: { price: 20.503125, sku: "2009", name: "Ravatherm XPS: 15cm" }
+        15: { price: 19.743750000000002, sku: "2009", name: "Ravatherm XPS: 15cm" }
     },
 
     // --- KAMENA VUNA ---
