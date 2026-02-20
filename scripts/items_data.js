@@ -6,15 +6,15 @@
 const prices = {
     // --- TERMOIZOLACIJA (XPS) ---
     xps: {
-        2: { price: 2.5312500000000004, sku: "2001", name: "Ravatherm XPS, 2cm" },
-        3: { price: 3.515625, sku: "2002", name: "Ravatherm XPS: 3cm" },
-        4: { price: 4.6875, sku: "2003", name: "Ravatherm XPS: 4cm" },
-        5: { price: 5.859375, sku: "2004", name: "Ravatherm XPS: 5cm" },
-        6: { price: 7.03125, sku: "2005", name: "Ravatherm XPS: 6cm" },
-        8: { price: 9.375, sku: "2006", name: "Ravatherm XPS: 8cm" },
-        10: { price: 11.71875, sku: "2007", name: "Ravatherm XPS: 10cm" },
-        12: { price: 14.0625, sku: "2008", name: "Ravatherm XPS: 12cm" },
-        15: { price: 18.984375, sku: "2009", name: "Ravatherm XPS: 15cm" }
+        2: { price: 2.7337500000000006, sku: "2001", name: "Ravatherm XPS, 2cm" },
+        3: { price: 3.7968750000000004, sku: "2002", name: "Ravatherm XPS: 3cm" },
+        4: { price: 5.0625, sku: "2003", name: "Ravatherm XPS: 4cm" },
+        5: { price: 6.328125, sku: "2004", name: "Ravatherm XPS: 5cm" },
+        6: { price: 7.593750000000001, sku: "2005", name: "Ravatherm XPS: 6cm" },
+        8: { price: 10.125, sku: "2006", name: "Ravatherm XPS: 8cm" },
+        10: { price: 12.65625, sku: "2007", name: "Ravatherm XPS: 10cm" },
+        12: { price: 15.187500000000002, sku: "2008", name: "Ravatherm XPS: 12cm" },
+        15: { price: 20.503125, sku: "2009", name: "Ravatherm XPS: 15cm" }
     },
 
     // --- KAMENA VUNA ---
@@ -146,10 +146,10 @@ const prices = {
         tpo_lim: { price: 42.25, sku: "2126", name: "TPO LIM (2 X 1m)" },
         pvc_lim: { price: 39, sku: "2127", name: "PVC LIM (2 X 1m)" },
         bentoshield: { price: 6.90625, sku: "2116", name: "Bentoshiled MAX5 (bentonit, bentonitna traka)" },
-        osb_12: { price: 5.94, sku: "3010", name: "OSB plo?e 12mm (2500 x 675mm)" },
-        osb_15: { price: 7.425, sku: "3007", name: "OSB plo?e 15mm (2500 x 675mm)" },
-        osb_18: { price: 8.91, sku: "3008", name: "OSB plo?e 18mm (2500 x 675mm)" },
-        osb_22: { price: 10.889999999999999, sku: "3009", name: "OSB plo?e 22mm (2500 x 675mm)" }
+        osb_12: { price: 5.909999999999999, sku: "3010", name: "OSB plo?e 12mm (2500 x 675mm)" },
+        osb_15: { price: 7.38, sku: "3007", name: "OSB plo?e 15mm (2500 x 675mm)" },
+        osb_18: { price: 8.85, sku: "3008", name: "OSB plo?e 18mm (2500 x 675mm)" },
+        osb_22: { price: 10.83, sku: "3009", name: "OSB plo?e 22mm (2500 x 675mm)" }
     },
     new_products: {
         reflectix: { price: 3.5875, sku: "3011", name: "SEALED AIR REFLECTIX? (alu izolacija)" },
