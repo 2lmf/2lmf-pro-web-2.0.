@@ -33,15 +33,22 @@ async function initPriceFetch() {
 
     try {
         console.log("⏳ Fetching live prices...");
-        const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=get_prices`);
+        // Add cache buster to URL
+        const cacheBuster = `&t=${Date.now()}`;
+        const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=get_prices${cacheBuster}`);
+        
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        
         const livePrices = await response.json();
 
         if (livePrices.error) throw new Error(livePrices.error);
-        if (Object.keys(livePrices).length === 0) throw new Error("Empty price list");
+        
+        const priceCount = Object.keys(livePrices).length;
+        if (priceCount === 0) throw new Error("Empty price list received");
 
         // Sync Logic: Map SKU to our internal structure
         updatePricesRecursive(prices, livePrices);
-        console.log("✅ Live prices active!", livePrices);
+        console.log(`✅ Live prices active! (${priceCount} items updated)`);
 
         // Show subtle success indicator
         const ind = document.createElement("div");
