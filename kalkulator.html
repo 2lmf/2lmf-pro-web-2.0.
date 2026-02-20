@@ -1335,7 +1335,18 @@
 
                 if (liveData && Object.keys(liveData).length > 0) {
                     if (LIVE_PRICES && LIVE_PRICES.prices) {
+                        // 1. Update the price lookup map
                         Object.assign(LIVE_PRICES.prices, liveData);
+
+                        // 2. Update prices inside the catalog array
+                        if (LIVE_PRICES.catalog && LIVE_PRICES.catalog.length > 0) {
+                            LIVE_PRICES.catalog.forEach(item => {
+                                if (liveData[item.sku] !== undefined) {
+                                    item.price = liveData[item.sku];
+                                }
+                            });
+                        }
+
                         console.log("✅ Live prices active!", liveData);
                         showLiveIndicator();
 
