@@ -1322,7 +1322,35 @@
 
     <script>
         // --- 1. CORE DATA & PRICING ---
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx4TQ6cFNr8X-fNRHE0Ai571pAioDeny_mSSrTVQm3OHbTKOhfIEDiKDFM2shZ5zDFLrA/exec";
+
         let activeModule = 'ograde', systemItems = [], manualItems = [], isAuthorized = false;
+
+        async function initPriceFetch() {
+            if (!GOOGLE_SCRIPT_URL) return;
+            try {
+                console.log("⏳ Fetching live prices...");
+                const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=get_prices&t=${Date.now()}`);
+                const liveData = await response.json();
+
+                if (liveData && Object.keys(liveData).length > 0) {
+                    if (LIVE_PRICES && LIVE_PRICES.prices) {
+                        Object.assign(LIVE_PRICES.prices, liveData);
+                        console.log("✅ Live prices active!", liveData);
+                        showLiveIndicator();
+                    }
+                }
+            } catch (e) {
+                console.error("❌ Live fetch failed:", e);
+            }
+        }
+
+        function showLiveIndicator() {
+            const ind = document.createElement("div");
+            ind.style = "position:fixed; bottom:20px; right:20px; background:#27ae60; color:white; padding:8px 15px; border-radius:30px; font-family:'Orbitron'; font-size:0.7rem; font-weight:bold; z-index:9999; box-shadow:0 0 15px rgba(39,174,96,0.4); display:flex; align-items:center; gap:8px; animation: fadeIn 0.5s ease forwards;";
+            ind.innerHTML = '<i class="fas fa-bolt"></i> ⚡ Live Cijene';
+            document.body.appendChild(ind);
+        }
 
         window.hydroState = {
             config: { system: "membrane-roof", area: 50, material: "tpo", thickness: "1.5", geoWeight: "200", xps: 5 },
@@ -1619,6 +1647,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             initNavigation();
             setupInquiryLogic();
+            initPriceFetch(); // Trigger live price fetch
             const hash = window.location.hash.replace('#', '');
             const validModules = ['ograde', 'hidro', 'fasade', 'termo', 'katalog'];
             const defaultMod = validModules.includes(hash) ? hash : 'katalog';
