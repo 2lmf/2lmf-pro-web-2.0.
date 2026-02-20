@@ -1,0 +1,1352 @@
+<!DOCTYPE html>
+<html lang="hr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RentShark vodič | 2LMF PRO & SharpShark Digital</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Outfit:wght@300;400;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --cyan: #00C2E0;
+            --cyan-dark: #0096B0;
+            --orange: #FF6B2B;
+            --orange-light: #FF8C54;
+            --dark: #0A0F1E;
+            --dark2: #111827;
+            --text: #1E293B;
+            --white: #FFFFFF;
+            --border: #E2E8F0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: #E5E7EB;
+        }
+
+        .page {
+            width: 210mm;
+            min-height: 297mm;
+            margin: 0 auto 20px;
+            background: white;
+            position: relative;
+            overflow: hidden;
+            page-break-after: always;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ====== NASLOVNICA ====== */
+        .cover {
+            background: var(--dark);
+            min-height: 297mm;
+        }
+
+        .cover-bg {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at 70% 30%, rgba(0, 194, 224, 0.15) 0%, transparent 60%),
+                radial-gradient(ellipse at 20% 80%, rgba(255, 107, 43, 0.12) 0%, transparent 60%);
+        }
+
+        .cover-grid {
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(0, 194, 224, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 194, 224, 0.05) 1px, transparent 1px);
+            background-size: 20mm 20mm;
+        }
+
+        .cover-content {
+            position: relative;
+            z-index: 2;
+            padding: 16mm 18mm;
+            display: flex;
+            flex-direction: column;
+            min-height: 297mm;
+        }
+
+        /* ====== RECONSTRUCTED LOGO COMPONENT ====== */
+        .brand-logo {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 5px;
+        }
+
+        .brand-logo.center {
+            align-items: center;
+        }
+
+        .logo-top-row {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .logo-text-2lmf {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 42px;
+            font-weight: 900;
+            letter-spacing: 1px;
+            line-height: 1;
+        }
+
+        .logo-text-2lmf .w {
+            color: #ffffff;
+        }
+
+        .logo-text-2lmf .o {
+            color: var(--orange);
+        }
+
+        .logo-ss-wrapper {
+            height: 110px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-ss-wrapper img {
+            height: 110px;
+            object-fit: contain;
+        }
+
+        .logo-bottom-row {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 11px;
+            letter-spacing: 11px;
+            color: white;
+            text-transform: uppercase;
+            margin-top: 8px;
+            padding-left: 4px;
+            font-weight: 700;
+        }
+
+        .logo-bottom-row .arch {
+            color: var(--orange);
+        }
+
+        .logo-bottom-row .code {
+            color: var(--cyan);
+        }
+
+        .f-w {
+            color: var(--white) !important;
+            opacity: 1 !important;
+        }
+
+        .f-o {
+            color: var(--orange) !important;
+            opacity: 1 !important;
+        }
+
+        .f-c {
+            color: var(--cyan) !important;
+            opacity: 1 !important;
+        }
+
+        .cover-logo {
+            margin-bottom: auto;
+        }
+
+        .cover-badge {
+            display: inline-block;
+            background: rgba(0, 194, 224, 0.15);
+            border: 1px solid rgba(0, 194, 224, 0.4);
+            color: var(--cyan);
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: 11px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+            width: fit-content;
+        }
+
+        .cover-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 30px;
+            font-weight: 900;
+            color: var(--white);
+            line-height: 1.2;
+            margin-bottom: 10px;
+        }
+
+        .cover-title span {
+            color: var(--orange);
+        }
+
+        .cover-subtitle {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.6);
+            line-height: 1.7;
+            margin-bottom: 30px;
+            max-width: 130mm;
+        }
+
+        .cover-stat-row {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .cover-stat {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 194, 224, 0.2);
+            border-radius: 12px;
+            padding: 14px 18px;
+            flex: 1;
+        }
+
+        .cover-stat .num {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 26px;
+            font-weight: 900;
+            color: var(--cyan);
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+
+        .cover-stat .num span {
+            color: var(--orange);
+        }
+
+        .cover-stat .label {
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .cover-cta {
+            background: linear-gradient(135deg, var(--orange), var(--orange-light));
+            color: var(--white);
+            padding: 14px 28px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 13px;
+            width: fit-content;
+            letter-spacing: 1px;
+        }
+
+        .cover-footer {
+            position: absolute;
+            bottom: 10mm;
+            left: 18mm;
+            right: 18mm;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 8px;
+        }
+
+        .cover-footer span {
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        .cover-footer .cf-year {
+            color: var(--cyan);
+        }
+
+        /* ====== HEADER UNUTARNJIH STRANICA ====== */
+        .page-header {
+            background: linear-gradient(135deg, var(--dark), var(--dark2));
+            padding: 5mm 18mm;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+            height: 140px;
+        }
+
+        /* SS logo u headeru — Samo morski pas (110px) */
+        .ph-logo {
+            height: 110px;
+            object-fit: contain;
+        }
+
+        .ph-page-num {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .ph-page-num span {
+            color: var(--cyan);
+            font-weight: 700;
+        }
+
+        .page-body {
+            padding: 8mm 18mm 10mm;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ====== ELEMENTI ====== */
+        .section-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: linear-gradient(135deg, rgba(0, 194, 224, 0.1), rgba(255, 107, 43, 0.05));
+            border: 1px solid rgba(0, 194, 224, 0.25);
+            color: var(--cyan-dark);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            width: fit-content;
+        }
+
+        .section-badge .icon {
+            font-size: 12px;
+        }
+
+        .section-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 22px;
+            font-weight: 900;
+            color: var(--dark);
+            line-height: 1.2;
+            margin-bottom: 8px;
+        }
+
+        .section-title span {
+            color: var(--orange);
+        }
+
+        .section-lead {
+            font-size: 13px;
+            color: #475569;
+            line-height: 1.7;
+            margin-bottom: 18px;
+            max-width: 160mm;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+
+        .card {
+            background: var(--light);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 14px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--cyan), var(--orange));
+        }
+
+        .card .card-icon {
+            font-size: 22px;
+            margin-bottom: 6px;
+        }
+
+        .card .card-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 4px;
+        }
+
+        .card .card-text {
+            font-size: 11px;
+            color: #64748B;
+            line-height: 1.5;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, var(--dark), var(--dark2));
+            border-radius: 14px;
+            padding: 16px 20px;
+            color: white;
+            margin: 14px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .highlight-box::after {
+            content: '';
+            position: absolute;
+            right: -20px;
+            top: -20px;
+            width: 80px;
+            height: 80px;
+            background: radial-gradient(circle, rgba(0, 194, 224, 0.3) 0%, transparent 70%);
+        }
+
+        .highlight-box .hb-label {
+            font-size: 10px;
+            color: var(--cyan);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 6px;
+            font-weight: 700;
+        }
+
+        .highlight-box .hb-text {
+            font-size: 13px;
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.85);
+        }
+
+        .highlight-box .hb-text em {
+            color: var(--orange);
+            font-style: normal;
+            font-weight: 700;
+        }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin: 14px 0;
+        }
+
+        .stat-box {
+            text-align: center;
+            padding: 14px 10px;
+            border-radius: 12px;
+            background: white;
+            border: 1px solid var(--border);
+        }
+
+        .stat-box .sb-num {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 26px;
+            font-weight: 900;
+            color: var(--cyan);
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+
+        .stat-box .sb-num.orange {
+            color: var(--orange);
+        }
+
+        .stat-box .sb-label {
+            font-size: 10px;
+            color: #94A3B8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .step-list {
+            display: flex;
+            flex-direction: column;
+            gap: 11px;
+            margin: 10px 0;
+        }
+
+        .step-item {
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+        }
+
+        .step-num {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--cyan), var(--cyan-dark));
+            color: white;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 12px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .step-item:nth-child(even) .step-num {
+            background: linear-gradient(135deg, var(--orange), var(--orange-light));
+        }
+
+        .step-content .step-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 2px;
+        }
+
+        .step-content .step-text {
+            font-size: 11px;
+            color: #64748B;
+            line-height: 1.5;
+        }
+
+        .roi-visual {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin: 14px 0;
+        }
+
+        .roi-before {
+            background: #FFF1F2;
+            border: 1px solid #FDA4AF;
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .roi-after {
+            background: #F0FDF4;
+            border: 1px solid #86EFAC;
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .roi-before .roi-label {
+            color: #BE123C;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .roi-after .roi-label {
+            color: #15803D;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .roi-num {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 26px;
+            font-weight: 900;
+            margin-bottom: 4px;
+        }
+
+        .roi-before .roi-num {
+            color: #BE123C;
+        }
+
+        .roi-after .roi-num {
+            color: #15803D;
+        }
+
+        .roi-before .roi-desc,
+        .roi-after .roi-desc {
+            font-size: 11px;
+            color: #64748B;
+            line-height: 1.5;
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin: 14px 0;
+        }
+
+        .price-card {
+            border-radius: 14px;
+            padding: 18px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .price-card.standard {
+            background: white;
+            border: 2px solid var(--border);
+        }
+
+        .price-card.premium {
+            background: linear-gradient(135deg, var(--dark), var(--dark2));
+            border: 2px solid var(--cyan);
+            color: white;
+        }
+
+        .price-card .pc-badge {
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--cyan);
+            margin-bottom: 6px;
+        }
+
+        .price-card.standard .pc-badge {
+            color: var(--orange);
+        }
+
+        .price-card .pc-name {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .price-card.premium .pc-name {
+            color: white;
+        }
+
+        .price-card.standard .pc-name {
+            color: var(--dark);
+        }
+
+        .price-card .pc-price {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 30px;
+            font-weight: 900;
+            color: var(--orange);
+            margin-bottom: 4px;
+        }
+
+        .price-card .pc-period {
+            font-size: 11px;
+            color: #94A3B8;
+            margin-bottom: 14px;
+        }
+
+        .price-card .pc-features {
+            list-style: none;
+        }
+
+        .price-card .pc-features li {
+            font-size: 11px;
+            padding: 4px 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .price-card.premium .pc-features li {
+            border-bottom-color: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .price-card .pc-features li::before {
+            content: '✓';
+            color: var(--cyan);
+            font-weight: 700;
+            font-size: 12px;
+        }
+
+        .flow-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin: 14px 0;
+            flex-wrap: wrap;
+        }
+
+        .flow-item {
+            background: var(--light);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 10px 8px;
+            text-align: center;
+            min-width: 34mm;
+            flex: 1;
+        }
+
+        .flow-item .fi-icon {
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+
+        .flow-item .fi-text {
+            font-size: 9px;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .flow-item.highlight {
+            background: var(--dark);
+            border-color: var(--cyan);
+        }
+
+        .flow-item.highlight .fi-text {
+            color: white;
+        }
+
+        .flow-arrow {
+            font-size: 18px;
+            color: var(--cyan);
+            flex-shrink: 0;
+        }
+
+        .cta-page {
+            background: var(--dark);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20mm;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-page::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at center, rgba(0, 194, 224, 0.15) 0%, transparent 70%);
+        }
+
+        .cta-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Logo na CTA stranici */
+        .cta-logo {
+            margin-bottom: 20px;
+        }
+
+        .cta-logo img {
+            height: 110px;
+            object-fit: contain;
+        }
+
+        .cta-badge {
+            display: inline-block;
+            background: rgba(255, 107, 43, 0.2);
+            border: 1px solid rgba(255, 107, 43, 0.4);
+            color: var(--orange);
+            padding: 5px 16px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+        }
+
+        .cta-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 26px;
+            font-weight: 900;
+            color: white;
+            line-height: 1.2;
+            margin-bottom: 12px;
+        }
+
+        .cta-sub {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.6);
+            line-height: 1.7;
+            max-width: 120mm;
+            margin: 0 auto 24px;
+        }
+
+        .cta-bonus {
+            background: rgba(255, 107, 43, 0.1);
+            border: 1px solid rgba(255, 107, 43, 0.3);
+            border-radius: 12px;
+            padding: 14px 20px;
+            margin-bottom: 24px;
+        }
+
+        .cta-bonus .bonus-label {
+            font-size: 10px;
+            color: var(--orange);
+            font-weight: 700;
+            letter-spacing: 2px;
+            margin-bottom: 4px;
+        }
+
+        .cta-bonus .bonus-text {
+            font-size: 13px;
+            color: white;
+        }
+
+        .cta-contacts {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+        }
+
+        .cta-contact {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 194, 224, 0.2);
+            border-radius: 12px;
+            padding: 14px;
+            color: white;
+        }
+
+        .cta-contact .cc-icon {
+            font-size: 22px;
+            margin-bottom: 6px;
+        }
+
+        .cta-contact .cc-label {
+            font-size: 9px;
+            color: var(--cyan);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+
+        .cta-contact .cc-value {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .page-footer {
+            background: var(--dark);
+            padding: 4mm 18mm;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .page-footer span {
+            font-size: 9px;
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        .page-footer .pf-brand {
+            color: var(--cyan);
+            font-weight: 700;
+        }
+
+        @media print {
+            body {
+                background: white;
+            }
+
+            .page {
+                margin: 0;
+                box-shadow: none;
+            }
+
+            @page {
+                size: A4;
+                margin: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ===== STRANICA 1: NASLOVNICA ===== -->
+    <div class="page cover">
+        <div class="cover-bg"></div>
+        <div class="cover-grid"></div>
+        <div class="cover-content">
+            <!-- RECONSTRUCTED LOGO (2LMF PRO + SS + ARCHITECTURAL CODE) -->
+            <div class="cover-logo">
+                <div class="brand-logo center">
+                    <div class="logo-top-row">
+                        <div class="logo-text-2lmf">
+                            <span class="w">2LMF</span> <span class="o">PRO</span>
+                        </div>
+                        <div class="logo-ss-wrapper">
+                            <img src="logo_2lmf_ss.png" alt="SharpShark">
+                        </div>
+                    </div>
+                    <div class="logo-bottom-row">
+                        <span class="arch">ARCHITECTURAL</span> <span class="code">CODE</span>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: auto; padding-bottom: 28mm;">
+                <div class="cover-badge">📘 Ekskluzivni Vodič · Sezona 2025/2026</div>
+                <div class="cover-title">
+                    Kako povratiti<br>
+                    <span>15% provizije</span><br>
+                    u vlastiti džep
+                </div>
+                <div class="cover-subtitle">
+                    Strategija za iznajmljivače koji žele slobodu od Booking.coma, Airbnba i velikih portala — uz
+                    potpunu automatizaciju naplate i rezervacija.
+                </div>
+
+                <div class="cover-stat-row">
+                    <div class="cover-stat">
+                        <div class="num">0<span>%</span></div>
+                        <div class="label">Provizije na direktne rezervacije</div>
+                    </div>
+                    <div class="cover-stat">
+                        <div class="num" style="color: var(--orange);">2.500€</div>
+                        <div class="label">Prosječna godišnja ušteda</div>
+                    </div>
+                    <div class="cover-stat">
+                        <div class="num">14<span style="font-size:14px; color:rgba(255,255,255,0.4)"> dana</span></div>
+                        <div class="label">Do povrata investicije</div>
+                    </div>
+                </div>
+
+                <div class="cover-cta">🚀 RentShark — Vaš Sustav Direktnih Rezervacija</div>
+            </div>
+
+            <div class="cover-footer">
+                <span>POVJERLJIVO — Za potencijalne partnere</span>
+                <span class="cf-year"><span class="f-w">2LMF</span> <span class="f-o">PRO</span> © 2025 ·
+                    2lmf-pro.hr</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== STRANICA 2: PROBLEM ===== -->
+    <div class="page">
+        <div class="page-header">
+            <img src="logo_2lmf_ss.png" class="ph-logo" alt="SharpShark">
+            <div class="ph-page-num"><span>01</span> / 07</div>
+        </div>
+        <div class="page-body">
+            <div class="section-badge"><span class="icon">💸</span> Problem koji nitko ne računa</div>
+            <div class="section-title">Dok vi radite,<br><span>Booking.com odmara</span></div>
+            <div class="section-lead">
+                Svaki put kad gost klikne "Rezerviraj", portal uzima prosjek od 18% vašeg prihoda.
+                Zbrojite li to na godišnjoj razini — priča postaje bolna.
+            </div>
+
+            <div class="stats-row">
+                <div class="stat-box">
+                    <div class="sb-num orange">18%</div>
+                    <div class="sb-label">Ukupna naknada portala</div>
+                </div>
+                <div class="stat-box">
+                    <div class="sb-num">2.500€</div>
+                    <div class="sb-label">Gubitak @ 15.000€ prometa</div>
+                </div>
+                <div class="stat-box">
+                    <div class="sb-num orange">4.500€</div>
+                    <div class="sb-label">Gubitak @ 25.000€ prometa</div>
+                </div>
+            </div>
+
+            <div class="highlight-box">
+                <div class="hb-label">🦈 SharpShark Fact-Check</div>
+                <div class="hb-text">
+                    „Dok vi čistite, perete, dočekujete i brinete — Booking.com <em>svakog srpnja prima desetke tisuća
+                        eura</em> od iznajmljivača poput vas. Za apsolutno ništa zauzvrat."
+                </div>
+            </div>
+
+            <div class="card-grid">
+                <div class="card">
+                    <div class="card-icon">📉</div>
+                    <div class="card-title">Nema pregovaranja</div>
+                    <div class="card-text">Pravila portala mijenjaju se jednostrano. Vi prihvaćate ili odlazite.</div>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🔒</div>
+                    <div class="card-title">Vi ste ovisni</div>
+                    <div class="card-text">Bez vlastite baze gostiju, bez direktnog kontakta, bez slobode.</div>
+                </div>
+                <div class="card">
+                    <div class="card-icon">💬</div>
+                    <div class="card-title">Gosti su "njihovi"</div>
+                    <div class="card-text">Portal zadržava podatke o vašim gostima. Vi ih ne možete kontaktirati.</div>
+                </div>
+                <div class="card">
+                    <div class="card-icon">⚡</div>
+                    <div class="card-title">Postoji rješenje</div>
+                    <div class="card-text">Direktne rezervacije + automatizacija = sloboda i novac ostaje vaš.</div>
+                </div>
+            </div>
+        </div>
+        <div class="page-footer">
+            <span><span class="f-w">2LMF</span> <span class="f-o">PRO</span> & <span class="f-c">Sharp</span><span
+                    class="f-o">Shark</span> <span class="f-c">Digital</span> — RentShark vodič</span>
+            <span class="pf-brand">2lmf-pro.hr</span>
+        </div>
+    </div>
+
+    <!-- ===== STRANICA 3: ŠTO GOSTI ŽELE ===== -->
+    <div class="page">
+        <div class="page-header">
+            <img src="logo_2lmf_ss.png" class="ph-logo" alt="SharpShark">
+            <div class="ph-page-num"><span>02</span> / 07</div>
+        </div>
+        <div class="page-body">
+            <div class="section-badge"><span class="icon">💡</span> Što gosti doista žele?</div>
+            <div class="section-title">Gosti žele <span>direktno</span> — i jeftinije</div>
+            <div class="section-lead">
+                Moderna istraživanja pokazuju da 62% putnika preferira direktnu rezervaciju ako postoji opcija. Razlog?
+                Niža cijena za gosta + vaš osobni pristup umjesto bezlične platforme.
+            </div>
+
+            <div class="card-grid" style="grid-template-columns: 1fr 1fr 1fr 1fr">
+                <div class="card" style="grid-column: span 2;">
+                    <div class="card-icon">🤝</div>
+                    <div class="card-title">Direktni kontakt gradi povjerenje</div>
+                    <div class="card-text">Gost koji rezervira direktno osjeća osobni pristup. Vežu se za vas, ne za
+                        platformu. Vraćaju se godinama.</div>
+                </div>
+                <div class="card" style="grid-column: span 2;">
+                    <div class="card-icon">💰</div>
+                    <div class="card-title">Popust direktnog bookinga</div>
+                    <div class="card-text">Nudite 5-10% popusta direktnim gostima — vi svejedno zarađujete više, jer ne
+                        plaćate 18% provizije portalu.</div>
+                </div>
+            </div>
+
+            <div class="highlight-box">
+                <div class="hb-label">Zašto vlastiti brand?</div>
+                <div class="hb-text">
+                    Na portalu ste <em>"Apartman Ivan — Rovinj #2847"</em>. Na vašoj stranici ste <em>„Villa Ivan — 30
+                        godina tradicije gostoprimstva."</em><br>
+                    Brand gradi lojalnost. Lojalnost gradi prihod koji ne dijeli nitko.
+                </div>
+            </div>
+
+            <div class="stats-row">
+                <div class="stat-box">
+                    <div class="sb-num">62%</div>
+                    <div class="sb-label">Gostiju preferira direktan booking</div>
+                </div>
+                <div class="stat-box">
+                    <div class="sb-num orange">5-10%</div>
+                    <div class="sb-label">Popust koji možete dati gostu</div>
+                </div>
+                <div class="stat-box">
+                    <div class="sb-num">3x</div>
+                    <div class="sb-label">Veći repeat rate direktnih gostiju</div>
+                </div>
+            </div>
+        </div>
+        <div class="page-footer">
+            <span><span class="f-w">2LMF</span> <span class="f-o">PRO</span> & <span class="f-c">Sharp</span><span
+                    class="f-o">Shark</span> <span class="f-c">Digital</span> — RentShark vodič</span>
+            <span class="pf-brand">2lmf-pro.hr</span>
+        </div>
+    </div>
+
+    <!-- ===== STRANICA 4: RJEŠENJE ===== -->
+    <div class="page">
+        <div class="page-header">
+            <img src="logo_2lmf_ss.png" class="ph-logo" alt="SharpShark">
+            <div class="ph-page-num"><span>03</span> / 07</div>
+        </div>
+        <div class="page-body">
+            <div class="section-badge"><span class="icon">🦈</span> RentShark Tajna Formula</div>
+            <div class="section-title"><span>4 Stupa</span> Sustava koji radi dok vi spavate</div>
+            <div class="section-lead">
+                RentShark nije samo web stranica. To je kompletan sustav koji eliminira svaki ručni posao oko
+                rezervacija, naplate i komunikacije s gostima.
+            </div>
+
+            <div class="step-list">
+                <div class="step-item">
+                    <div class="step-num">1</div>
+                    <div class="step-content">
+                        <div class="step-title">🌐 Profesionalni Web — Bolji od agencijskog</div>
+                        <div class="step-text">Vaša web stranica izgleda premium. Gosti mogu odmah rezervirati,
+                            provjeriti dostupnost i platiti online — bez telefona i čekanja.</div>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-num">2</div>
+                    <div class="step-content">
+                        <div class="step-title">🔄 Channel Manager (Nobeds) — Kraj overbookinga</div>
+                        <div class="step-text">Sinkronizacija s Booking.com, Airbnb i vašim direktnim kalendarom u
+                            realnom vremenu. Nikad više dvostruke rezervacije.</div>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-num">3</div>
+                    <div class="step-content">
+                        <div class="step-title">🍳 Upsell — Prodajte doručak, bicikle, brodicu</div>
+                        <div class="step-text">Direktno kroz vaš booking kalendar nudite dodatne usluge. Gosti ih kupuju
+                            online, novac dolazi automatski.</div>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-num">4</div>
+                    <div class="step-content">
+                        <div class="step-title">🧾 Automatska Naplata i Fiskalizacija</div>
+                        <div class="step-text">WSPay/Corvus za naplatu + Solo/e-Računi za fiskalizaciju. Račun se kreira
+                            i šalje sam. Vaš jedini zadatak je osmijeh na ulazu.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="page-footer">
+            <span><span class="f-w">2LMF</span> <span class="f-o">PRO</span> & <span class="f-c">Sharp</span><span
+                    class="f-o">Shark</span> <span class="f-c">Digital</span> — RentShark vodič</span>
+            <span class="pf-brand">2lmf-pro.hr</span>
+        </div>
+    </div>
+
+    <!-- ===== STRANICA 5: AUTOMATIZACIJA ===== -->
+    <div class="page">
+        <div class="page-header">
+            <img src="logo_2lmf_ss.png" class="ph-logo" alt="SharpShark">
+            <div class="ph-page-num"><span>04</span> / 07</div>
+        </div>
+        <div class="page-body">
+            <div class="section-badge"><span class="icon">⚙️</span> Potpuna Automatizacija</div>
+            <div class="section-title">Vaš jedini zadatak:<br><span>Osmijeh na ulazu</span></div>
+            <div class="section-lead">
+                Zaboravite na loginove, stres oko potvrda rezervacija, kucanje računa i strah od overbookinga. Sustav
+                radi sve to za vas — u sekundi.
+            </div>
+
+            <div class="flow-row">
+                <div class="flow-item highlight">
+                    <div class="fi-icon">👆</div>
+                    <div class="fi-text">Gost rezervira</div>
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-item">
+                    <div class="fi-icon">💳</div>
+                    <div class="fi-text">Automatska naplata</div>
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-item">
+                    <div class="fi-icon">🧾</div>
+                    <div class="fi-text">Fiskalizirani račun</div>
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-item">
+                    <div class="fi-icon">📅</div>
+                    <div class="fi-text">Kalendar zatvoren</div>
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-item highlight">
+                    <div class="fi-icon">😊</div>
+                    <div class="fi-text">Vi dočekate gosta</div>
+                </div>
+            </div>
+
+            <div class="card-grid">
+                <div class="card">
+                    <div class="card-icon">🔗</div>
+                    <div class="card-title">WSPay / Corvus Pay</div>
+                    <div class="card-text">Hrvatska naplata karticama i PayPalom. Novac sjeda direktno na vaš račun.
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-icon">📋</div>
+                    <div class="card-title">Solo / e-Računi</div>
+                    <div class="card-text">Automatska fiskalizacija u skladu s Poreznom. Bez ručnog unosa, bez grešaka.
+                    </div>
+                </div>
+            </div>
+
+            <div class="highlight-box">
+                <div class="hb-label">Backend tajna</div>
+                <div class="hb-text">
+                    Integracija WSPay (naplata) + Solo (fiskalizacija) u realnom vremenu — to je ono što <em>nitko
+                        drugi</em> ne nudi u paketu za iznajmljivače. SharpShark to rješava za vas od A do Ž.
+                </div>
+            </div>
+        </div>
+        <div class="page-footer">
+            <span><span class="f-w">2LMF</span> <span class="f-o">PRO</span> & <span class="f-c">Sharp</span><span
+                    class="f-o">Shark</span> <span class="f-c">Digital</span> — RentShark vodič</span>
+            <span class="pf-brand">2lmf-pro.hr</span>
+        </div>
+    </div>
+
+    <!-- ===== STRANICA 6: ROI ===== -->
+    <div class="page">
+        <div class="page-header">
+            <img src="logo_2lmf_ss.png" class="ph-logo" alt="SharpShark">
+            <div class="ph-page-num"><span>05</span> / 07</div>
+        </div>
+        <div class="page-body">
+            <div class="section-badge"><span class="icon">📊</span> Matematika Uštede · Case Study</div>
+            <div class="section-title">Pravi brojevi,<br><span>Pravi rezultati</span></div>
+            <div class="section-lead">
+                Apartman na Jadranu, godišnji promet 15.000 €. Evo što se dogodi kada vlasnik prelazi na RentShark
+                sustav.
+            </div>
+
+            <div class="roi-visual">
+                <div class="roi-before">
+                    <div class="roi-label">❌ Prije — Ovisnost o portalima</div>
+                    <div class="roi-num">−2.500€</div>
+                    <div class="roi-desc">Godišnji gubitak na provizijama. 18% ukupnog prometa odlazi agencijama +
+                        naknade za platni promet.</div>
+                    <br>
+                    <div style="font-size:10px; color:#BE123C; font-weight:700;">Bez vlastite baze gostiju.<br>Bez
+                        kontrole cijena.<br>Bez slobode.</div>
+                </div>
+                <div class="roi-after">
+                    <div class="roi-label">✅ Nakon — RentShark sustav</div>
+                    <div class="roi-num">+2.500€</div>
+                    <div class="roi-desc">Taj isti novac ostaje u vašem džepu. Investicija u sustav vraća se već u prvih
+                        14 dana srpnja.</div>
+                    <br>
+                    <div style="font-size:10px; color:#15803D; font-weight:700;">Vlastita baza gostiju.<br>Vi diktujete
+                        cijene.<br>Potpuna sloboda.</div>
+                </div>
+            </div>
+
+            <div class="stats-row">
+                <div class="stat-box">
+                    <div class="sb-num">14</div>
+                    <div class="sb-label">Dana do povrata investicije</div>
+                </div>
+                <div class="stat-box">
+                    <div class="sb-num orange">20%</div>
+                    <div class="sb-label">Porast neto dobiti</div>
+                </div>
+                <div class="stat-box">
+                    <div class="sb-num">0</div>
+                    <div class="sb-label">Provizija na direktne goste</div>
+                </div>
+            </div>
+        </div>
+        <div class="page-footer">
+            <span><span class="f-w">2LMF</span> <span class="f-o">PRO</span> & <span class="f-c">Sharp</span><span
+                    class="f-o">Shark</span> <span class="f-c">Digital</span> — RentShark vodič</span>
+            <span class="pf-brand">2lmf-pro.hr</span>
+        </div>
+    </div>
+
+    <!-- ===== STRANICA 7: INVESTICIJA ===== -->
+    <div class="page">
+        <div class="page-header">
+            <img src="logo_2lmf_ss.png" class="ph-logo" alt="SharpShark">
+            <div class="ph-page-num"><span>06</span> / 07</div>
+        </div>
+        <div class="page-body">
+            <div class="section-badge"><span class="icon">💰</span> Model Investicije</div>
+            <div class="section-title">Ne trošite — <span>Preusmjeravate</span></div>
+            <div class="section-lead">
+                Novac koji biste ionako platili agencijama, usmjeravate jednom u slobodu.
+                Jedna investicija, godinama bez briga.
+            </div>
+
+            <div class="pricing-grid">
+                <div class="price-card standard">
+                    <div class="pc-badge">💚 Fleksibilnost</div>
+                    <div class="pc-name">Partner Success Plan</div>
+                    <div class="pc-price">125€</div>
+                    <div class="pc-period">/ mjesec · Godišnji plan (1.500€/god)</div>
+                    <ul class="pc-features">
+                        <li>Profesionalni web za iznajmljivanje</li>
+                        <li>Booking kalendar s direktnom naplatom</li>
+                        <li>Channel Manager (Nobeds) integracija</li>
+                        <li>Tehnička podrška</li>
+                        <li>Godišnja ažuriranja sadržaja</li>
+                    </ul>
+                </div>
+                <div class="price-card premium">
+                    <div class="pc-badge">🏆 Preporučeno</div>
+                    <div class="pc-name">Premium 3-Year Pass</div>
+                    <div class="pc-price">3.500€</div>
+                    <div class="pc-period">Jednokratno · 3 godine mira</div>
+                    <ul class="pc-features">
+                        <li>Sve iz Partner plana</li>
+                        <li>WSPay / Corvus Pay integracija</li>
+                        <li>Solo / e-Računi fiskalizacija</li>
+                        <li>Upsell modul (doručak, bicikli, brodica)</li>
+                        <li>Prioritetna podrška 24/7</li>
+                        <li>3 godine bez dodatnih troškova</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="highlight-box">
+                <div class="hb-label">🧮 Matematika koja govori sama za sebe</div>
+                <div class="hb-text">
+                    Ako imate 15.000€ godišnjeg prometa, plaćate agencijama <em>~2.500€ godišnje</em>.
+                    U 3 godine to je <em>7.500€ gubitka</em>. RentShark 3-Year Pass = 3.500€ jednom.
+                    Ušteda = <em>4.000€ u džepu.</em>
+                </div>
+            </div>
+        </div>
+        <div class="page-footer">
+            <span><span class="f-w">2LMF</span> <span class="f-o">PRO</span> & <span class="f-c">Sharp</span><span
+                    class="f-o">Shark</span> <span class="f-c">Digital</span> — RentShark vodič</span>
+            <span class="pf-brand">2lmf-pro.hr</span>
+        </div>
+    </div>
+
+    <!-- ===== STRANICA 8: POZIV NA AKCIJU ===== -->
+    <div class="page">
+        <div class="page-header">
+            <img src="logo_2lmf_ss.png" class="ph-logo" alt="SharpShark">
+            <div class="ph-page-num"><span>07</span> / 07</div>
+        </div>
+        <div class="cta-page">
+            <div class="cta-content">
+                <div class="cta-logo">
+                    <div class="brand-logo center">
+                        <div class="logo-top-row">
+                            <div class="logo-text-2lmf">
+                                <span class="w">2LMF</span> <span class="o">PRO</span>
+                            </div>
+                            <div class="logo-ss-wrapper">
+                                <img src="logo_2lmf_ss.png" alt="SharpShark">
+                            </div>
+                        </div>
+                        <div class="logo-bottom-row">
+                            <span class="arch">ARCHITECTURAL</span> <span class="code">CODE</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="cta-badge">⚡ Posebna Ponuda — Ograničeno</div>
+                <div class="cta-title">Zakažite Besplatne<br>Konzultacije</div>
+                <div class="cta-sub">
+                    Prvih 5 prijava dobiva besplatnu analizu vašeg objekta i prijedlog konkretnog akcijskog plana za
+                    prijelaz na direktni booking. Bez obaveza.
+                </div>
+
+                <div class="cta-bonus">
+                    <div class="bonus-label">🎁 BONUS za prvih 5 klijenata</div>
+                    <div class="bonus-text">Besplatna analiza vašeg objekta + personalizirana strategija direktnog
+                        bookinga — vrijednost 300€ na dar</div>
+                </div>
+
+                <div class="cta-contacts">
+                    <div class="cta-contact">
+                        <div class="cc-icon">📱</div>
+                        <div class="cc-label">Telefon / WhatsApp</div>
+                        <div class="cc-value">+385 95 311 5007</div>
+                    </div>
+                    <div class="cta-contact">
+                        <div class="cc-icon">📧</div>
+                        <div class="cc-label">Email</div>
+                        <div class="cc-value">info@2lmf-pro.hr</div>
+                    </div>
+                    <div class="cta-contact">
+                        <div class="cc-icon">🌐</div>
+                        <div class="cc-label">Web</div>
+                        <div class="cc-value">2lmf-pro.hr</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

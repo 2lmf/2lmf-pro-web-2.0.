@@ -4,7 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SHARPSHARK | ROI Kalkulator</title>
+    <link rel="canonical" href="https://2lmf-pro.hr/kalkulator_ustede.html" />
+    <title>Kalkulator Uštede | 2LMF PRO</title>
     <link
         href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Outfit:wght@300;400;600&display=swap"
         rel="stylesheet">
@@ -523,6 +524,8 @@
     </div>
 
     <script>
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyIWixcWJRDQOzcBPTCTfstUzbhrFJlTa7dMq21lnE2YunRDJL-IJlpxEnjf3w76-KI/exec";
+
         function calculate() {
             const u = document.getElementById('units').value;
             const d = document.getElementById('days').value;
@@ -540,16 +543,46 @@
             }, 300);
         }
 
-        function submitLead() {
+        async function submitLead() {
             const name = document.getElementById('lead-name').value;
             const email = document.getElementById('lead-email').value;
+            const lossVal = document.getElementById('loss-val').innerText;
 
             if (!name || !email) {
                 alert('Molimo unesite barem ime i email.');
                 return;
             }
 
-            alert('Hvala ' + name + '! PDF vodič je poslan na ' + email + '. Kontaktirat ćemo vas uskoro.');
+            const btn = document.querySelector('#lead .btn-main');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '⏳ Šaljem...';
+            btn.disabled = true;
+
+            try {
+                // Post to Google Apps Script
+                const formData = new URLSearchParams();
+                formData.append('userName', name);
+                formData.append('userEmail', email);
+                formData.append('subject', 'RentShark vodič');
+                formData.append('lossValue', lossVal);
+                formData.append('source', 'kalkulator_ustede.html');
+
+                await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors', // standard for GAS
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: formData.toString()
+                });
+
+                alert('Hvala ' + name + '! PDF vodič je poslan na ' + email + '. Kontaktirat ćemo vas uskoro.');
+                btn.innerHTML = '✅ POSLANO';
+
+            } catch (err) {
+                console.error("Submission error:", err);
+                alert('Došlo je do greške. Molimo pokušajte ponovno.');
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
         }
     </script>
 </body>

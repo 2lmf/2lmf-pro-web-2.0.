@@ -182,16 +182,62 @@ function doPost(e) {
 
 function processInquiry(params) {
   try {
-    var name = params.name || "Kupac";
-    var email = params.email;
-    var phone = params.phone || "-";
-    var subject = params._subject || "Upit";
-    var type = params.type || "calculator"; // 'calculator' or 'contact'
+    var name = params.name || params.userName || "Kupac";
+    var email = params.email || params.userEmail;
+    var phone = params.phone || params.userPhone || "-";
+    var subject = params._subject || params.subject || "Upit";
+    var type = params.type || (subject.indexOf("vodič") !== -1 ? "guide" : "calculator");
     
     var inquiryId;
-    var items = [];
     
-    if (type === 'contact') {
+    if (subject.indexOf("vodič") !== -1) {
+      // RENTSHARK GUIDE FLOW
+      inquiryId = getNextSequenceId("g");
+      var lossValue = params.lossValue || "0 €";
+      
+      // 1. Send Guide to Customer
+      var customerHtml = `
+        <div style="font-family: sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
+          <h2 style="color: #E67E22;">Vaš RentShark Plan Uštede je spreman! 🦈</h2>
+          <p>Poštovani/a <b>${name}</b>,</p>
+          <p>Hvala što ste koristili naš kalkulator. Na temelju vaših podataka, izračunali smo da godišnje portali uzimaju oko <b>${lossValue}</b> vašeg truda.</p>
+          <p>U prilogu i na linku ispod nalazi se detaljan vodič kako tu brojku svesti na nulu uz automatizaciju i direktni booking.</p>
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="https://2lmf-pro.hr/sharkbook-pdf/sharkbook_vodic.pdf" 
+               style="background: #E67E22; color: white; padding: 15px 25px; text-decoration: none; border-radius: 5px; font-weight: bold;">
+               PREUZMI PDF VODIČ (2.5 MB)
+            </a>
+          </div>
+          <p>Za sva pitanja oko implementacije, stojimo na raspolaganju.</p>
+          <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
+          <p style="font-size: 12px; color: #888;">2LMF PRO & SharpShark Digital<br>Web: 2lmf-pro.hr | Mob: +385 95 311 5007</p>
+        </div>
+      `;
+
+      MailApp.sendEmail({
+        to: email,
+        subject: "📥 Vaš RentShark Vodič (Plan Uštede)",
+        htmlBody: customerHtml,
+        name: "2LMF PRO | RentShark"
+      });
+
+      // 2. Notify Admin
+      var adminHtml = `<h3>Novi zahtjev za VODIČ (${inquiryId})</h3>
+                       <p><b>Ime:</b> ${name}</p>
+                       <p><b>Email:</b> ${email}</p>
+                       <p><b>Izračunata ušteda:</b> ${lossValue}</p>
+                       <p><b>Izvor:</b> ${params.source || "Kalkulator Uštede"}</p>`;
+                       
+      MailApp.sendEmail({
+        to: "2lmf.info@gmail.com", 
+        subject: "📈 ZAHTJEV ZA VODIČ: " + name + " (" + inquiryId + ")",
+        htmlBody: adminHtml
+      });
+
+      // 3. Log to CRM
+      logToCRM(inquiryId, name, email, phone, "RentShark Vodič", 0, "PDF", "NOVO", "Ušteda: " + lossValue);
+
+    } else if (type === 'contact') {
       // CONTACT FORM FLOW
       inquiryId = getNextSequenceId("k");
       var message = params.message || "-";
@@ -214,9 +260,9 @@ function processInquiry(params) {
       logToCRM(inquiryId, name, email, phone, "Kontakt Forma", 0, "-", "NOVO", message);
       
     } else {
-      // CALCULATOR FLOW
-      var itemsJson = params.items_json;
-      items = JSON.parse(itemsJson);
+      // CALCULATOR FLOW (Existing logic)
+      var itemsJson = params.items_json || "[]";
+      var items = JSON.parse(itemsJson);
       
       // Normalize items
       items = items.map(function(it) {
@@ -1005,10 +1051,10 @@ function addItemsFromCjenik(isMobile) {
   var data = sheetCjenik.getDataRange().getValues();
   var itemsToAdd = [];
   for (var i = 1; i < data.length; i++) {
-    var qty = parseFloat(data[i][6]);
+    var qty = parseFloat(data[i][8]); // Column I is index 8 (0-based)
     if (!isNaN(qty) && qty > 0) {
       itemsToAdd.push([sheetGen.getLastRow()-9, data[i][0], data[i][1], qty, "kom", data[i][4]]);
-      sheetCjenik.getRange(i + 1, 7).clearContent();
+      sheetCjenik.getRange(i + 1, 9).clearContent(); // Clear Column I (1-based index 9)
     }
   }
   if (itemsToAdd.length > 0) sheetGen.getRange(sheetGen.getLastRow()+1, 1, itemsToAdd.length, 6).setValues(itemsToAdd);
