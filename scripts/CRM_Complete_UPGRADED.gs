@@ -695,7 +695,7 @@ function sendCustomOffer(isMobile) {
   pdfBlob.setName("Ponuda_" + inquiryId + ".pdf");
   
   // SAVE TO DRIVE
-  savePdfToDrive(pdfBlob, "Izlazni računi");
+  savePdfToDrive(pdfBlob, "Ponude za plaćanje");
 
   // SEND EMAIL
   MailApp.sendEmail({
