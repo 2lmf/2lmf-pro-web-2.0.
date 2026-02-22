@@ -869,7 +869,7 @@ function generateHtml(items, name, isAutoReply, inquiryId, color, isHidro, subje
              ".td-num { text-align: right; font-weight: 600; white-space: nowrap; }" +
              ".total-block { background: " + primaryColor + "; color: " + darkColor + "; padding: 20px; text-align: right; border: 2px solid " + darkColor + "; }" +
              ".total-value { font-size: 24px; font-weight: bold; color: " + darkColor + "; }" +
-             ".footer { background: " + primaryColor + "; color: " + darkColor + "; padding: 30px 20px; font-size: 11px; text-align: center; line-height: 1.8; border-top: 5px solid " + darkColor + "; flex-shrink: 0; }" +
+             ".footer { background: " + primaryColor + "; color: " + darkColor + "; padding: 15px 20px; font-size: 9px; text-align: center; line-height: 1.4; border-top: 3px solid " + darkColor + "; flex-shrink: 0; margin-top: auto; }" +
              ".note { background: #fff8f0; border-left: 4px solid " + primaryColor + "; padding: 20px; font-size: 12px; margin-top: 30px; line-height: 1.6; }" +
              ".qr-box { margin-top: 30px; text-align: center; border: 1px solid #eee; padding: 20px; border-radius: 10px; }" +
              
@@ -885,8 +885,9 @@ function generateHtml(items, name, isAutoReply, inquiryId, color, isHidro, subje
                ".footer { background: #fff !important; border-top: 2px solid #333 !important; position: relative; bottom: 0; width: 100%; box-sizing: border-box; } " +
              "} " + 
              "</style></head><body><div class='page-wrapper'>" +
-             "<div style='padding: 30px 20px 20px 20px; max-width: 650px; margin: 0 auto; font-size: 14px; color: #333; line-height: 1.6; width: 100%; box-sizing: border-box;'>" +
-             kupacHtml +
+             "<div style='padding: 30px 20px 20px 20px; max-width: 650px; margin: 0 auto; font-size: 14px; color: #333; line-height: 1.6; width: 100%; box-sizing: border-box; display: flex; justify-content: space-between;'>" +
+             "<div>" + kupacHtml + "</div>" +
+             "<div style='text-align:right;'>Datum izdavanja:<br><b>" + Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "dd.MM.yyyy.") + "</b></div>" +
              "</div>" +
              "<div class='container'>" +
              "<div class='header'><h1 class='logo-text'>2LMF PRO</h1><div class='sub-header'>HIDRO & TERMO IZOLACIJA • FASADE • OGRADE</div></div>" +
@@ -910,11 +911,11 @@ function generateHtml(items, name, isAutoReply, inquiryId, color, isHidro, subje
 
     html += "</tbody></table>" +
             "<div class='total-block'><div style='font-size:11px; font-weight:bold; margin-bottom:5px; color:" + darkColor + ";'>SVEUKUPNI IZNOS (MPC)</div>" +
-            "<div class='total-value'>" + rawTotal.toLocaleString('hr-HR', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " €</div></div>";
+            "<div class='total-value'>" + rawTotal.toLocaleString('hr-HR', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " €</div></div>" +
+            "<div style='font-size:11px; text-align:right; margin-top:5px; color:#555;'>Porezni obveznik nije u sustavu PDV-a, temeljem članka 90. Zakona o porezu na dodanu vrijednost.</div>";
             
     if (!isInvoice) {
-        html += "<div class='note'><b>Uvjeti kupnje:</b><br><ul style='margin-top:5px; padding-left:20px; margin-bottom:10px;'><li>Plaćanje: avans - uplatom na žiro račun</li><li>Minimalni iznos kupovine: 200,00 eur</li><li>Sve cijene su sa PDV-om*</li></ul>" +
-                "<div style='font-size:11px; opacity:0.8;'>* Porezni obveznik nije u sustavu PDV-a, temeljem članka 90. Zakona o porezu na dodanu vrijednost</div></div>";
+        html += "<div class='note'><b>Uvjeti kupnje:</b><br><ul style='margin-top:5px; padding-left:20px; margin-bottom:10px;'><li>Plaćanje: avans - uplatom na žiro račun</li><li>Minimalni iznos kupovine: 200,00 eur</li><li>Sve cijene su sa PDV-om*</li></ul></div>";
     }
 
     // QR Code logic: Using Base64 URI for PDF stability
@@ -923,8 +924,13 @@ function generateHtml(items, name, isAutoReply, inquiryId, color, isHidro, subje
                 "<div style='margin-top:10px; font-size:11px; color:#666; font-weight:bold;'>SKENIRAJ I PLATI (HUB3 STANDARD)</div></div>";
     }
 
-    html += "</div></div><div class='footer'><div><b>2LMF PRO j.d.o.o.</b></div><div>Orešje 7, 10090 Zagreb | Telefon: +385 95 311 5007 | info@2lmf-pro.hr</div>" +
-            "<div style='margin-top:15px; border-top:1px solid rgba(0,0,0,0.1); padding-top:15px;'>IBAN: <b>HR3123400091111213241</b> | © 2026 2LMF PRO</div></div></div></body></html>";
+    html += "</div></div><div class='footer'>" +
+            "Operater / Dokument izdao: Jelena Praštalo, OIB: 41356727940 | Način plaćanja: transakcijski račun<br>" +
+            "Članovi uprave: Jelena Praštalo, OIB: 41356727940 | Temeljni kapital: 1,00 eur, uplaćen u cijelosti<br>" +
+            "Sud: Upisano u Sudski registar Trgovačkog suda u Zagrebu pod brojem 081477933<br><br>" +
+            "Privredna banka Zagreb d.d. | Radnička cesta 50, 10000 Zagreb, Hrvatska<br>" +
+            "Broj bankovnog računa: IBAN: <b>HR3123400091111213241</b>" +
+            "</div></div></body></html>";
     return html;
 }
 
