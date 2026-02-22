@@ -760,7 +760,7 @@ function sendCustomInvoice(isMobile) {
   pdfBlob.setName("Racun_" + docId + ".pdf");
   
   // SAVE TO DRIVE
-  savePdfToDrive(pdfBlob, "Izlazni računi");
+  var pdfDriveUrl = savePdfToDrive(pdfBlob, "Izlazni računi");
 
   MailApp.sendEmail({
     to: email,
@@ -781,12 +781,15 @@ function sendCustomInvoice(isMobile) {
   // --- ACCOUNTING: LOG IRA ---
   var totalAmount = items.reduce((sum, item) => sum + (item.line_total || ((parseFloat(item.qty) || 0) * (parseFloat(item.price_sell) || 0))), 0);
   
+  // Formatiramo link za knjigovodstvo ako ga imamo
+  var dokLink = pdfDriveUrl ? '=HYPERLINK("' + pdfDriveUrl + '"; "' + docId + '")' : docId;
+
   recordDnevnikEntry(
     new Date(), 
     "IRA", 
     name, 
     "Izdavanje računa po upitu " + inquiryId, 
-    docId, 
+    dokLink, 
     [
       { konto: "1200", nazivKonta: "Kupci u zemlji", duguje: totalAmount, potrazuje: 0 },
       { konto: "7500", nazivKonta: "Prihodi od prodaje roba i usluga", duguje: 0, potrazuje: totalAmount }
@@ -1451,8 +1454,10 @@ function savePdfToDrive(pdfBlob, folderName) {
     } else {
       folder = targetParent.createFolder(folderName);
     }
-    folder.createFile(pdfBlob);
+    var file = folder.createFile(pdfBlob);
+    return file.getUrl();
   } catch (err) {
     console.log("Nemoguće spremiti PDF na Drive: " + err);
+    return "";
   }
 }
