@@ -1262,27 +1262,14 @@ function addItemsFromCjenik() {
     }
     
     if (qty > 0) {
-      // Mjesto 0 je rezervirano za redni broj koji ćemo izračunati poslije
-      itemsToAdd.push(["", data[i][0], data[i][1], qty, data[i][5] || "kom", data[i][4]]);
+      itemsToAdd.push(["", data[i][0], data[i][1], qty, "kom", data[i][4]]);
       rowsToClear.push({ row: i + 1, isCheckbox: isCheckbox });
     }
   }
   
   if (itemsToAdd.length > 0) {
     var lastGenRow = sheetGen.getLastRow();
-    var startRow = Math.max(12, lastGenRow + 1); // Pretpostavka da zaglavlje završava oko 11
-    
-    // Ako Generator već ima stavke, nastavljamo brojčanik
-    var startingIndex = 1;
-    if (lastGenRow >= 12) {
-       startingIndex = parseInt(sheetGen.getRange(lastGenRow, 1).getValue()) || 0;
-       startingIndex += 1;
-    }
-    
-    // Dodaj redne brojeve
-    for (var j = 0; j < itemsToAdd.length; j++) {
-       itemsToAdd[j][0] = startingIndex + j;
-    }
+    var startRow = Math.max(13, lastGenRow + 1); // Zaglavlje na redu 12, startamo ispod
     
     sheetGen.getRange(startRow, 1, itemsToAdd.length, 6).setValues(itemsToAdd);
     
