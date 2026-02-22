@@ -107,9 +107,12 @@ function setupGeneratorLayout(sheet) {
   sheet.getRange("A8").setValue("Tel:");
   sheet.getRange("A9").setValue("Boja:");
   
-  // Item Table Header
-  sheet.getRange("A10:F10").setValues([["RB", "Šifra", "Opis Stavke", "Količina", "Jed. Mj.", "Cijena (€)"]]);
-  sheet.getRange("A10:F10").setBackground("#E67E22").setFontColor("black").setFontWeight("bold");
+  // Item Table Header (Moved down by 2)
+  sheet.getRange("A10").setValue("Adresa:");
+  sheet.getRange("A11").setValue("OIB / PDV ID:");
+  
+  sheet.getRange("A12:F12").setValues([["RB", "Šifra", "Opis Stavke", "Količina", "Jed. Mj.", "Cijena (€)"]]);
+  sheet.getRange("A12:F12").setBackground("#E67E22").setFontColor("black").setFontWeight("bold");
   
   // Instructions & Mobile Controls
   sheet.getRange("H3").setValue("UPRAVLJANJE (MOBITEL):").setFontWeight("bold");
@@ -117,9 +120,13 @@ function setupGeneratorLayout(sheet) {
   sheet.getRange("H5").insertCheckboxes();
   sheet.getRange("H6").setValue("(Status učitavanja)");
 
-  sheet.getRange("H7").setValue("👇 2. Klikni za Slanje");
+  sheet.getRange("H7").setValue("👇 2. Klikni za Slanje Ponude");
   sheet.getRange("H8").insertCheckboxes();
-  sheet.getRange("H9").setValue("(Status slanja)");
+  sheet.getRange("H9").setValue("(Status slanja ponude)");
+  
+  sheet.getRange("H10").setValue("👇 3. Klikni za Slanje Računa");
+  sheet.getRange("H11").insertCheckboxes();
+  sheet.getRange("H12").setValue("(Status slanja računa)");
 }
 
 // --- 2. WEB APP HANDLER ---
@@ -619,7 +626,7 @@ function importInquiry() {
   var items = JSON.parse(rowData[9]); // Adjusted index (Column J)
   
   // Clear old items
-  sheetGen.getRange("A11:F50").clearContent();
+  sheetGen.getRange("A13:F50").clearContent();
   
   // Write new items
   var output = [];
@@ -629,7 +636,7 @@ function importInquiry() {
   });
   
   if (output.length > 0) {
-    sheetGen.getRange(11, 1, output.length, 6).setValues(output);
+    sheetGen.getRange(13, 1, output.length, 6).setValues(output);
   }
   
   setStatus("Podaci učitani za " + id);
@@ -652,10 +659,12 @@ function sendCustomOffer(isMobile) {
   var name = sheetGen.getRange("B6").getValue();
   var email = sheetGen.getRange("B7").getValue();
   var color = sheetGen.getRange("B9").getValue();
+  var address = sheetGen.getRange("B10").getValue();
+  var oib = sheetGen.getRange("B11").getValue();
   
   if(!email) { setStatus("Greška: Nema emaila!"); return false; }
   
-  var itemsData = sheetGen.getRange(11, 1, sheetGen.getLastRow() - 10, 6).getValues();
+  var itemsData = sheetGen.getRange(13, 1, Math.max(1, sheetGen.getLastRow() - 12), 6).getValues();
   
   var items = [];
   var totalAmount = 0;
@@ -679,7 +688,7 @@ function sendCustomOffer(isMobile) {
   // For now, let's assume if the color field contains "HIDRO" it's a hidro offer.
   // A more robust solution might involve a dedicated field or parsing the items.
   var isHidro = String(color || "").toUpperCase().indexOf("HIDRO") !== -1;
-  var htmlBody = generateHtml(items, name, false, inquiryId, color, isHidro, "Službena Ponuda - 2LMF PRO");
+  var htmlBody = generateHtml(items, name, false, inquiryId, color, isHidro, "Službena Ponuda - 2LMF PRO", address, oib);
   
   // PDF GENERATION
   var pdfBlob = HtmlService.createHtmlOutput(htmlBody).setTitle("Ponuda").getAs('application/pdf');
@@ -722,12 +731,14 @@ function sendCustomInvoice(isMobile) {
   var name = sheetGen.getRange("B6").getValue();
   var email = sheetGen.getRange("B7").getValue();
   var color = sheetGen.getRange("B9").getValue();
+  var address = sheetGen.getRange("B10").getValue();
+  var oib = sheetGen.getRange("B11").getValue();
   var docId = sheetGen.getRange("B4").getValue();
   var inquiryId = sheetGen.getRange("B3").getValue(); // For CRM logging
   
   if(!email) { setStatus("Greška: Nema emaila!"); return false; }
   
-  var itemsData = sheetGen.getRange(11, 1, sheetGen.getLastRow() - 10, 6).getValues();
+  var itemsData = sheetGen.getRange(13, 1, Math.max(1, sheetGen.getLastRow() - 12), 6).getValues();
   var items = [];
   for (var i = 0; i < itemsData.length; i++) {
     var row = itemsData[i];
@@ -740,7 +751,7 @@ function sendCustomInvoice(isMobile) {
   }
   
   var isHidro = String(color || "").toUpperCase().indexOf("HIDRO") !== -1;
-  var htmlBody = generateHtml(items, name, false, docId, color, isHidro, "Račun #"+docId + " - 2LMF PRO");
+  var htmlBody = generateHtml(items, name, false, docId, color, isHidro, "Račun #"+docId + " - 2LMF PRO", address, oib);
   
   var pdfBlob = HtmlService.createHtmlOutput(htmlBody).setTitle("Racun").getAs('application/pdf');
   pdfBlob.setName("Racun_" + docId + ".pdf");
@@ -787,7 +798,7 @@ function setStatus(msg) {
 }
 
 // --- UPGRADED HELPER: HTML GENERATOR (Shared) ---
-function generateHtml(items, name, isAutoReply, inquiryId, color, isHidro, subject) {
+function generateHtml(items, name, isAutoReply, inquiryId, color, isHidro, subject, address, oib) {
     name = String(name || "Kupac"); // Sanitize to string to prevent substring error
     var rawTotal = 0;
     items.forEach(i => {
@@ -829,6 +840,11 @@ function generateHtml(items, name, isAutoReply, inquiryId, color, isHidro, subje
 
   // Use simple fonts for PDF and email reliability
   var fontStack = "'Segoe UI', Roboto, Arial, sans-serif";
+  
+  // Formatiranje bloka za kupca
+  var kupacHtml = "<b>" + name + "</b>";
+  if (address) kupacHtml += "<br>" + address;
+  if (oib) kupacHtml += "<br>OIB: " + oib;
 
   var html = "<!DOCTYPE html><html><head>" +
              "<style>" +
@@ -858,7 +874,7 @@ function generateHtml(items, name, isAutoReply, inquiryId, color, isHidro, subje
              "} " + 
              "</style></head><body>" +
              "<div style='padding: 20px; max-width: 650px; margin: 0 auto; font-size: 14px; color: #333; line-height: 1.6;'>" +
-             "Poštovani <b>" + name + "</b>,<br>" + 
+             "Poštovani " + kupacHtml + ",<br>" + 
              (isAutoReply ? 
                "informativna ponuda za Vaš upit nalazi se niže u mailu.<br><br>" +
                "Ukoliko Vam ponuda odgovara, javite se povratno na mail ili mobitel i poslati ćemo Vam službenu ponudu za plaćanje.<br><br>" +
@@ -1200,7 +1216,7 @@ function addItemsFromCjenik(isMobile) {
   for (var i = 1; i < data.length; i++) {
     var qty = parseFloat(data[i][8]); // Column I is index 8 (0-based)
     if (!isNaN(qty) && qty > 0) {
-      itemsToAdd.push([sheetGen.getLastRow()-9, data[i][0], data[i][1], qty, "kom", data[i][4]]);
+      itemsToAdd.push([sheetGen.getLastRow()-11, data[i][0], data[i][1], qty, "kom", data[i][4]]);
       sheetCjenik.getRange(i + 1, 9).clearContent(); // Clear Column I (1-based index 9)
     }
   }
