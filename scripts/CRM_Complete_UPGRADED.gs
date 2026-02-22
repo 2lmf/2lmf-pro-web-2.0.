@@ -1204,3 +1204,141 @@ function addItemsFromCjenik(isMobile) {
   }
   if (itemsToAdd.length > 0) sheetGen.getRange(sheetGen.getLastRow()+1, 1, itemsToAdd.length, 6).setValues(itemsToAdd);
 }
+
+// --- 4. AI INVOICE OCR PROCESSING ---
+
+function processNewInvoices() {
+  var folderInId = "1kpBzqrSHVWTaBi8kKIUXknKhRtoUEy5g";
+  var folderOutId = "1N7XfCy5s0XnLrCJaBB2QxhJ3gH6eya_a";
+  
+  var folderIn;
+  var folderOut;
+  try {
+    folderIn = DriveApp.getFolderById(folderInId);
+    folderOut = DriveApp.getFolderById(folderOutId);
+  } catch(e) {
+    if(SpreadsheetApp.getUi) SpreadsheetApp.getUi().alert("Greška: Nije pronađen Google Drive folder. Provjerite ID.");
+    return;
+  }
+  
+  // We process a max number of files to prevent timeout
+  var files = folderIn.getFiles();
+  var count = 0;
+  
+  while (files.hasNext() && count < 10) {
+    var file = files.next();
+    
+    // 1. OCR Extract Text via Google Drive API
+    var text = null;
+    try {
+        var token = ScriptApp.getOAuthToken();
+        var copyUrl = "https://www.googleapis.com/drive/v3/files/" + file.getId() + "/copy";
+        var options = {
+          method: "POST",
+          headers: {"Authorization": "Bearer " + token},
+          contentType: "application/json",
+          payload: JSON.stringify({ mimeType: "application/vnd.google-apps.document" }),
+          muteHttpExceptions: true
+        };
+        var copyRes = UrlFetchApp.fetch(copyUrl, options);
+        if (copyRes.getResponseCode() == 200) {
+          var docId = JSON.parse(copyRes.getContentText()).id;
+          var doc = DocumentApp.openById(docId);
+          text = doc.getBody().getText();
+          DriveApp.getFileById(docId).setTrashed(true);
+        }
+    } catch(ocrErr) {
+       console.log("OCR Error: " + ocrErr);
+    }
+    
+    if (!text || text.trim().length < 5) {
+      console.log("Preskačem " + file.getName() + " jer nema prepoznatog teksta.");
+      file.moveTo(folderOut); // Move even if failed
+      continue;
+    }
+    
+    // 2. OpenAI Parse
+    var data = null;
+    try {
+        var apiKey = PropertiesService.getScriptProperties().getProperty("OPENAI_API_KEY");
+        if (!apiKey) {
+           if(SpreadsheetApp.getUi) SpreadsheetApp.getUi().alert("Greška: Nije postavljen OPENAI_API_KEY u Script Properties.");
+           return;
+        }
+        var url = "https://api.openai.com/v1/chat/completions";
+        var prompt = "Pročitaj tekst ovog računa i izvuci podatke u striktnom JSON formatu.\n" +
+                     "Ključevi moraju biti: \n" +
+                     "- dobavljac: Ime tvrtke izdavaoca računa (npr. INA d.d.)\n" +
+                     "- iznos: ukupan iznos računa s PDV-om za plaćanje (broj, npr. 120.50, kao float bez razmaka i sa točkom)\n" +
+                     "- datum: datum izdavanja računa (format DD.MM.YYYY)\n" +
+                     "- vrsta_troska: 'Kancelarijski materijal', 'Gorivo', 'Građevinski materijal', 'Marketing', 'Bankarske usluge' ili 'Usluge'\n\n" +
+                     "Tekst računa:\n" + text;
+                     
+        var payload = {
+          model: "gpt-4o-mini",
+          response_format: { "type": "json_object" },
+          messages: [
+            { role: "system", content: "Ti si stručni porezni savjetnik. Vraćaš isključivo čisti JSON sukladno uputama. Nemoj vraćati nikakav drugi tekst, samo JSON." },
+            { role: "user", content: prompt }
+          ],
+          temperature: 0.1
+        };
+        
+        var res = UrlFetchApp.fetch(url, {
+          method: "POST",
+          headers: {
+            "Authorization": "Bearer " + apiKey,
+            "Content-Type": "application/json"
+          },
+          payload: JSON.stringify(payload),
+          muteHttpExceptions: true
+        });
+        
+        if (res.getResponseCode() == 200) {
+           var json = JSON.parse(res.getContentText());
+           data = JSON.parse(json.choices[0].message.content);
+        } else {
+           console.log("OpenAI Error: " + res.getContentText());
+        }
+    } catch(aiErr) {
+        console.log("AI Parsing Error: " + aiErr);
+    }
+    
+    if (!data) {
+      console.log("OpenAI nije uspio parsirati " + file.getName());
+      continue; // leave it in IN folder so user can check
+    }
+    
+    // 3. Log to Dnevnik
+    var fileUrl = file.getUrl();
+    var datum = data.datum || Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "dd.MM.yyyy");
+    var iznos = parseFloat(data.iznos) || 0;
+    var dobavljac = data.dobavljac || "Nepoznati dobavljač";
+    var opis = "Ulazni račun: " + (data.vrsta_troska || "Trošak") + " (AI Obrada)";
+    var dokumentLink = '=HYPERLINK("' + fileUrl + '"; "🔎 Otvori račun")';
+    
+    recordDnevnikEntry(
+         datum,
+         "URA",
+         dobavljac,
+         opis,
+         dokumentLink, 
+         [
+           { konto: "4100", nazivKonta: "Troškovi (" + (data.vrsta_troska || "Razno") + ")", duguje: iznos, potrazuje: 0 },
+           { konto: "2200", nazivKonta: "Dobavljači u zemlji", duguje: 0, potrazuje: iznos }
+         ]
+    );
+    
+    // 4. Move File to OUT
+    file.moveTo(folderOut);
+    count++;
+  }
+  
+  if(SpreadsheetApp.getUi) {
+      if (count > 0) {
+        SpreadsheetApp.getUi().alert("✅ Uspješno proknjiženo " + count + " novih URA računa!");
+      } else {
+        SpreadsheetApp.getUi().alert("ℹ️ Nema novih računa u mapi za knjiženje.");
+      }
+  }
+}
