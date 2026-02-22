@@ -417,6 +417,8 @@ function onOpen() {
       .addItem('➕ Dodaj označeno iz Cjenika u Ponudu', 'addItemsFromCjenik')
       .addSeparator()
       .addItem('🤖 Pokreni AI skeniranje (URA)', 'processNewInvoices')
+      .addSeparator()
+      .addItem('💳 Plati označenu URA-u (Dnevnik)', 'paySelectedUra')
       .addToUi();
 }
 
@@ -1340,5 +1342,62 @@ function processNewInvoices() {
       } else {
         SpreadsheetApp.getUi().alert("ℹ️ Nema novih računa u mapi za knjiženje.");
       }
+  }
+}
+
+// --- 5. AUTOMATSKO PLAĆANJE URA (IZVOD) ---
+function paySelectedUra() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getActiveSheet();
+  
+  if (sheet.getName() !== "Dnevnik knjiženja") {
+    SpreadsheetApp.getUi().alert("Greška: Ovu radnju možete pokrenuti samo dok ste u tabu 'Dnevnik knjiženja'.");
+    return;
+  }
+  
+  var cell = sheet.getActiveCell();
+  var row = cell.getRow();
+  
+  if (row < 2) {
+    SpreadsheetApp.getUi().alert("Molimo označite redak unutar kojeg je račun.");
+    return;
+  }
+  
+  var vrstaDokumenta = String(sheet.getRange(row, 2).getValue()).toUpperCase();
+  if (vrstaDokumenta !== "URA") {
+     SpreadsheetApp.getUi().alert("Možete platiti samo račune koji imaju oznaku 'URA' (Ulazni račun).");
+     return;
+  }
+  
+  var stranka = sheet.getRange(row, 3).getValue();
+  var konto = String(sheet.getRange(row, 6).getValue());
+  var potrazuje = parseFloat(sheet.getRange(row, 9).getValue()); // Očekujemo da konto 2200 Potražuje
+  
+  // Provjera jesmo li označili pravi "Dobavljači" red od te URE
+  if (konto !== "2200" || potrazuje <= 0) {
+      SpreadsheetApp.getUi().alert("Molimo označite onaj red URA-e u kojem Konto 2200 (Dobavljači) POTRAŽUJE novac kako bismo znali iznos za uplatu.");
+      return;
+  }
+  
+  var ui = SpreadsheetApp.getUi();
+  var response = ui.alert('Plaćanje URA-e', 'Želite li proknjižiti IZVOD (Plaćanje) u iznosu od ' + potrazuje.toFixed(2) + ' € za dobavljača "' + stranka + '"?', ui.ButtonSet.YES_NO);
+  
+  if (response == ui.Button.YES) {
+      var datumPlacanja = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "dd.MM.yyyy");
+      recordDnevnikEntry(
+         datumPlacanja,
+         "IZVOD",
+         stranka,
+         "Plaćanje dobavljaču (" + stranka + ")",
+         "Izvod (Auto)", 
+         [
+           { konto: "2200", nazivKonta: "Dobavljači u zemlji", duguje: potrazuje, potrazuje: 0 },
+           { konto: "1000", nazivKonta: "Žiro račun", duguje: 0, potrazuje: potrazuje }
+         ]
+      );
+      
+      // Vizualna potvrda: bojimo red u zeleno da se zna da je riješeno
+      sheet.getRange(row, 1, 1, 10).setBackground("#d9ead3"); 
+      ui.alert("✅ Izvod uspješno proknjižen na dno Dnevnika!");
   }
 }
