@@ -72,6 +72,16 @@ function setupCRM() {
       setupGeneratorLayout(sheetGen);
   }
   
+  // Setup "Dnevnik knjiženja" if not exists
+  var sheetDnevnik = ss.getSheetByName("Dnevnik knjiženja");
+  if (!sheetDnevnik) {
+      sheetDnevnik = ss.insertSheet("Dnevnik knjiženja");
+      sheetDnevnik.appendRow(["Datum", "Vrsta dokumenta", "Stranka", "Opis", "Dokument", "Konto", "Naziv konta", "Duguje", "Potrazuje", "saldo"]);
+      sheetDnevnik.getRange("A1:J1").setFontWeight("bold").setBackground("#d9ead3");
+      sheetDnevnik.setFrozenRows(1);
+  }
+
+  
   console.log("✅ SUSTAV USPJEŠNO POVEZAN SA STAROM TABLICOM!");
   console.log("ID Tablice: " + EXISTING_ID);
   console.log("LINK NA TABLICU: " + ss.getUrl());
@@ -345,6 +355,43 @@ function logToCRM(id, name, email, phone, subject, amount, color, status, rawDat
   }
 }
 
+// --- ACCOUNTING: DNEVNIK KNJIŽENJA ---
+function recordDnevnikEntry(date, vrstaDokumenta, stranka, opis, dokument, entries) {
+  try {
+    var sheetId = SCRIPT_PROP.getProperty("SHEET_ID");
+    if (!sheetId) return;
+    var ss = SpreadsheetApp.openById(sheetId);
+    var sheetDnevnik = ss.getSheetByName("Dnevnik knjiženja");
+    if (!sheetDnevnik) return;
+    
+    // entries should be an array of objects: {konto, nazivKonta, duguje, potrazuje}
+    entries.forEach(function(entry) {
+        var formatDuguje = entry.duguje || 0;
+        var formatPotrazuje = entry.potrazuje || 0;
+        var saldoFormula = '=INDIRECT("H"&ROW()) - INDIRECT("I"&ROW())';
+        
+        // Append row: ["Datum", "Vrsta dokumenta", "Stranka", "Opis", "Dokument", "Konto", "Naziv konta", "Duguje", "Potrazuje", "saldo"]
+        sheetDnevnik.appendRow([
+            date, 
+            vrstaDokumenta, 
+            stranka, 
+            opis, 
+            dokument, 
+            entry.konto, 
+            entry.nazivKonta, 
+            formatDuguje, 
+            formatPotrazuje,
+            "" // Formula will go here or just leave empty and set formula next
+        ]);
+        
+        var lastRow = sheetDnevnik.getLastRow();
+        sheetDnevnik.getRange(lastRow, 10).setFormula(saldoFormula);
+    });
+  } catch(err) {
+    console.error("Dnevnik Log failed: " + err);
+  }
+}
+
 // --- 3. GOOGLE SHEETS MENU & MOBILE TRIGGERS ---
 
 function onOpen() {
@@ -436,7 +483,7 @@ function handleMobileEdit(e) {
   
   // Allow work only on specific sheets
   var sheetName = sheet.getName();
-  if (sheetName !== "Generator Ponuda" && sheetName !== "CJENIK") return;
+  if (sheetName !== "Generator Ponuda" && sheetName !== "CJENIK" && sheetName !== "Upiti") return;
   
   var row = range.getRow();
   var col = range.getColumn();
@@ -477,7 +524,35 @@ function handleMobileEdit(e) {
        sheet.getRange("I3").setValue("✅ Prebačeno!");
      }
   }
+
+  // 5. ACCOUNTING - IZVOD GENERATOR (Upiti sheet, Status column I = 9)
+  if (sheetName === "Upiti") {
+    if (col === 9 && String(val).toUpperCase() === "PLAĆENO") {
+       var pId = String(sheet.getRange(row, 2).getValue());
+       var pName = String(sheet.getRange(row, 3).getValue());
+       var pAmount = parseFloat(sheet.getRange(row, 7).getValue()) || 0;
+       
+       recordDnevnikEntry(
+         new Date(),
+         "IZVOD",
+         pName,
+         "Plaćanje računa za " + pName + " ("+pId+")",
+         "Izvod",
+         [
+           { konto: "1000", nazivKonta: "Žiro račun", duguje: pAmount, potrazuje: 0 },
+           { konto: "1200", nazivKonta: "Kupci u zemlji", duguje: 0, potrazuje: pAmount }
+         ]
+       );
+       
+       // Change status so it doesn't trigger again accidentally on another edit
+       range.setValue("PLAĆENO (KNJIŽENO)");
+       
+       // Show notification
+       SpreadsheetApp.getActiveSpreadsheet().toast("Izvod uspješno proknjižen za " + pName, "Računovodstvo", 5);
+    }
+  }
 }
+
 
 function importInquiry() {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -681,6 +756,21 @@ function sendCustomInvoice(isMobile) {
       break;
     }
   }
+
+  // --- ACCOUNTING: LOG IRA ---
+  var totalAmount = items.reduce((sum, item) => sum + (item.line_total || ((parseFloat(item.qty) || 0) * (parseFloat(item.price_sell) || 0))), 0);
+  
+  recordDnevnikEntry(
+    new Date(), 
+    "IRA", 
+    name, 
+    "Izdavanje računa po upitu " + inquiryId, 
+    docId, 
+    [
+      { konto: "1200", nazivKonta: "Kupci u zemlji", duguje: totalAmount, potrazuje: 0 },
+      { konto: "7500", nazivKonta: "Prihodi od prodaje roba i usluga", duguje: 0, potrazuje: totalAmount }
+    ]
+  );
   
   if (!isMobile) Browser.msgBox("Račun poslan na: " + email);
   return true;
