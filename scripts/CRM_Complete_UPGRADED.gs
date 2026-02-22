@@ -783,9 +783,10 @@ function sendCustomInvoice(isMobile) {
   
   // Formatiramo link za knjigovodstvo ako ga imamo
   var dokLink = pdfDriveUrl ? '=HYPERLINK("' + pdfDriveUrl + '"; "' + docId + '")' : docId;
+  var formattedDate = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "dd.MM.yyyy.");
 
   recordDnevnikEntry(
-    new Date(), 
+    formattedDate, 
     "IRA", 
     name, 
     "Izdavanje računa po upitu " + inquiryId, 
@@ -798,7 +799,7 @@ function sendCustomInvoice(isMobile) {
   
   // --- ACCOUNTING: LOG IZVOD (Auto-paid as Advance) ---
   recordDnevnikEntry(
-    new Date(), 
+    formattedDate, 
     "IZVOD", 
     name, 
     "Avansna uplata kupca po računu " + inquiryId, 
