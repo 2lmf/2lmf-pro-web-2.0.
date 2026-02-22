@@ -693,6 +693,9 @@ function sendCustomOffer(isMobile) {
   // PDF GENERATION
   var pdfBlob = HtmlService.createHtmlOutput(htmlBody).setTitle("Ponuda").getAs('application/pdf');
   pdfBlob.setName("Ponuda_" + inquiryId + ".pdf");
+  
+  // SAVE TO DRIVE
+  savePdfToDrive(pdfBlob, "Izlazni računi");
 
   // SEND EMAIL
   MailApp.sendEmail({
@@ -751,14 +754,17 @@ function sendCustomInvoice(isMobile) {
   }
   
   var isHidro = String(color || "").toUpperCase().indexOf("HIDRO") !== -1;
-  var htmlBody = generateHtml(items, name, false, docId, color, isHidro, "Račun #"+docId + " - 2LMF PRO", address, oib);
+  var htmlBody = generateHtml(items, name, false, docId, color, isHidro, "Račun br. "+docId + " - 2LMF PRO", address, oib);
   
   var pdfBlob = HtmlService.createHtmlOutput(htmlBody).setTitle("Racun").getAs('application/pdf');
   pdfBlob.setName("Racun_" + docId + ".pdf");
+  
+  // SAVE TO DRIVE
+  savePdfToDrive(pdfBlob, "Izlazni računi");
 
   MailApp.sendEmail({
     to: email,
-    subject: "Račun #" + docId + " - 2LMF PRO",
+    subject: "Račun br. " + docId + " - 2LMF PRO",
     htmlBody: htmlBody,
     attachments: [pdfBlob],
     name: "2LMF PRO"
@@ -873,19 +879,12 @@ function generateHtml(items, name, isAutoReply, inquiryId, color, isHidro, subje
                ".footer { background: #fff !important; border-top: 2px solid #333 !important; } " +
              "} " + 
              "</style></head><body>" +
-             "<div style='padding: 20px; max-width: 650px; margin: 0 auto; font-size: 14px; color: #333; line-height: 1.6;'>" +
-             "Poštovani " + kupacHtml + ",<br>" + 
-             (isAutoReply ? 
-               "informativna ponuda za Vaš upit nalazi se niže u mailu.<br><br>" +
-               "Ukoliko Vam ponuda odgovara, javite se povratno na mail ili mobitel i poslati ćemo Vam službenu ponudu za plaćanje.<br><br>" +
-               "Vaš <b>2LMF PRO tim</b><br>" +
-               "Mobitel: +385 95 311 5007<br>" +
-               "Email: 2lmf.info@gmail.com" : 
-               "ispod se nalazi Vaša službena ponuda:") + 
+             "<div style='padding: 30px 20px 20px 20px; max-width: 650px; margin: 0 auto; font-size: 14px; color: #333; line-height: 1.6;'>" +
+             kupacHtml +
              "</div>" +
              "<div class='container'>" +
              "<div class='header'><h1 class='logo-text'>2LMF PRO</h1><div class='sub-header'>HIDRO & TERMO IZOLACIJA • FASADE • OGRADE</div></div>" +
-             "<div class='content'><h2 class='title'>" + title + " #" + inquiryId + "</h2>" +
+             "<div class='content'><h2 class='title'>" + title + " br. " + inquiryId + "</h2>" +
               (color ? 
                 "<div style='margin-bottom:25px; display:flex; align-items:center; background:#f9f9f9; padding:15px; border-radius:8px; border:1px solid #eee;'>" +
                 "<div style='width:35px; height:35px; background:" + primaryColor + "; border-radius:6px; margin-right:15px; border:2px solid #fff; box-shadow:0 1px 3px rgba(0,0,0,0.1);'></div>" +
@@ -1415,5 +1414,22 @@ function paySelectedUra() {
       // Vizualna potvrda: bojimo red u zeleno da se zna da je riješeno
       sheet.getRange(row, 1, 1, 10).setBackground("#d9ead3"); 
       ui.alert("✅ Izvod uspješno proknjižen na dno Dnevnika!");
+  }
+}
+
+// --- 6. DRIVE AUTO-SAVE HELPER ---
+function savePdfToDrive(pdfBlob, folderName) {
+  try {
+    var folders = DriveApp.getFoldersByName(folderName);
+    var folder;
+    if (folders.hasNext()) {
+      folder = folders.next();
+    } else {
+      // Create folder on the root drive if it doesn't exist
+      folder = DriveApp.createFolder(folderName);
+    }
+    folder.createFile(pdfBlob);
+  } catch (err) {
+    console.log("Nemoguće spremiti PDF na Drive: " + err);
   }
 }
