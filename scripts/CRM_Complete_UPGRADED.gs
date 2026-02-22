@@ -783,7 +783,7 @@ function sendCustomInvoice(isMobile) {
   
   // Formatiramo link za knjigovodstvo ako ga imamo
   var dokLink = pdfDriveUrl ? '=HYPERLINK("' + pdfDriveUrl + '"; "' + docId + '")' : docId;
-  var formattedDate = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "dd.MM.yyyy.");
+  var formattedDate = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "dd.MM.yyyy., HH:mm");
 
   recordDnevnikEntry(
     formattedDate, 
@@ -871,12 +871,13 @@ function generateHtml(items, name, isAutoReply, inquiryId, color, isHidro, subje
   if (oib) kupacHtml += "<br>OIB: " + oib;
 
   var html = "<!DOCTYPE html><html><head>" +
+             "<link href='https://fonts.googleapis.com/css2?family=Montserrat:wght@800&family=Inter:wght@400;600;700&display=swap' rel='stylesheet'>" +
              "<style>" +
-             "body { margin:0; padding:0; background-color: " + (isAutoReply ? "#fff" : "#f8f9fa") + "; font-family: " + fontStack + "; }" +
+             "body { margin:0; padding:0; background-color: " + (isAutoReply ? "#fff" : "#f8f9fa") + "; font-family: 'Inter', " + fontStack + "; }" +
              ".page-wrapper { }" +
              ".container { max-width: 650px; margin: 0 auto; background: #ffffff; width: 100%; box-sizing: border-box; }" +
              ".header { background: " + primaryColor + "; padding: 25px; text-align: center; border-bottom: 5px solid " + darkColor + "; }" +
-             ".logo-text { font-size: 38px; font-weight: bold; letter-spacing: 2px; color: " + darkColor + "; margin:0; text-transform: uppercase; }" +
+             ".logo-text { font-family: 'Montserrat', sans-serif; font-size: 38px; font-weight: 800; letter-spacing: 2px; color: " + darkColor + "; margin:0; text-transform: uppercase; }" +
              ".sub-header { font-size: 10px; color: " + darkColor + "; margin-top: 5px; opacity: 0.9; letter-spacing: 1px; font-weight: bold; }" +
              ".content { padding: 40px; }" +
              ".title { color: " + primaryColor + "; font-size: 22px; margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 10px; font-weight: bold; }" +
@@ -904,7 +905,7 @@ function generateHtml(items, name, isAutoReply, inquiryId, color, isHidro, subje
              "</style></head><body><div class='page-wrapper'>" +
              "<table width='100%' cellpadding='0' cellspacing='0' border='0' style='max-width: 650px; margin: 0 auto;'><tr>" +
              "<td style='padding: 30px 20px 20px 20px; font-size: 14px; color: #333; line-height: 1.6; vertical-align: top;'>" + kupacHtml + "</td>" +
-             "<td style='padding: 30px 20px 20px 20px; font-size: 14px; color: #333; line-height: 1.6; text-align: right; vertical-align: top; white-space: nowrap;'>Datum i vrijeme izdavanja:<br><b>" + Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "dd.MM.yyyy. HH:mm") + "</b></td>" +
+             "<td style='padding: 30px 20px 20px 20px; font-size: 14px; color: #333; line-height: 1.6; text-align: right; vertical-align: top; white-space: nowrap;'>Datum i vrijeme izdavanja:<br><b>" + Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "dd.MM.yyyy., HH:mm") + "</b></td>" +
              "</tr></table>" +
              "<div class='container'>" +
              "<div class='header'><h1 class='logo-text'>2LMF PRO</h1><div class='sub-header'>HIDRO & TERMO IZOLACIJA • FASADE • OGRADE</div></div>" +
