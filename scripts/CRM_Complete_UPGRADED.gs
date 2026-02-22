@@ -1239,18 +1239,67 @@ function updateGitHubFile(owner, repo, path, branch, content, sha, message, toke
   UrlFetchApp.fetch(url, { "method": "put", "headers": { "Authorization": "token " + token }, "contentType": "application/json", "payload": JSON.stringify(payload) });
 }
 
-function addItemsFromCjenik(isMobile) {
-  var ss = SpreadsheetApp.getActiveSpreadsheet(); var sheetCjenik = ss.getSheetByName("CJENIK"); var sheetGen = ss.getSheetByName("Generator Ponuda");
+function addItemsFromCjenik() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet(); 
+  var sheetCjenik = ss.getSheetByName("CJENIK"); 
+  var sheetGen = ss.getSheetByName("Generator Ponuda");
+  
+  if (!sheetCjenik || !sheetGen) return;
+
   var data = sheetCjenik.getDataRange().getValues();
   var itemsToAdd = [];
+  var rowsToClear = [];
+  
   for (var i = 1; i < data.length; i++) {
-    var qty = parseFloat(data[i][8]); // Column I is index 8 (0-based)
-    if (!isNaN(qty) && qty > 0) {
-      itemsToAdd.push([sheetGen.getLastRow()-11, data[i][0], data[i][1], qty, "kom", data[i][4]]);
-      sheetCjenik.getRange(i + 1, 9).clearContent(); // Clear Column I (1-based index 9)
+    var val = data[i][6]; // Stupac G (indeks 6)
+    var qty = 0;
+    var isCheckbox = (val === true || val === false);
+    
+    if (val === true || String(val).toUpperCase() === "TRUE" || String(val).toUpperCase() === "DA") {
+      qty = 1;
+    } else if (!isNaN(parseFloat(val)) && parseFloat(val) > 0 && !isCheckbox) {
+      qty = parseFloat(val);
+    }
+    
+    if (qty > 0) {
+      // Mjesto 0 je rezervirano za redni broj koji ćemo izračunati poslije
+      itemsToAdd.push(["", data[i][0], data[i][1], qty, data[i][5] || "kom", data[i][4]]);
+      rowsToClear.push({ row: i + 1, isCheckbox: isCheckbox });
     }
   }
-  if (itemsToAdd.length > 0) sheetGen.getRange(sheetGen.getLastRow()+1, 1, itemsToAdd.length, 6).setValues(itemsToAdd);
+  
+  if (itemsToAdd.length > 0) {
+    var lastGenRow = sheetGen.getLastRow();
+    var startRow = Math.max(12, lastGenRow + 1); // Pretpostavka da zaglavlje završava oko 11
+    
+    // Ako Generator već ima stavke, nastavljamo brojčanik
+    var startingIndex = 1;
+    if (lastGenRow >= 12) {
+       startingIndex = parseInt(sheetGen.getRange(lastGenRow, 1).getValue()) || 0;
+       startingIndex += 1;
+    }
+    
+    // Dodaj redne brojeve
+    for (var j = 0; j < itemsToAdd.length; j++) {
+       itemsToAdd[j][0] = startingIndex + j;
+    }
+    
+    sheetGen.getRange(startRow, 1, itemsToAdd.length, 6).setValues(itemsToAdd);
+    
+    // Obriši/Odznači u Cjeniku
+    rowsToClear.forEach(function(r) {
+       var cell = sheetCjenik.getRange(r.row, 7); // Stupac G
+       if (r.isCheckbox) {
+          try { cell.uncheck(); } catch(e) { cell.setValue(false); }
+       } else {
+          cell.clearContent();
+       }
+    });
+    
+    SpreadsheetApp.getUi().alert("✅ Uspješno prebačeno " + itemsToAdd.length + " stavaka u Ponudu!");
+  } else {
+    SpreadsheetApp.getUi().alert("ℹ️ Niste označili niti jednu stavku u stupcu G (količina ili kvačica).");
+  }
 }
 
 // --- 4. AI INVOICE OCR PROCESSING ---
