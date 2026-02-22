@@ -888,10 +888,10 @@ function generateHtml(items, name, isAutoReply, inquiryId, color, isHidro, subje
                ".footer { background: #fff !important; border-top: 2px solid #333 !important; position: relative; bottom: 0; width: 100%; box-sizing: border-box; } " +
              "} " + 
              "</style></head><body><div class='page-wrapper'>" +
-             "<div style='padding: 30px 20px 20px 20px; max-width: 650px; margin: 0 auto; font-size: 14px; color: #333; line-height: 1.6; width: 100%; box-sizing: border-box; display: flex; justify-content: space-between;'>" +
-             "<div>" + kupacHtml + "</div>" +
-             "<div style='text-align:right;'>Datum izdavanja:<br><b>" + Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "dd.MM.yyyy.") + "</b></div>" +
-             "</div>" +
+             "<table width='100%' cellpadding='0' cellspacing='0' border='0' style='max-width: 650px; margin: 0 auto;'><tr>" +
+             "<td style='padding: 30px 20px 20px 20px; font-size: 14px; color: #333; line-height: 1.6; vertical-align: top;'>" + kupacHtml + "</td>" +
+             "<td style='padding: 30px 20px 20px 20px; font-size: 14px; color: #333; line-height: 1.6; text-align: right; vertical-align: top; white-space: nowrap;'>Datum izdavanja:<br><b>" + Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "dd.MM.yyyy.") + "</b></td>" +
+             "</tr></table>" +
              "<div class='container'>" +
              "<div class='header'><h1 class='logo-text'>2LMF PRO</h1><div class='sub-header'>HIDRO & TERMO IZOLACIJA • FASADE • OGRADE</div></div>" +
              "<div class='content'><h2 class='title'>" + title + " br. " + inquiryId + "</h2>" +
