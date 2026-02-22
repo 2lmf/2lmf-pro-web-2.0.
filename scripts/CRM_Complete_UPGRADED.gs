@@ -1420,13 +1420,21 @@ function paySelectedUra() {
 // --- 6. DRIVE AUTO-SAVE HELPER ---
 function savePdfToDrive(pdfBlob, folderName) {
   try {
-    var folders = DriveApp.getFoldersByName(folderName);
+    var parentName = "2LMF Računovodstvo";
+    var rootFolders = DriveApp.getFoldersByName(parentName);
+    var targetParent;
+    if (rootFolders.hasNext()) {
+      targetParent = rootFolders.next();
+    } else {
+      targetParent = DriveApp.getRootFolder();
+    }
+    
+    var folders = targetParent.getFoldersByName(folderName);
     var folder;
     if (folders.hasNext()) {
       folder = folders.next();
     } else {
-      // Create folder on the root drive if it doesn't exist
-      folder = DriveApp.createFolder(folderName);
+      folder = targetParent.createFolder(folderName);
     }
     folder.createFile(pdfBlob);
   } catch (err) {
