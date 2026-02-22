@@ -255,7 +255,7 @@ function processInquiry(params) {
                        <p><b>Izvor:</b> ${params.source || "Kalkulator Uštede"}</p>`;
                        
       MailApp.sendEmail({
-        to: "2lmf.info@gmail.com", 
+        to: "info@2lmf-pro.hr", 
         subject: "📈 ZAHTJEV ZA VODIČ: " + name + " (" + inquiryId + ")",
         htmlBody: adminHtml
       });
@@ -277,7 +277,7 @@ function processInquiry(params) {
                        <p><b>Poruka:</b><br>${message.replace(/\n/g, '<br>')}</p>`;
                        
       MailApp.sendEmail({
-        to: "2lmf.info@gmail.com", 
+        to: "info@2lmf-pro.hr", 
         subject: "📩 NOVI KONTAKT UPIT: " + name + " (" + inquiryId + ")",
         htmlBody: adminHtml
       });
@@ -328,7 +328,7 @@ function processInquiry(params) {
       
       var adminHtml = generateAdminHtml(items, name, email, phone, subject, customerHtml, params.location);
       var adminMailOptions = {
-        to: "2lmf.info@gmail.com", 
+        to: "info@2lmf-pro.hr", 
         subject: "🔔 NOVI UPIT: " + name + " (" + inquiryId + ")",
         htmlBody: adminHtml
       };
@@ -842,7 +842,8 @@ function generateHtml(items, name, isAutoReply, inquiryId, color, isHidro, subje
   var lightGray = "#f8f9fa";
 
   var title = isAutoReply ? "INFORMATIVNA PONUDA" : "PONUDA ZA PLAĆANJE";
-  if (subjectUpper.indexOf("RAČUN") !== -1) title = "RAČUN";
+  var isInvoice = subjectUpper.indexOf("RAČUN") !== -1;
+  if (isInvoice) title = "RAČUN";
 
   // Use simple fonts for PDF and email reliability
   var fontStack = "'Segoe UI', Roboto, Arial, sans-serif";
@@ -904,17 +905,20 @@ function generateHtml(items, name, isAutoReply, inquiryId, color, isHidro, subje
 
     html += "</tbody></table>" +
             "<div class='total-block'><div style='font-size:11px; font-weight:bold; margin-bottom:5px; color:" + darkColor + ";'>SVEUKUPNI IZNOS (MPC)</div>" +
-            "<div class='total-value'>" + rawTotal.toLocaleString('hr-HR', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " €</div></div>" +
-            "<div class='note'><b>Uvjeti kupnje:</b><br><ul style='margin-top:5px; padding-left:20px; margin-bottom:10px;'><li>Plaćanje: avans - uplatom na žiro račun</li><li>Minimalni iznos kupovine: 200,00 eur</li><li>Sve cijene su sa PDV-om*</li></ul>" +
-            "<div style='font-size:11px; opacity:0.8;'>* Porezni obveznik nije u sustavu PDV-a, temeljem članka 90. Zakona o porezu na dodanu vrijednost</div></div>";
+            "<div class='total-value'>" + rawTotal.toLocaleString('hr-HR', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " €</div></div>";
+            
+    if (!isInvoice) {
+        html += "<div class='note'><b>Uvjeti kupnje:</b><br><ul style='margin-top:5px; padding-left:20px; margin-bottom:10px;'><li>Plaćanje: avans - uplatom na žiro račun</li><li>Minimalni iznos kupovine: 200,00 eur</li><li>Sve cijene su sa PDV-om*</li></ul>" +
+                "<div style='font-size:11px; opacity:0.8;'>* Porezni obveznik nije u sustavu PDV-a, temeljem članka 90. Zakona o porezu na dodanu vrijednost</div></div>";
+    }
 
     // QR Code logic: Using Base64 URI for PDF stability
-    if (!isAutoReply && qrDataUri) {
+    if (!isAutoReply && qrDataUri && !isInvoice) {
         html += "<div class='qr-box'><img src='" + qrDataUri + "' style='width:150px;'>" +
                 "<div style='margin-top:10px; font-size:11px; color:#666; font-weight:bold;'>SKENIRAJ I PLATI (HUB3 STANDARD)</div></div>";
     }
 
-    html += "</div><div class='footer'><div><b>2LMF PRO j.d.o.o.</b></div><div>Orešje 7, 10090 Zagreb | Telefon: +385 95 311 5007 | 2lmf.info@gmail.com</div>" +
+    html += "</div><div class='footer'><div><b>2LMF PRO j.d.o.o.</b></div><div>Orešje 7, 10090 Zagreb | Telefon: +385 95 311 5007 | info@2lmf-pro.hr</div>" +
             "<div style='margin-top:15px; border-top:1px solid rgba(0,0,0,0.1); padding-top:15px;'>IBAN: <b>HR3123400091111213241</b> | © 2026 2LMF PRO</div></div></div></body></html>";
     return html;
 }
