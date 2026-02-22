@@ -855,12 +855,13 @@ function generateHtml(items, name, isAutoReply, inquiryId, color, isHidro, subje
 
   var html = "<!DOCTYPE html><html><head>" +
              "<style>" +
-             "body { margin:0; padding:0; background-color: " + (isAutoReply ? "#fff" : "#f8f9fa") + "; font-family: " + fontStack + "; }" +
-             ".container { max-width: 650px; margin: 0 auto; background: #ffffff; }" +
-             ".header { background: " + primaryColor + "; padding: 25px; text-align: center; border-bottom: 5px solid " + darkColor + "; }" +
+             "body { margin:0; padding:0; background-color: " + (isAutoReply ? "#fff" : "#f8f9fa") + "; font-family: " + fontStack + "; display: flex; flex-direction: column; min-height: 100vh; }" +
+             ".page-wrapper { display: flex; flex-direction: column; flex: 1; }" +
+             ".container { max-width: 650px; margin: 0 auto; background: #ffffff; display: flex; flex-direction: column; flex: 1; width: 100%; box-sizing: border-box; }" +
+             ".header { background: " + primaryColor + "; padding: 25px; text-align: center; border-bottom: 5px solid " + darkColor + "; flex-shrink: 0; }" +
              ".logo-text { font-size: 38px; font-weight: bold; letter-spacing: 2px; color: " + darkColor + "; margin:0; text-transform: uppercase; }" +
              ".sub-header { font-size: 10px; color: " + darkColor + "; margin-top: 5px; opacity: 0.9; letter-spacing: 1px; font-weight: bold; }" +
-             ".content { padding: 40px; }" +
+             ".content { padding: 40px; flex: 1; }" +
              ".title { color: " + primaryColor + "; font-size: 22px; margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 10px; font-weight: bold; }" +
              ".table-wrapper { width: 100%; border-collapse: collapse; margin-bottom: 30px; }" +
              ".th { background: " + primaryColor + "; color: " + darkColor + "; padding: 12px; font-size: 11px; font-weight: bold; text-align: left; border: 1px solid " + darkColor + "; text-transform: uppercase; }" +
@@ -868,19 +869,23 @@ function generateHtml(items, name, isAutoReply, inquiryId, color, isHidro, subje
              ".td-num { text-align: right; font-weight: 600; white-space: nowrap; }" +
              ".total-block { background: " + primaryColor + "; color: " + darkColor + "; padding: 20px; text-align: right; border: 2px solid " + darkColor + "; }" +
              ".total-value { font-size: 24px; font-weight: bold; color: " + darkColor + "; }" +
-             ".footer { background: " + primaryColor + "; color: " + darkColor + "; padding: 30px 20px; font-size: 11px; text-align: center; line-height: 1.8; border-top: 5px solid " + darkColor + "; }" +
+             ".footer { background: " + primaryColor + "; color: " + darkColor + "; padding: 30px 20px; font-size: 11px; text-align: center; line-height: 1.8; border-top: 5px solid " + darkColor + "; flex-shrink: 0; }" +
              ".note { background: #fff8f0; border-left: 4px solid " + primaryColor + "; padding: 20px; font-size: 12px; margin-top: 30px; line-height: 1.6; }" +
              ".qr-box { margin-top: 30px; text-align: center; border: 1px solid #eee; padding: 20px; border-radius: 10px; }" +
              
              // PDF SPECIFIC OVERRIDES
              "@media print { " +
+               "html, body { height: 100%; margin: 0 !important; padding: 0 !important; overflow: hidden; }" +
+               ".page-wrapper { height: 100vh; display: flex; flex-direction: column; }" +
+               ".container { flex: 1; display: flex; flex-direction: column; width: 100%; max-width: none; }" +
+               ".content { flex: 1; }" +
                ".header { background: #fff !important; border-bottom: 2px solid #333 !important; } " +
                ".th { background: #eee !important; color: #000 !important; } " +
                ".total-block { background: #fff !important; border: 2px solid #333 !important; } " +
-               ".footer { background: #fff !important; border-top: 2px solid #333 !important; } " +
+               ".footer { background: #fff !important; border-top: 2px solid #333 !important; position: relative; bottom: 0; width: 100%; box-sizing: border-box; } " +
              "} " + 
-             "</style></head><body>" +
-             "<div style='padding: 30px 20px 20px 20px; max-width: 650px; margin: 0 auto; font-size: 14px; color: #333; line-height: 1.6;'>" +
+             "</style></head><body><div class='page-wrapper'>" +
+             "<div style='padding: 30px 20px 20px 20px; max-width: 650px; margin: 0 auto; font-size: 14px; color: #333; line-height: 1.6; width: 100%; box-sizing: border-box;'>" +
              kupacHtml +
              "</div>" +
              "<div class='container'>" +
@@ -918,7 +923,7 @@ function generateHtml(items, name, isAutoReply, inquiryId, color, isHidro, subje
                 "<div style='margin-top:10px; font-size:11px; color:#666; font-weight:bold;'>SKENIRAJ I PLATI (HUB3 STANDARD)</div></div>";
     }
 
-    html += "</div><div class='footer'><div><b>2LMF PRO j.d.o.o.</b></div><div>Orešje 7, 10090 Zagreb | Telefon: +385 95 311 5007 | info@2lmf-pro.hr</div>" +
+    html += "</div></div><div class='footer'><div><b>2LMF PRO j.d.o.o.</b></div><div>Orešje 7, 10090 Zagreb | Telefon: +385 95 311 5007 | info@2lmf-pro.hr</div>" +
             "<div style='margin-top:15px; border-top:1px solid rgba(0,0,0,0.1); padding-top:15px;'>IBAN: <b>HR3123400091111213241</b> | © 2026 2LMF PRO</div></div></div></body></html>";
     return html;
 }
