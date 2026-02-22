@@ -415,6 +415,8 @@ function onOpen() {
       .addItem('🚀 Ažuriraj cijene na webu', 'syncPricesToWeb')
       .addSeparator()
       .addItem('➕ Dodaj označeno iz Cjenika u Ponudu', 'addItemsFromCjenik')
+      .addSeparator()
+      .addItem('🤖 Pokreni AI skeniranje (URA)', 'processNewInvoices')
       .addToUi();
 }
 
