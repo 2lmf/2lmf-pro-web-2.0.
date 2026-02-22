@@ -796,6 +796,19 @@ function sendCustomInvoice(isMobile) {
     ]
   );
   
+  // --- ACCOUNTING: LOG IZVOD (Auto-paid as Advance) ---
+  recordDnevnikEntry(
+    new Date(), 
+    "IZVOD", 
+    name, 
+    "Avansna uplata kupca po računu " + inquiryId, 
+    dokLink, 
+    [
+      { konto: "1000", nazivKonta: "Žiro račun", duguje: totalAmount, potrazuje: 0 },
+      { konto: "1200", nazivKonta: "Kupci u zemlji", duguje: 0, potrazuje: totalAmount }
+    ]
+  );
+  
   if (!isMobile) Browser.msgBox("Račun poslan na: " + email);
   return true;
 }
