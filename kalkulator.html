@@ -972,7 +972,11 @@
                 <span class="price-display" id="globalTotalPrice">??? €</span>
                 <small style="font-size: 0.5rem; opacity: 0.6;">Prikazano nakon slanja upita</small>
             </div>
-            <button class="submit-btn" id="btnSubmitInquiry">POŠALJI UPIT I VIDI CIJENU</button>
+            <div style="text-align: center; margin-top: 15px; margin-bottom: 5px;">
+                <span style="color: #aaa; font-size: 0.65rem;"><i class="fas fa-lock" style="margin-right: 4px;"></i>Vaš
+                    upit ne predstavlja obvezu kupnje</span>
+            </div>
+            <button class="submit-btn" id="btnSubmitInquiry">POŠALJI UPIT I OTKLJUČAJ UKUPNU CIJENU</button>
         </aside>
     </main>
 
@@ -1737,9 +1741,9 @@
                     <div class="line-item">
                         <div style="flex:1;">
                             <div class="name">${it.name}${removeBtn}</div>
-                            <div class="details">${qtyDisplay} x ${isAuthorized ? format(it.price) : '???'} €</div>
+                            <div class="details">${qtyDisplay} x ${format(it.price)} €</div>
                         </div>
-                        <div class="price">${isAuthorized ? format(itemTotal) : '???'} €</div>
+                        <div class="price">${format(itemTotal)} €</div>
                     </div>`;
             }).join('');
             totalDisplay.textContent = isAuthorized ? format(total) + ' €' : '??? €';
