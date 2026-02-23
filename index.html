@@ -194,12 +194,19 @@
             padding: 180px 20px 100px;
             /* Pushed down from nav */
             background-image:
-                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                /* Major Grid (250px) */
+                linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+                /* Minor Grid (50px) */
+                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                /* Accent Glows */
                 radial-gradient(circle at 70% 20%, rgba(230, 126, 34, 0.08), transparent 40%),
-                radial-gradient(circle at 20% 80%, rgba(0, 242, 255, 0.05), transparent 40%);
-            background-size: 50px 50px, 50px 50px, 100% 100%, 100% 100%;
-            background-position: top center, top center, center, center;
+                radial-gradient(circle at 20% 80%, rgba(0, 242, 255, 0.05), transparent 40%),
+                /* Vignette to break uniformity */
+                radial-gradient(ellipse at center 30%, transparent 20%, var(--bg-dark) 90%);
+            background-size: 250px 250px, 250px 250px, 50px 50px, 50px 50px, 100% 100%, 100% 100%, 100% 100%;
+            background-position: top center, top center, top center, top center, center, center, center;
             box-sizing: border-box;
             padding-bottom: 20px !important;
             /* Reduced from 50px */
