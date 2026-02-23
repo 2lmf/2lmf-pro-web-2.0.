@@ -1665,6 +1665,36 @@
         document.addEventListener('DOMContentLoaded', async () => {
             initNavigation();
             setupInquiryLogic();
+
+            // --- TRACK FIRST INTERACTION ---
+            const trackInteraction = () => {
+                if (!sessionStorage.getItem('2lmf_interacted')) {
+                    sessionStorage.setItem('2lmf_interacted', 'true');
+                    console.log("Tracking first interaction...");
+
+                    const payload = {
+                        action: 'log_interaction',
+                        module: activeModule,
+                        source: 'CalculatorV2',
+                        timestamp: new Date().toISOString()
+                    };
+
+                    if (typeof google === 'undefined') {
+                        fetch(GOOGLE_SCRIPT_URL, {
+                            method: 'POST',
+                            mode: 'no-cors',
+                            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                            body: new URLSearchParams(payload)
+                        }).catch(e => console.error("Tracking error:", e));
+                    } else if (google.script && google.script.run) {
+                        google.script.run.doPostManual(payload);
+                    }
+                }
+            };
+            const configArea = document.querySelector('.config-area');
+            if (configArea) configArea.addEventListener('click', trackInteraction, { once: true });
+            else document.body.addEventListener('click', trackInteraction, { once: true });
+
             await initPriceFetch(); // Wait for prices!
             const hash = window.location.hash.replace('#', '');
             const validModules = ['ograde', 'hidro', 'fasade', 'termo', 'katalog'];
