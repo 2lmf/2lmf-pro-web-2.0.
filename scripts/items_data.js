@@ -14,7 +14,7 @@ const prices = {
         8: { price: 10.125, sku: "2006", name: "Ravatherm XPS: 8cm" },
         10: { price: 12.65625, sku: "2007", name: "Ravatherm XPS: 10cm" },
         12: { price: 15.187500000000002, sku: "2008", name: "Ravatherm XPS: 12cm" },
-        15: { price: 19.743750000000002, sku: "2009", name: "Ravatherm XPS: 15cm" }
+        15: { price: 20.503125, sku: "2009", name: "Ravatherm XPS: 15cm" }
     },
 
     // --- KAMENA VUNA ---
@@ -40,11 +40,11 @@ const prices = {
     },
 
     bitumen: {
-        diamond_p4: { price: 4.978125, sku: "2117", name: "RAVAPROOF Diamond P 4, SBS, Polyester, s posipom, sivi" },
-        ruby_v4: { price: 3.7125000000000004, sku: "2118", name: "RAVAPROOF Ruby V-4" },
-        sapphire_g3: { price: 2.0250000000000004, sku: "2119", name: "RAVAPROOF Sapphire G3" },
-        sapphire_g4: { price: 2.7, sku: "2120", name: "RAVAPROOF Sapphire G4" },
-        vapor_al: { price: 4.7250000000000005, sku: "2121", name: "RAVAPROOF Vapor Al-35 (3,5mm) , SBS" }
+        diamond_p4: { price: 6.453125, sku: "2117", name: "RAVAPROOF Diamond P 4, SBS, Polyester, s posipom, sivi" },
+        ruby_v4: { price: 4.675, sku: "2118", name: "RAVAPROOF Ruby V-4" },
+        sapphire_g3: { price: 2.55, sku: "2119", name: "RAVAPROOF Sapphire G3" },
+        sapphire_g4: { price: 3.4, sku: "2120", name: "RAVAPROOF Sapphire G4" },
+        vapor_al: { price: 5.95, sku: "2121", name: "RAVAPROOF Vapor Al-35 (3,5mm) , SBS" }
     },
 
     // --- FASADE (ETICS) ---
