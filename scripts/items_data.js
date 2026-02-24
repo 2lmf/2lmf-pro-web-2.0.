@@ -136,7 +136,7 @@ const prices = {
     chemicals: {
         insta_stik: { price: 10.293750000000001, sku: "2010", name: "Dow Insta Stik, za pi?tolj" },
         ak20: { price: 0.44999999999999996, sku: "2122", name: "Isomat AK 20" },
-        aquamat_elastic: { price: 1.9500000000000002, sku: "2128", name: "Isomat Aquamat Elastic sivi, 35kg (A+B komp)" },
+        aquamat_elastic: { price: 2.25, sku: "2128", name: "Isomat Aquamat Elastic sivi, 35kg (A+B komp)" },
         pu_primer: { price: 12.025, sku: "2129", name: "Isomat PU pimer, 5kg" },
         isoflex_pu500: { price: 7.6375, sku: "2130", name: "Isomat: Isoflex PU500, bijeli, (poliuretan)" },
         fimizol: { price: 24.94375, sku: "2131", name: "FIMIZOL, 9L, bitumenski premaz" }
