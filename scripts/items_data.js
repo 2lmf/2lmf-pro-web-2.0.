@@ -14,7 +14,7 @@ const prices = {
         8: { price: 10.125, sku: "2006", name: "Ravatherm XPS: 8cm" },
         10: { price: 12.65625, sku: "2007", name: "Ravatherm XPS: 10cm" },
         12: { price: 15.187500000000002, sku: "2008", name: "Ravatherm XPS: 12cm" },
-        15: { price: 20.503125, sku: "2009", name: "Ravatherm XPS: 15cm" }
+        15: { price: 19.743750000000002, sku: "2009", name: "Ravatherm XPS: 15cm" }
     },
 
     // --- KAMENA VUNA ---
@@ -128,8 +128,8 @@ const prices = {
         anker_vijci: { price: 0.6299999999999999, sku: "1040", name: "SIDRENI VIJAK ZN M10" },
         zastita_ok: { price: 44.85, sku: "1041", name: "ZA?TITA OD POGLEDA, REBRASTA, 26 m?" },
         pricvrsnica_traka: { price: 0.7475000000000002, sku: "1042", name: "PVC PRI?VRSNICA ZA TRAKU" },
-        montaza_plate: { price: 31.25, sku: "1043", name: "monta?a na parapet/m'" },
-        montaza_concrete: { price: 43.75, sku: "1044", name: "monta?a u beton/m'" }
+        montaza_plate: { price: 25, sku: "1043", name: "monta?a na parapet/m'" },
+        montaza_concrete: { price: 35, sku: "1044", name: "monta?a u beton/m'" }
     },
 
     // --- KEMIJA I OSTALO ---
