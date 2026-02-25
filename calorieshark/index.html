@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="hr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CalorieShark</title>
+
+    <!-- Fonts: Orbitron for tech look -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Orbitron:wght@400;700;900&display=swap"
+        rel="stylesheet">
+    <!-- Font Awesome -->
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0F172A">
+    <link rel="apple-touch-icon" href="assets/logo_shark_digital_transparent.png">
+
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Cropper.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+    <!-- TOP NAVIGATION BAR -->
+    <nav class="top-nav"
+        style="display: flex; flex-direction: row; justify-content: space-between; align-items: center; flex-wrap: nowrap; width: 100%;">
+        <!-- BRANDING (Left) -->
+        <div class="brand-container" style="display: flex; flex-direction: column;">
+            <div class="brand-text">
+                <span class="calorie">CALORIE</span><span class="shark">SHARK</span>
+            </div>
+            <div class="sub-brand" style="font-size: 0.75rem; font-weight: 700; margin-top: 2px;">
+                <span style="color: var(--text-muted);">by </span><span
+                    style="color: var(--accent-cyan);">Sharp</span><span
+                    style="color: var(--accent-orange);">Shark</span>
+            </div>
+        </div>
+
+        <!-- BUTTONS (Right) -->
+        <div style="display:flex; gap:10px; align-items: center;">
+            <button id="btnStats" class="icon-btn" title="Statistika Cloud Dnevnika"><i
+                    class="fas fa-chart-line"></i></button>
+            <button id="btnSettings" class="icon-btn" title="Postavke"><i class="fas fa-cog"></i></button>
+        </div>
+    </nav>
+
+    <!-- ONBOARDING / SETUP SCREEN -->
+    <div id="screenOnboarding" class="screen">
+        <div class="onboarding-card">
+            <h2><i class="fas fa-user-astronaut"></i> TVOJ PROFIL</h2>
+            <p class="subtitle">Unesi podatke za kreiranje osobnog oblaka.</p>
+
+            <div class="input-group">
+                <label>Korisničko ime (Username)</label>
+                <input type="text" id="inpUsername" placeholder="Npr. IvanMaster123" required autocomplete="off">
+            </div>
+
+            <div class="input-group">
+                <label>Spol</label>
+                <div class="toggle-group">
+                    <button class="toggle-btn active" data-gender="male">MUŠKO</button>
+                    <button class="toggle-btn" data-gender="female">ŽENSKO</button>
+                </div>
+            </div>
+
+            <div class="input-row">
+                <div class="input-group">
+                    <label>Godine</label>
+                    <input type="number" id="inpAge" value="30" min="10" max="100">
+                </div>
+                <div class="input-group">
+                    <label>Visina (cm)</label>
+                    <input type="number" id="inpHeight" value="180" min="100" max="250">
+                </div>
+            </div>
+
+            <div class="input-group" style="margin-top: 15px;">
+                <label>Trenutna težina (kg)</label>
+                <input type="number" id="inpWeight" value="85" min="30" max="200" step="0.1">
+            </div>
+
+            <button id="btnSaveProfile" class="primary-btn mt-20">ZAPOČNI <i class="fas fa-rocket"></i></button>
+        </div>
+    </div>
+
+    <!-- SETTINGS SCREEN (Profile Edit & About) -->
+    <div id="screenSettings" class="screen hidden" style="padding-top: 80px;">
+        <div class="onboarding-card">
+            <h2 style="color: var(--accent-cyan);"><i class="fas fa-cog"></i> POSTAVKE PROFILA</h2>
+
+            <div class="input-group">
+                <label>Korisničko ime (Username)</label>
+                <input type="text" id="inpSettingsUsername" placeholder="Npr. IvanMaster123" required
+                    autocomplete="off">
+            </div>
+
+            <div class="input-group">
+                <label>Spol</label>
+                <div class="toggle-group" id="settingsToggleGroup">
+                    <button class="toggle-btn active" data-gender="male">MUŠKO</button>
+                    <button class="toggle-btn" data-gender="female">ŽENSKO</button>
+                </div>
+            </div>
+
+            <div class="input-row">
+                <div class="input-group">
+                    <label>Godine</label>
+                    <input type="number" id="inpSettingsAge" value="30" min="10" max="100">
+                </div>
+                <div class="input-group">
+                    <label>Visina (cm)</label>
+                    <input type="number" id="inpSettingsHeight" value="180" min="100" max="250">
+                </div>
+            </div>
+
+            <div class="input-group" style="margin-top: 15px;">
+                <label>Trenutna težina (kg)</label>
+                <input type="number" id="inpSettingsWeight" value="85" min="30" max="200" step="0.1">
+            </div>
+
+            <button id="btnSaveSettings" class="primary-btn mt-20" style="margin-bottom: 30px;"><i
+                    class="fas fa-save"></i> SPREMI PROMJENE</button>
+
+            <!-- ABOUT APP SECTION -->
+            <div
+                style="background: rgba(255,255,255,0.8); border: 1px solid var(--glass-border); border-radius: 12px; padding: 20px; text-align: center; margin-top: 20px;">
+                <img src="assets/SharpShark_Logo.png" alt="SharpShark" style="width: 110px; margin-bottom: 20px;">
+                <h3
+                    style="color: var(--accent-orange); font-size: 1.1rem; margin-bottom: 10px; text-transform: uppercase;">
+                    O Aplikaciji</h3>
+                <p style="color: #222; font-size: 0.85rem; line-height: 1.6; margin-bottom: 15px;">
+                    <strong style="font-family: 'Orbitron', sans-serif;"><span
+                            style="color: var(--accent-cyan);">Calorie</span><span
+                            style="color: var(--accent-orange);">Shark</span></strong> je 100% besplatan alat (bez
+                    reklama) koji je razvio
+                    <strong style="font-family: 'Orbitron', sans-serif;"><span
+                            style="color: var(--accent-cyan);">Sharp</span><span
+                            style="color: var(--accent-orange);">Shark</span></strong> digital, digitalni odjel
+                    grupacije
+                    <strong style="font-family: 'Orbitron', sans-serif;"><span style="color: #111;">2LMF</span> <span
+                            style="color: var(--accent-orange);">PRO</span></strong>.
+                </p>
+                <p style="color: #222; font-size: 0.85rem; line-height: 1.6; margin-bottom: 20px;">
+                    Sviđa vam se moderan dizajn, AI integracija i brzina? Projektiramo robusne web aplikacije,
+                    progresivne aplikacije i portale za poduzeća.
+                </p>
+                <a href="https://2lmf-pro.hr/digitalna_dominacija.html" target="_blank"
+                    style="display: inline-block; background: var(--bg-dark); color: var(--accent-cyan); text-decoration: none; padding: 12px 20px; border-radius: 30px; font-weight: bold; font-size: 0.9rem; border: 1px solid var(--accent-cyan); transition: all 0.3s;">
+                    Zatraži neobvezujuću ponudu <i class="fas fa-external-link-alt"
+                        style="margin-left: 5px; font-size: 0.8rem;"></i>
+                </a>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- MAIN DASHBOARD SCREEN -->
+    <div id="screenDashboard" class="screen hidden">
+        <div class="dashboard-header">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <div class="date-display" style="margin-bottom: 0;">DANAS, 24. VELJAČE</div>
+                <button id="btnAddExercise"
+                    style="background: rgba(0,242,255,0.1); color: var(--accent-cyan); border: 1px solid var(--accent-cyan); padding: 6px 12px; border-radius: 20px; font-weight: bold; font-size: 0.8rem; cursor: pointer;">
+                    <i class="fas fa-running"></i> TRENING
+                </button>
+            </div>
+
+            <!-- Main Calorie Circle -->
+            <div class="calorie-circle">
+                <svg viewBox="0 0 100 100">
+                    <circle class="bg" cx="50" cy="50" r="45"></circle>
+                    <circle class="progress" id="kcalProgress" cx="50" cy="50" r="45" stroke-dasharray="283"
+                        stroke-dashoffset="283"></circle>
+                    <circle class="burned-track" id="kcalBurnedTrack" cx="50" cy="50" r="45" stroke="#00D084"
+                        stroke-dasharray="0 283" stroke-dashoffset="0" stroke-linecap="round"
+                        style="transition: stroke-dasharray 1s ease-out, stroke-dashoffset 1s ease-out;"></circle>
+                </svg>
+                <div class="circle-content">
+                    <div class="val" id="lblKcalEaten">0</div>
+                    <div class="lbl">/ <span id="lblKcalTarget">2500</span> KCAL</div>
+                    <div id="lblKcalBurned" class="hidden"
+                        style="color: #00D084; font-size: 0.8rem; font-weight: bold; margin-top: 5px;">
+                        <i class="fas fa-fire"></i> +<span id="lblBurnedVal">0</span> kcal budget
+                    </div>
+                </div>
+            </div>
+
+            <!-- Macro Circles -->
+            <div class="macros-row">
+                <div class="macro-item">
+                    <div class="macro-val" style="color: #00F2FF;" id="lblCarbs">0g</div>
+                    <div class="macro-lbl">UGLJIKOHIDRATI</div>
+                </div>
+                <div class="macro-item">
+                    <div class="macro-val" style="color: #E67E22;" id="lblProtein">0g</div>
+                    <div class="macro-lbl">PROTEINI</div>
+                </div>
+                <div class="macro-item">
+                    <div class="macro-val" style="color: #FF2A2A;" id="lblFat">0g</div>
+                    <div class="macro-lbl">MASTI</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="divider">DNEVNIK OBROKA</div>
+
+        <div class="meals-list" id="mealsList">
+            <!-- Dinamički obroci će se pojavljivati ovdje -->
+            <div class="empty-state">
+                <i class="fas fa-utensils"></i>
+                <p>Nema zabilježenih obroka danas.</p>
+            </div>
+        </div>
+
+        <!-- BRANDING FOOTER -->
+        <div
+            style="text-align:center; padding: 40px 20px 80px 20px; opacity: 0.8; display: flex; flex-direction: column; align-items: center; gap: 8px;">
+            <p style="font-size: 0.75rem; color: var(--text-muted); margin: 0; font-weight: 500;">
+                <i class="fas fa-bolt" style="color: var(--accent-orange); margin-right: 3px;"></i> Powered by
+            </p>
+            <img src="assets/SharpShark_Logo.png" alt="SharpShark Digital"
+                style="width: 110px; height: auto; margin-top: 2px; opacity: 1;">
+            <p style="font-size: 0.7rem; color: var(--text-muted); margin: 10px 0 0 0; letter-spacing: 0.5px;">digitalni
+                odjel</p>
+            <div
+                style="font-family: 'Orbitron', 'Montserrat', sans-serif; font-weight: 900; font-size: 1.25rem; letter-spacing: 2px;">
+                <span style="color: #111;">2LMF</span> <span style="color: var(--accent-orange);">PRO</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- FLOATING ACTION BUTTON (CAMERA) -->
+    <button id="fabCamera" class="fab hidden">
+        <i class="fas fa-camera"></i>
+    </button>
+    <input type="file" id="inpCamera" accept="image/*" capture="environment" class="hidden-file-input">
+
+    <!-- FLOATING TEXT/VOICE INPUT BAR -->
+    <div id="textInputBar" class="text-input-bar hidden">
+        <button id="btnVoice" class="icon-btn-small" title="Glasovni unos">
+            <i class="fas fa-microphone"></i>
+        </button>
+        <input type="text" id="inpTextMeal" placeholder="Upiši ili izgovori obrok..." autocomplete="off">
+        <button id="btnSendText" class="icon-btn-small" title="Pošalji">
+            <i class="fas fa-paper-plane"></i>
+        </button>
+    </div>
+
+    <!-- STATISTICS & CLOUD HISTORY SCREEN -->
+    <div id="screenStats" class="screen hidden" style="padding-top: 80px;">
+        <div
+            style="background: var(--bg-card); border-radius: 12px; padding: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px;">
+            <h3 style="color:var(--text-main); margin-bottom:5px; text-align:center;"><i
+                    class="fas fa-cloud-download-alt" style="color:var(--accent-cyan);"></i> Tvoj Cloud Dnevnik</h3>
+            <div style="text-align:center; font-size:0.85rem; color:var(--text-muted); margin-bottom:15px;">
+                Tvoj dnevni cilj (TDEE): <strong style="color:var(--accent-orange);" id="lblStatsTDEE">0</strong> kcal
+            </div>
+            <canvas id="kcalChart" width="400" height="200"></canvas>
+        </div>
+
+        <h4 style="color:var(--text-muted); margin-bottom:10px;">Kronološki ispisi obroka</h4>
+        <div id="cloudMealsList"></div>
+    </div>
+
+    <!-- CROPPER UI MODAL -->
+    <div id="cropModal" class="hidden"
+        style="position:fixed; top:0; left:0; width:100vw; height:100vh; background:#0F172A; z-index:9999; display:flex; flex-direction:column; justify-content:center; align-items:center;">
+        <div style="width:100%; height:75vh; background:#000; position:relative;">
+            <img id="cropImage" src="" alt="Izreži sliku" style="max-width:100%; max-height:100%; display:block;">
+        </div>
+        <div
+            style="width:100%; height:25vh; display:flex; flex-direction:column; justify-content:center; align-items:center; padding:20px; box-sizing:border-box;">
+            <p style="color:#00A8B5; font-size:0.9rem; margin-bottom:15px; text-align:center;">Prstima zumiraj i izreži
+                dotično jelo/stavku s menija.</p>
+            <div style="display:flex; gap:15px; width:100%; justify-content:center;">
+                <button id="btnCancelCrop" class="icon-btn"
+                    style="background:#2C3E50; color:#fff; width:60px; height:60px;"><i
+                        class="fas fa-times"></i></button>
+                <button id="btnConfirmCrop" class="primary-btn" style="flex:1; max-width:200px;"><i
+                        class="fas fa-cut"></i> IZREŽI</button>
+            </div>
+        </div>
+    </div>
+    <!-- EXERCISE MODAL -->
+    <div id="exerciseModal" class="modal hidden">
+        <div class="modal-content" style="max-height: 90vh; overflow-y: auto;">
+            <h3 style="color:var(--accent-cyan); margin-bottom:15px;"><i class="fas fa-running"></i> Zabilježi Trening
+            </h3>
+
+            <label style="color:var(--text-muted); font-size:0.9rem;">Odaberi aktivnost:</label>
+            <select id="exerciseSelect"
+                style="width:100%; padding:10px; margin-top:5px; margin-bottom:15px; border-radius:8px; background:#FAFCFF; border:1px solid var(--border-color); color:#2C3E50; font-size:1rem;">
+                <!-- Popunjeno iz JS-a -->
+            </select>
+
+            <p id="exerciseDesc"
+                style="color:var(--text-muted); font-size:0.85rem; margin-bottom:20px; font-style:italic;">Opis
+                vježbe...</p>
+
+            <label id="lblExerciseInputTitle" style="color:var(--text-muted); font-size:0.9rem;">Trajanje
+                (minute):</label>
+            <input type="number" id="inpExerciseDuration" value="30" min="5" max="3000"
+                style="width:100%; padding:10px; margin-top:5px; border-radius:8px; background:#FAFCFF; border:1px solid var(--border-color); color:#2C3E50; font-size:1.2rem; font-weight:bold; text-align:center;">
+
+            <div id="exercisePillButtons" style="display:flex; gap:10px; margin-top:10px; margin-bottom:20px;">
+                <button class="secondary-btn btn-duration" data-min="15" style="flex:1; padding: 5px;">+15m</button>
+                <button class="secondary-btn btn-duration" data-min="30" style="flex:1; padding: 5px;">+30m</button>
+                <button class="secondary-btn btn-duration" data-min="45" style="flex:1; padding: 5px;">+45m</button>
+            </div>
+
+            <div
+                style="text-align:center; padding:15px; background:rgba(0, 208, 132, 0.1); border-radius:8px; margin-bottom:20px;">
+                <div style="color:var(--text-muted); font-size:0.9rem;">Potrošene kalorije (live):</div>
+                <div id="lblExercisePreview" style="color:#00D084; font-size:1.8rem; font-weight:900;">0 kcal
+                </div>
+            </div>
+
+            <div style="display:flex; justify-content:space-between; gap:15px;">
+                <button id="btnCancelExercise" class="secondary-btn" style="flex:1;">Odustani</button>
+                <button id="btnConfirmExercise" class="primary-btn" style="flex:1;">Spremi</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PWA INSTALL PROMPT -->
+    <div id="installModal" class="hidden"
+        style="position:fixed; bottom:20px; left:50%; transform:translateX(-50%); width:90%; max-width:400px; background:var(--bg-card); padding:20px; border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,0.5); z-index:10000; display:flex; flex-direction:column; align-items:center; border: 1px solid var(--accent-cyan);">
+        <img src="assets/SharpShark_Logo_GreyOrange_Large.png" alt="Logo" style="width:80px; margin-bottom:15px;">
+        <h3 style="color:var(--text-main); margin-bottom:10px; text-align:center;">Instaliraj CalorieShark!</h3>
+        <p style="color:var(--text-muted); font-size:0.9rem; text-align:center; margin-bottom:20px;">Dodaj aplikaciju na
+            početni zaslon svog mobitela za brzi pristup, Kameru, Mikrofon i Offline rad.</p>
+        <div style="display:flex; gap:10px; width:100%;">
+            <button id="btnCancelInstall" class="icon-btn"
+                style="width:100px; background:none; border:1px solid var(--border-color); color:var(--text-muted); font-size: 0.8rem;">Kasnije</button>
+            <button id="btnConfirmInstall" class="primary-btn" style="flex:1;"><i class="fas fa-download"></i>
+                INSTALIRAJ</button>
+        </div>
+    </div>
+
+    <script src="food_database.js"></script>
+    <script src="food_categories.js"></script>
+    <script src="food_categories_2.js"></script>
+    <script src="exercise_database.js"></script>
+    <script src="app.js?v=31"></script>
+    <link rel="stylesheet" href="styles.css?v=4">
+</body>
+
+</html>

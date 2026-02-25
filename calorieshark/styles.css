@@ -1,0 +1,448 @@
+:root {
+    --bg-dark: #F0F4F8;
+    /* Light gray-blue background */
+    --bg-card: #FFFFFF;
+    /* White cards for contrast */
+    --border-color: rgba(0, 0, 0, 0.08);
+    /* Subtle dark border */
+    --accent-orange: #E67E22;
+    --accent-cyan: #00A8B5;
+    /* Darker cyan for better readability on light bg */
+    --text-main: #2C3E50;
+    /* Dark blue-gray text */
+    --text-muted: #7F8C8D;
+    --font-main: 'Orbitron', sans-serif;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: var(--font-main);
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Utils */
+.hidden {
+    display: none !important;
+}
+
+.mt-20 {
+    margin-top: 20px;
+}
+
+/* Navigation */
+.top-nav {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background: rgba(240, 244, 248, 0.85);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border-color);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.brand-text {
+    font-family: 'Orbitron', 'Montserrat', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 900;
+    letter-spacing: 1px;
+    line-height: 1;
+    padding-top: 8px;
+    /* align with logo slightly */
+}
+
+.brand-text .calorie {
+    color: var(--accent-cyan);
+    /* Plava po novoj želji korisnika */
+}
+
+.brand-text .shark {
+    color: var(--accent-orange);
+    /* Ostaje narančasto */
+}
+
+.icon-btn {
+    background: none;
+    border: none;
+    color: var(--text-main);
+    font-size: 1.5rem;
+    cursor: pointer;
+    z-index: 2;
+    padding: 10px;
+}
+
+/* Screens */
+.screen {
+    padding: 20px;
+    min-height: calc(100vh - 70px);
+    padding-bottom: 100px;
+    /* Space for FAB */
+}
+
+/* Onboarding */
+.onboarding-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 30px 20px;
+    max-width: 400px;
+    margin: 40px auto;
+    text-align: center;
+}
+
+.onboarding-card h2 {
+    color: var(--accent-cyan);
+    margin-bottom: 5px;
+    letter-spacing: 2px;
+}
+
+.subtitle {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    margin-bottom: 30px;
+}
+
+.input-group {
+    text-align: left;
+    margin-bottom: 15px;
+}
+
+.input-group label {
+    display: block;
+    font-size: 0.7rem;
+    color: var(--accent-orange);
+    letter-spacing: 1px;
+    margin-bottom: 5px;
+}
+
+.input-group input {
+    width: 100%;
+    background: #FAFCFF;
+    /* Very light input background */
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+    padding: 12px;
+    border-radius: 6px;
+    font-size: 1.1rem;
+    text-align: center;
+}
+
+.input-group input:focus {
+    outline: none;
+    border-color: var(--accent-cyan);
+}
+
+.input-row {
+    display: flex;
+    gap: 15px;
+}
+
+.toggle-group {
+    display: flex;
+    gap: 10px;
+}
+
+.toggle-btn {
+    flex: 1;
+    background: #FAFCFF;
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+    padding: 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s;
+}
+
+.toggle-btn.active {
+    background: rgba(0, 168, 181, 0.1);
+    border-color: var(--accent-cyan);
+    color: var(--accent-cyan);
+}
+
+.primary-btn {
+    width: 100%;
+    background: var(--accent-orange);
+    color: #FFFFFF;
+    /* Changed to white text on orange button for better contrast */
+    border: none;
+    padding: 15px;
+    font-size: 1.1rem;
+    font-weight: 900;
+    border-radius: 6px;
+    cursor: pointer;
+    letter-spacing: 2px;
+    transition: transform 0.2s;
+}
+
+.primary-btn:active {
+    transform: scale(0.98);
+}
+
+/* Dashboard */
+.dashboard-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.date-display {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    letter-spacing: 3px;
+    margin-bottom: 20px;
+}
+
+.calorie-circle {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    margin: 0 auto 30px;
+}
+
+.calorie-circle svg {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+}
+
+.calorie-circle circle {
+    fill: none;
+    stroke-width: 6;
+}
+
+.calorie-circle .bg {
+    stroke: var(--border-color);
+}
+
+.calorie-circle .progress {
+    stroke: var(--accent-cyan);
+    stroke-linecap: round;
+    transition: stroke-dashoffset 1s ease-out;
+}
+
+.circle-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+.circle-content .val {
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: var(--text-main);
+}
+
+.circle-content .lbl {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+}
+
+.macros-row {
+    display: flex;
+    justify-content: space-around;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 15px;
+}
+
+.macro-item {
+    text-align: center;
+}
+
+.macro-val {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.macro-lbl {
+    font-size: 0.6rem;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+}
+
+/* Meals List */
+.divider {
+    font-size: 0.8rem;
+    color: var(--accent-orange);
+    letter-spacing: 2px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+.empty-state {
+    text-align: center;
+    color: var(--text-muted);
+    padding: 40px 0;
+}
+
+.empty-state i {
+    font-size: 2rem;
+    margin-bottom: 10px;
+    opacity: 0.5;
+}
+
+/* FAB */
+.fab {
+    position: fixed;
+    bottom: 95px;
+    right: 20px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--accent-cyan);
+    color: #FFFFFF;
+    /* White icon on cyan */
+    border: none;
+    font-size: 1.5rem;
+    box-shadow: 0 4px 15px rgba(0, 168, 181, 0.3);
+    cursor: pointer;
+    z-index: 1000;
+    transition: transform 0.2s;
+}
+
+.fab:active {
+    transform: scale(0.9);
+}
+
+.hidden-file-input {
+    display: none;
+}
+
+/* AI Results UI */
+.pending-meal {
+    background: var(--bg-card);
+    border: 1px solid var(--accent-cyan);
+    border-radius: 12px;
+    padding: 20px;
+    margin-top: 15px;
+    box-shadow: 0 4px 15px rgba(0, 168, 181, 0.1);
+}
+
+.meal-item-editor {
+    transition: background 0.3s;
+}
+
+.meal-item-editor:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+}
+
+.gram-input:focus {
+    outline: none;
+    border-color: var(--accent-orange) !important;
+}
+
+/* Floating Text Input Bar */
+.text-input-bar {
+    position: fixed;
+    bottom: 30px;
+    left: 20px;
+    right: 20px;
+    /* Puni zaslon, jer je FAB kamera ispred */
+    background: var(--bg-card);
+    border-radius: 30px;
+    display: flex;
+    align-items: center;
+    padding: 5px 15px;
+    box-shadow: 0 4px 18px rgba(230, 126, 34, 0.25);
+    border: 2px solid var(--accent-orange);
+    z-index: 999;
+}
+
+.text-input-bar input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 10px;
+    font-size: 1rem;
+    color: var(--text-main);
+    outline: none;
+}
+
+.text-input-bar .icon-btn-small {
+    background: none;
+    border: none;
+    color: var(--accent-cyan);
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 5px;
+    transition: transform 0.2s;
+}
+
+.text-input-bar .icon-btn-small:hover {
+    transform: scale(1.1);
+    color: var(--accent-orange);
+}
+
+.recording-pulse {
+    animation: pulse-red 1.5s infinite;
+    color: #FF2A2A !important;
+}
+
+@keyframes pulse-red {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: scale(1.2);
+        opacity: 0.7;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Modals */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(15, 23, 42, 0.85);
+    /* Dark semi-transparent overlay */
+    z-index: 10000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal.hidden {
+    display: none !important;
+}
+
+.modal-content {
+    background: var(--bg-card);
+    width: 90%;
+    max-width: 400px;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    border: 1px solid var(--accent-cyan);
+    box-sizing: border-box;
+}
+
+.modal-content input,
+.modal-content select {
+    box-sizing: border-box;
+}
