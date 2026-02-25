@@ -266,6 +266,46 @@
             color: white;
         }
 
+        .cta-consult {
+            display: inline-block;
+            background: var(--accent-orange);
+            color: #000;
+            text-decoration: none;
+            padding: 15px 30px;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: bold;
+            border-radius: 5px;
+            margin-top: 20px;
+            text-transform: uppercase;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .cta-consult:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 20px rgba(230, 126, 34, 0.3);
+            color: #fff;
+        }
+
+        .btn-pwa {
+            background: var(--bg-dark);
+            color: var(--accent-cyan);
+            border: 1px solid var(--accent-cyan);
+            padding: 15px 30px;
+            border-radius: 30px;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1rem;
+        }
+
+        .btn-pwa:hover {
+            background: var(--accent-cyan);
+            color: var(--bg-dark);
+            box-shadow: 0 10px 20px rgba(0, 242, 255, 0.3);
+            transform: scale(1.05);
+        }
+
         /* --- FOOTER --- */
         .seo-footer {
             background: #000;
@@ -430,9 +470,7 @@
             <p style="text-align: center; margin-top: 40px;">
                 Trebate slično rješenje, modernizaciju postojećeg sustava ili progresivnu web aplikaciju visokih
                 performansi?<br>
-                <a href="index.html#kontakt"
-                    style="display: inline-block; background: var(--accent-orange); color: #000; text-decoration: none; padding: 15px 30px; font-family: 'Orbitron', sans-serif; font-weight: bold; border-radius: 5px; margin-top: 20px; text-transform: uppercase;">Zatražite
-                    neobvezujuću konzultaciju s nama!</a>
+                <a href="index.html#kontakt" class="cta-consult">Zatražite neobvezujuću konzultaciju s nama!</a>
             </p>
 
             <div
@@ -443,8 +481,7 @@
                     ući u njezin nativni opseg. Klikom na gumb ispod otvorit će se CalorieShark, a naš sustav će vam
                     automatski pokazati upute za instalaciju!</p>
 
-                <button onclick="document.getElementById('pwaModal').style.display='flex';"
-                    style="background: var(--bg-dark); color: var(--accent-cyan); border: 1px solid var(--accent-cyan); padding: 15px 30px; border-radius: 30px; font-family: 'Orbitron', sans-serif; font-weight: bold; cursor: pointer; transition: all 0.3s; font-size: 1rem;">
+                <button onclick="document.getElementById('pwaModal').style.display='flex';" class="btn-pwa">
                     ISPROBAJ CALORIESHARK <i class="fas fa-external-link-alt" style="margin-left: 5px;"></i>
                 </button>
             </div>
@@ -462,8 +499,8 @@
                 koristeći <strong>Chrome</strong> ili <strong>Safari</strong>.</p>
             <p style="margin-bottom: 25px; font-size: 0.85rem; color: #888;">(Ako prozor slučajno zatvorite unutar
                 aplikacije, uvijek ju možete instalirati klikom na ikonu 'Postavke' u gornjem desnom kutu).</p>
-            <a href="calorieshark/index.html"
-                style="display: inline-block; background: var(--accent-cyan); color: #000; text-decoration: none; padding: 12px 25px; font-family: 'Orbitron', sans-serif; font-weight: bold; border-radius: 5px; text-transform: uppercase;">
+            <a href="calorieshark/index.html" class="cta-consult"
+                style="background: var(--accent-cyan); border-radius: 5px;">
                 NASTAVI U APLIKACIJU
             </a>
         </div>
