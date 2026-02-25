@@ -1,6 +1,6 @@
 // 2LMF PRO - Service Worker
 // Verzija cache-a — promijeni kad se objavi nova verzija
-const CACHE_VERSION = 'v1.0';
+const CACHE_VERSION = 'v1.1';
 const CACHE_NAME = '2lmf-kalkulator-' + CACHE_VERSION;
 const PRICE_CACHE_KEY = '2lmf-prices-cache';
 const PRICE_CACHE_TIMESTAMP_KEY = '2lmf-prices-timestamp';
@@ -62,6 +62,11 @@ self.addEventListener('fetch', event => {
 
     // Ne interceptiramo Google Apps Script pozive (slanje upita)
     if (url.hostname.includes('script.google.com')) {
+        return;
+    }
+
+    // IZOLACIJA: Ne diraj CalorieShark podmapu (ona ima svoj vlastiti SW i Manifest)
+    if (url.pathname.startsWith('/calorieshark/')) {
         return;
     }
 
