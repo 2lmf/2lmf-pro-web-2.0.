@@ -1,6 +1,7 @@
 // --- STATE MANAGEMENT ---
 let userProfile = {
     username: '',
+    email: '',
     gender: 'male',
     age: 30,
     height: 180,
@@ -166,6 +167,7 @@ function loadProfile() {
 
         // Populate inputs if they go back to settings
         document.getElementById('inpUsername').value = userProfile.username || '';
+        document.getElementById('inpEmail').value = userProfile.email || '';
         document.getElementById('inpAge').value = userProfile.age || 30;
         document.getElementById('inpHeight').value = userProfile.height || 180;
         document.getElementById('inpWeight').value = userProfile.weight || 85;
@@ -199,12 +201,15 @@ function bindEvents() {
     // Save Profile
     document.getElementById('btnSaveProfile').addEventListener('click', () => {
         const usernameVal = document.getElementById('inpUsername').value.trim();
-        if (!usernameVal) {
-            alert("Molimo unesite korisničko ime!");
+        const emailVal = document.getElementById('inpEmail').value.trim();
+
+        if (!usernameVal || !emailVal) {
+            alert("Molimo unesite korisničko ime i e-mail adresu!");
             return;
         }
 
         userProfile.username = usernameVal;
+        userProfile.email = emailVal;
         userProfile.age = parseInt(document.getElementById('inpAge').value);
         userProfile.height = parseInt(document.getElementById('inpHeight').value);
         userProfile.weight = parseFloat(document.getElementById('inpWeight').value);
@@ -227,6 +232,7 @@ function bindEvents() {
     document.getElementById('btnSettings').addEventListener('click', () => {
         // Pre-fill with current profile
         document.getElementById('inpSettingsUsername').value = userProfile.username;
+        document.getElementById('inpSettingsEmail').value = userProfile.email || '';
         document.getElementById('inpSettingsAge').value = userProfile.age;
         document.getElementById('inpSettingsHeight').value = userProfile.height;
         document.getElementById('inpSettingsWeight').value = userProfile.weight;
@@ -255,15 +261,16 @@ function bindEvents() {
     // Save Settings Button
     document.getElementById('btnSaveSettings').addEventListener('click', () => {
         const un = document.getElementById('inpSettingsUsername').value.trim();
+        const em = document.getElementById('inpSettingsEmail').value.trim();
         const a = parseInt(document.getElementById('inpSettingsAge').value);
         const h = parseInt(document.getElementById('inpSettingsHeight').value);
         const w = parseFloat(document.getElementById('inpSettingsWeight').value);
         const activeBtn = document.querySelector('#settingsToggleGroup .toggle-btn.active');
         const g = activeBtn ? activeBtn.dataset.gender : 'male';
 
-        if (!un) { alert('Unesi korisničko ime!'); return; }
+        if (!un || !em) { alert('Unesi korisničko ime i e-mail!'); return; }
 
-        userProfile = { username: un, age: a, height: h, weight: w, gender: g };
+        userProfile = { username: un, email: em, age: a, height: h, weight: w, gender: g };
         calculateTDEE();
         localStorage.setItem('calorieShark_profile', JSON.stringify(userProfile));
 
