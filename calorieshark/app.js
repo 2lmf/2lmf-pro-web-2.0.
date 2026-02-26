@@ -384,6 +384,16 @@ if (btnCancelInstall && btnConfirmInstall) {
 }
 
 function updateDashboardUI() {
+    // Dynamic Date Update
+    const lblDateToday = document.getElementById('lblDateToday');
+    if (lblDateToday) {
+        const now = new Date();
+        const options = { day: 'numeric', month: 'long' };
+        let dateStr = now.toLocaleDateString('hr-HR', options).toUpperCase();
+        // Ensure format is "DANAS, 26. VELJAČE"
+        lblDateToday.textContent = `DANAS, ${dateStr}`;
+    }
+
     const burned = dailyData.totalBurned || 0;
     const target = userProfile.tdee; // NO INCREASING TARGET TDEE
 
