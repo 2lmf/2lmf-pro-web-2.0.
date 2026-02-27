@@ -409,10 +409,43 @@ function bindEvents() {
         }
     });
 
+    // Uklonjen isCooldown return za glasovni gumb da korisnik može 
+    // pritisnuti i snimiti glasovni upit bez da troši AI vizijski cooldown
     btnVoice.addEventListener('click', (e) => {
-        if (isCooldown) return;
         handleVoiceInput(e);
     });
+
+    // Shark Advisor UI Toggle
+    const advisorCard = document.getElementById('advisorCard');
+    const advisorExpandedSection = document.getElementById('advisorExpandedSection');
+    const advisorExpandedIcon = document.getElementById('advisorExpandedIcon');
+    const btnRefreshAdvisor = document.getElementById('btnRefreshAdvisor');
+
+    if (advisorCard && advisorExpandedSection) {
+        // Toggle on clicking the main card
+        advisorCard.addEventListener('click', (e) => {
+            // Prevent toggling if clicked exactly on the refresh button
+            if (e.target.closest('#btnRefreshAdvisor')) return;
+
+            advisorExpandedSection.classList.toggle('hidden');
+            if (advisorExpandedSection.classList.contains('hidden')) {
+                advisorExpandedIcon.classList.remove('fa-chevron-up');
+                advisorExpandedIcon.classList.add('fa-chevron-down');
+            } else {
+                advisorExpandedIcon.classList.remove('fa-chevron-down');
+                advisorExpandedIcon.classList.add('fa-chevron-up');
+            }
+        });
+
+        // Refresh explicitly
+        if (btnRefreshAdvisor) {
+            btnRefreshAdvisor.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                renderSharkAdvisor();
+            });
+        }
+    }
 
     setupExerciseEvents();
 }
@@ -777,7 +810,7 @@ async function handleTextUpload(text) {
     // Scrolaj na vrh
     window.scrollTo({ top: 0, behavior: 'smooth' });
 
-    // Prekidač za hlađenje
+    // Prekidač za hlađenje SAMO ako idemo na Google API
     startCooldown();
 
     try {
