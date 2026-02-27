@@ -634,35 +634,29 @@ function renderSharkAdvisor() {
     let validMeals = [];
 
     if (explicitFilter === 'favorite') {
-        // Logika za 'Moji favoriti': Pronađi najčešće poistovjećene obroke u dnevniku,
-        // pretvori ih u format za savjetnika i ignoriraj defaultna pravila kalorija (zato sto ih zeli ponoviti)
+        // Logika za 'Moji favoriti': Pronađi obroke koji su eksplicitno označeni zvjezdicom
 
-        let freqMap = {};
+        let uniqueFavs = {};
         dailyData.meals.forEach(m => {
-            if (m.totals.kcal > 0) {
-                // Generiramo jedinstveni potpis jela na bazi imena stavaka
+            if (m.isFavorite && m.totals.kcal > 0) {
                 let namesStr = m.items.map(i => i.name).sort().join(', ');
-                if (!freqMap[namesStr]) {
-                    freqMap[namesStr] = { count: 0, mealObj: m };
+                if (!uniqueFavs[namesStr]) {
+                    uniqueFavs[namesStr] = m;
                 }
-                freqMap[namesStr].count++;
             }
         });
 
-        // Sortiramo po učestalosti od najveceg do najmanjeg
-        const sortedFavs = Object.values(freqMap).sort((a, b) => b.count - a.count);
-
-        validMeals = sortedFavs.slice(0, 10).map(fav => {
-            const recipeStr = fav.mealObj.items.map(i => `${i.name} (${i.estimatedWeightG}g)`).join(' + ');
+        validMeals = Object.values(uniqueFavs).map(favMeal => {
+            const recipeStr = favMeal.items.map(i => `${i.name} (${i.estimatedWeightG}g)`).join(' + ');
             return {
-                name: "Moj Česti Obrok",
+                name: "Moj Favorit",
                 tags: ['favorite'],
-                kcal: fav.mealObj.totals.kcal,
-                protein: Math.round(fav.mealObj.totals.protein || 0),
-                carbs: Math.round(fav.mealObj.totals.carbs || 0),
-                fat: Math.round(fav.mealObj.totals.fat || 0),
+                kcal: favMeal.totals.kcal,
+                protein: Math.round(favMeal.totals.protein || 0),
+                carbs: Math.round(favMeal.totals.carbs || 0),
+                fat: Math.round(favMeal.totals.fat || 0),
                 recipe: recipeStr,
-                originalItems: fav.mealObj.items // Spremamo original da bi znali dupicirati kad klikne poslije
+                originalItems: favMeal.items
             };
         });
 
@@ -1187,6 +1181,14 @@ function renderDailyMeals() {
                 </div>
                 <div style="font-size:1.3rem; font-weight:900; color:var(--accent-orange); margin-left:15px; text-align:right;">
                     ${meal.totals.kcal < 0 ? '<span style="color:#00D084"><i class="fas fa-fire"></i> ' + Math.abs(Math.round(meal.totals.kcal)) + '</span>' : Math.round(meal.totals.kcal)}<br><span style="font-size:0.7rem; color:var(--text-muted); font-weight:normal;">kcal</span>
+                    ${meal.totals.kcal > 0 ? `
+                        <div style="margin-top:5px;">
+                            <i class="${meal.isFavorite ? 'fas' : 'far'} fa-star btn-toggle-fav" 
+                               data-index="${originalIndex}" 
+                               style="color: #F1C40F; cursor: pointer; font-size: 1.1rem;" 
+                               title="Označi kao favorit"></i>
+                        </div>
+                    ` : ''}
                 </div>
             </div>
             
@@ -1222,6 +1224,20 @@ function renderDailyMeals() {
             editMeal(index);
         });
     });
+
+    document.querySelectorAll('.btn-toggle-fav').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const index = parseInt(e.currentTarget.getAttribute('data-index'));
+            toggleFavorite(index);
+        });
+    });
+}
+
+function toggleFavorite(index) {
+    const meal = dailyData.meals[index];
+    meal.isFavorite = !meal.isFavorite;
+    saveDailyData();
+    renderDailyMeals();
 }
 
 function editMeal(index) {
