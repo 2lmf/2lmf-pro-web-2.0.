@@ -511,6 +511,40 @@ const localFoodDB = [
         macrosPer100g: { carbs: 5, protein: 80, fat: 4 },
         standardUnits: { "mjerica": 30, "porcija": 30, "scoop": 30 },
         note: "1 standardna mjerica (scoop) koja dođe u kutiji teži oko 30g."
+    },
+    // === JUHE ===
+    {
+        name: "Bistra pileća juha / Goveđa juha",
+        keywords: ["juha", "pileca juha", "goveda juha", "bistra juha", "tanjur juhe", "juhu", "pilecu juhu", "domaca juha"],
+        kcalPer100g: 30,
+        macrosPer100g: { carbs: 3, protein: 2, fat: 1 },
+        standardUnits: { "tanjur": 250, "porcija": 250, "ml": 1, "dl": 100 },
+        note: "Default prepoznata juha. 1 standardni tanjur je oko 250ml (75 kcal)."
+    },
+    {
+        name: "Riblja juha",
+        keywords: ["riblja juha", "tanjur riblje juhe", "riblju juhu"],
+        kcalPer100g: 40,
+        macrosPer100g: { carbs: 3, protein: 4, fat: 1.5 },
+        standardUnits: { "tanjur": 250, "porcija": 250, "ml": 1, "dl": 100 },
+        note: "Malo bogatija proteinima. 1 standardni tanjur je oko 250ml (100 kcal)."
+    },
+    // === MORSKI PLODOVI ===
+    {
+        name: "Škampi na žaru (ili kuhani)",
+        keywords: ["skampi", "skampe", "skampi zar", "skampi na zaru", "peceni skampi", "kuhani skampi", "skampi zaru", "porcija skampa"],
+        kcalPer100g: 90,
+        macrosPer100g: { carbs: 0, protein: 18, fat: 1.5 },
+        standardUnits: { "porcija": 300, "kom": 30, "grama": 1 },
+        note: "Čisto meso škampa ima jako malo kalorija. Porcija s ljuskama od 300g donosi oko 100g čistog mesa."
+    },
+    {
+        name: "Škampi na buzaru",
+        keywords: ["skampi na buzaru", "buzara", "skampe na buzaru", "buzaru"],
+        kcalPer100g: 130,
+        macrosPer100g: { carbs: 2, protein: 15, fat: 6 },
+        standardUnits: { "porcija": 350, "kom": 30, "grama": 1 },
+        note: "Umak (buzara) sadrži maslinovo ulje, vino, krušne mrvice. Porcija ima više kalorija zbog safta."
     }
 ];
 

@@ -128,6 +128,15 @@ const advisorMeals = [
         tags: ["meat"],
         recipe: "Nekoliko komada nigirija i sashimija (sirova riba). Odličan izvor proteina i zdravih masti."
     },
+    {
+        name: "Bistra riblja juha",
+        kcal: 150,
+        protein: 15,
+        carbs: 10,
+        fat: 5,
+        tags: ["meat", "glutenFree"],
+        recipe: "Tanjur tople riblje juhe s komadićima bijele ribe i malo riže. Lagana i hranjiva večera."
+    },
 
     // --- SNACKS (Međuobroci) ---
     {
