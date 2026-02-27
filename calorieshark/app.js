@@ -944,12 +944,6 @@ async function handleImageUpload(e) {
     const file = e.target.files[0];
     if (!file) return;
 
-    if (!useVisionEnergy()) {
-        alert("Sharks are resting! Ponestalo ti je energije za skeniranje. Pokušaj malo kasnije ili unesi tekstualno.");
-        e.target.value = ''; // Reset
-        return;
-    }
-
     if (!API_URL) {
         alert("Molimo unesite Google Apps Script Web App URL u postavkama!");
         showScreen('onboarding');
@@ -993,6 +987,14 @@ btnCancelCrop.addEventListener('click', () => {
 btnConfirmCrop.addEventListener('click', async () => {
     if (!cropperInstance) return;
     if (isCooldown) return;
+
+    // Provjera energije netom prije slanja
+    if (!useVisionEnergy()) {
+        alert("Shark Energy Low! 🦈⚡ Ponestalo ti je energije (munja) za AI skeniranje. Pričekaj 20 minuta da se regenerira jedna munja ili unesi tekstualno.");
+        cropModal.classList.add('hidden');
+        if (cropperInstance) cropperInstance.destroy();
+        return;
+    }
 
     // Uzmi izrezani dio
     const canvas = cropperInstance.getCroppedCanvas({
@@ -1043,7 +1045,11 @@ btnConfirmCrop.addEventListener('click', async () => {
 
     } catch (err) {
         console.error("Greska pri uploadu okrnjene slike:", err);
-        mealsList.innerHTML = `<div class="empty-state" style="color:#FF2A2A;"><i class="fas fa-exclamation-triangle"></i><p>Greska: ${err.message}</p></div>`;
+        let errorMsg = err.message;
+        if (errorMsg.includes("quota") || errorMsg.includes("limit") || errorMsg.includes("429")) {
+            errorMsg = "Gemini API limit! 🦈 Šarka je trenutno prezauzeta analizom (kvota potrošena). Pokušaj ponovno za koju minutu.";
+        }
+        mealsList.innerHTML = `<div class="empty-state" style="color:#FF2A2A;"><i class="fas fa-exclamation-triangle"></i><p>Greška: ${errorMsg}</p></div>`;
     }
 });
 
@@ -1121,7 +1127,11 @@ async function handleTextUpload(text) {
 
     } catch (err) {
         console.error("Greska pri uploadu teksta:", err);
-        mealsList.innerHTML = `<div class="empty-state" style="color:#FF2A2A;"><i class="fas fa-exclamation-triangle"></i><p>AI greška: ${err.message}</p></div>`;
+        let errorMsg = err.message;
+        if (errorMsg.includes("quota") || errorMsg.includes("limit") || errorMsg.includes("429")) {
+            errorMsg = "Gemini API limit! 🦈 Previše smo pitali Šarku u kratkom vremenu. Pokušaj ponovno za minutu.";
+        }
+        mealsList.innerHTML = `<div class="empty-state" style="color:#FF2A2A;"><i class="fas fa-exclamation-triangle"></i><p>AI greška: ${errorMsg}</p></div>`;
     }
 }
 
