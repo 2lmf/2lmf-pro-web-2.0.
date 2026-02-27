@@ -285,6 +285,7 @@ function saveProfile() {
 // --- BARCODE SCANNER LOGIC ---
 function openScanner() {
     barcodeModal.classList.remove('hidden');
+    document.body.classList.add('body-lock');
     scannerStatus.textContent = "Pokrećem kameru...";
     scannerFallback.classList.add('hidden');
 
@@ -309,6 +310,7 @@ function openScanner() {
 }
 
 function closeScanner() {
+    document.body.classList.remove('body-lock');
     if (html5QrCode) {
         html5QrCode.stop().then(() => {
             html5QrCode = null;
