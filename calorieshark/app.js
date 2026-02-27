@@ -1136,6 +1136,10 @@ function renderDailyMeals() {
             </div>
             
             <div style="display: flex; justify-content: flex-end; gap: 15px; margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border-color);">
+                ${meal.totals.kcal > 0 ? `
+                <button class="btn-copy-meal" data-index="${originalIndex}" style="background: none; border: none; color: var(--accent-orange); cursor: pointer; padding: 5px; font-size: 0.9rem;">
+                    <i class="fas fa-recycle"></i> Ponovi
+                </button>` : ''}
                 <button class="btn-edit-meal" data-index="${originalIndex}" style="background: none; border: none; color: var(--accent-cyan); cursor: pointer; padding: 5px; font-size: 0.9rem;">
                     <i class="fas fa-edit"></i> Uredi
                 </button>
@@ -1167,6 +1171,27 @@ function renderDailyMeals() {
             editMeal(index);
         });
     });
+
+    document.querySelectorAll('.btn-copy-meal').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const index = parseInt(e.currentTarget.getAttribute('data-index'));
+            if (confirm("Želite li brzo dodati još jednu identičnu praznu porciju ovog obroka/pića u dnevnik?")) {
+                copyMeal(index);
+            }
+        });
+    });
+}
+
+function copyMeal(index) {
+    // Stvaramo deep copy originalnog obroka ali preskacemo time/id da to bude totalno novi
+    const originalMeal = dailyData.meals[index];
+    currentUnsavedMeal = {
+        items: JSON.parse(JSON.stringify(originalMeal.items))
+    };
+
+    // Budući da simuliramo brzu prijavu, otvaramo Pending UI s tim podatcima da korisnik samo stisne SPREMI (ili popravi gramazu)
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    drawPendingMealUI();
 }
 
 function editMeal(index) {
@@ -1286,11 +1311,21 @@ function renderStatsUI(meals) {
 
     // 1. Grupiranje kalorija po datumima za Chart.js
     const dailySums = {};
+    const dailyMacros = {}; // Za pie chart najnovijeg dana
+
     meals.forEach(m => {
         // Pretvaramo "dd.MM.yyyy" u kraći format "dd.MM."
         const shortDate = m.date.substring(0, 5);
         if (!dailySums[shortDate]) dailySums[shortDate] = 0;
         dailySums[shortDate] += m.totals.kcal;
+
+        // Racunamo pozitivne (unešene) makrose samo za zadnji/najnoviji vizualno
+        if (m.totals.kcal > 0) {
+            if (!dailyMacros[m.date]) dailyMacros[m.date] = { carbs: 0, protein: 0, fat: 0 };
+            dailyMacros[m.date].carbs += (m.totals.carbs || 0);
+            dailyMacros[m.date].protein += (m.totals.protein || 0);
+            dailyMacros[m.date].fat += (m.totals.fat || 0);
+        }
     });
 
     const labels = Object.keys(dailySums).reverse();
@@ -1356,6 +1391,54 @@ function renderStatsUI(meals) {
             }
         }
     });
+
+    // --- MACRO CHART LOGIKA ---
+    // Dohvaćamo najnoviji zabilježeni datum na listi za pie chart
+    const latestDate = meals[0].date;
+    let todayMacros = dailyMacros[latestDate] || { carbs: 0, protein: 0, fat: 0 };
+
+    // Inject kanvas dinamicki poslije grafa od kcal (ako vec ne postoji)
+    const statsContainer = document.getElementById('kcalChart').parentElement;
+    let macroCanvas = document.getElementById('macroChart');
+    if (!macroCanvas) {
+        macroCanvas = document.createElement('canvas');
+        macroCanvas.id = 'macroChart';
+        macroCanvas.width = 400;
+        macroCanvas.height = 200;
+        macroCanvas.style.marginTop = '20px';
+        statsContainer.appendChild(macroCanvas);
+    }
+
+    const ctxMacro = macroCanvas.getContext('2d');
+    if (window.macroChartInstance) {
+        window.macroChartInstance.destroy();
+    }
+
+    window.macroChartInstance = new Chart(ctxMacro, {
+        type: 'doughnut',
+        data: {
+            labels: ['Ugljikohidrati (g)', 'Proteini (g)', 'Masti (g)'],
+            datasets: [{
+                data: [Math.round(todayMacros.carbs), Math.round(todayMacros.protein), Math.round(todayMacros.fat)],
+                backgroundColor: ['#00A8B5', '#00D084', '#FF2A2A'], // Cyan, Green, Red
+                borderWidth: 2,
+                borderColor: '#1E293B' // Da pase uz dark background
+            }]
+        },
+        options: {
+            responsive: true,
+            cutout: '65%',
+            plugins: {
+                title: {
+                    display: true,
+                    text: `Makronutrijenti za zadnji dan (${latestDate})`,
+                    color: '#7f8c8d'
+                },
+                legend: { position: 'right' }
+            }
+        }
+    });
+
 
     // 2. Iscrtavanje kronološke liste ispod grafa
     let html = '';
