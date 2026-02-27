@@ -540,11 +540,30 @@ function searchLocalFoodDB(query) {
     let foundUnitType = null;
     let foundUnitFactor = null;
 
+    // Levenshtein distance funkcija
+    function levenshtein(a, b) {
+        if (a.length === 0) return b.length;
+        if (b.length === 0) return a.length;
+        let matrix = [];
+        for (let i = 0; i <= b.length; i++) { matrix[i] = [i]; }
+        for (let j = 0; j <= a.length; j++) { matrix[0][j] = j; }
+        for (let i = 1; i <= b.length; i++) {
+            for (let j = 1; j <= a.length; j++) {
+                if (b.charAt(i - 1) === a.charAt(j - 1)) {
+                    matrix[i][j] = matrix[i - 1][j - 1];
+                } else {
+                    matrix[i][j] = Math.min(matrix[i - 1][j - 1] + 1, Math.min(matrix[i][j - 1] + 1, matrix[i - 1][j] + 1));
+                }
+            }
+        }
+        return matrix[b.length][a.length];
+    }
+
     // Lista definiranih namirnica iz baze sa Scoreom pretrage
     let bestMatch = null;
-    let bestScore = -1;
+    let bestScore = -1; // Sada manji score znaci vecu udaljenost, mi trazimo blago bodovanje
 
-    // Prvo "fuzzy" pronalazimo bazu:
+    // Advanced fuzzy pronalazak baze:
     localFoodDB.forEach(food => {
         let score = 0;
 
@@ -553,13 +572,21 @@ function searchLocalFoodDB(query) {
 
         food.keywords.forEach(kw => {
             const normalizedKw = normalizeString(kw);
+
+            // 1. Exact contains (Kao i prije)
             if (normalizedQuery.includes(normalizedKw)) {
-                // Ako upit recimo "2 jaja na oko" sadrži keyword "jaja na oko" -> To je bingo! Ovisno o duljini matcha
                 score += normalizedKw.length * 2;
+            }
+
+            // 2. Levenshtein fuzzy match za tipfelere
+            const distance = levenshtein(normalizedQuery, normalizedKw);
+            // Ako je razlika vrlo mala u odnosu na duljinu rijeci (npr 1 ili 2 tipfelera)
+            if (distance <= 2 && normalizedKw.length > 4) {
+                score += (normalizedKw.length * 2) - distance; // Dodaj bodove ali umanji za greske
             }
         });
 
-        if (score > bestScore && score > 8) { // Prag bodova da ne gađa naslijepo (manje od 8 bodova je mozda samo slovo pogodio)
+        if (score > bestScore && score > 6) { // Prag bodova, snizen zbog fuzzy-a
             bestScore = score;
             bestMatch = food;
         }
@@ -572,9 +599,17 @@ function searchLocalFoodDB(query) {
     // Pročeprkajmo preostali dio riječi (normalizedQuery) da vidimo jel se spominju mjerne jedinice iz tekućeg namirničkog rječnika
     if (bestMatch.standardUnits) {
         Object.keys(bestMatch.standardUnits).forEach(unitKw => {
-            if (normalizedQuery.includes(unitKw)) {
+            const unitKwNorm = normalizeString(unitKw);
+            if (normalizedQuery.includes(unitKwNorm)) {
                 foundUnitType = unitKw;
                 foundUnitFactor = bestMatch.standardUnits[unitKw];
+            } else {
+                // Pokusaj fuzzy i za mjernu jedinicu (npr porija umjesto porcija)
+                const dist = levenshtein(normalizedQuery, unitKwNorm);
+                if (dist <= 1 && unitKwNorm.length >= 4) {
+                    foundUnitType = unitKw;
+                    foundUnitFactor = bestMatch.standardUnits[unitKw];
+                }
             }
         });
     }

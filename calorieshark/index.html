@@ -98,6 +98,23 @@
                 <input type="number" id="inpWeight" value="85" min="30" max="200" step="0.1">
             </div>
 
+            <!-- DIETARY PREFERENCES (Onboarding) -->
+            <div class="input-group" style="margin-top: 20px;">
+                <label style="color: var(--accent-cyan);"><i class="fas fa-leaf"></i> Prehrambene navike
+                    (Opcionalno)</label>
+                <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:5px;">
+                    <label style="display:flex; align-items:center; gap:5px; font-size:0.9rem;">
+                        <input type="checkbox" id="chkOnbVege" value="vege"> Vege
+                    </label>
+                    <label style="display:flex; align-items:center; gap:5px; font-size:0.9rem;">
+                        <input type="checkbox" id="chkOnbVegan" value="vegan"> Vegan
+                    </label>
+                    <label style="display:flex; align-items:center; gap:5px; font-size:0.9rem;">
+                        <input type="checkbox" id="chkOnbGlutenFree" value="glutenFree"> Bez Glutena
+                    </label>
+                </div>
+            </div>
+
             <button id="btnSaveProfile" class="primary-btn mt-20">ZAPOČNI <i class="fas fa-rocket"></i></button>
         </div>
     </div>
@@ -141,6 +158,23 @@
             <div class="input-group" style="margin-top: 15px;">
                 <label>Trenutna težina (kg)</label>
                 <input type="number" id="inpSettingsWeight" value="85" min="30" max="200" step="0.1">
+            </div>
+
+            <!-- DIETARY PREFERENCES -->
+            <div class="input-group" style="margin-top: 20px;">
+                <label style="color: var(--accent-cyan);"><i class="fas fa-leaf"></i> Prehrambene navike
+                    (Opcionalno)</label>
+                <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:5px;">
+                    <label style="display:flex; align-items:center; gap:5px; font-size:0.9rem;">
+                        <input type="checkbox" id="chkSetVege" value="vege"> Vege
+                    </label>
+                    <label style="display:flex; align-items:center; gap:5px; font-size:0.9rem;">
+                        <input type="checkbox" id="chkSetVegan" value="vegan"> Vegan
+                    </label>
+                    <label style="display:flex; align-items:center; gap:5px; font-size:0.9rem;">
+                        <input type="checkbox" id="chkSetGlutenFree" value="glutenFree"> Bez Glutena
+                    </label>
+                </div>
             </div>
 
             <button id="btnSaveSettings" class="primary-btn mt-20" style="margin-bottom: 30px;"><i
@@ -229,6 +263,24 @@
 
         <div class="divider">DNEVNIK OBROKA</div>
 
+        <!-- SHARK ADVISOR CARD -->
+        <div id="advisorCard"
+            style="background: rgba(0, 242, 255, 0.05); border: 1px solid var(--accent-cyan); border-radius: 12px; padding: 15px; margin-bottom: 20px; position: relative; overflow: hidden;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h3 style="color: var(--accent-cyan); font-size: 1.1rem; margin: 0;"><i class="fas fa-robot"></i>
+                    Šalabahter</h3>
+                <button id="btnRefreshAdvisor" class="icon-btn-small"
+                    style="background: none; border: none; color: var(--text-muted); padding: 5px;"><i
+                        class="fas fa-sync-alt"></i></button>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px; font-style: italic;">"Ostalo ti
+                je <span id="lblAdvisorTarget" style="color: var(--accent-orange); font-weight: bold;">0</span> kcal.
+                Evo što možeš pojesti:"</p>
+            <div id="advisorSuggestionsList" style="display: flex; flex-direction: column; gap: 10px;">
+                <!-- Suggestions will be injected here -->
+            </div>
+        </div>
+
         <div class="meals-list" id="mealsList">
             <!-- Dinamički obroci će se pojavljivati ovdje -->
             <div class="empty-state">
@@ -254,10 +306,19 @@
         </div>
     </div>
 
-    <!-- FLOATING ACTION BUTTON (CAMERA) -->
-    <button id="fabCamera" class="fab hidden">
-        <i class="fas fa-camera"></i>
-    </button>
+    <!-- FLOATING ACTION BUTTON (CAMERA) + ENERGY BAR -->
+    <div id="fabContainer" class="hidden"
+        style="position: fixed; bottom: 85px; right: 20px; z-index: 1000; display: flex; flex-direction: column; align-items: center; gap: 5px;">
+        <div id="visionEnergyContainer"
+            style="display: flex; gap: 4px; background: rgba(0,0,0,0.5); padding: 4px 8px; border-radius: 20px; border: 1px solid var(--glass-border);">
+            <i class="fas fa-bolt energy-bolt"></i>
+            <i class="fas fa-bolt energy-bolt"></i>
+            <i class="fas fa-bolt energy-bolt"></i>
+        </div>
+        <button id="fabCamera" class="fab" style="position: static; transform: none; bottom: auto; right: auto;">
+            <i class="fas fa-camera"></i>
+        </button>
+    </div>
     <input type="file" id="inpCamera" accept="image/*" capture="environment" class="hidden-file-input">
 
     <!-- FLOATING TEXT/VOICE INPUT BAR -->
@@ -366,6 +427,7 @@
     <script src="food_categories.js"></script>
     <script src="food_categories_2.js"></script>
     <script src="exercise_database.js"></script>
+    <script src="advisor_database.js"></script>
     <script src="app.js?v=35"></script>
     <link rel="stylesheet" href="styles.css?v=5">
 </body>

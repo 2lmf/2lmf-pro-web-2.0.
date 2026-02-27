@@ -6,7 +6,17 @@ let userProfile = {
     age: 30,
     height: 180,
     weight: 85,
-    tdee: 2500
+    tdee: 2500,
+    dietPrefs: {
+        vege: false,
+        vegan: false,
+        glutenFree: false
+    }
+};
+
+let visionEnergy = {
+    charges: 3,
+    lastUsed: null // Timestamp of last deduction
 };
 
 // Daily Data
@@ -126,8 +136,71 @@ function init() {
     registerServiceWorker();
     loadDailyData();
     loadProfile();
+    loadVisionEnergy();
     initExerciseModal();
     bindEvents();
+
+    // Start energy regeneration loop
+    setInterval(checkVisionEnergy, 60000); // Check every minute
+}
+
+function loadVisionEnergy() {
+    const saved = localStorage.getItem('calorieShark_vision_energy');
+    if (saved) {
+        visionEnergy = JSON.parse(saved);
+    }
+    checkVisionEnergy();
+}
+
+function checkVisionEnergy() {
+    if (visionEnergy.charges < 3 && visionEnergy.lastUsed) {
+        const now = new Date().getTime();
+        const diffMs = now - visionEnergy.lastUsed;
+        const diffMins = Math.floor(diffMs / 60000);
+
+        // 20 minutes to regenerate 1 charge
+        if (diffMins >= 20) {
+            const chargesToAdd = Math.floor(diffMins / 20);
+            visionEnergy.charges = Math.min(3, visionEnergy.charges + chargesToAdd);
+
+            if (visionEnergy.charges < 3) {
+                // If not full, advance the lastUsed timestamp to the point where the last charge regenerated
+                visionEnergy.lastUsed += chargesToAdd * 20 * 60000;
+            } else {
+                visionEnergy.lastUsed = null; // Full
+            }
+            saveVisionEnergy();
+        }
+    }
+    renderVisionEnergy();
+}
+
+function useVisionEnergy() {
+    if (visionEnergy.charges > 0) {
+        visionEnergy.charges--;
+        if (!visionEnergy.lastUsed) {
+            visionEnergy.lastUsed = new Date().getTime(); // Start the timer if it wasn't running
+        }
+        saveVisionEnergy();
+        renderVisionEnergy();
+        return true;
+    }
+    return false;
+}
+
+function saveVisionEnergy() {
+    localStorage.setItem('calorieShark_vision_energy', JSON.stringify(visionEnergy));
+}
+
+function renderVisionEnergy() {
+    const bolts = document.querySelectorAll('.energy-bolt');
+    bolts.forEach((bolt, index) => {
+        if (index < visionEnergy.charges) {
+            bolt.classList.remove('used');
+        } else {
+            bolt.classList.add('used');
+        }
+    });
 }
 
 function loadDailyData() {
@@ -181,6 +254,13 @@ function loadProfile() {
             }
         });
 
+        // Populate checkboxes
+        if (userProfile.dietPrefs) {
+            document.getElementById('chkSettingsVege').checked = userProfile.dietPrefs.vege || false;
+            document.getElementById('chkSettingsVegan').checked = userProfile.dietPrefs.vegan || false;
+            document.getElementById('chkSettingsGlutenFree').checked = userProfile.dietPrefs.glutenFree || false;
+        }
+
         showScreen('dashboard');
         updateDashboardUI();
     } else {
@@ -213,6 +293,17 @@ function bindEvents() {
         userProfile.age = parseInt(document.getElementById('inpAge').value);
         userProfile.height = parseInt(document.getElementById('inpHeight').value);
         userProfile.weight = parseFloat(document.getElementById('inpWeight').value);
+
+        // Save Onboarding Diet Prefs
+        const chkVege = document.getElementById('chkOnbVege');
+        const chkVegan = document.getElementById('chkOnbVegan');
+        const chkGluten = document.getElementById('chkOnbGlutenFree');
+
+        userProfile.dietPrefs = {
+            vege: chkVege ? chkVege.checked : false,
+            vegan: chkVegan ? chkVegan.checked : false,
+            glutenFree: chkGluten ? chkGluten.checked : false
+        };
 
         calculateTDEE();
         localStorage.setItem('calorieShark_profile', JSON.stringify(userProfile));
@@ -271,6 +362,18 @@ function bindEvents() {
         if (!un || !em) { alert('Unesi korisničko ime i e-mail!'); return; }
 
         userProfile = { username: un, email: em, age: a, height: h, weight: w, gender: g };
+
+        // Save Diet Prefs from settings
+        const chkVege = document.getElementById('chkSettingsVege');
+        const chkVegan = document.getElementById('chkSettingsVegan');
+        const chkGluten = document.getElementById('chkSettingsGlutenFree');
+
+        userProfile.dietPrefs = {
+            vege: chkVege ? chkVege.checked : false,
+            vegan: chkVegan ? chkVegan.checked : false,
+            glutenFree: chkGluten ? chkGluten.checked : false
+        };
+
         calculateTDEE();
         localStorage.setItem('calorieShark_profile', JSON.stringify(userProfile));
 
@@ -326,12 +429,14 @@ function calculateTDEE() {
 
 function showScreen(screenId) {
     Object.values(screens).forEach(s => s.classList.add('hidden'));
+    document.getElementById('fabContainer').classList.add('hidden'); // Hide the new container
     fabCamera.classList.add('hidden');
     textInputBar.classList.add('hidden');
 
     if (screenId === 'dashboard') {
         screens.dashboard.classList.remove('hidden');
         fabCamera.classList.remove('hidden');
+        document.getElementById('fabContainer').classList.remove('hidden'); // Show container instead of just fab
         textInputBar.classList.remove('hidden');
     } else if (screenId === 'onboarding') {
         screens.onboarding.classList.remove('hidden');
@@ -440,13 +545,98 @@ function updateDashboardUI() {
     document.getElementById('lblProtein').textContent = Math.round(dailyData.protein) + "g";
     document.getElementById('lblFat').textContent = Math.round(dailyData.fat) + "g";
 
+    // Prikaz Shark Advisora
+    renderSharkAdvisor();
+
     // Obavezno iscrtaj povijest
     renderDailyMeals();
+}
+
+function renderSharkAdvisor() {
+    const list = document.getElementById('advisorSuggestionsList');
+    if (!list) return;
+
+    if (!advisorMeals || advisorMeals.length === 0) {
+        list.innerHTML = `<p style="font-size:0.8rem; color:var(--text-muted); text-align:center;">Baza savjeta je trenutno prazna.</p>`;
+        return;
+    }
+
+    const burned = dailyData.totalBurned || 0;
+    const target = userProfile.tdee;
+    const remainingKcal = Math.max(0, target - dailyData.totalKcal + burned);
+
+    document.getElementById('lblAdvisorTarget').textContent = Math.round(remainingKcal);
+
+    // Filtriranje prema dijetalnim opcijama
+    let validMeals = advisorMeals.filter(meal => {
+        if (meal.kcal > remainingKcal + 100) return false; // Ne nudimo jela puno veca od budzeta
+
+        if (userProfile.dietPrefs) {
+            if (userProfile.dietPrefs.vege && !meal.tags.includes("vege")) return false;
+            if (userProfile.dietPrefs.vegan && !meal.tags.includes("vegan")) return false;
+            if (userProfile.dietPrefs.glutenFree && !meal.tags.includes("glutenFree")) return false;
+        }
+        return true;
+    });
+
+    // Ako smo previše filtera stavili i nema nicega, ublazavamo samo budzetom
+    if (validMeals.length === 0) {
+        validMeals = advisorMeals.filter(meal => meal.kcal <= remainingKcal + 100);
+    }
+
+    // Odaberi 3 random opcije
+    let shownMeals = [];
+    if (validMeals.length <= 3) {
+        shownMeals = validMeals;
+    } else {
+        const shuffled = [...validMeals].sort(() => 0.5 - Math.random());
+        shownMeals = shuffled.slice(0, 3);
+    }
+
+    if (shownMeals.length === 0) {
+        list.innerHTML = `<p style="font-size:0.85rem; color:var(--text-muted); text-align:center;">Nemam ti što ponuditi za preostali budžet. Popij vodu!</p>`;
+        return;
+    }
+
+    let html = '';
+    shownMeals.forEach(meal => {
+        // Iscrtavanje bedzeva za tagove
+        let tagsHtml = '';
+        meal.tags.forEach(t => {
+            if (t === 'vege') tagsHtml += `<span style="background:rgba(0,208,132,0.1); color:#00D084; padding:2px 6px; border-radius:10px; font-size:0.65rem; margin-right:4px;">Vege</span>`;
+            if (t === 'vegan') tagsHtml += `<span style="background:rgba(0,255,100,0.1); color:#00FF64; padding:2px 6px; border-radius:10px; font-size:0.65rem; margin-right:4px;">Vegan</span>`;
+            if (t === 'glutenFree') tagsHtml += `<span style="background:rgba(255,165,0,0.1); color:var(--accent-orange); padding:2px 6px; border-radius:10px; font-size:0.65rem; margin-right:4px;">GF</span>`;
+        });
+
+        html += `
+        <div style="background: var(--bg-card); border-radius: 8px; padding: 10px; display:flex; flex-direction:column; gap:8px;">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                <div>
+                    <h4 style="margin:0; font-size:0.95rem; color:var(--text-main);">${meal.name}</h4>
+                    <div style="margin-top:4px;">${tagsHtml}</div>
+                </div>
+                <div style="text-align:right;">
+                    <div style="color:var(--accent-cyan); font-weight:bold; font-size:0.9rem;">${meal.kcal} kcal</div>
+                    <div style="font-size:0.7rem; color:var(--text-muted);">P:${meal.protein}g C:${meal.carbs}g F:${meal.fat}g</div>
+                </div>
+            </div>
+            <p style="margin:0; font-size:0.8rem; color:var(--text-muted); font-style:italic;">${meal.recipe}</p>
+        </div>
+        `;
+    });
+
+    list.innerHTML = html;
 }
 
 async function handleImageUpload(e) {
     const file = e.target.files[0];
     if (!file) return;
+
+    if (!useVisionEnergy()) {
+        alert("Sharks are resting! Ponestalo ti je energije za skeniranje. Pokušaj malo kasnije ili unesi tekstualno.");
+        e.target.value = ''; // Reset
+        return;
+    }
 
     if (!API_URL) {
         alert("Molimo unesite Google Apps Script Web App URL u postavkama!");

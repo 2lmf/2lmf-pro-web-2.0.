@@ -446,3 +446,17 @@ body {
 .modal-content select {
     box-sizing: border-box;
 }
+
+/* Vision Energy UI */
+.energy-bolt {
+    color: #FFD700; /* Gold/Yellow for energy */
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+}
+
+.energy-bolt.used {
+    color: #555 !important;
+    text-shadow: none;
+    opacity: 0.5;
+}
