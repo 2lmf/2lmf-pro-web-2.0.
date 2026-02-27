@@ -289,24 +289,27 @@ function openScanner() {
     scannerStatus.textContent = "Pokrećem kameru...";
     scannerFallback.classList.add('hidden');
 
-    html5QrCode = new Html5Qrcode("scannerViewport");
-    const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+    // Mala odgoda da se DOM stigne renderirati prije pokretanja kamere
+    setTimeout(() => {
+        html5QrCode = new Html5Qrcode("scannerViewport");
+        const config = { fps: 10, qrbox: { width: 250, height: 250 } };
 
-    html5QrCode.start(
-        { facingMode: "environment" },
-        config,
-        (decodedText) => {
-            // Success!
-            handleScanSuccess(decodedText);
-        },
-        (errorMessage) => {
-            // scanning...
-            scannerStatus.textContent = "Tražim fokus...";
-        }
-    ).catch(err => {
-        console.error("Greška pri pokretanju skenera:", err);
-        scannerStatus.textContent = "Greška: Pristup kameri odbijen.";
-    });
+        html5QrCode.start(
+            { facingMode: "environment" },
+            config,
+            (decodedText) => {
+                // Success!
+                handleScanSuccess(decodedText);
+            },
+            (errorMessage) => {
+                // Scanning...
+            }
+        ).catch(err => {
+            console.error("Greška pri pokretanju skenera:", err);
+            scannerStatus.style.color = "var(--accent-orange)";
+            scannerStatus.textContent = "Greška kamere: " + err;
+        });
+    }, 300);
 }
 
 function closeScanner() {
