@@ -636,6 +636,7 @@ function renderSharkAdvisor() {
     if (explicitFilter === 'favorite') {
         // Logika za 'Moji favoriti': Pronađi obroke koji su eksplicitno označeni zvjezdicom
 
+        // 1. Favoriti iz povijesti
         let uniqueFavs = {};
         dailyData.meals.forEach(m => {
             if (m.isFavorite && m.totals.kcal > 0) {
@@ -660,6 +661,12 @@ function renderSharkAdvisor() {
             };
         });
 
+        // 2. Favoriti iz Advisor baze (oni koje je korisnik "zvijezdao" u meniju)
+        const advisorFavNames = JSON.parse(localStorage.getItem('calorieShark_advisorFavs') || '[]');
+        if (typeof advisorMeals !== 'undefined') {
+            const advisorFavs = advisorMeals.filter(m => advisorFavNames.includes(m.name));
+            validMeals = [...validMeals, ...advisorFavs];
+        }
     } else {
         // Standardna logika iz baze savjeta
         validMeals = advisorMeals.filter(meal => {
@@ -709,19 +716,28 @@ function renderSharkAdvisor() {
             if (t === 'glutenFree') tagsHtml += `<span style="background:rgba(255,165,0,0.1); color:var(--accent-orange); padding:2px 6px; border-radius:10px; font-size:0.65rem; margin-right:4px;">GF</span>`;
         });
 
-        // Zbog escapeanja stringova, bolje spremiti objekte u dataset
+        // Provjeri je li ovaj specifični obrok favorit (ako je iz advisor baze, tražimo u localStorage)
+        const savedFavs = JSON.parse(localStorage.getItem('calorieShark_advisorFavs') || '[]');
+        const isFav = savedFavs.includes(meal.name);
+
         const mealJson = JSON.stringify(meal).replace(/'/g, "&#39;");
 
         html += `
-        <div class="advisor-item" data-meal='${mealJson}' style="background: var(--bg-card); cursor: pointer; border-radius: 8px; padding: 10px; display:flex; flex-direction:column; gap:8px; border-left: 3px solid #00D084; box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: transform 0.1s;">
+        <div class="advisor-item" data-meal='${mealJson}' style="background: var(--bg-card); cursor: pointer; border-radius: 8px; padding: 10px; display:flex; flex-direction:column; gap:8px; border-left: 3px solid #00D084; box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: transform 0.1s; position:relative;">
             <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-                <div>
+                <div style="flex:1;">
                     <h4 style="margin:0; font-size:0.95rem; color:var(--text-main);">${meal.name}</h4>
                     <div style="margin-top:4px;">${tagsHtml}</div>
                 </div>
-                <div style="text-align:right;">
-                    <div style="color:var(--accent-cyan); font-weight:bold; font-size:0.9rem;">${meal.kcal} kcal</div>
-                    <div style="font-size:0.7rem; color:var(--text-muted);">P:${meal.protein}g C:${meal.carbs}g F:${meal.fat}g</div>
+                <div style="text-align:right; display:flex; align-items:center; gap:10px;">
+                    <div>
+                        <div style="color:var(--accent-cyan); font-weight:bold; font-size:0.9rem;">${meal.kcal} kcal</div>
+                        <div style="font-size:0.7rem; color:var(--text-muted);">P:${meal.protein}g C:${meal.carbs}g F:${meal.fat}g</div>
+                    </div>
+                    <i class="${isFav ? 'fas' : 'far'} fa-star btn-toggle-adv-fav" 
+                       data-name="${meal.name}" 
+                       style="color: #F1C40F; cursor: pointer; font-size: 1.1rem; padding: 5px;" 
+                       title="Favorit"></i>
                 </div>
             </div>
             <p style="margin:0; font-size:0.8rem; color:var(--text-muted); font-style:italic;">${meal.recipe}</p>
@@ -731,20 +747,48 @@ function renderSharkAdvisor() {
 
     list.innerHTML = html;
 
-    // Attach click listener for automatic filling
+    // Favoriti toggle u advisor listi
+    document.querySelectorAll('.btn-toggle-adv-fav').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation(); // Ne želimo aktivaciju obroka
+            const mealName = e.currentTarget.getAttribute('data-name');
+            let savedFavs = JSON.parse(localStorage.getItem('calorieShark_advisorFavs') || '[]');
+            if (savedFavs.includes(mealName)) {
+                savedFavs = savedFavs.filter(n => n !== mealName);
+            } else {
+                savedFavs.push(mealName);
+            }
+            localStorage.setItem('calorieShark_advisorFavs', JSON.stringify(savedFavs));
+            renderSharkAdvisor(); // Refresh list to show new star state
+        });
+    });
+
+    // Attach click listener for automatic filling (instant confirm)
     document.querySelectorAll('.advisor-item').forEach(item => {
         item.addEventListener('click', (e) => {
             const mealData = JSON.parse(e.currentTarget.getAttribute('data-meal'));
 
             if (mealData.tags && mealData.tags.includes('favorite') && mealData.originalItems) {
-                // Za favorizirani sastavljeni obrok, tretiraj ga kao savršen AI odgovor i odmah otvori Pending UI
+                // Za već spremljene favorite iz povijesti
                 currentUnsavedMeal = { items: mealData.originalItems };
                 window.scrollTo({ top: 0, behavior: 'smooth' });
-                drawPendingMealUI();
+                saveMealToServer(); // INSTANT SAVE
             } else {
-                // Za obicne Advisor obroke, stavi naziv u input
-                inpTextMeal.value = mealData.name;
-                inpTextMeal.focus();
+                // Za objekte iz advisor baze (bypassing AI)
+                const fakeAI = {
+                    items: [{
+                        name: mealData.name,
+                        estimatedWeightG: 100, // standardna porcija
+                        kcalPer100g: mealData.kcal,
+                        macrosPer100g: {
+                            carbs: mealData.carbs,
+                            protein: mealData.protein,
+                            fat: mealData.fat
+                        }
+                    }]
+                };
+                renderAIResult(fakeAI); // Prikazuje pending UI tako da korisnik vidi što se sprema
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             }
         });
     });
@@ -1064,8 +1108,10 @@ function drawPendingMealUI() {
 
 async function saveMealToServer() {
     const btn = document.getElementById('btnConfirmMeal');
-    btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> SPREMAM...`;
-    btn.disabled = true;
+    if (btn) {
+        btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> SPREMAM...`;
+        btn.disabled = true;
+    }
 
     // Preracunavanje totala makrosa
     let totals = { kcal: 0, carbs: 0, protein: 0, fat: 0 };
@@ -1608,26 +1654,25 @@ function setupExerciseEvents() {
             burnedKcal = Math.round((ex.met * 3.5 * userProfile.weight / 200) * val);
         }
 
-        // Formiramo "lažni" AI odgovor za Pending UI, ali s negativnim kalorijama i 0 makro
-        const fakeAIResponse = {
-            items: [
-                {
-                    name: ex.met === 0 ? `[VJEŽBA] Garmin / Smartwatch` : `[VJEŽBA] ${ex.name} (${val} min)`,
-                    estimatedWeightG: val, // Hack da UI gramaže postane UI minute
-                    kcalPer100g: -burnedKcal, // -burnedKcal za 1 minutu hack
-                    macrosPer100g: { carbs: 0, protein: 0, fat: 0 }
-                }
-            ]
-        };
+        // Formiramo "lažni" AI odgovor i direktno spremamo bez Pending UI
+        const fakeItems = [
+            {
+                name: ex.met === 0 ? `[VJEŽBA] Garmin / Smartwatch` : `[VJEŽBA] ${ex.name} (${val} min)`,
+                estimatedWeightG: 100, // standardni factor
+                kcalPer100g: -burnedKcal,
+                macrosPer100g: { carbs: 0, protein: 0, fat: 0 }
+            }
+        ];
 
         // Sakrivamo modal
         exerciseModal.classList.add('hidden');
         inpExerciseDuration.value = 30; // reset
 
-        // Prikazujemo u pending UI (Hack: stavljam estimatedWeightG na 100 da factor bude 1)
-        fakeAIResponse.items[0].estimatedWeightG = 100;
+        // Postavljamo globalno da se može spremiti
+        currentUnsavedMeal = { items: fakeItems };
 
-        renderAIResult(fakeAIResponse);
+        // Instant spremanje na server (i u lokalni dnevnik)
+        saveMealToServer();
     });
 }
 
