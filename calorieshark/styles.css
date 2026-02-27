@@ -449,7 +449,8 @@ body {
 
 /* Vision Energy UI */
 .energy-bolt {
-    color: #FFD700; /* Gold/Yellow for energy */
+    color: #FFD700;
+    /* Gold/Yellow for energy */
     font-size: 1rem;
     transition: all 0.3s ease;
     text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
@@ -459,4 +460,59 @@ body {
     color: #555 !important;
     text-shadow: none;
     opacity: 0.5;
+}
+
+/* Scanner Animations */
+@keyframes scanLine {
+    0% {
+        top: 10%;
+        opacity: 0.2;
+    }
+
+    50% {
+        top: 90%;
+        opacity: 0.8;
+    }
+
+    100% {
+        top: 10%;
+        opacity: 0.2;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+#barcodeModal .screen {
+    background: #000 !important;
+}
+
+#scannerViewport video {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+}
+
+.secondary-btn {
+    background: none;
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+    padding: 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.2s;
+}
+
+.secondary-btn:active {
+    background: rgba(0, 0, 0, 0.05);
 }

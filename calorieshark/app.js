@@ -62,6 +62,13 @@ const btnCancelExercise = document.getElementById('btnCancelExercise');
 const btnConfirmExercise = document.getElementById('btnConfirmExercise');
 const btnsDuration = document.querySelectorAll('.btn-duration');
 
+// Barcode Scanner DOM
+const barcodeModal = document.getElementById('barcodeModal');
+const scannerStatus = document.getElementById('scannerStatus');
+const scannerFallback = document.getElementById('scannerFallback');
+const btnScannerCameraFallback = document.getElementById('btnScannerCameraFallback');
+const btnScannerCancel = document.getElementById('btnScannerCancel');
+
 // Cropper DOM Elements
 const cropModal = document.getElementById('cropModal');
 const cropImage = document.getElementById('cropImage');
@@ -130,6 +137,9 @@ let deferredPrompt;
 const installModal = document.getElementById('installModal');
 const btnCancelInstall = document.getElementById('btnCancelInstall');
 const btnConfirmInstall = document.getElementById('btnConfirmInstall');
+
+// --- SCANNER STATE ---
+let html5QrCode = null;
 
 // --- INITIALIZATION ---
 function init() {
@@ -268,6 +278,99 @@ function loadProfile() {
     }
 }
 
+function saveProfile() {
+    localStorage.setItem('calorieShark_profile', JSON.stringify(userProfile));
+}
+
+// --- BARCODE SCANNER LOGIC ---
+function openScanner() {
+    barcodeModal.classList.remove('hidden');
+    scannerStatus.textContent = "Pokrećem kameru...";
+    scannerFallback.classList.add('hidden');
+
+    html5QrCode = new Html5Qrcode("scannerViewport");
+    const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+
+    html5QrCode.start(
+        { facingMode: "environment" },
+        config,
+        (decodedText) => {
+            // Success!
+            handleScanSuccess(decodedText);
+        },
+        (errorMessage) => {
+            // scanning...
+            scannerStatus.textContent = "Tražim fokus...";
+        }
+    ).catch(err => {
+        console.error("Greška pri pokretanju skenera:", err);
+        scannerStatus.textContent = "Greška: Pristup kameri odbijen.";
+    });
+}
+
+function closeScanner() {
+    if (html5QrCode) {
+        html5QrCode.stop().then(() => {
+            html5QrCode = null;
+            barcodeModal.classList.add('hidden');
+        }).catch(err => {
+            console.error("Greška pri gašenju skenera:", err);
+            barcodeModal.classList.add('hidden');
+        });
+    } else {
+        barcodeModal.classList.add('hidden');
+    }
+}
+
+async function handleScanSuccess(decodedText) {
+    if (html5QrCode) {
+        await html5QrCode.stop();
+        html5QrCode = null;
+    }
+
+    scannerStatus.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Tražim proizvod: <strong>${decodedText}</strong>...`;
+    lookupProduct(decodedText);
+}
+
+async function lookupProduct(barcode) {
+    try {
+        const response = await fetch(`https://world.openfoodfacts.org/api/v2/product/${barcode}.json?fields=product_name,nutriments,image_url`);
+        const data = await response.json();
+
+        if (data.status === 1 && data.product) {
+            const p = data.product;
+            const n = p.nutriments;
+
+            // Mapiramo podatke
+            const mappedResult = {
+                items: [{
+                    name: p.product_name || "Nepoznat proizvod",
+                    estimatedWeightG: 100, // Default porcija
+                    kcalPer100g: Math.round(n['energy-kcal_100g'] || 0),
+                    macrosPer100g: {
+                        carbs: Math.round(n.carbohydrates_100g || 0),
+                        protein: Math.round(n.proteins_100g || 0),
+                        fat: Math.round(n.fat_100g || 0)
+                    }
+                }]
+            };
+
+            barcodeModal.classList.add('hidden');
+            renderAIResult(mappedResult);
+        } else {
+            showScannerFallback();
+        }
+    } catch (err) {
+        console.error("Greška pri upitu baze:", err);
+        showScannerFallback();
+    }
+}
+
+function showScannerFallback() {
+    scannerStatus.textContent = "";
+    scannerFallback.classList.remove('hidden');
+}
+
 function bindEvents() {
     // Gender Toggles
     document.querySelectorAll('.toggle-btn').forEach(btn => {
@@ -316,6 +419,23 @@ function bindEvents() {
     fabCamera.addEventListener('click', () => {
         inpCamera.click();
     });
+
+    // Barcode Button
+    const btnBarcode = document.getElementById('btnBarcode');
+    if (btnBarcode) {
+        btnBarcode.addEventListener('click', openScanner);
+    }
+
+    // Barcode Modal controls
+    if (btnScannerCancel) btnScannerCancel.addEventListener('click', closeScanner);
+    document.getElementById('btnCloseScanner').addEventListener('click', closeScanner);
+
+    if (btnScannerCameraFallback) {
+        btnScannerCameraFallback.addEventListener('click', () => {
+            closeScanner();
+            inpCamera.click(); // Trigger regular AI camera flow
+        });
+    }
 
     inpCamera.addEventListener('change', handleImageUpload);
 
