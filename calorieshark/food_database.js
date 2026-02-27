@@ -232,19 +232,35 @@ const localFoodDB = [
     },
     {
         name: "Svijetlo pivo (Lager pivo)",
-        keywords: ["pivo", "zujacka", "ozujsko", "karlovacko", "svijetlo pivo", "veliko pivo", "malo pivo", "toceno pivo"],
+        keywords: ["pivo", "zujacka", "ozujsko", "karlovacko", "svijetlo pivo", "veliko pivo", "malo pivo", "toceno pivo", "lager pivo", "lager"],
         kcalPer100g: 43,
         macrosPer100g: { carbs: 3.6, protein: 0.5, fat: 0 },
         standardUnits: { "ml": 1, "dl": 100, "l": 1000, "veliko": 500, "malo": 330, "boca": 500, "limenka": 500 },
         note: "1 veliko (pola litre) sadrži oko 215 Kcal."
     },
     {
-        name: "Tamno/Crno pivo",
-        keywords: ["crno pivo", "tamno pivo", "tomislav", "stout", "porter"],
+        name: "Tamno / Crno pivo",
+        keywords: ["crno pivo", "tamno pivo", "tomislav", "stout", "porter", "crno"],
         kcalPer100g: 50,
         macrosPer100g: { carbs: 4.5, protein: 0.6, fat: 0 },
         standardUnits: { "ml": 1, "dl": 100, "l": 1000, "veliko": 500, "malo": 330, "boca": 500, "limenka": 500 },
-        note: "Neznatno kaloričnije i jače od svijetlog."
+        note: "Neznatno kaloričnije i jače od svijetlog. 1 veliko (pola litre) = 250 kcal."
+    },
+    {
+        name: "Pšenično pivo (Hefeweizen)",
+        keywords: ["psenicno pivo", "psenicno", "paulaner", "erdinger", "weizen"],
+        kcalPer100g: 45,
+        macrosPer100g: { carbs: 3.5, protein: 0.5, fat: 0 },
+        standardUnits: { "ml": 1, "dl": 100, "l": 1000, "veliko": 500, "malo": 330, "boca": 500, "limenka": 500 },
+        note: "Kalorijski slično lageru, oko 225 kcal na pola litre."
+    },
+    {
+        name: "Craft pivo (IPA / APA / Pale Ale)",
+        keywords: ["craft pivo", "ipa", "apa", "pale ale", "ale pivo", "zahmeljeno pivo"],
+        kcalPer100g: 55,
+        macrosPer100g: { carbs: 4.0, protein: 0.6, fat: 0 },
+        standardUnits: { "ml": 1, "dl": 100, "l": 1000, "veliko": 500, "malo": 330, "boca": 500, "limenka": 500 },
+        note: "Craft piva i Pale Ale-ovi obično imaju veći postotak alkohola i ekstrakta pa su kaloričnija. 1 veliko = cca 275 kcal."
     },
     {
         name: "Bijelo vino",
@@ -261,6 +277,22 @@ const localFoodDB = [
         macrosPer100g: { carbs: 2.6, protein: 0.1, fat: 0 },
         standardUnits: { "ml": 1, "dl": 100, "l": 1000, "casa": 150, "deci": 100 },
         note: "1 čaša restoranske mjere (1.5 dl) = cca 125 Kcal."
+    },
+    {
+        name: "Gemišt / Bevanda / Špricer",
+        keywords: ["gemist", "bevanda", "spricer", "casa gemista", "litra i voda", "bambus"],
+        kcalPer100g: 50,
+        macrosPer100g: { carbs: 1.5, protein: 0, fat: 0 },
+        standardUnits: { "ml": 1, "dl": 100, "l": 1000, "casa": 200 },
+        note: "Pola vino pola mineralna. 1 čaša (2 dl) = oko 100 Kcal."
+    },
+    {
+        name: "Pelinkovac / Jägermeister / Biteri",
+        keywords: ["pelinkovac", "pelin", "jegermeister", "jeger", "amaro", "campari", "biha", "rakija"],
+        kcalPer100g: 250,
+        macrosPer100g: { carbs: 12, protein: 0, fat: 0 },
+        standardUnits: { "ml": 1, "dl": 100, "l": 1000, "cep": 30, "kratko": 30, "duplo": 60 },
+        note: "Jako kalorično zbog šećera i alkohola. Žestice imaju oko 75 kcal po standardnoj (0.03l) čašici (čepa)."
     },
     {
         name: "Coca-Cola (Regularna)",
