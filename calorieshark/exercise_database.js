@@ -141,5 +141,10 @@ const exerciseDB = [
         name: "Fizički rad (Nošenje tereta, bauštela)",
         met: 8.0,
         description: "Podizanje i nošenje teških materijala na gradilištu."
+    },
+    {
+        name: "Kućni majstor (Popravci po kući)",
+        met: 3.5,
+        description: "Bušenje, krečenje pofarbanje zidova, preslagivanje soba i nošenje kutija."
     }
 ];
