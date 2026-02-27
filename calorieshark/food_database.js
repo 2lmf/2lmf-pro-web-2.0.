@@ -248,7 +248,7 @@ const localFoodDB = [
     },
     {
         name: "Pšenično pivo (Hefeweizen)",
-        keywords: ["psenicno pivo", "psenicno", "paulaner", "erdinger", "weizen"],
+        keywords: ["psenicno pivo", "psenicno", "psenica", "paulaner", "erdinger", "weizen", "psenicno pivo", "psenicno", "pšenično pivo", "pšenično"],
         kcalPer100g: 45,
         macrosPer100g: { carbs: 3.5, protein: 0.5, fat: 0 },
         standardUnits: { "ml": 1, "dl": 100, "l": 1000, "veliko": 500, "malo": 330, "boca": 500, "limenka": 500 },
@@ -697,27 +697,21 @@ function searchLocalFoodDB(query) {
             foundUnitFactor = bestMatch.standardUnits[firstKey];
         }
     }
-    // Skroz slijepi fallback
-    const firstKey = Object.keys(bestMatch.standardUnits)[0];
-    foundUnitType = firstKey;
-    foundUnitFactor = bestMatch.standardUnits[firstKey];
-}
+
+    // Ako je tip rekao npr "500 mesa" a failali smo naću mjernu jedinicu osim pukog broja, i to je broj debelo veći od normalnih komada, možemo guessat da su to grami.
+    let finalGrams;
+    if (quantity >= 20 && foundUnitType !== 'ml' && foundUnitType !== 'dl') {
+        // Korisnik je vjerojatno izrekao baš točan broj grama (npr "200 svinjskog vrata" -> 200 grama svinjskog vrata)
+        finalGrams = quantity;
+    } else {
+        finalGrams = quantity * foundUnitFactor;
     }
 
-// Ako je tip rekao npr "500 mesa" a failali smo naću mjernu jedinicu osim pukog broja, i to je broj debelo veći od normalnih komada, možemo guessat da su to grami.
-let finalGrams;
-if (quantity >= 20 && foundUnitType !== 'ml' && foundUnitType !== 'dl') {
-    // Korisnik je vjerojatno izrekao baš točan broj grama (npr "200 svinjskog vrata" -> 200 grama svinjskog vrata)
-    finalGrams = quantity;
-} else {
-    finalGrams = quantity * foundUnitFactor;
-}
-
-return {
-    name: bestMatch.name,
-    estimatedWeightG: Math.round(finalGrams),
-    kcalPer100g: bestMatch.kcalPer100g,
-    macrosPer100g: bestMatch.macrosPer100g,
-    note: `⚡ Offline AI (${foundUnitType} ≈ ${foundUnitFactor}g) | ${bestMatch.note}`
-};
+    return {
+        name: bestMatch.name,
+        estimatedWeightG: Math.round(finalGrams),
+        kcalPer100g: bestMatch.kcalPer100g,
+        macrosPer100g: bestMatch.macrosPer100g,
+        note: `⚡ Offline AI (${foundUnitType} ≈ ${foundUnitFactor}g) | ${bestMatch.note}`
+    };
 }
