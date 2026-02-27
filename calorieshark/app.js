@@ -445,6 +445,33 @@ function bindEvents() {
                 renderSharkAdvisor();
             });
         }
+
+        // Filter Buttons explicitly
+        const advFilterBtns = document.querySelectorAll('.adv-filter-btn');
+        advFilterBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+
+                // Toggle active state only
+                if (btn.classList.contains('active')) {
+                    btn.classList.remove('active');
+                    btn.style.background = 'transparent';
+                    btn.style.color = btn.style.borderColor; // Reset text color
+                } else {
+                    advFilterBtns.forEach(b => {
+                        b.classList.remove('active');
+                        b.style.background = 'transparent';
+                        b.style.color = b.style.borderColor; // Reset all
+                    });
+                    btn.classList.add('active');
+                    btn.style.background = btn.style.borderColor; // Fill it with color
+                    btn.style.color = '#111'; // Dark text for filled bg
+                }
+
+                renderSharkAdvisor(); // Refresh after filter selection
+            });
+        });
     }
 
     setupExerciseEvents();
@@ -600,11 +627,18 @@ function renderSharkAdvisor() {
 
     document.getElementById('lblAdvisorTarget').textContent = Math.round(remainingKcal);
 
-    // Filtriranje prema dijetalnim opcijama
-    let validMeals = advisorMeals.filter(meal => {
-        if (meal.kcal > remainingKcal + 100) return false; // Ne nudimo jela puno veca od budzeta
+    // Ako je korisnik odabrao iskljucivi filter na samom vizualnom panelu dashboarda
+    const activeFilterBtn = document.querySelector('.adv-filter-btn.active');
+    const explicitFilter = activeFilterBtn ? activeFilterBtn.dataset.filter : null;
 
-        if (userProfile.dietPrefs) {
+    let validMeals = advisorMeals.filter(meal => {
+        if (meal.kcal > remainingKcal + 100) return false;
+
+        if (explicitFilter) {
+            // Ako je stisnut neki gumb, uvjet je isključivo on
+            if (!meal.tags.includes(explicitFilter)) return false;
+        } else if (userProfile.dietPrefs) {
+            // Inače koristim globalne preferencije
             if (userProfile.dietPrefs.vege && !meal.tags.includes("vege")) return false;
             if (userProfile.dietPrefs.vegan && !meal.tags.includes("vegan")) return false;
             if (userProfile.dietPrefs.glutenFree && !meal.tags.includes("glutenFree")) return false;
@@ -612,9 +646,15 @@ function renderSharkAdvisor() {
         return true;
     });
 
-    // Ako smo previše filtera stavili i nema nicega, ublazavamo samo budzetom
+    // Ako smo previše filtera stavili (npr globalno) i nema nicega, ublazavamo
     if (validMeals.length === 0) {
-        validMeals = advisorMeals.filter(meal => meal.kcal <= remainingKcal + 100);
+        if (explicitFilter) {
+            // Ako je korisnik eksplicitno stisnuo gumb, ignoriramo kalorijski limit da ipak NESTO pokazemo
+            validMeals = advisorMeals.filter(meal => meal.tags.includes(explicitFilter));
+        } else {
+            // Inace, gubimo globalne filtere i nudimo obrok samo po kalorijama
+            validMeals = advisorMeals.filter(meal => meal.kcal <= remainingKcal + 100);
+        }
     }
 
     // Odaberi 3 random opcije
