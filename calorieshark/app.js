@@ -140,6 +140,7 @@ const btnConfirmInstall = document.getElementById('btnConfirmInstall');
 
 // --- SCANNER STATE ---
 let html5QrCode = null;
+let scannerTimeoutTimer = null;
 
 // --- INITIALIZATION ---
 function init() {
@@ -309,10 +310,20 @@ function openScanner() {
             scannerStatus.style.color = "var(--accent-orange)";
             scannerStatus.textContent = "Greška kamere: " + err;
         });
+
+        // Pokreni timer za automatski fallback (7 sekundi)
+        if (scannerTimeoutTimer) clearTimeout(scannerTimeoutTimer);
+        scannerTimeoutTimer = setTimeout(() => {
+            if (html5QrCode && html5QrCode.isScanning) {
+                showScannerFallback();
+            }
+        }, 7000);
+
     }, 300);
 }
 
 function closeScanner() {
+    if (scannerTimeoutTimer) clearTimeout(scannerTimeoutTimer);
     document.body.classList.remove('body-lock');
     if (html5QrCode) {
         html5QrCode.stop().then(() => {
@@ -328,6 +339,7 @@ function closeScanner() {
 }
 
 async function handleScanSuccess(decodedText) {
+    if (scannerTimeoutTimer) clearTimeout(scannerTimeoutTimer);
     if (html5QrCode) {
         await html5QrCode.stop();
         html5QrCode = null;
@@ -372,6 +384,15 @@ async function lookupProduct(barcode) {
 }
 
 function showScannerFallback() {
+    if (scannerTimeoutTimer) clearTimeout(scannerTimeoutTimer);
+
+    // Ako je upaljeno skeniranje, ugasi ga da ne troši bateriju dok korisnik čita poruku
+    if (html5QrCode && html5QrCode.isScanning) {
+        html5QrCode.stop().then(() => {
+            html5QrCode = null;
+        }).catch(err => console.error(err));
+    }
+
     scannerStatus.textContent = "";
     scannerFallback.classList.remove('hidden');
 }
