@@ -631,29 +631,63 @@ function renderSharkAdvisor() {
     const activeFilterBtn = document.querySelector('.adv-filter-btn.active');
     const explicitFilter = activeFilterBtn ? activeFilterBtn.dataset.filter : null;
 
-    let validMeals = advisorMeals.filter(meal => {
-        if (meal.kcal > remainingKcal + 100) return false;
+    let validMeals = [];
 
-        if (explicitFilter) {
-            // Ako je stisnut neki gumb, uvjet je isključivo on
-            if (!meal.tags.includes(explicitFilter)) return false;
-        } else if (userProfile.dietPrefs) {
-            // Inače koristim globalne preferencije
-            if (userProfile.dietPrefs.vege && !meal.tags.includes("vege")) return false;
-            if (userProfile.dietPrefs.vegan && !meal.tags.includes("vegan")) return false;
-            if (userProfile.dietPrefs.glutenFree && !meal.tags.includes("glutenFree")) return false;
-        }
-        return true;
-    });
+    if (explicitFilter === 'favorite') {
+        // Logika za 'Moji favoriti': Pronađi najčešće poistovjećene obroke u dnevniku,
+        // pretvori ih u format za savjetnika i ignoriraj defaultna pravila kalorija (zato sto ih zeli ponoviti)
 
-    // Ako smo previše filtera stavili (npr globalno) i nema nicega, ublazavamo
-    if (validMeals.length === 0) {
-        if (explicitFilter) {
-            // Ako je korisnik eksplicitno stisnuo gumb, ignoriramo kalorijski limit da ipak NESTO pokazemo
-            validMeals = advisorMeals.filter(meal => meal.tags.includes(explicitFilter));
-        } else {
-            // Inace, gubimo globalne filtere i nudimo obrok samo po kalorijama
-            validMeals = advisorMeals.filter(meal => meal.kcal <= remainingKcal + 100);
+        let freqMap = {};
+        dailyData.meals.forEach(m => {
+            if (m.totals.kcal > 0) {
+                // Generiramo jedinstveni potpis jela na bazi imena stavaka
+                let namesStr = m.items.map(i => i.name).sort().join(', ');
+                if (!freqMap[namesStr]) {
+                    freqMap[namesStr] = { count: 0, mealObj: m };
+                }
+                freqMap[namesStr].count++;
+            }
+        });
+
+        // Sortiramo po učestalosti od najveceg do najmanjeg
+        const sortedFavs = Object.values(freqMap).sort((a, b) => b.count - a.count);
+
+        validMeals = sortedFavs.slice(0, 10).map(fav => {
+            const recipeStr = fav.mealObj.items.map(i => `${i.name} (${i.estimatedWeightG}g)`).join(' + ');
+            return {
+                name: "Moj Česti Obrok",
+                tags: ['favorite'],
+                kcal: fav.mealObj.totals.kcal,
+                protein: Math.round(fav.mealObj.totals.protein || 0),
+                carbs: Math.round(fav.mealObj.totals.carbs || 0),
+                fat: Math.round(fav.mealObj.totals.fat || 0),
+                recipe: recipeStr,
+                originalItems: fav.mealObj.items // Spremamo original da bi znali dupicirati kad klikne poslije
+            };
+        });
+
+    } else {
+        // Standardna logika iz baze savjeta
+        validMeals = advisorMeals.filter(meal => {
+            if (meal.kcal > remainingKcal + 100) return false;
+
+            if (explicitFilter && explicitFilter !== 'favorite') {
+                if (!meal.tags.includes(explicitFilter)) return false;
+            } else if (userProfile.dietPrefs) {
+                if (userProfile.dietPrefs.vege && !meal.tags.includes("vege")) return false;
+                if (userProfile.dietPrefs.vegan && !meal.tags.includes("vegan")) return false;
+                if (userProfile.dietPrefs.glutenFree && !meal.tags.includes("glutenFree")) return false;
+            }
+            return true;
+        });
+
+        // Soft fallback
+        if (validMeals.length === 0) {
+            if (explicitFilter) {
+                validMeals = advisorMeals.filter(meal => meal.tags.includes(explicitFilter));
+            } else {
+                validMeals = advisorMeals.filter(meal => meal.kcal <= remainingKcal + 100);
+            }
         }
     }
 
@@ -681,8 +715,11 @@ function renderSharkAdvisor() {
             if (t === 'glutenFree') tagsHtml += `<span style="background:rgba(255,165,0,0.1); color:var(--accent-orange); padding:2px 6px; border-radius:10px; font-size:0.65rem; margin-right:4px;">GF</span>`;
         });
 
+        // Zbog escapeanja stringova, bolje spremiti objekte u dataset
+        const mealJson = JSON.stringify(meal).replace(/'/g, "&#39;");
+
         html += `
-        <div style="background: var(--bg-card); border-radius: 8px; padding: 10px; display:flex; flex-direction:column; gap:8px;">
+        <div class="advisor-item" data-meal='${mealJson}' style="background: var(--bg-card); cursor: pointer; border-radius: 8px; padding: 10px; display:flex; flex-direction:column; gap:8px; border-left: 3px solid #00D084; box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: transform 0.1s;">
             <div style="display:flex; justify-content:space-between; align-items:flex-start;">
                 <div>
                     <h4 style="margin:0; font-size:0.95rem; color:var(--text-main);">${meal.name}</h4>
@@ -699,6 +736,24 @@ function renderSharkAdvisor() {
     });
 
     list.innerHTML = html;
+
+    // Attach click listener for automatic filling
+    document.querySelectorAll('.advisor-item').forEach(item => {
+        item.addEventListener('click', (e) => {
+            const mealData = JSON.parse(e.currentTarget.getAttribute('data-meal'));
+
+            if (mealData.tags && mealData.tags.includes('favorite') && mealData.originalItems) {
+                // Za favorizirani sastavljeni obrok, tretiraj ga kao savršen AI odgovor i odmah otvori Pending UI
+                currentUnsavedMeal = { items: mealData.originalItems };
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                drawPendingMealUI();
+            } else {
+                // Za obicne Advisor obroke, stavi naziv u input
+                inpTextMeal.value = mealData.name;
+                inpTextMeal.focus();
+            }
+        });
+    });
 }
 
 async function handleImageUpload(e) {
@@ -1136,10 +1191,6 @@ function renderDailyMeals() {
             </div>
             
             <div style="display: flex; justify-content: flex-end; gap: 15px; margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border-color);">
-                ${meal.totals.kcal > 0 ? `
-                <button class="btn-copy-meal" data-index="${originalIndex}" style="background: none; border: none; color: var(--accent-orange); cursor: pointer; padding: 5px; font-size: 0.9rem;">
-                    <i class="fas fa-recycle"></i> Ponovi
-                </button>` : ''}
                 <button class="btn-edit-meal" data-index="${originalIndex}" style="background: none; border: none; color: var(--accent-cyan); cursor: pointer; padding: 5px; font-size: 0.9rem;">
                     <i class="fas fa-edit"></i> Uredi
                 </button>
@@ -1171,27 +1222,6 @@ function renderDailyMeals() {
             editMeal(index);
         });
     });
-
-    document.querySelectorAll('.btn-copy-meal').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const index = parseInt(e.currentTarget.getAttribute('data-index'));
-            if (confirm("Želite li brzo dodati još jednu identičnu praznu porciju ovog obroka/pića u dnevnik?")) {
-                copyMeal(index);
-            }
-        });
-    });
-}
-
-function copyMeal(index) {
-    // Stvaramo deep copy originalnog obroka ali preskacemo time/id da to bude totalno novi
-    const originalMeal = dailyData.meals[index];
-    currentUnsavedMeal = {
-        items: JSON.parse(JSON.stringify(originalMeal.items))
-    };
-
-    // Budući da simuliramo brzu prijavu, otvaramo Pending UI s tim podatcima da korisnik samo stisne SPREMI (ili popravi gramazu)
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    drawPendingMealUI();
 }
 
 function editMeal(index) {
@@ -1414,12 +1444,26 @@ function renderStatsUI(meals) {
         window.macroChartInstance.destroy();
     }
 
+    const cG = Math.round(todayMacros.carbs);
+    const pG = Math.round(todayMacros.protein);
+    const fG = Math.round(todayMacros.fat);
+    const totalG = cG + pG + fG;
+
+    // Ako je total 0 da izbjegnemo NaN divisuon
+    const pC = totalG > 0 ? Math.round((cG / totalG) * 100) : 0;
+    const pP = totalG > 0 ? Math.round((pG / totalG) * 100) : 0;
+    const pF = totalG > 0 ? Math.round((fG / totalG) * 100) : 0;
+
     window.macroChartInstance = new Chart(ctxMacro, {
         type: 'doughnut',
         data: {
-            labels: ['Ugljikohidrati (g)', 'Proteini (g)', 'Masti (g)'],
+            labels: [
+                `Ugljikohidrati (${pC}%)`,
+                `Proteini (${pP}%)`,
+                `Masti (${pF}%)`
+            ],
             datasets: [{
-                data: [Math.round(todayMacros.carbs), Math.round(todayMacros.protein), Math.round(todayMacros.fat)],
+                data: [cG, pG, fG],
                 backgroundColor: ['#00A8B5', '#00D084', '#FF2A2A'], // Cyan, Green, Red
                 borderWidth: 2,
                 borderColor: '#1E293B' // Da pase uz dark background
@@ -1431,7 +1475,7 @@ function renderStatsUI(meals) {
             plugins: {
                 title: {
                     display: true,
-                    text: `Makronutrijenti za zadnji dan (${latestDate})`,
+                    text: `Makronutrijenti za ${latestDate}`,
                     color: '#7f8c8d'
                 },
                 legend: { position: 'right' }
