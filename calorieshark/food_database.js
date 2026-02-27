@@ -654,9 +654,10 @@ function searchLocalFoodDB(query) {
         if (bestMatch.standardUnits['kom']) { foundUnitType = 'kom'; foundUnitFactor = bestMatch.standardUnits['kom']; }
         else if (bestMatch.standardUnits['komad']) { foundUnitType = 'komad'; foundUnitFactor = bestMatch.standardUnits['komad']; }
         else if (bestMatch.standardUnits['snita']) { foundUnitType = 'snita'; foundUnitFactor = bestMatch.standardUnits['snita']; }
+        else if (bestMatch.standardUnits['tanjur']) { foundUnitType = 'tanjur'; foundUnitFactor = bestMatch.standardUnits['tanjur']; } // DODANO: Prioritet tanjuru nad ML
+        else if (bestMatch.standardUnits['porcija']) { foundUnitType = 'porcija'; foundUnitFactor = bestMatch.standardUnits['porcija']; }
         else if (bestMatch.standardUnits['ml']) { foundUnitType = 'ml'; foundUnitFactor = 1; } // "200 mlijeka" -> pretpostavka 200ml
         else if (bestMatch.standardUnits['salica']) { foundUnitType = 'salica'; foundUnitFactor = bestMatch.standardUnits['salica']; }
-        else if (bestMatch.standardUnits['porcija']) { foundUnitType = 'porcija'; foundUnitFactor = bestMatch.standardUnits['porcija']; }
         else {
             // Skroz slijepi fallback
             const firstKey = Object.keys(bestMatch.standardUnits)[0];
@@ -664,21 +665,27 @@ function searchLocalFoodDB(query) {
             foundUnitFactor = bestMatch.standardUnits[firstKey];
         }
     }
-
-    // Ako je tip rekao npr "500 mesa" a failali smo naću mjernu jedinicu osim pukog broja, i to je broj debelo veći od normalnih komada, možemo guessat da su to grami.
-    let finalGrams;
-    if (quantity >= 20 && foundUnitType !== 'ml' && foundUnitType !== 'dl') {
-        // Korisnik je vjerojatno izrekao baš točan broj grama (npr "200 svinjskog vrata" -> 200 grama svinjskog vrata)
-        finalGrams = quantity;
-    } else {
-        finalGrams = quantity * foundUnitFactor;
+    // Skroz slijepi fallback
+    const firstKey = Object.keys(bestMatch.standardUnits)[0];
+    foundUnitType = firstKey;
+    foundUnitFactor = bestMatch.standardUnits[firstKey];
+}
     }
 
-    return {
-        name: bestMatch.name,
-        estimatedWeightG: Math.round(finalGrams),
-        kcalPer100g: bestMatch.kcalPer100g,
-        macrosPer100g: bestMatch.macrosPer100g,
-        note: `⚡ Offline AI (${foundUnitType} ≈ ${foundUnitFactor}g) | ${bestMatch.note}`
-    };
+// Ako je tip rekao npr "500 mesa" a failali smo naću mjernu jedinicu osim pukog broja, i to je broj debelo veći od normalnih komada, možemo guessat da su to grami.
+let finalGrams;
+if (quantity >= 20 && foundUnitType !== 'ml' && foundUnitType !== 'dl') {
+    // Korisnik je vjerojatno izrekao baš točan broj grama (npr "200 svinjskog vrata" -> 200 grama svinjskog vrata)
+    finalGrams = quantity;
+} else {
+    finalGrams = quantity * foundUnitFactor;
+}
+
+return {
+    name: bestMatch.name,
+    estimatedWeightG: Math.round(finalGrams),
+    kcalPer100g: bestMatch.kcalPer100g,
+    macrosPer100g: bestMatch.macrosPer100g,
+    note: `⚡ Offline AI (${foundUnitType} ≈ ${foundUnitFactor}g) | ${bestMatch.note}`
+};
 }
