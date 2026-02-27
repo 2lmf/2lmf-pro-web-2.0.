@@ -878,7 +878,6 @@ function handleVoiceInput() {
     recognition.onspeechend = function () {
         recognition.stop();
         btnVoice.classList.remove('recording-pulse');
-        inpTextMeal.placeholder = "Upiši ili izgovori obrok...";
     };
 
     recognition.onerror = function (event) {
