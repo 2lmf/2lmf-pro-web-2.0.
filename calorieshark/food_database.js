@@ -235,7 +235,7 @@ const localFoodDB = [
         keywords: ["pivo", "zujacka", "ozujsko", "karlovacko", "svijetlo pivo", "veliko pivo", "malo pivo", "toceno pivo", "lager pivo", "lager"],
         kcalPer100g: 43,
         macrosPer100g: { carbs: 3.6, protein: 0.5, fat: 0 },
-        standardUnits: { "ml": 1, "dl": 100, "l": 1000, "veliko": 500, "malo": 330, "boca": 500, "limenka": 500 },
+        standardUnits: { "ml": 1, "dl": 100, "l": 1000, "veliko": 500, "malo": 330, "boca": 500, "limenka": 500, "pivo": 500 },
         note: "1 veliko (pola litre) sadrži oko 215 Kcal."
     },
     {
@@ -251,7 +251,7 @@ const localFoodDB = [
         keywords: ["psenicno pivo", "psenicno", "psenica", "paulaner", "erdinger", "weizen", "psenicno pivo", "psenicno", "pšenično pivo", "pšenično"],
         kcalPer100g: 45,
         macrosPer100g: { carbs: 3.5, protein: 0.5, fat: 0 },
-        standardUnits: { "ml": 1, "dl": 100, "l": 1000, "veliko": 500, "malo": 330, "boca": 500, "limenka": 500 },
+        standardUnits: { "ml": 1, "dl": 100, "l": 1000, "veliko": 500, "malo": 330, "boca": 500, "limenka": 500, "pivo": 500 },
         note: "Kalorijski slično lageru, oko 225 kcal na pola litre."
     },
     {
@@ -685,16 +685,19 @@ function searchLocalFoodDB(query) {
         // Fallback: Ako je namirnica tekućina (ima ml) tražimo ml, ako tvrda kom. Inače uzimamo prvi key.
         if (bestMatch.standardUnits['kom']) { foundUnitType = 'kom'; foundUnitFactor = bestMatch.standardUnits['kom']; }
         else if (bestMatch.standardUnits['komad']) { foundUnitType = 'komad'; foundUnitFactor = bestMatch.standardUnits['komad']; }
+        else if (bestMatch.standardUnits['pivo']) { foundUnitType = 'pivo'; foundUnitFactor = bestMatch.standardUnits['pivo']; }
+        else if (bestMatch.standardUnits['veliko']) { foundUnitType = 'veliko'; foundUnitFactor = bestMatch.standardUnits['veliko']; }
         else if (bestMatch.standardUnits['snita']) { foundUnitType = 'snita'; foundUnitFactor = bestMatch.standardUnits['snita']; }
-        else if (bestMatch.standardUnits['tanjur']) { foundUnitType = 'tanjur'; foundUnitFactor = bestMatch.standardUnits['tanjur']; } // DODANO: Prioritet tanjuru nad ML
+        else if (bestMatch.standardUnits['tanjur']) { foundUnitType = 'tanjur'; foundUnitFactor = bestMatch.standardUnits['tanjur']; }
         else if (bestMatch.standardUnits['porcija']) { foundUnitType = 'porcija'; foundUnitFactor = bestMatch.standardUnits['porcija']; }
-        else if (bestMatch.standardUnits['ml']) { foundUnitType = 'ml'; foundUnitFactor = 1; } // "200 mlijeka" -> pretpostavka 200ml
+        else if (bestMatch.standardUnits['ml']) { foundUnitType = 'ml'; foundUnitFactor = 1; }
+        else if (bestMatch.standardUnits['dl']) { foundUnitType = 'dl'; foundUnitFactor = 100; }
         else if (bestMatch.standardUnits['salica']) { foundUnitType = 'salica'; foundUnitFactor = bestMatch.standardUnits['salica']; }
         else {
             // Skroz slijepi fallback
             const firstKey = Object.keys(bestMatch.standardUnits)[0];
             foundUnitType = firstKey;
-            foundUnitFactor = bestMatch.standardUnits[firstKey];
+            foundUnitFactor = bestMatch.standardUnits[firstKey] || 1;
         }
     }
 
