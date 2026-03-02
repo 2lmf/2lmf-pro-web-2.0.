@@ -302,11 +302,15 @@ function loadProfile() {
             }
         });
 
-        // Populate checkboxes
+        // Populate checkboxes safely
         if (userProfile.dietPrefs) {
-            document.getElementById('chkSettingsVege').checked = userProfile.dietPrefs.vege || false;
-            document.getElementById('chkSettingsVegan').checked = userProfile.dietPrefs.vegan || false;
-            document.getElementById('chkSettingsGlutenFree').checked = userProfile.dietPrefs.glutenFree || false;
+            const chkVege = document.getElementById('chkSettingsVege');
+            const chkVegan = document.getElementById('chkSettingsVegan');
+            const chkGluten = document.getElementById('chkSettingsGlutenFree');
+
+            if (chkVege) chkVege.checked = userProfile.dietPrefs.vege || false;
+            if (chkVegan) chkVegan.checked = userProfile.dietPrefs.vegan || false;
+            if (chkGluten) chkGluten.checked = userProfile.dietPrefs.glutenFree || false;
         }
 
         showScreen('dashboard');
