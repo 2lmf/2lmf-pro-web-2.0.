@@ -1,9 +1,9 @@
-const CACHE_NAME = 'calorieshark-v35';
+const CACHE_NAME = 'calorieshark-v38';
 const ASSETS = [
     './',
     './index.html',
     './styles.css',
-    './app.js',
+    './app_v36.js',
     './food_database.js',
     './food_categories.js',
     './food_categories_2.js',

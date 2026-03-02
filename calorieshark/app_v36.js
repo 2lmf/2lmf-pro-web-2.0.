@@ -1,4 +1,41 @@
+// --- DEBUGGING & ERROR HANDLING ---
+window.onerror = function (msg, url, lineNo, columnNo, error) {
+    const errorMsg = `ERROR: ${msg}\nLine: ${lineNo}\nURL: ${url}`;
+    console.error(errorMsg);
+    if (!msg.includes('ResizeObserver')) {
+        alert(errorMsg);
+    }
+    return false;
+};
+console.log("CalorieShark v38 Initializing...");
+
 // --- STATE MANAGEMENT ---
+function safeGetElement(id) {
+    const el = document.getElementById(id);
+    if (!el) {
+        console.warn(`Element with ID "${id}" NOT found in DOM!`);
+    }
+    return el;
+}
+
+const safeLocalStorage = {
+    getItem: function (key) {
+        try {
+            return localStorage.getItem(key);
+        } catch (e) {
+            console.warn(`localStorage getItem error for key "${key}":`, e);
+            return null;
+        }
+    },
+    setItem: function (key, value) {
+        try {
+            localStorage.setItem(key, value);
+        } catch (e) {
+            console.warn(`localStorage setItem error for key "${key}":`, e);
+        }
+    }
+};
+
 let userProfile = {
     username: '',
     email: '',
@@ -144,19 +181,19 @@ let scannerTimeoutTimer = null;
 
 // --- INITIALIZATION ---
 function init() {
+    bindEvents(); // Bind events FIRST to avoid freezing UI if other things fail
     registerServiceWorker();
     loadDailyData();
     loadProfile();
     loadVisionEnergy();
     initExerciseModal();
-    bindEvents();
 
     // Start energy regeneration loop
     setInterval(checkVisionEnergy, 60000); // Check every minute
 }
 
 function loadVisionEnergy() {
-    const saved = localStorage.getItem('calorieShark_vision_energy');
+    const saved = safeLocalStorage.getItem('calorieShark_vision_energy');
     if (saved) {
         visionEnergy = JSON.parse(saved);
     }
@@ -200,7 +237,7 @@ function useVisionEnergy() {
 }
 
 function saveVisionEnergy() {
-    localStorage.setItem('calorieShark_vision_energy', JSON.stringify(visionEnergy));
+    safeLocalStorage.setItem('calorieShark_vision_energy', JSON.stringify(visionEnergy));
 }
 
 function renderVisionEnergy() {
@@ -215,7 +252,7 @@ function renderVisionEnergy() {
 }
 
 function loadDailyData() {
-    const saved = localStorage.getItem('calorieShark_daily');
+    const saved = safeLocalStorage.getItem('calorieShark_daily');
     const today = new Date().toLocaleDateString('hr-HR');
 
     if (saved) {
@@ -237,14 +274,14 @@ function loadDailyData() {
 
 function saveDailyData() {
     const today = new Date().toLocaleDateString('hr-HR');
-    localStorage.setItem('calorieShark_daily', JSON.stringify({
+    safeLocalStorage.setItem('calorieShark_daily', JSON.stringify({
         date: today,
         data: dailyData
     }));
 }
 
 function loadProfile() {
-    const saved = localStorage.getItem('calorieShark_profile');
+    const saved = safeLocalStorage.getItem('calorieShark_profile');
 
     if (saved) {
         userProfile = JSON.parse(saved);
@@ -280,7 +317,7 @@ function loadProfile() {
 }
 
 function saveProfile() {
-    localStorage.setItem('calorieShark_profile', JSON.stringify(userProfile));
+    safeLocalStorage.setItem('calorieShark_profile', JSON.stringify(userProfile));
 }
 
 // --- BARCODE SCANNER LOGIC ---
@@ -409,36 +446,42 @@ function bindEvents() {
 
     // Save Profile
     document.getElementById('btnSaveProfile').addEventListener('click', () => {
-        const usernameVal = document.getElementById('inpUsername').value.trim();
-        const emailVal = document.getElementById('inpEmail').value.trim();
+        try {
+            const usernameVal = document.getElementById('inpUsername').value.trim();
+            const emailVal = document.getElementById('inpEmail').value.trim();
 
-        if (!usernameVal || !emailVal) {
-            alert("Molimo unesite korisničko ime i e-mail adresu!");
-            return;
+            if (!usernameVal || !emailVal) {
+                alert("Molimo unesite korisničko ime i e-mail adresu!");
+                return;
+            }
+
+            userProfile.username = usernameVal;
+            userProfile.email = emailVal;
+            // Defensive parsing to prevent NaN errors freezing the UI
+            userProfile.age = Math.abs(parseInt(document.getElementById('inpAge').value)) || 30;
+            userProfile.height = Math.abs(parseInt(document.getElementById('inpHeight').value)) || 180;
+            userProfile.weight = Math.abs(parseFloat(document.getElementById('inpWeight').value)) || 85;
+
+            // Save Onboarding Diet Prefs
+            const chkVege = document.getElementById('chkOnbVege');
+            const chkVegan = document.getElementById('chkOnbVegan');
+            const chkGluten = document.getElementById('chkOnbGlutenFree');
+
+            userProfile.dietPrefs = {
+                vege: chkVege ? chkVege.checked : false,
+                vegan: chkVegan ? chkVegan.checked : false,
+                glutenFree: chkGluten ? chkGluten.checked : false
+            };
+
+            calculateTDEE();
+            safeLocalStorage.setItem('calorieShark_profile', JSON.stringify(userProfile));
+
+            showScreen('dashboard');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            updateDashboardUI();
+        } catch (e) {
+            alert("Greska kod spremanja profila: " + e.message);
         }
-
-        userProfile.username = usernameVal;
-        userProfile.email = emailVal;
-        userProfile.age = parseInt(document.getElementById('inpAge').value);
-        userProfile.height = parseInt(document.getElementById('inpHeight').value);
-        userProfile.weight = parseFloat(document.getElementById('inpWeight').value);
-
-        // Save Onboarding Diet Prefs
-        const chkVege = document.getElementById('chkOnbVege');
-        const chkVegan = document.getElementById('chkOnbVegan');
-        const chkGluten = document.getElementById('chkOnbGlutenFree');
-
-        userProfile.dietPrefs = {
-            vege: chkVege ? chkVege.checked : false,
-            vegan: chkVegan ? chkVegan.checked : false,
-            glutenFree: chkGluten ? chkGluten.checked : false
-        };
-
-        calculateTDEE();
-        localStorage.setItem('calorieShark_profile', JSON.stringify(userProfile));
-
-        showScreen('dashboard');
-        updateDashboardUI();
     });
 
     // Camera FAB
@@ -497,34 +540,39 @@ function bindEvents() {
 
     // Save Settings Button
     document.getElementById('btnSaveSettings').addEventListener('click', () => {
-        const un = document.getElementById('inpSettingsUsername').value.trim();
-        const em = document.getElementById('inpSettingsEmail').value.trim();
-        const a = parseInt(document.getElementById('inpSettingsAge').value);
-        const h = parseInt(document.getElementById('inpSettingsHeight').value);
-        const w = parseFloat(document.getElementById('inpSettingsWeight').value);
-        const activeBtn = document.querySelector('#settingsToggleGroup .toggle-btn.active');
-        const g = activeBtn ? activeBtn.dataset.gender : 'male';
+        try {
+            const un = document.getElementById('inpSettingsUsername').value.trim();
+            const em = document.getElementById('inpSettingsEmail').value.trim();
+            const a = Math.abs(parseInt(document.getElementById('inpSettingsAge').value)) || 30;
+            const h = Math.abs(parseInt(document.getElementById('inpSettingsHeight').value)) || 180;
+            const w = Math.abs(parseFloat(document.getElementById('inpSettingsWeight').value)) || 85;
+            const activeBtn = document.querySelector('#settingsToggleGroup .toggle-btn.active');
+            const g = activeBtn ? activeBtn.dataset.gender : 'male';
 
-        if (!un || !em) { alert('Unesi korisničko ime i e-mail!'); return; }
+            if (!un || !em) { alert('Unesi korisničko ime i e-mail!'); return; }
 
-        userProfile = { username: un, email: em, age: a, height: h, weight: w, gender: g };
+            userProfile = { username: un, email: em, age: a, height: h, weight: w, gender: g };
 
-        // Save Diet Prefs from settings
-        const chkVege = document.getElementById('chkSettingsVege');
-        const chkVegan = document.getElementById('chkSettingsVegan');
-        const chkGluten = document.getElementById('chkSettingsGlutenFree');
+            // Save Diet Prefs from settings
+            const chkVege = document.getElementById('chkSettingsVege');
+            const chkVegan = document.getElementById('chkSettingsVegan');
+            const chkGluten = document.getElementById('chkSettingsGlutenFree');
 
-        userProfile.dietPrefs = {
-            vege: chkVege ? chkVege.checked : false,
-            vegan: chkVegan ? chkVegan.checked : false,
-            glutenFree: chkGluten ? chkGluten.checked : false
-        };
+            userProfile.dietPrefs = {
+                vege: chkVege ? chkVege.checked : false,
+                vegan: chkVegan ? chkVegan.checked : false,
+                glutenFree: chkGluten ? chkGluten.checked : false
+            };
 
-        calculateTDEE();
-        localStorage.setItem('calorieShark_profile', JSON.stringify(userProfile));
+            calculateTDEE();
+            safeLocalStorage.setItem('calorieShark_profile', JSON.stringify(userProfile));
 
-        showScreen('dashboard');
-        updateDashboardUI();
+            showScreen('dashboard');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            updateDashboardUI();
+        } catch (e) {
+            alert("Greska kod postavki: " + e.message);
+        }
     });
 
     // Stats Button
@@ -656,7 +704,6 @@ function showScreen(screenId) {
     }
 }
 
-// PWA Service Worker & Install Logic
 function registerServiceWorker() {
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('sw.js')
@@ -670,9 +717,11 @@ window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredPrompt = e;
 
-    // Show our custom modal if they haven't installed it
+    // Show our custom modal if they haven't installed it and ARE LOGGED IN
     setTimeout(() => {
-        installModal.classList.remove('hidden');
+        if (userProfile.username && userProfile.username.length > 0 && !document.getElementById('screenOnboarding').classList.contains('hidden') === false) {
+            installModal.classList.remove('hidden');
+        }
     }, 2000); // Pokazi 2 sekunde nakon loada
 });
 
@@ -1237,6 +1286,7 @@ function drawPendingMealUI() {
             <strong style="font-size:1.2rem;">UKUPNO:</strong>
             <strong style="font-size:1.5rem; color:${isExercise ? '#00D084' : 'var(--accent-orange)'};">${Math.abs(totalKcal)} kcal</strong>
         </div>
+        ${!isExercise ? `<button id="btnAddMissingItem" class="secondary-btn" style="width:100%; margin-bottom:15px; font-size:0.9rem; border: 1px dashed var(--accent-cyan); color: var(--accent-cyan);"><i class="fas fa-plus"></i> Dodaj sastojak koga AI nije skužio</button>` : ''}
         <button id="btnConfirmMeal" class="primary-btn" style="background:${isExercise ? '#00D084' : 'var(--accent-orange)'};"><i class="fas fa-check"></i> ${confirmBtnTxt}</button>
         <button id="btnCancelMeal" class="icon-btn" style="width:100%; margin-top:10px; color:var(--text-muted); font-size:1rem;"><i class="fas fa-times"></i> Odbaci</button>
     </div>`;
@@ -1260,6 +1310,60 @@ function drawPendingMealUI() {
         renderDailyMeals(); // Osvjezi trenutnu listu i povrati stari obrok (ako editiramo)
         updateDashboardUI();
     });
+
+    const btnAddMissing = document.getElementById('btnAddMissingItem');
+    if (btnAddMissing) {
+        btnAddMissing.addEventListener('click', handleMissingItemAdd);
+    }
+}
+
+async function handleMissingItemAdd() {
+    const itemName = prompt("Upišite naziv sastojka kojeg je AI zaboravio (npr. 'kruh', 'maslinovo ulje'):");
+    if (!itemName || itemName.trim() === '') return;
+
+    // Prvo provjeri lokalnu bazu
+    if (typeof searchLocalFoodDB === 'function') {
+        const localHit = searchLocalFoodDB(itemName.trim());
+        if (localHit) {
+            currentUnsavedMeal.items.push(localHit);
+            drawPendingMealUI();
+            return;
+        }
+    }
+
+    // Ako nemamo lokalno, šalji na AI API
+    const prevText = mealsList.innerHTML;
+    mealsList.innerHTML = `<div class="empty-state" style="color:var(--accent-cyan);"><i class="fas fa-spinner fa-spin"></i><p>Pitam AI za: ${itemName}...</p></div>`;
+
+    try {
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            mode: 'cors',
+            headers: {
+                'Content-Type': 'text/plain;charset=utf-8',
+            },
+            body: JSON.stringify({
+                action: 'analyzeMeal',
+                textDescription: itemName
+            })
+        });
+
+        const responseText = await response.text();
+        const result = JSON.parse(responseText);
+
+        if (result.status === 'success' && result.data && result.data.items && result.data.items.length > 0) {
+            currentUnsavedMeal.items.push(result.data.items[0]); // Dodaj prvi AI item
+            drawPendingMealUI();
+        } else {
+            alert("AI nažalost nije prepoznao: " + itemName);
+            mealsList.innerHTML = prevText;
+            drawPendingMealUI(); // rebind
+        }
+    } catch (err) {
+        alert("Greška sa spajanjem na AI: " + err.message);
+        mealsList.innerHTML = prevText;
+        drawPendingMealUI(); // rebind
+    }
 }
 
 async function saveMealToServer() {
