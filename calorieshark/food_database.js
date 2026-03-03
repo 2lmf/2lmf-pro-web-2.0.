@@ -544,6 +544,106 @@ const localFoodDB = [
         standardUnits: { "mjerica": 30, "porcija": 30, "scoop": 30 },
         note: "1 standardna mjerica (scoop) koja dođe u kutiji teži oko 30g."
     },
+    // === SJEMENKE I ORAŠASTI PLODOVI ===
+    {
+        name: "Chia sjemenke",
+        keywords: ["chia sjemenke", "čia", "zlica chie", "chia"],
+        kcalPer100g: 486,
+        macrosPer100g: { carbs: 42, protein: 16, fat: 31 },
+        standardUnits: { "zlica": 15, "porcija": 15 },
+        note: "Vrlo kalorično, bogato vlaknima. 1 jušna žlica ≈ 15g (70 kcal)."
+    },
+    {
+        name: "Lanene sjemenke",
+        keywords: ["lanene sjemenke", "lan", "mljeveni lan", "zlica lana"],
+        kcalPer100g: 534,
+        macrosPer100g: { carbs: 29, protein: 18, fat: 42 },
+        standardUnits: { "zlica": 10, "porcija": 10 },
+        note: "Bogato omega-3 mastima, 1 žlica = 10g."
+    },
+    {
+        name: "Sjemenke bundeve (Golice)",
+        keywords: ["sjemenke bundeve", "bucine sjemenke", "golice", "bundeva"],
+        kcalPer100g: 574,
+        macrosPer100g: { carbs: 15, protein: 30, fat: 49 },
+        standardUnits: { "sakica": 30, "porcija": 30, "zlica": 15 },
+        note: "Visoko proteínaslko, ali i masno. 1 šakica = cca 30g (170 kcal)."
+    },
+    {
+        name: "Kikiriki (Prženi, Slani)",
+        keywords: ["kikiriki", "kikirikija", "kiki riki", "slani kikiriki", "saka kikirikija"],
+        kcalPer100g: 585,
+        macrosPer100g: { carbs: 16, protein: 24, fat: 49 },
+        standardUnits: { "saka": 30, "porcija": 30, "vreca": 100 },
+        note: "OPREZ: Pravi kalorični ubojica! Šaka je ~175 kcal."
+    },
+    // === SUHO VOĆE ===
+    {
+        name: "Grožđice (Suho grožđe)",
+        keywords: ["grozdice", "suho grozdje", "cvebe", "saka grozdica"],
+        kcalPer100g: 300,
+        macrosPer100g: { carbs: 79, protein: 3, fat: 0.5 },
+        standardUnits: { "zlica": 15, "saka": 30, "porcija": 30 },
+        note: "Čista energija/šećeri. 1 žlica ≈ 15g."
+    },
+    {
+        name: "Suhe šljive",
+        keywords: ["suhe sljive", "suha sljiva", "sljive"],
+        kcalPer100g: 240,
+        macrosPer100g: { carbs: 64, protein: 2, fat: 0.4 },
+        standardUnits: { "kom": 10, "komad": 10, "porcija": 50 },
+        note: "1 komad bez koštice = cca 10g (24 kcal)."
+    },
+    {
+        name: "Brusnice (Sušene, zašećerene)",
+        keywords: ["brusnice", "suhe brusnice", "brusnica"],
+        kcalPer100g: 308,
+        macrosPer100g: { carbs: 82, protein: 0.1, fat: 1.4 },
+        standardUnits: { "zlica": 15, "saka": 30 },
+        note: "Često sadrže velik postotak dodanog šećera."
+    },
+    // === ŽITARICE I DORUČAK ===
+    {
+        name: "Zobena kaša (S mlijekom/vodom)",
+        keywords: ["zobena kasa", "zobene kasa", "kuhane zobene", "porcija zobene kase", "zobena doručak"],
+        kcalPer100g: 110,
+        macrosPer100g: { carbs: 18, protein: 4, fat: 2 },
+        standardUnits: { "porcija": 250, "zdjelica": 250, "tanjur": 250 },
+        note: "Odražava *gotov* obrok pripremljen s vodom i malo mlijeka. Porcija je teža jer je voda upijena (~280 kcal/porcija)."
+    },
+    {
+        name: "Muesli / Granola (S orasima, voćem)",
+        keywords: ["muesli", "granola", "musle", "zobene s vocem"],
+        kcalPer100g: 450,
+        macrosPer100g: { carbs: 65, protein: 10, fat: 15 },
+        standardUnits: { "zlica": 15, "porcija": 60, "zdjelica": 60 },
+        note: "Puno kaloričnije od običnih zobenih zbog ulja i meda u pečenju."
+    },
+    {
+        name: "Corn Flakes (Kukuruzne pahuljice)",
+        keywords: ["corn flakes", "kornfleks", "pahuljice", "kukuruzne pahuljice"],
+        kcalPer100g: 357,
+        macrosPer100g: { carbs: 84, protein: 7, fat: 0.4 },
+        standardUnits: { "porcija": 40, "zdjelica": 40 },
+        note: "Porcija za manju zdjelicu obično varira oko 40 grama."
+    },
+    // === ZALEĐENO POVRĆE ===
+    {
+        name: "Zaleđeno miješano povrće (Grašak, Mrkva, Kukuruz)",
+        keywords: ["mjesano povrce", "zaledeno povrce", "smrznuto povrce", "carska mjesavina"],
+        kcalPer100g: 50,
+        macrosPer100g: { carbs: 10, protein: 3, fat: 0.5 },
+        standardUnits: { "porcija": 200, "zdjelica": 200, "tanjur": 200 },
+        note: "Odličan niskokalorični prilog uz meso."
+    },
+    {
+        name: "Grašak (Kuhani / Zaleđeni pa kuhan)",
+        keywords: ["grasak", "graska", "kuhani grasak", "porcija graska"],
+        kcalPer100g: 81,
+        macrosPer100g: { carbs: 14, protein: 5, fat: 0.4 },
+        standardUnits: { "porcija": 150, "zlica": 20 },
+        note: "Kaloričniji od većine povrća (zbog veće razine UH)."
+    },
     // === JUHE ===
     {
         name: "Bistra pileća juha / Goveđa juha",
@@ -625,12 +725,27 @@ function searchLocalFoodDB(query) {
         return matrix[b.length][a.length];
     }
 
+    // Inicijaliziramo array sa svim pretraživim jelima i dodajemo NAUČENA JELA na početak baze
+    let fullDatabase = [...localFoodDB];
+    try {
+        const learnedMealsStr = safeLocalStorage.getItem('calorieShark_learnedFoods');
+        if (learnedMealsStr) {
+            const learnedArr = JSON.parse(learnedMealsStr);
+            if (Array.isArray(learnedArr) && learnedArr.length > 0) {
+                // Stavi naučena jela na početak liste kako bi imala blagu prednost kod pretrage istog imena
+                fullDatabase = [...learnedArr, ...fullDatabase];
+            }
+        }
+    } catch (e) {
+        console.warn("Nisam uspio pročitati learnedFoods bazu", e);
+    }
+
     // Lista definiranih namirnica iz baze sa Scoreom pretrage
     let bestMatch = null;
     let bestScore = -1; // Sada manji score znaci vecu udaljenost, mi trazimo blago bodovanje
 
     // Advanced fuzzy pronalazak baze:
-    localFoodDB.forEach(food => {
+    fullDatabase.forEach(food => {
         let score = 0;
 
         // Direktan pogodak
@@ -659,7 +774,7 @@ function searchLocalFoodDB(query) {
     });
 
     if (!bestMatch) {
-        return null; // Nismo dovoljno uvjereni u lokalnoj bazi, šalji pravom Google AI-u!
+        return null; // Nismo dovoljno uvjereni u bazi, šalji API-ju!
     }
 
     // Pročeprkajmo preostali dio riječi (normalizedQuery) da vidimo jel se spominju mjerne jedinice iz tekućeg namirničkog rječnika
@@ -715,6 +830,6 @@ function searchLocalFoodDB(query) {
         estimatedWeightG: Math.round(finalGrams),
         kcalPer100g: bestMatch.kcalPer100g,
         macrosPer100g: bestMatch.macrosPer100g,
-        note: `⚡ Offline AI (${foundUnitType} ≈ ${foundUnitFactor}g) | ${bestMatch.note}`
+        note: `⚡ AI Memorija/Baza (${foundUnitType} ≈ ${foundUnitFactor}g)`
     };
 }

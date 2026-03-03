@@ -1272,7 +1272,8 @@ function drawPendingMealUI() {
             <div style="display:flex; align-items:center; gap:10px;">
                 <label style="font-size:0.8rem; color:var(--text-muted);">Gramaža:</label>
                 <input type="number" class="gram-input" data-index="${index}" value="${item.estimatedWeightG}" style="width:70px; padding:5px; border-radius:4px; border:1px solid var(--border-color); background:#FAFCFF; color:#2C3E50; text-align:center;">
-                <span style="font-size:0.8rem; color:var(--text-muted);">g (AI procijenio)</span>
+                <span style="font-size:0.8rem; color:var(--text-muted);">g</span>
+                <button class="icon-btn btn-delete-pending" data-index="${index}" style="margin-left:auto; color:#FF2A2A; padding:5px; border:none; background:transparent;"><i class="fas fa-times"></i></button>
             </div>
         </div>`;
     });
@@ -1304,6 +1305,21 @@ function drawPendingMealUI() {
             const newGrams = parseInt(e.target.value) || 0;
             currentUnsavedMeal.items[idx].estimatedWeightG = newGrams;
             drawPendingMealUI(); // Re-render to update calculations
+        });
+    });
+
+    // Attach Listeners za brisanje (X)
+    document.querySelectorAll('.btn-delete-pending').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const btnEl = e.target.closest('.btn-delete-pending');
+            const idx = btnEl.getAttribute('data-index');
+            currentUnsavedMeal.items.splice(idx, 1);
+            if (currentUnsavedMeal.items.length === 0) {
+                // Ako smo obrisali jedini sastojak, odbacujemo obrok totalno
+                document.getElementById('btnCancelMeal').click();
+            } else {
+                drawPendingMealUI(); // Re-render
+            }
         });
     });
 
@@ -1419,6 +1435,43 @@ async function saveMealToServer() {
             if (editingMealIndex !== null) {
                 deleteMeal(editingMealIndex, true); // (index, skipRender) -> istina
                 editingMealIndex = null;
+            }
+
+            // ŠARKOV SUSTAV UČENJA (Nauči nova jela za offline bazu)
+            try {
+                if (!isExercise) {
+                    let learnedArr = [];
+                    const learnedStr = safeLocalStorage.getItem('calorieShark_learnedFoods');
+                    if (learnedStr) learnedArr = JSON.parse(learnedStr);
+
+                    let addedNew = false;
+                    currentUnsavedMeal.items.forEach(item => {
+                        // Ako dodano jelo nije iz lokalne baze (nema onu '⚡ Offline AI' bilješku), znači da je AI novo generirao!
+                        if (!item.note || !item.note.includes('Offline AI') && !item.note.includes('AI Memorija/Baza')) {
+                            // Provjeri jesmo li ga vec negdje naucili prije (po nazivu)
+                            const exists = learnedArr.find(x => x.name.toLowerCase() === item.name.toLowerCase());
+                            if (!exists) {
+                                // Dodaj ga i spakuj standardne "komad / gram / ml" vrijednosti
+                                learnedArr.push({
+                                    name: item.name,
+                                    keywords: [item.name.toLowerCase(), item.name.toLowerCase() + "a"],
+                                    kcalPer100g: item.kcalPer100g,
+                                    macrosPer100g: item.macrosPer100g,
+                                    standardUnits: { "kom": 100, "porcija": 150 },
+                                    note: "Naučeno od Google AI: " + new Date().toLocaleDateString('hr-HR')
+                                });
+                                addedNew = true;
+                            }
+                        }
+                    });
+
+                    // Spremi nazad u lokalnu memoriju ako smo obogatili rječnik
+                    if (addedNew) {
+                        safeLocalStorage.setItem('calorieShark_learnedFoods', JSON.stringify(learnedArr));
+                    }
+                }
+            } catch (e) {
+                console.warn("Greška kod AI sustava učenja:", e);
             }
 
             applyMealToDashboard(currentUnsavedMeal.items, totals, result.insertedId);
