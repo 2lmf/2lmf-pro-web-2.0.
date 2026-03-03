@@ -677,6 +677,265 @@ const localFoodDB = [
         macrosPer100g: { carbs: 2, protein: 15, fat: 6 },
         standardUnits: { "porcija": 350, "kom": 30, "grama": 1 },
         note: "Umak (buzara) sadrži maslinovo ulje, vino, krušne mrvice. Porcija ima više kalorija zbog safta."
+    },
+    // === SVJEŽE VOĆE I BOBIČASTO VOĆE ===
+    {
+        name: "Naranča",
+        keywords: ["naranca", "narancu", "narance"],
+        kcalPer100g: 47,
+        macrosPer100g: { carbs: 12, protein: 0.9, fat: 0.1 },
+        standardUnits: { "kom": 130, "komad": 130 },
+        note: "1 srednja naranča (bez kore) ≈ 130g."
+    },
+    {
+        name: "Mandarina",
+        keywords: ["mandarina", "mandarine", "mandarinu"],
+        kcalPer100g: 53,
+        macrosPer100g: { carbs: 13, protein: 0.8, fat: 0.3 },
+        standardUnits: { "kom": 90, "komad": 90 },
+        note: "1 mandarina (bez kore) ≈ 90g."
+    },
+    {
+        name: "Limun",
+        keywords: ["limun", "limuna", "cijeđeni limun", "sok od limuna"],
+        kcalPer100g: 29,
+        macrosPer100g: { carbs: 9, protein: 1.1, fat: 0.3 },
+        standardUnits: { "kom": 60, "komad": 60, "dl": 100 },
+        note: "1 iscijeđeni limun daje oko 50-60 ml soka."
+    },
+    {
+        name: "Jagode",
+        keywords: ["jagode", "jagoda", "zdjelica jagoda"],
+        kcalPer100g: 32,
+        macrosPer100g: { carbs: 8, protein: 0.7, fat: 0.3 },
+        standardUnits: { "kom": 15, "porcija": 150, "zdjelica": 150 },
+        note: "Vrlo niskokalorično i puno vode."
+    },
+    {
+        name: "Maline",
+        keywords: ["maline", "malina"],
+        kcalPer100g: 52,
+        macrosPer100g: { carbs: 12, protein: 1.2, fat: 0.7 },
+        standardUnits: { "porcija": 100, "zdjelica": 100 },
+        note: "Porcija od 100g."
+    },
+    {
+        name: "Borovnice",
+        keywords: ["borovnice", "borovnica"],
+        kcalPer100g: 57,
+        macrosPer100g: { carbs: 14, protein: 0.7, fat: 0.3 },
+        standardUnits: { "porcija": 100, "zdjelica": 100 },
+        note: "Porcija od 100g."
+    },
+
+    // === POVRĆE (SVJEŽE / KUHANO) ===
+    {
+        name: "Paprika (svježa)",
+        keywords: ["paprika", "paprike", "crvena paprika", "zelena paprika"],
+        kcalPer100g: 31,
+        macrosPer100g: { carbs: 6, protein: 1, fat: 0.3 },
+        standardUnits: { "kom": 150, "komad": 150 },
+        note: "1 velika paprika ≈ 150g."
+    },
+    {
+        name: "Krastavac",
+        keywords: ["krastavac", "krastavci", "salata od krastavaca"],
+        kcalPer100g: 15,
+        macrosPer100g: { carbs: 3.6, protein: 0.7, fat: 0.1 },
+        standardUnits: { "kom": 300, "komad": 300, "porcija": 150 },
+        note: "Gotovo čista voda. Cijeli veliki je oko 300g."
+    },
+    {
+        name: "Luk (Kapula)",
+        keywords: ["luk", "kapula", "crveni luk", "bijeli luk", "glavica luka", "veliki luk"],
+        kcalPer100g: 40,
+        macrosPer100g: { carbs: 9, protein: 1.1, fat: 0.1 },
+        standardUnits: { "kom": 100, "glavica": 100, "polovina": 50 },
+        note: "1 srednja glavica ≈ 100g."
+    },
+    {
+        name: "Mladi luk",
+        keywords: ["mladi luk", "mladog luka", "strucak mladog luka"],
+        kcalPer100g: 32,
+        macrosPer100g: { carbs: 7, protein: 1.8, fat: 0.2 },
+        standardUnits: { "kom": 15, "komad": 15, "strucak": 15, "porcija": 50 },
+        note: "1 komad s perima = cca 15-20g."
+    },
+    {
+        name: "Tikvice (Grill ili Kuhane)",
+        keywords: ["tikvica", "tikvice", "grilane tikvice", "kuhane tikvice"],
+        kcalPer100g: 17,
+        macrosPer100g: { carbs: 3.1, protein: 1.2, fat: 0.3 },
+        standardUnits: { "kom": 200, "komad": 200, "porcija": 150 },
+        note: "Brojke su za samu tikvicu, pazi na ulje ako je grill!"
+    },
+    {
+        name: "Brokula (Kuhana)",
+        keywords: ["brokula", "kuhana brokula", "brokule"],
+        kcalPer100g: 35,
+        macrosPer100g: { carbs: 7, protein: 2.4, fat: 0.4 },
+        standardUnits: { "porcija": 150, "zdjelica": 150 },
+        note: "Zasitno i niskokalorično."
+    },
+    {
+        name: "Cvjetača / Karfiol (Kuhana)",
+        keywords: ["cvjetaca", "karfiol", "kuhana cvjetaca", "pohani karfiol"],
+        kcalPer100g: 25,
+        macrosPer100g: { carbs: 5, protein: 1.9, fat: 0.3 },
+        standardUnits: { "porcija": 150, "zdjelica": 150 },
+        note: "Pohana cvjetača ima puno više kalorija zbog mrvica i ulja!"
+    },
+
+    // === FAST FOOD I GRICKALICE ===
+    {
+        name: "Pizza Margherita / Miješana (Prosjek)",
+        keywords: ["pizza", "pica", "komad pizze", "mjesana pizza", "slavonska pizza", "margarita", "margherita"],
+        kcalPer100g: 266,
+        macrosPer100g: { carbs: 33, protein: 11, fat: 10 },
+        standardUnits: { "komad": 150, "kom": 150, "snita": 150, "cijela": 450, "pola": 225 },
+        note: "1 komad (trokut) iz pekare ili restorana ≈ 150g (oko 400 Kcal)."
+    },
+    {
+        name: "Hamburger (Klasični / Fast food)",
+        keywords: ["hamburger", "burger", "mali hamburger", "veliki hamburger", "cheeseburger"],
+        kcalPer100g: 250,
+        macrosPer100g: { carbs: 24, protein: 12, fat: 12 },
+        standardUnits: { "kom": 150, "mali": 150, "veliki": 250, "komad": 200 },
+        note: "Mali fast-food hamburger (npr. McDonald's) ≈ 100-150g. Veliki craft burger ≈ 250-300g."
+    },
+    {
+        name: "Big Mac (McDonald's)",
+        keywords: ["big mac", "big mek", "mcdonalds big mac"],
+        kcalPer100g: 257,
+        macrosPer100g: { carbs: 20, protein: 12, fat: 14 },
+        standardUnits: { "kom": 215, "komad": 215 },
+        note: "Cijeli Big Mac ima 215g (550 Kcal)."
+    },
+    {
+        name: "Chicken Nuggets (Pohani komadići)",
+        keywords: ["chicken nuggets", "nuggets", "mcnuggets", "pohana piletina komadici"],
+        kcalPer100g: 296,
+        macrosPer100g: { carbs: 16, protein: 15, fat: 20 },
+        standardUnits: { "kom": 16, "komad": 16, "porcija": 100 },
+        note: "1 nugget iznosi oko 16 grama (cca 45 Kcal)."
+    },
+    {
+        name: "Čips od krumpira (Slani)",
+        keywords: ["cips", "chips", "cipsa", "vrecica cipsa", "saka cipsa", "pringles"],
+        kcalPer100g: 536,
+        macrosPer100g: { carbs: 53, protein: 7, fat: 35 },
+        standardUnits: { "saka": 30, "vreca": 150, "mali": 50 },
+        note: "Iznimno visoko kalorično! Velika vreća (150g) ima preko 800 kcal."
+    },
+    {
+        name: "Flips / Smoki (Kikiriki)",
+        keywords: ["smoki", "flips", "kikiriki flips", "vrecica smokija", "saka smokija"],
+        kcalPer100g: 500,
+        macrosPer100g: { carbs: 55, protein: 14, fat: 25 },
+        standardUnits: { "saka": 20, "vreca": 80 },
+        note: "Standardna vrećica Smokija obično ima oko 80g."
+    },
+    {
+        name: "Kokice (Air-popped ili pečene)",
+        keywords: ["kokice", "popcorn", "saka kokica", "zdjela kokica", "kino kokice"],
+        kcalPer100g: 387,
+        macrosPer100g: { carbs: 78, protein: 13, fat: 5 },
+        standardUnits: { "saka": 10, "porcija": 50, "velika": 100 },
+        note: "Kokice na zrak su zdrave, ali kino kokice plivaju u ulju i idu preko 500 kcal/100g."
+    },
+
+    // === RIBA I PLODOVI MORA ===
+    {
+        name: "Tuna (Konzerva, Ocijeđena)",
+        keywords: ["tuna", "tuna konzerva", "konzerva tune", "tuna u salamuri", "tuna u maslinovom", "tunjevina", "rio mare"],
+        kcalPer100g: 130,
+        macrosPer100g: { carbs: 0, protein: 28, fat: 2 },
+        standardUnits: { "konzerva": 100, "porcija": 100 },
+        note: "Odražava tunu u vlastitom soku ili ocijeđenu. Tuna s uljem (neocijeđena) ima puno više masti!"
+    },
+    {
+        name: "Losos (Filet, Pečen)",
+        keywords: ["losos", "lososa", "filet lososa", "porcija lososa", "dimljeni losos"],
+        kcalPer100g: 206,
+        macrosPer100g: { carbs: 0, protein: 22, fat: 13 },
+        standardUnits: { "filet": 150, "porcija": 150 },
+        note: "Zdrave (omega-3) masti, ali dosta kaloričniji od bijele ribe."
+    },
+    {
+        name: "Oslić (Kuhani / Pečen na malo ulja)",
+        keywords: ["oslic", "oslica", "filet oslica", "kuhani oslic", "oslic na leso"],
+        kcalPer100g: 90,
+        macrosPer100g: { carbs: 0, protein: 19, fat: 1.5 },
+        standardUnits: { "filet": 150, "porcija": 200, "kom": 150 },
+        note: "Jako krta i niskokalorična riba. Pohani oslić dupla kalorije."
+    },
+    {
+        name: "Skuša",
+        keywords: ["skusa", "konzerva skuse", "pecena skusa", "filet skuse"],
+        kcalPer100g: 205,
+        macrosPer100g: { carbs: 0, protein: 19, fat: 14 },
+        standardUnits: { "kom": 200, "filet": 150, "konzerva": 100, "porcija": 200 },
+        note: "Plava riba, bogata masnoćama i proteinima."
+    },
+    {
+        name: "Srdela (Pržena / Pečena)",
+        keywords: ["srdela", "srdele", "kilo srdela", "frigane srdele"],
+        kcalPer100g: 160,
+        macrosPer100g: { carbs: 0, protein: 20, fat: 9 },
+        standardUnits: { "kom": 20, "komad": 20, "porcija": 200 },
+        note: "Frigane (pržene u dubokom ulju) imaju više kalorija zbog upijenog ulja (~250 kcal/100g)."
+    },
+    {
+        name: "Lignje (Prženi kolutići)",
+        keywords: ["lignje", "frigane lignje", "przeni kolutici", "porcija lignji"],
+        kcalPer100g: 175,
+        macrosPer100g: { carbs: 8, protein: 15, fat: 9 },
+        standardUnits: { "porcija": 200 },
+        note: "Lignje sa žara su drastično manje kalorične (~90 kcal/100g) jer nemaju tijesto i ulje."
+    },
+
+    // === NAMAZI I SLATKO ===
+    {
+        name: "Nutella / Lino Lada",
+        keywords: ["nutella", "nutela", "lino lada", "linolada", "eurokrem", "zlica nutelle"],
+        kcalPer100g: 539,
+        macrosPer100g: { carbs: 57, protein: 6, fat: 31 },
+        standardUnits: { "zlica": 15, "zlicica": 5, "mazanje": 25 },
+        note: "Bombolet za kalorije. 1 debeli namaz na kruh = cca 25-30g."
+    },
+    {
+        name: "Med",
+        keywords: ["med", "zlica meda", "domaci med"],
+        kcalPer100g: 304,
+        macrosPer100g: { carbs: 82, protein: 0.3, fat: 0 },
+        standardUnits: { "zlica": 20, "zlicica": 7 },
+        note: "Puno šećera (fruktoze), 1 jušna žlica ≈ 20g (60 Kcal)."
+    },
+    {
+        name: "Džem / Pekmez (Miješani)",
+        keywords: ["dzem", "pekmez", "marmelada", "dzem od sljiva", "pekmez marelica"],
+        kcalPer100g: 250,
+        macrosPer100g: { carbs: 65, protein: 0.5, fat: 0 },
+        standardUnits: { "zlica": 20, "zlicica": 7, "mazanje": 25 },
+        note: "Gotovo čist ugljikohidrat. Manje kalorija od nutelle."
+    },
+    {
+        name: "Maslac od kikirikija (Peanut butter)",
+        keywords: ["kikiriki maslac", "peanut butter", "kikiriki putar", "putar od kikirikija"],
+        kcalPer100g: 588,
+        macrosPer100g: { carbs: 20, protein: 25, fat: 50 },
+        standardUnits: { "zlica": 15, "zlicica": 5, "mazanje": 25 },
+        note: "Odličan izvor masti i proteina. 1 puna žlica = oko 90 kcal."
+    },
+
+    // === PIĆA I NAPITCI ===
+    {
+        name: "Čaj (Bez šećera)",
+        keywords: ["caj", "salica caja", "zeleni caj", "crni caj", "kamilica", "caj od"],
+        kcalPer100g: 1,
+        macrosPer100g: { carbs: 0, protein: 0, fat: 0 },
+        standardUnits: { "salica": 200, "ml": 1, "dl": 100 },
+        note: "Čaj sam po sebi nema kalorija. Pripaziti med i šećer koje stavljate unutra."
     }
 ];
 
