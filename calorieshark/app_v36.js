@@ -7,7 +7,7 @@ window.onerror = function (msg, url, lineNo, columnNo, error) {
     }
     return false;
 };
-console.log("CalorieShark v48 Initializing...");
+console.log("CalorieShark v44 Initializing...");
 
 // --- TRANSLATIONS (i18n) ---
 const TRANSLATIONS = {
@@ -450,12 +450,12 @@ function renderVisionEnergy() {
 
 function loadDailyData() {
     if (!userProfile.username) return;
+    const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
     const saved = safeLocalStorage.getItem('calorieShark_daily_' + userProfile.username);
-    const today = new Date().toLocaleDateString('hr-HR');
 
     if (saved) {
         const parsed = JSON.parse(saved);
-        if (parsed.date === today) {
+        if (parsed.date === today || parsed.date === new Date().toLocaleDateString('hr-HR')) {
             dailyData = parsed.data;
             // Migracija (patch za stare profile)
             if (typeof dailyData.totalBurned === 'undefined') dailyData.totalBurned = 0;
@@ -472,7 +472,7 @@ function loadDailyData() {
 
 function saveDailyData() {
     if (!userProfile.username) return;
-    const today = new Date().toLocaleDateString('hr-HR');
+    const today = new Date().toISOString().split('T')[0];
     safeLocalStorage.setItem('calorieShark_daily_' + userProfile.username, JSON.stringify({
         date: today,
         data: dailyData
@@ -857,7 +857,7 @@ function bindEvents() {
             };
 
             calculateTDEE();
-            safeLocalStorage.setItem('calorieShark_profile', JSON.stringify(userProfile));
+            saveProfile(); // Use the standard saveProfile function
 
             showScreen('dashboard');
             window.scrollTo({ top: 0, behavior: 'smooth' });
