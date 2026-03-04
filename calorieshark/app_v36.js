@@ -7,7 +7,7 @@ window.onerror = function (msg, url, lineNo, columnNo, error) {
     }
     return false;
 };
-console.log("CalorieShark v46 Initializing...");
+console.log("CalorieShark v44 Initializing...");
 
 // --- TRANSLATIONS (i18n) ---
 const TRANSLATIONS = {
@@ -994,8 +994,25 @@ function setupStepsEvents() {
 
     if (btnConfirmSteps) {
         btnConfirmSteps.addEventListener('click', () => {
-            dailyData.steps = parseInt(inpStepCount.value || 0);
-            dailyData.stepsKcal = parseInt(inpStepKcal.value || 0);
+            const stepsCount = parseInt(inpStepCount.value || 0);
+            const stepsKcal = parseInt(inpStepKcal.value || 0);
+
+            // 1. Ažuriraj dnevne sume
+            dailyData.steps = stepsCount;
+            dailyData.stepsKcal = stepsKcal;
+
+            // 2. Dodaj u dnevnik kao "vježbu"
+            const fakeStepItem = [{
+                name: `[KORACI] ${stepsCount.toLocaleString('hr-HR')} koraka`,
+                estimatedWeightG: 100,
+                kcalPer100g: -stepsKcal,
+                macrosPer100g: { carbs: 0, protein: 0, fat: 0 }
+            }];
+
+            // Ako već postoji zapis koraka u dnevniku, možemo ga zamijeniti ili samo dodati novi
+            // Korisnik želi da se vidi kao zapis (kao trening)
+            applyMealToDashboard(fakeStepItem, { kcal: -stepsKcal, carbs: 0, protein: 0, fat: 0 });
+
             saveDailyData();
             updateDashboardUI();
             stepsModal.classList.add('hidden');
@@ -1154,7 +1171,7 @@ function updateDashboardUI() {
     document.getElementById('lblFat').textContent = Math.round(dailyData.fat) + "g";
 
     // Prikaz vježbe/koraka u budgetu
-    const budgetBonus = burned + (dailyData.stepsKcal || 0);
+    const budgetBonus = burned; // koraci su sada dio burned jer ulaze u dnevnik
     const burnedValEl = document.getElementById('lblBurnedVal');
     if (burnedValEl) {
         burnedValEl.textContent = Math.round(budgetBonus);
@@ -1177,9 +1194,8 @@ function renderSharkAdvisor() {
     }
 
     const burned = dailyData.totalBurned || 0;
-    const stepsKcal = dailyData.stepsKcal || 0;
     const target = userProfile.tdee;
-    const remainingKcal = Math.max(0, target - dailyData.totalKcal + burned + stepsKcal);
+    const remainingKcal = Math.max(0, target - dailyData.totalKcal + burned);
 
     if (document.getElementById('lblAdvisorTarget')) {
         document.getElementById('lblAdvisorTarget').textContent = Math.round(remainingKcal);
@@ -1867,8 +1883,8 @@ function applyMealToDashboard(items, totals, id = null) {
         dailyData.fat += totals.fat;
     }
 
-    // Spremamo obrok lokalno u niz za današnji dan
-    dailyData.meals.push({
+    // Spremamo obrok lokalno u niz za današnji dan - NA VRH (unshift)
+    dailyData.meals.unshift({
         id: id,
         time: new Date().toLocaleTimeString('hr-HR', { hour: '2-digit', minute: '2-digit' }),
         items: items,
@@ -1891,11 +1907,8 @@ function renderDailyMeals() {
     }
 
     let html = '';
-    // Prikazujemo najnovije na vrhu (reverse)
-    const reversedMeals = [...dailyData.meals].reverse();
-
-    reversedMeals.forEach((meal, reversedIndex) => {
-        const originalIndex = dailyData.meals.length - 1 - reversedIndex;
+    // Prikazujemo najnovije na vrhu (već su na početku zbog unshift)
+    dailyData.meals.forEach((meal, originalIndex) => {
         let mealDesc = meal.items.map(item => `${item.name} (${item.estimatedWeightG}g)`).join(', ');
 
         html += `
@@ -1906,7 +1919,7 @@ function renderDailyMeals() {
                     <div style="font-weight:bold; font-size:0.95rem; color: ${meal.totals.kcal < 0 ? '#00D084' : 'var(--text-main)'}; line-height:1.4;">${mealDesc}</div>
                 </div>
                 <div style="font-size:1.3rem; font-weight:900; color:var(--accent-orange); margin-left:15px; text-align:right;">
-                    ${meal.totals.kcal < 0 ? '<span style="color:#00D084"><i class="fas fa-fire"></i> ' + Math.abs(Math.round(meal.totals.kcal)) + '</span>' : Math.round(meal.totals.kcal)}<br><span style="font-size:0.7rem; color:var(--text-muted); font-weight:normal;">kcal</span>
+                    ${meal.totals.kcal < 0 ? '<span style="color:' + (mealDesc.includes('KORACI') ? 'var(--accent-orange)' : '#00D084') + '"><i class="fas ' + (mealDesc.includes('KORACI') ? 'fa-shoe-prints' : 'fa-fire') + '"></i> ' + Math.abs(Math.round(meal.totals.kcal)) + '</span>' : Math.round(meal.totals.kcal)}<br><span style="font-size:0.7rem; color:var(--text-muted); font-weight:normal;">kcal</span>
                     ${meal.totals.kcal > 0 ? `
                         <div style="margin-top:5px;">
                             <i class="${meal.isFavorite ? 'fas' : 'far'} fa-star btn-toggle-fav" 

@@ -281,14 +281,16 @@
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <div id="lblDateToday" class="date-display" style="margin-bottom: 0;" data-i18n="dash_today">DANAS, 24.
                     VELJAČE</div>
-                <button id="btnAddExercise"
-                    style="background: rgba(0,242,255,0.1); color: var(--accent-cyan); border: 1px solid var(--accent-cyan); padding: 6px 12px; border-radius: 20px; font-weight: bold; font-size: 0.8rem; cursor: pointer;">
-                    <i class="fas fa-running"></i> <span data-i18n="dash_exercise">TRENING</span>
-                </button>
-                <button id="btnAddSteps"
-                    style="background: rgba(230, 126, 34, 0.1); color: var(--accent-orange); border: 1px solid var(--accent-orange); padding: 6px 12px; border-radius: 20px; font-weight: bold; font-size: 0.8rem; cursor: pointer; margin-top: 5px;">
-                    <i class="fas fa-shoe-prints"></i> <span data-i18n="dash_steps">KORACI</span>
-                </button>
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <button id="btnAddExercise"
+                        style="background: rgba(0,242,255,0.1); color: var(--accent-cyan); border: 1px solid var(--accent-cyan); padding: 8px 16px; border-radius: 20px; font-weight: bold; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-running"></i> <span data-i18n="dash_exercise">TRENING</span>
+                    </button>
+                    <button id="btnAddSteps"
+                        style="background: rgba(230, 126, 34, 0.1); color: var(--accent-orange); border: 1px solid var(--accent-orange); padding: 8px 16px; border-radius: 20px; font-weight: bold; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-shoe-prints"></i> <span data-i18n="dash_steps">KORACI</span>
+                    </button>
+                </div>
             </div>
 
             <!-- Main Calorie Circle -->
@@ -630,8 +632,8 @@
     <script src="food_categories_2.js"></script>
     <script src="exercise_database.js"></script>
     <script src="advisor_database.js"></script>
-    <script src="app_v36.js?v=46"></script>
-    <link rel="stylesheet" href="styles.css?v=46">
+    <script src="app_v36.js?v=47"></script>
+    <link rel="stylesheet" href="styles.css?v=47">
 </body>
 
 </html>
