@@ -7,7 +7,7 @@ window.onerror = function (msg, url, lineNo, columnNo, error) {
     }
     return false;
 };
-console.log("CalorieShark v44 Initializing...");
+console.log("CalorieShark v45 Initializing...");
 
 // --- TRANSLATIONS (i18n) ---
 const TRANSLATIONS = {
@@ -513,13 +513,13 @@ function loadProfile() {
 
         // Populate checkboxes safely
         if (userProfile.dietPrefs) {
-            const chkVege = document.getElementById('chkSettingsVege');
-            const chkVegan = document.getElementById('chkSettingsVegan');
-            const chkGluten = document.getElementById('chkSettingsGlutenFree');
+            const chkVege = document.getElementById('chkSetVege');
+            const chkVegan = document.getElementById('chkSetVegan');
+            const chkGluten = document.getElementById('chkSetGlutenFree');
 
-            if (chkVege) chkVege.checked = userProfile.dietPrefs.vege || false;
-            if (chkVegan) chkVegan.checked = userProfile.dietPrefs.vegan || false;
-            if (chkGluten) chkGluten.checked = userProfile.dietPrefs.glutenFree || false;
+            if (chkVege) chkVege.checked = (userProfile.dietPrefs.vege === true) || false;
+            if (chkVegan) chkVegan.checked = (userProfile.dietPrefs.vegan === true) || false;
+            if (chkGluten) chkGluten.checked = (userProfile.dietPrefs.glutenFree === true) || false;
         }
 
         showScreen('dashboard');
@@ -1095,8 +1095,13 @@ function renderSharkAdvisor() {
     const target = userProfile.tdee;
     const remainingKcal = Math.max(0, target - dailyData.totalKcal + burned);
 
-    document.getElementById('lblAdvisorTarget').textContent = Math.round(remainingKcal);
-    document.getElementById('advisorSubTitle').innerText = i18n('adv_sub', { kcal: Math.round(remainingKcal) });
+    if (document.getElementById('lblAdvisorTarget')) {
+        document.getElementById('lblAdvisorTarget').textContent = Math.round(remainingKcal);
+    }
+    const subTitle = document.getElementById('advisorSubTitle');
+    if (subTitle) {
+        subTitle.innerText = i18n('adv_sub', { kcal: Math.round(remainingKcal) });
+    }
 
     // Ako je korisnik odabrao iskljucivi filter na samom vizualnom panelu dashboarda
     const activeFilterBtn = document.querySelector('.adv-filter-btn.active');
