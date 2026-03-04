@@ -7,7 +7,7 @@ window.onerror = function (msg, url, lineNo, columnNo, error) {
     }
     return false;
 };
-console.log("CalorieShark v45 Initializing...");
+console.log("CalorieShark v46 Initializing...");
 
 // --- TRANSLATIONS (i18n) ---
 const TRANSLATIONS = {
@@ -77,7 +77,12 @@ const TRANSLATIONS = {
         adv_empty: "Nemam ti što ponuditi za preostali budžet. Popij vodu!",
         adv_db_empty: "Baza savjeta je trenutno prazna.",
         adv_fav_title: "Moj Favorit",
-        set_logout: "ODJAVI SE"
+        set_logout: "ODJAVI SE",
+        dash_steps: "KORACI",
+        mod_steps_title: "Zabilježi Korake",
+        mod_steps_count: "Broj koraka:",
+        mod_steps_kcal: "Potrošene kalorije:",
+        mod_steps_hint: "Aplikacija automatski računa kalorije prema tvojoj masi, ali ih možeš korigirati."
     },
     en: {
         onb_lang_select: "SELECT LANGUAGE",
@@ -145,7 +150,12 @@ const TRANSLATIONS = {
         adv_empty: "I have nothing to offer for your remaining budget. Drink some water!",
         adv_db_empty: "Advisor database is currently empty.",
         adv_fav_title: "My Favorite",
-        set_logout: "LOG OUT"
+        set_logout: "LOG OUT",
+        dash_steps: "STEPS",
+        mod_steps_title: "Log Steps",
+        mod_steps_count: "Step count:",
+        mod_steps_kcal: "Calories burned:",
+        mod_steps_hint: "The app automatically calculates calories based on your mass, but you can correct them."
     }
 };
 
@@ -237,6 +247,9 @@ let dailyData = {
     carbs: 0,
     protein: 0,
     fat: 0,
+    totalBurned: 0,
+    steps: 0,
+    stepsKcal: 0,
     meals: []
 };
 
@@ -440,16 +453,16 @@ function loadDailyData() {
         const parsed = JSON.parse(saved);
         if (parsed.date === today) {
             dailyData = parsed.data;
-            // Migracija unazad (ako netko već ima spremljeno bez totalBurned)
-            if (typeof dailyData.totalBurned === 'undefined') {
-                dailyData.totalBurned = 0;
-            }
+            // Migracija (patch za stare profile)
+            if (typeof dailyData.totalBurned === 'undefined') dailyData.totalBurned = 0;
+            if (typeof dailyData.steps === 'undefined') dailyData.steps = 0;
+            if (typeof dailyData.stepsKcal === 'undefined') dailyData.stepsKcal = 0;
         } else {
             // Novi dan, resetiraj
-            dailyData = { totalKcal: 0, carbs: 0, protein: 0, fat: 0, totalBurned: 0, meals: [] };
+            dailyData = { totalKcal: 0, carbs: 0, protein: 0, fat: 0, totalBurned: 0, steps: 0, stepsKcal: 0, meals: [] };
         }
     } else {
-        dailyData = { totalKcal: 0, carbs: 0, protein: 0, fat: 0, totalBurned: 0, meals: [] };
+        dailyData = { totalKcal: 0, carbs: 0, protein: 0, fat: 0, totalBurned: 0, steps: 0, stepsKcal: 0, meals: [] };
     }
 }
 
@@ -944,6 +957,58 @@ function bindEvents() {
     }
 
     setupExerciseEvents();
+    setupStepsEvents();
+}
+
+function setupStepsEvents() {
+    const btnAddSteps = document.getElementById('btnAddSteps');
+    const stepsModal = document.getElementById('stepsModal');
+    const btnCancelSteps = document.getElementById('btnCancelSteps');
+    const btnConfirmSteps = document.getElementById('btnConfirmSteps');
+    const inpStepCount = document.getElementById('inpStepCount');
+    const inpStepKcal = document.getElementById('inpStepKcal');
+
+    if (btnAddSteps) {
+        btnAddSteps.addEventListener('click', () => {
+            inpStepCount.value = dailyData.steps || 5000;
+            updateStepsPreview();
+            stepsModal.classList.remove('hidden');
+        });
+    }
+
+    if (btnCancelSteps) {
+        btnCancelSteps.addEventListener('click', () => stepsModal.classList.add('hidden'));
+    }
+
+    if (inpStepCount) {
+        inpStepCount.addEventListener('input', updateStepsPreview);
+    }
+
+    document.querySelectorAll('.btn-steps-quick').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const add = parseInt(btn.dataset.steps);
+            inpStepCount.value = parseInt(inpStepCount.value || 0) + add;
+            updateStepsPreview();
+        });
+    });
+
+    if (btnConfirmSteps) {
+        btnConfirmSteps.addEventListener('click', () => {
+            dailyData.steps = parseInt(inpStepCount.value || 0);
+            dailyData.stepsKcal = parseInt(inpStepKcal.value || 0);
+            saveDailyData();
+            updateDashboardUI();
+            stepsModal.classList.add('hidden');
+        });
+    }
+}
+
+function updateStepsPreview() {
+    const count = parseInt(document.getElementById('inpStepCount').value || 0);
+    const weight = userProfile.weight || 85;
+    // Formula: 0.04 kcal po koraku, korigirano za masu (baza 75kg)
+    const calculated = Math.round(count * 0.04 * (weight / 75));
+    document.getElementById('inpStepKcal').value = calculated;
 }
 
 // --- CORE LOGIC ---
@@ -1054,26 +1119,46 @@ function updateDashboardUI() {
     progressCircle.style.strokeDashoffset = offset;
 
     const burnedTrack = document.getElementById('kcalBurnedTrack');
+    const stepsTrack = document.getElementById('stepsTrack');
+    const stepsCircumference = 238; // r=38 -> 2 * PI * 38 ≈ 238
+
     if (burned > 0) {
-        const pctBurned = Math.min(burned / target, 1); // Ne pokazuj preko 100% tdee prstena u zelenoj
+        const pctBurned = Math.min(burned / target, 1);
         burnedTrack.style.strokeDasharray = `${pctBurned * circumference} ${circumference}`;
         burnedTrack.style.strokeDashoffset = `0`;
-        burnedTrack.style.transform = `none`;
     } else {
         burnedTrack.style.strokeDasharray = `0 ${circumference}`;
-        burnedTrack.style.strokeDashoffset = `0`;
-        burnedTrack.style.transform = `none`;
+    }
+
+    // Steps Ring (Orange)
+    if (stepsTrack) {
+        const stepsKcal = dailyData.stepsKcal || 0;
+        if (stepsKcal > 0) {
+            const pctSteps = Math.min(stepsKcal / target, 1);
+            stepsTrack.style.strokeDasharray = `${pctSteps * stepsCircumference} ${stepsCircumference}`;
+            stepsTrack.style.opacity = "1";
+        } else {
+            stepsTrack.style.strokeDasharray = `0 ${stepsCircumference}`;
+            stepsTrack.style.opacity = "0.3";
+        }
     }
 
     // Color logic
     if (percentEaten > 1.0) progressCircle.style.stroke = '#FF2A2A'; // Red if over
     else progressCircle.style.stroke = 'var(--accent-cyan)';
 
-    // Ažuriranje brojčanih iznosa makrosa na UI (tako da kod ponovnog ulaska nema nula)
+    // Ažuriranje brojčanih iznosa makrosa na UI
     document.getElementById('lblKcalEaten').textContent = Math.round(dailyData.totalKcal);
     document.getElementById('lblCarbs').textContent = Math.round(dailyData.carbs) + "g";
     document.getElementById('lblProtein').textContent = Math.round(dailyData.protein) + "g";
     document.getElementById('lblFat').textContent = Math.round(dailyData.fat) + "g";
+
+    // Prikaz vježbe/koraka u budgetu
+    const budgetBonus = burned + (dailyData.stepsKcal || 0);
+    const burnedValEl = document.getElementById('lblBurnedVal');
+    if (burnedValEl) {
+        burnedValEl.textContent = Math.round(budgetBonus);
+    }
 
     // Prikaz Shark Advisora
     renderSharkAdvisor();
@@ -1092,8 +1177,9 @@ function renderSharkAdvisor() {
     }
 
     const burned = dailyData.totalBurned || 0;
+    const stepsKcal = dailyData.stepsKcal || 0;
     const target = userProfile.tdee;
-    const remainingKcal = Math.max(0, target - dailyData.totalKcal + burned);
+    const remainingKcal = Math.max(0, target - dailyData.totalKcal + burned + stepsKcal);
 
     if (document.getElementById('lblAdvisorTarget')) {
         document.getElementById('lblAdvisorTarget').textContent = Math.round(remainingKcal);

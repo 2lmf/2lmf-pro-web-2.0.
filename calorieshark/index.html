@@ -285,6 +285,10 @@
                     style="background: rgba(0,242,255,0.1); color: var(--accent-cyan); border: 1px solid var(--accent-cyan); padding: 6px 12px; border-radius: 20px; font-weight: bold; font-size: 0.8rem; cursor: pointer;">
                     <i class="fas fa-running"></i> <span data-i18n="dash_exercise">TRENING</span>
                 </button>
+                <button id="btnAddSteps"
+                    style="background: rgba(230, 126, 34, 0.1); color: var(--accent-orange); border: 1px solid var(--accent-orange); padding: 6px 12px; border-radius: 20px; font-weight: bold; font-size: 0.8rem; cursor: pointer; margin-top: 5px;">
+                    <i class="fas fa-shoe-prints"></i> <span data-i18n="dash_steps">KORACI</span>
+                </button>
             </div>
 
             <!-- Main Calorie Circle -->
@@ -296,6 +300,9 @@
                     <circle class="burned-track" id="kcalBurnedTrack" cx="50" cy="50" r="45" stroke="#00D084"
                         stroke-dasharray="0 283" stroke-dashoffset="0" stroke-linecap="round"
                         style="transition: stroke-dasharray 1s ease-out, stroke-dashoffset 1s ease-out;"></circle>
+                    <circle id="stepsTrack" cx="50" cy="50" r="38" fill="transparent" stroke="var(--accent-orange)"
+                        stroke-width="4" stroke-dasharray="0 238" stroke-dashoffset="0" stroke-linecap="round"
+                        style="transition: stroke-dasharray 1s ease-out; opacity: 0.3;"></circle>
                 </svg>
                 <div class="circle-content">
                     <div class="val" id="lblKcalEaten">0</div>
@@ -508,6 +515,46 @@
         </div>
     </div>
 
+    <!-- STEPS MODAL -->
+    <div id="stepsModal" class="modal hidden">
+        <div class="modal-content" style="max-height: 90vh; overflow-y: auto;">
+            <h3 style="color:var(--accent-orange); margin-bottom:15px;"><i class="fas fa-shoe-prints"></i> <span
+                    data-i18n="mod_steps_title">Zabilježi Korake</span>
+            </h3>
+
+            <label style="color:var(--text-muted); font-size:0.9rem;" data-i18n="mod_steps_count">Broj koraka:</label>
+            <input type="number" id="inpStepCount" value="5000" min="0" max="100000"
+                style="width:100%; padding:10px; margin-top:5px; border-radius:8px; background:#FAFCFF; border:2px solid var(--accent-orange); color:#2C3E50; font-size:1.5rem; font-weight:bold; text-align:center; outline:none;">
+
+            <div style="display:flex; gap:10px; margin-top:10px; margin-bottom:20px;">
+                <button class="secondary-btn btn-steps-quick" data-steps="2000"
+                    style="flex:1; padding: 5px;">+2k</button>
+                <button class="secondary-btn btn-steps-quick" data-steps="5000"
+                    style="flex:1; padding: 5px;">+5k</button>
+                <button class="secondary-btn btn-steps-quick" data-steps="10000"
+                    style="flex:1; padding: 5px;">+10k</button>
+            </div>
+
+            <label style="color:var(--text-muted); font-size:0.9rem;" data-i18n="mod_steps_kcal">Potrošene
+                kalorije:</label>
+            <input type="number" id="inpStepKcal" value="0" min="0" max="5000"
+                style="width:100%; padding:10px; margin-top:5px; border-radius:8px; background:#FAFCFF; border:2px solid var(--accent-orange); color:#2C3E50; font-size:1.5rem; font-weight:bold; text-align:center; outline:none;">
+
+            <p style="color:var(--text-muted); font-size:0.8rem; margin-top:10px; text-align:center; font-style:italic;"
+                data-i18n="mod_steps_hint">
+                Aplikacija automatski računa kalorije prema tvojoj masi, ali ih možeš korigirati.
+            </p>
+
+            <div style="display:flex; justify-content:space-between; gap:15px; margin-top:30px;">
+                <button id="btnCancelSteps" class="secondary-btn" style="flex:1;"
+                    data-i18n="btn_cancel">Odustani</button>
+                <button id="btnConfirmSteps" class="primary-btn"
+                    style="flex:1; background:var(--accent-orange); border-color:var(--accent-orange);"
+                    data-i18n="btn_save">Spremi</button>
+            </div>
+        </div>
+    </div>
+
     <!-- PWA INSTALL PROMPT -->
     <div id="installModal" class="hidden"
         style="position:fixed; bottom:20px; left:50%; transform:translateX(-50%); width:90%; max-width:400px; background:var(--bg-card); padding:20px; border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,0.5); z-index:10000; display:flex; flex-direction:column; align-items:center; border: 1px solid var(--accent-cyan);">
@@ -583,8 +630,8 @@
     <script src="food_categories_2.js"></script>
     <script src="exercise_database.js"></script>
     <script src="advisor_database.js"></script>
-    <script src="app_v36.js?v=45"></script>
-    <link rel="stylesheet" href="styles.css?v=45">
+    <script src="app_v36.js?v=46"></script>
+    <link rel="stylesheet" href="styles.css?v=46">
 </body>
 
 </html>
