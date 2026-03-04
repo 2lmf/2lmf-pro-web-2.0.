@@ -7,7 +7,7 @@ window.onerror = function (msg, url, lineNo, columnNo, error) {
     }
     return false;
 };
-console.log("CalorieShark v44 Initializing...");
+console.log("CalorieShark v48 Initializing...");
 
 // --- TRANSLATIONS (i18n) ---
 const TRANSLATIONS = {
@@ -82,7 +82,9 @@ const TRANSLATIONS = {
         mod_steps_title: "Zabilježi Korake",
         mod_steps_count: "Broj koraka:",
         mod_steps_kcal: "Potrošene kalorije:",
-        mod_steps_hint: "Aplikacija automatski računa kalorije prema tvojoj masi, ali ih možeš korigirati."
+        mod_steps_hint: "Aplikacija automatski računa kalorije prema tvojoj masi, ali ih možeš korigirati.",
+        btn_edit: "Uredi",
+        btn_delete: "Izbriši"
     },
     en: {
         onb_lang_select: "SELECT LANGUAGE",
@@ -155,7 +157,9 @@ const TRANSLATIONS = {
         mod_steps_title: "Log Steps",
         mod_steps_count: "Step count:",
         mod_steps_kcal: "Calories burned:",
-        mod_steps_hint: "The app automatically calculates calories based on your mass, but you can correct them."
+        mod_steps_hint: "The app automatically calculates calories based on your mass, but you can correct them.",
+        btn_edit: "Edit",
+        btn_delete: "Delete"
     }
 };
 
@@ -1539,7 +1543,8 @@ async function handleTextUpload(text) {
             },
             body: JSON.stringify({
                 action: 'analyzeMeal',
-                textDescription: text
+                textDescription: text + (currentLang === 'en' ? " (Please respond in English)" : ""),
+                language: currentLang
             })
         });
 
@@ -1933,10 +1938,10 @@ function renderDailyMeals() {
             
             <div style="display: flex; justify-content: flex-end; gap: 15px; margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border-color);">
                 <button class="btn-edit-meal" data-index="${originalIndex}" style="background: none; border: none; color: var(--accent-cyan); cursor: pointer; padding: 5px; font-size: 0.9rem;">
-                    <i class="fas fa-edit"></i> Uredi
+                    <i class="fas fa-edit"></i> ${i18n('btn_edit')}
                 </button>
                 <button class="btn-delete-meal" data-index="${originalIndex}" style="background: none; border: none; color: #FF2A2A; cursor: pointer; padding: 5px; font-size: 0.9rem;">
-                    <i class="fas fa-trash"></i> Izbriši
+                    <i class="fas fa-trash"></i> ${i18n('btn_delete')}
                 </button>
             </div>
         </div>

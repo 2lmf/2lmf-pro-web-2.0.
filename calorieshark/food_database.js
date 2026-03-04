@@ -2,18 +2,20 @@ const localFoodDB = [
     // === MLIJEKO I MLIJEČNI PROIZVODI ===
     {
         name: "Mlijeko kravlje, 3.2% mm",
-        keywords: ["mlijeko 3.2", "mlijeko 3,2", "punomasno mlijeko", "mlijeka 3.2", "mlijeka 3,2", "domace mlijeko"],
+        name_en: "Cow Milk, 3.2% fat",
+        keywords: ["mlijeko 3.2", "mlijeko 3,2", "punomasno mlijeko", "mlijeka 3.2", "mlijeka 3,2", "domace mlijeko", "milk", "whole milk"],
         kcalPer100g: 61,
         macrosPer100g: { carbs: 4.7, protein: 3.3, fat: 3.2 },
-        standardUnits: { "ml": 1, "dl": 100, "dcl": 100, "l": 1000, "litra": 1000, "casa": 250, "salica": 200 },
+        standardUnits: { "ml": 1, "dl": 100, "dcl": 100, "l": 1000, "litra": 1000, "casa": 250, "salica": 200, "cup": 200, "glass": 250 },
         note: "1 dl ≈ 100g. Standardno punomasno mlijeko."
     },
     {
         name: "Mlijeko kravlje, 2.8% mm",
-        keywords: ["mlijeko 2.8", "mlijeko 2,8", "trajno mlijeko", "mlijeka 2.8", "mlijeka 2,8"],
+        name_en: "Cow Milk, 2.8% fat",
+        keywords: ["mlijeko 2.8", "mlijeko 2,8", "trajno mlijeko", "mlijeka 2.8", "mlijeka 2,8", "milk"],
         kcalPer100g: 58,
         macrosPer100g: { carbs: 4.7, protein: 3.3, fat: 2.8 },
-        standardUnits: { "ml": 1, "dl": 100, "dcl": 100, "l": 1000, "litra": 1000, "casa": 250, "salica": 200 },
+        standardUnits: { "ml": 1, "dl": 100, "dcl": 100, "l": 1000, "litra": 1000, "casa": 250, "salica": 200, "cup": 200, "glass": 250 },
         note: "1 dl ≈ 100g. Standardno trajno mlijeko."
     },
     {
@@ -66,10 +68,11 @@ const localFoodDB = [
     },
     {
         name: "Sir Gouda / Edamer",
-        keywords: ["sir gauda", "sir edamer", "zuti sir", "gauda", "edamer", "sir za pizzu", "gouda", "snita sira", "snita gaude"],
+        name_en: "Gouda / Edam Cheese",
+        keywords: ["sir gauda", "sir edamer", "zuti sir", "gauda", "edamer", "sir za pizzu", "gouda", "snita sira", "snita gaude", "cheese", "edam"],
         kcalPer100g: 350,
         macrosPer100g: { carbs: 0, protein: 25, fat: 28 },
-        standardUnits: { "snita": 20, "snite": 20, "listic": 15, "listica": 15 },
+        standardUnits: { "snita": 20, "snite": 20, "listic": 15, "listica": 15, "slice": 20 },
         note: "1 tanka šnita / listić ≈ 15-20g."
     },
     {
@@ -92,10 +95,11 @@ const localFoodDB = [
     // === JAJA ===
     {
         name: "Jaje (kuhano)",
-        keywords: ["kuhano jaje", "jaje na tvrdo", "kuhana jaja"],
+        name_en: "Egg (boiled)",
+        keywords: ["kuhano jaje", "jaje na tvrdo", "kuhana jaja", "egg", "boiled egg"],
         kcalPer100g: 155,
         macrosPer100g: { carbs: 1.1, protein: 12.6, fat: 10.6 },
-        standardUnits: { "kom": 60, "komad": 60, "komada": 60 },
+        standardUnits: { "kom": 60, "komad": 60, "komada": 60, "piece": 60 },
         note: "1 kokošje jaje M-L = cca 60g."
     },
     {
@@ -681,10 +685,11 @@ const localFoodDB = [
     // === SVJEŽE VOĆE I BOBIČASTO VOĆE ===
     {
         name: "Naranča",
-        keywords: ["naranca", "narancu", "narance"],
+        name_en: "Orange",
+        keywords: ["naranca", "narancu", "narance", "orange"],
         kcalPer100g: 47,
         macrosPer100g: { carbs: 12, protein: 0.9, fat: 0.1 },
-        standardUnits: { "kom": 130, "komad": 130 },
+        standardUnits: { "kom": 130, "komad": 130, "piece": 130 },
         note: "1 srednja naranča (bez kore) ≈ 130g."
     },
     {
@@ -739,10 +744,11 @@ const localFoodDB = [
     },
     {
         name: "Krastavac",
-        keywords: ["krastavac", "krastavci", "salata od krastavaca"],
+        name_en: "Cucumber",
+        keywords: ["krastavac", "krastavci", "salata od krastavaca", "cucumber"],
         kcalPer100g: 15,
         macrosPer100g: { carbs: 3.6, protein: 0.7, fat: 0.1 },
-        standardUnits: { "kom": 300, "komad": 300, "porcija": 150 },
+        standardUnits: { "kom": 300, "komad": 300, "porcija": 150, "piece": 300, "portion": 150 },
         note: "Gotovo čista voda. Cijeli veliki je oko 300g."
     },
     {
@@ -789,10 +795,11 @@ const localFoodDB = [
     // === FAST FOOD I GRICKALICE ===
     {
         name: "Pizza Margherita / Miješana (Prosjek)",
+        name_en: "Pizza Margherita / Mixed (Average)",
         keywords: ["pizza", "pica", "komad pizze", "mjesana pizza", "slavonska pizza", "margarita", "margherita"],
         kcalPer100g: 266,
         macrosPer100g: { carbs: 33, protein: 11, fat: 10 },
-        standardUnits: { "komad": 150, "kom": 150, "snita": 150, "cijela": 450, "pola": 225 },
+        standardUnits: { "komad": 150, "kom": 150, "snita": 150, "cijela": 450, "pola": 225, "slice": 150, "whole": 450 },
         note: "1 komad (trokut) iz pekare ili restorana ≈ 150g (oko 400 Kcal)."
     },
     {
@@ -1084,8 +1091,10 @@ function searchLocalFoodDB(query) {
         finalGrams = quantity * foundUnitFactor;
     }
 
+    const finalName = (currentLang === 'en' && bestMatch.name_en) ? bestMatch.name_en : bestMatch.name;
+
     return {
-        name: bestMatch.name,
+        name: finalName,
         estimatedWeightG: Math.round(finalGrams),
         kcalPer100g: bestMatch.kcalPer100g,
         macrosPer100g: bestMatch.macrosPer100g,
