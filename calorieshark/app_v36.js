@@ -7,7 +7,7 @@ window.onerror = function (msg, url, lineNo, columnNo, error) {
     }
     return false;
 };
-console.log("CalorieShark v52 Initializing...");
+console.log("CalorieShark v53 Initializing...");
 
 // --- TRANSLATIONS (i18n) ---
 const TRANSLATIONS = {
@@ -996,7 +996,7 @@ function setupStepsEvents() {
 
     if (btnAddSteps) {
         btnAddSteps.addEventListener('click', () => {
-            inpStepCount.value = dailyData.steps || 5000;
+            inpStepCount.value = dailyData.steps || 0;
             updateStepsPreview();
             stepsModal.classList.remove('hidden');
         });
@@ -1187,7 +1187,7 @@ function updateDashboardUI() {
             stepsTrack.style.opacity = "1";
         } else {
             stepsTrack.style.strokeDasharray = `0 ${stepsCircumference}`;
-            stepsTrack.style.opacity = "0.3";
+            stepsTrack.style.opacity = "0";
         }
 
         // Workout (Blue) - Starts where steps end
@@ -1200,7 +1200,7 @@ function updateDashboardUI() {
         } else {
             workoutTrack.style.strokeDasharray = `0 ${stepsCircumference}`;
             workoutTrack.style.strokeDashoffset = "0";
-            workoutTrack.style.opacity = "0.3";
+            workoutTrack.style.opacity = "0";
         }
     }
 
@@ -1965,12 +1965,26 @@ function renderDailyMeals() {
             return `${itemName} (${item.estimatedWeightG}g)`;
         }).join(', ');
 
+        const isExercise = meal.totals.kcal < 0;
+        let borderColor = isExercise ? "#00D084" : "var(--accent-cyan)";
+        let titleColor = isExercise ? "#00D084" : "var(--text-main)";
+
+        if (isExercise) {
+            if (mealDesc.includes('KORACI') || mealDesc.includes('STEPS')) {
+                borderColor = 'var(--accent-orange)';
+                titleColor = 'var(--accent-orange)';
+            } else {
+                borderColor = '#3498DB';
+                titleColor = '#3498DB';
+            }
+        }
+
         html += `
-        <div style="background: var(--bg-card); padding: 15px; border-radius: 8px; margin-bottom: 10px; border-left: 3px solid ${meal.totals.kcal < 0 ? '#00D084' : 'var(--accent-cyan)'}; box-shadow: 0 4px 10px rgba(0,0,0,0.03);">
+        <div style="background: var(--bg-card); padding: 15px; border-radius: 8px; margin-bottom: 10px; border-left: 3px solid ${borderColor}; box-shadow: 0 4px 10px rgba(0,0,0,0.03);">
             <div style="display: flex; justify-content: space-between; align-items: flex-start;">
                 <div style="flex:1;">
                     <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:5px;"><i class="fas fa-clock"></i> ${meal.time}</div>
-                    <div style="font-weight:bold; font-size:0.95rem; color: ${meal.totals.kcal < 0 ? '#00D084' : 'var(--text-main)'}; line-height:1.4;">${mealDesc}</div>
+                    <div style="font-weight:bold; font-size:0.95rem; color: ${titleColor}; line-height:1.4;">${mealDesc}</div>
                 </div>
                 <div style="font-size:1.3rem; font-weight:900; color:var(--accent-orange); margin-left:15px; text-align:right;">
                     ${meal.totals.kcal < 0 ? '<span style="color:' + (mealDesc.includes('KORACI') ? 'var(--accent-orange)' : '#00D084') + '"><i class="fas ' + (mealDesc.includes('KORACI') ? 'fa-shoe-prints' : 'fa-fire') + '"></i> ' + Math.abs(Math.round(meal.totals.kcal)) + '</span>' : Math.round(meal.totals.kcal)}<br><span style="font-size:0.7rem; color:var(--text-muted); font-weight:normal;">kcal</span>
