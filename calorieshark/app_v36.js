@@ -7,7 +7,7 @@ window.onerror = function (msg, url, lineNo, columnNo, error) {
     }
     return false;
 };
-console.log("CalorieShark v51 Initializing...");
+console.log("CalorieShark v52 Initializing...");
 
 // --- TRANSLATIONS (i18n) ---
 const TRANSLATIONS = {
@@ -84,7 +84,9 @@ const TRANSLATIONS = {
         mod_steps_kcal: "Potrošene kalorije:",
         mod_steps_hint: "Aplikacija automatski računa kalorije prema tvojoj masi, ali ih možeš korigirati.",
         btn_edit: "Uredi",
-        btn_delete: "Izbriši"
+        btn_delete: "Izbriši",
+        meal_del_confirm: "Jeste li sigurni da želite obrisati ovaj obrok?",
+        ex_del_confirm: "Jeste li sigurni da želite obrisati ovaj trening?"
     },
     en: {
         onb_lang_select: "SELECT LANGUAGE",
@@ -159,7 +161,9 @@ const TRANSLATIONS = {
         mod_steps_kcal: "Calories burned:",
         mod_steps_hint: "The app automatically calculates calories based on your mass, but you can correct them.",
         btn_edit: "Edit",
-        btn_delete: "Delete"
+        btn_delete: "Delete",
+        meal_del_confirm: "Are you sure you want to delete this meal?",
+        ex_del_confirm: "Are you sure you want to delete this workout?"
     }
 };
 
@@ -1159,8 +1163,10 @@ function updateDashboardUI() {
 
     const burnedTrack = document.getElementById('kcalBurnedTrack');
     const stepsTrack = document.getElementById('stepsTrack');
+    const workoutTrack = document.getElementById('workoutTrack');
     const stepsCircumference = 238; // r=38 -> 2 * PI * 38 ≈ 238
 
+    // Green sum-all track (Main circle)
     if (burned > 0) {
         const pctBurned = Math.min(burned / target, 1);
         burnedTrack.style.strokeDasharray = `${pctBurned * circumference} ${circumference}`;
@@ -1169,9 +1175,12 @@ function updateDashboardUI() {
         burnedTrack.style.strokeDasharray = `0 ${circumference}`;
     }
 
-    // Steps Ring (Orange)
-    if (stepsTrack) {
+    // Segmented Inner Rings (Orange Steps + Blue Workout)
+    if (stepsTrack && workoutTrack) {
         const stepsKcal = dailyData.stepsKcal || 0;
+        const workoutKcal = Math.max(0, burned - stepsKcal);
+
+        // Steps (Orange)
         if (stepsKcal > 0) {
             const pctSteps = Math.min(stepsKcal / target, 1);
             stepsTrack.style.strokeDasharray = `${pctSteps * stepsCircumference} ${stepsCircumference}`;
@@ -1179,6 +1188,19 @@ function updateDashboardUI() {
         } else {
             stepsTrack.style.strokeDasharray = `0 ${stepsCircumference}`;
             stepsTrack.style.opacity = "0.3";
+        }
+
+        // Workout (Blue) - Starts where steps end
+        if (workoutKcal > 0) {
+            const pctWorkout = Math.min(workoutKcal / target, 1);
+            const pctSteps = Math.min(stepsKcal / target, 1);
+            workoutTrack.style.strokeDasharray = `${pctWorkout * stepsCircumference} ${stepsCircumference}`;
+            workoutTrack.style.strokeDashoffset = `-${pctSteps * stepsCircumference}`;
+            workoutTrack.style.opacity = "1";
+        } else {
+            workoutTrack.style.strokeDasharray = `0 ${stepsCircumference}`;
+            workoutTrack.style.strokeDashoffset = "0";
+            workoutTrack.style.opacity = "0.3";
         }
     }
 
@@ -1375,9 +1397,10 @@ function renderSharkAdvisor() {
                 saveMealToServer(); // INSTANT SAVE
             } else {
                 // Za objekte iz advisor baze (bypassing AI)
+                const localizedName = (currentLang === 'en' && mealData.name_en) ? mealData.name_en : mealData.name;
                 const fakeAI = {
                     items: [{
-                        name: mealData.name,
+                        name: localizedName,
                         estimatedWeightG: 100, // standardna porcija
                         kcalPer100g: mealData.kcal,
                         macrosPer100g: {
@@ -1925,14 +1948,22 @@ function applyMealToDashboard(items, totals, id = null) {
 
 function renderDailyMeals() {
     if (dailyData.meals.length === 0) {
-        mealsList.innerHTML = `<div class="empty-state"><i class="fas fa-utensils"></i><p>Nema zabilježenih obroka danas.</p></div>`;
+        mealsList.innerHTML = `<div class="empty-state"><i class="fas fa-utensils"></i><p>${i18n('dash_empty')}</p></div>`;
         return;
     }
 
     let html = '';
     // Prikazujemo najnovije na vrhu (već su na početku zbog unshift)
     dailyData.meals.forEach((meal, originalIndex) => {
-        let mealDesc = meal.items.map(item => `${item.name} (${item.estimatedWeightG}g)`).join(', ');
+        let mealDesc = meal.items.map(item => {
+            let itemName = item.name;
+            // On-the-fly localization lookup
+            if (currentLang === 'en' && typeof localFoodDB !== 'undefined') {
+                const dbMatch = localFoodDB.find(f => f.name === item.name);
+                if (dbMatch && dbMatch.name_en) itemName = dbMatch.name_en;
+            }
+            return `${itemName} (${item.estimatedWeightG}g)`;
+        }).join(', ');
 
         html += `
         <div style="background: var(--bg-card); padding: 15px; border-radius: 8px; margin-bottom: 10px; border-left: 3px solid ${meal.totals.kcal < 0 ? '#00D084' : 'var(--accent-cyan)'}; box-shadow: 0 4px 10px rgba(0,0,0,0.03);">
@@ -1973,7 +2004,7 @@ function renderDailyMeals() {
         btn.addEventListener('click', (e) => {
             const index = parseInt(e.currentTarget.getAttribute('data-index'));
             const isExercise = dailyData.meals[index].totals.kcal < 0;
-            const message = isExercise ? "Jeste li sigurni da želite obrisati ovaj trening?" : "Jeste li sigurni da želite obrisati ovaj obrok?";
+            const message = isExercise ? i18n('ex_del_confirm') : i18n('meal_del_confirm');
             if (confirm(message)) {
                 deleteMeal(index);
             }
