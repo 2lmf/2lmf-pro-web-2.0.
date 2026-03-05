@@ -7,7 +7,7 @@ window.onerror = function (msg, url, lineNo, columnNo, error) {
     }
     return false;
 };
-console.log("CalorieShark v59 Initializing...");
+console.log("CalorieShark v60 Initializing...");
 
 // --- TRANSLATIONS (i18n) ---
 const TRANSLATIONS = {
@@ -1047,8 +1047,9 @@ function setupStepsEvents() {
             dailyData.stepsKcal = stepsKcal;
 
             // 2. Dodaj u dnevnik kao "vježbu"
+            const label = currentLang === 'en' ? '[STEPS]' : '[KORACI]';
             const fakeStepItem = [{
-                name: `[KORACI] ${stepsCount.toLocaleString('hr-HR')} koraka`,
+                name: `${label} ${stepsCount.toLocaleString(currentLang === 'en' ? 'en-US' : 'hr-HR')} koraka`,
                 estimatedWeightG: 100,
                 kcalPer100g: -stepsKcal,
                 macrosPer100g: { carbs: 0, protein: 0, fat: 0 }
@@ -1407,7 +1408,17 @@ function renderSharkAdvisor() {
                 savedFavs.push(mealName);
             }
             localStorage.setItem('calorieShark_advisorFavs', JSON.stringify(savedFavs));
-            renderSharkAdvisor(); // Refresh list to show new star state
+            // renderSharkAdvisor(); // Refresh skinut po zahtjevu korisnika - v60
+
+            // Samo vizualno promijeni zvjezdicu bez refresha cijele liste
+            const icon = e.currentTarget;
+            if (savedFavs.includes(mealName)) {
+                icon.classList.remove('far');
+                icon.classList.add('fas');
+            } else {
+                icon.classList.remove('fas');
+                icon.classList.add('far');
+            }
         });
     });
 
@@ -1730,9 +1741,11 @@ function drawPendingMealUI() {
             </div>
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
                 <span style="color:var(--accent-cyan); font-weight:bold;">${currentKcal} kcal</span>
+                ${item.kcalPer100g > 0 ? `
                 <span style="font-size:0.9rem; color:var(--text-muted); text-align:center;">
                     <i class="fas fa-balance-scale"></i> ${Math.abs(item.kcalPer100g)} kcal / 100g
                 </span>
+                ` : ''}
             </div>
             <div style="display:flex; align-items:center; gap:10px;">
                 <label style="font-size:0.8rem; color:var(--text-muted);">${i18n('meal_weight_label')}</label>
@@ -2543,10 +2556,11 @@ function setupExerciseEvents() {
             burnedKcal = Math.round((ex.met * 3.5 * userProfile.weight / 200) * val);
         }
 
-        // Formiramo "lažni" AI odgovor i direktno spremamo bez Pending UI
+        // Formiramo "lazni" AI odgovor i direktno spremamo bez Pending UI
+        const label = currentLang === 'en' ? '[WORKOUT]' : '[VJEZBA]';
         const fakeItems = [
             {
-                name: ex.met === 0 ? `[VJEŽBA] Garmin / Smartwatch` : `[VJEŽBA] ${ex.name} (${val} min)`,
+                name: ex.met === 0 ? `${label} Garmin / Smartwatch` : `${label} ${ex.name} (${val} min)`,
                 estimatedWeightG: 100, // standardni factor
                 kcalPer100g: -burnedKcal,
                 macrosPer100g: { carbs: 0, protein: 0, fat: 0 }
