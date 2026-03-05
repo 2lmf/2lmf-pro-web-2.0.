@@ -7,7 +7,7 @@ window.onerror = function (msg, url, lineNo, columnNo, error) {
     }
     return false;
 };
-console.log("CalorieShark v55 Initializing...");
+console.log("CalorieShark v57 Initializing...");
 
 // --- TRANSLATIONS (i18n) ---
 const TRANSLATIONS = {
@@ -1713,7 +1713,8 @@ function drawPendingMealUI() {
         totalKcal += currentKcal;
 
         // Provjeri je li item favorit
-        const isFav = userProfile.favorites && userProfile.favorites.some(f => f.name === item.name);
+        if (!userProfile.favorites) userProfile.favorites = [];
+        const isFav = userProfile.favorites.some(f => f && f.name === item.name);
 
         html += `
         <div class="meal-item-editor" style="background: rgba(255,255,255,0.05); padding:15px; border-radius:8px; margin-bottom:10px; border-left: 3px solid var(--accent-orange);">
@@ -1777,7 +1778,7 @@ function drawPendingMealUI() {
             const item = currentUnsavedMeal.items[idx];
 
             if (!userProfile.favorites) userProfile.favorites = [];
-            const existingIndex = userProfile.favorites.findIndex(f => f.name === item.name);
+            const existingIndex = userProfile.favorites.findIndex(f => f && f.name === item.name);
 
             if (existingIndex > -1) {
                 userProfile.favorites.splice(existingIndex, 1);
