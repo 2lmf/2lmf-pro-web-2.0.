@@ -7,7 +7,7 @@ window.onerror = function (msg, url, lineNo, columnNo, error) {
     }
     return false;
 };
-console.log("CalorieShark v60 Initializing...");
+console.log("CalorieShark v61 Initializing...");
 
 // --- TRANSLATIONS (i18n) ---
 const TRANSLATIONS = {
@@ -1750,7 +1750,7 @@ function drawPendingMealUI() {
             <div style="display:flex; align-items:center; gap:10px;">
                 <label style="font-size:0.8rem; color:var(--text-muted);">${i18n('meal_weight_label')}</label>
                 <input type="number" class="gram-input" data-index="${index}" value="${item.estimatedWeightG}" style="width:70px; padding:5px; border-radius:4px; border:1px solid var(--border-color); background:#FAFCFF; color:#2C3E50; text-align:center;">
-                <span style="font-size:0.8rem; color:var(--text-muted);">g</span>
+                <span style="font-size:0.8rem; color:var(--text-muted);">${item.kcalPer100g > 0 ? 'g' : ''}</span>
                 <button class="icon-btn btn-delete-pending" data-index="${index}" style="margin-left:auto; color:#FF2A2A; padding:5px; border:none; background:transparent;"><i class="fas fa-times"></i></button>
             </div>
         </div>`;
@@ -2039,7 +2039,7 @@ function renderDailyMeals() {
                 const dbMatch = localFoodDB.find(f => f.name === item.name);
                 if (dbMatch && dbMatch.name_en) itemName = dbMatch.name_en;
             }
-            return `${itemName} (${item.estimatedWeightG}g)`;
+            return item.kcalPer100g < 0 ? itemName : `${itemName} (${item.estimatedWeightG}g)`;
         }).join(', ');
 
         const isExercise = meal.totals.kcal < 0;
