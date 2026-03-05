@@ -7,7 +7,7 @@ window.onerror = function (msg, url, lineNo, columnNo, error) {
     }
     return false;
 };
-console.log("CalorieShark v53 Initializing...");
+console.log("CalorieShark v54 Initializing...");
 
 // --- TRANSLATIONS (i18n) ---
 const TRANSLATIONS = {
@@ -1184,10 +1184,10 @@ function updateDashboardUI() {
         if (stepsKcal > 0) {
             const pctSteps = Math.min(stepsKcal / target, 1);
             stepsTrack.style.strokeDasharray = `${pctSteps * stepsCircumference} ${stepsCircumference}`;
-            stepsTrack.style.opacity = "1";
+            stepsTrack.style.display = "block";
         } else {
             stepsTrack.style.strokeDasharray = `0 ${stepsCircumference}`;
-            stepsTrack.style.opacity = "0";
+            stepsTrack.style.display = "none";
         }
 
         // Workout (Blue) - Starts where steps end
@@ -1196,11 +1196,11 @@ function updateDashboardUI() {
             const pctSteps = Math.min(stepsKcal / target, 1);
             workoutTrack.style.strokeDasharray = `${pctWorkout * stepsCircumference} ${stepsCircumference}`;
             workoutTrack.style.strokeDashoffset = `-${pctSteps * stepsCircumference}`;
-            workoutTrack.style.opacity = "1";
+            workoutTrack.style.display = "block";
         } else {
             workoutTrack.style.strokeDasharray = `0 ${stepsCircumference}`;
             workoutTrack.style.strokeDashoffset = "0";
-            workoutTrack.style.opacity = "0";
+            workoutTrack.style.display = "none";
         }
     }
 
