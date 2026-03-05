@@ -7,7 +7,7 @@ window.onerror = function (msg, url, lineNo, columnNo, error) {
     }
     return false;
 };
-console.log("CalorieShark v44 Initializing...");
+console.log("CalorieShark v51 Initializing...");
 
 // --- TRANSLATIONS (i18n) ---
 const TRANSLATIONS = {
@@ -46,7 +46,7 @@ const TRANSLATIONS = {
         meal_add_missing: "+ Dodaj sastojak koga AI nije skužio",
         meal_ai_analyzing: "Pitam Gemini AI za: {text}...",
         meal_ai_error: "AI greška: {errorMsg}",
-        meal_quota_error: "Gemini API limit! 🦈 Previše smo pitali Šarku u kratkom vremenu. Pokušaj ponovno za minutu.",
+        meal_quota_error: "Gemini API limit! 🦈 Previše smo pitali Shark-a u kratkom vremenu. Pokušaj ponovno za minutu.",
         mic_not_supported: "Žao mi je, vaš preglednik ne podržava glasovni unos. (Pokušajte Chrome ili Safari).",
         mic_listening: "Slušam... Pričaj sada!",
         mic_error: "Greška s mikrofonom. Pokušaj ponovno.",
@@ -373,12 +373,19 @@ let scannerTimeoutTimer = null;
 
 // --- INITIALIZATION ---
 function init() {
-    bindEvents(); // Bind events FIRST to avoid freezing UI if other things fail
+    bindEvents(); // Bind events FIRST
     registerServiceWorker();
-    loadProfile(); // This sets userProfile
-    loadDailyData(); // This now has userProfile.username
+
+    // 1. Load profile (sets userProfile.username)
+    loadProfile();
+
+    // 2. Load data for specific user only AFTER username is known
+    loadDailyData();
     loadVisionEnergy();
     initExerciseModal();
+
+    // 3. Update UI specifically AFTER data is loaded
+    updateDashboardUI();
 
     // Start energy regeneration loop
     setInterval(checkVisionEnergy, 60000); // Check every minute
@@ -448,14 +455,25 @@ function renderVisionEnergy() {
     });
 }
 
+function getTodayKey() {
+    // Stable YYYY-MM-DD in LOCAL time
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
 function loadDailyData() {
     if (!userProfile.username) return;
-    const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+    const today = getTodayKey();
     const saved = safeLocalStorage.getItem('calorieShark_daily_' + userProfile.username);
 
     if (saved) {
         const parsed = JSON.parse(saved);
-        if (parsed.date === today || parsed.date === new Date().toLocaleDateString('hr-HR')) {
+        // Fallback check for multiple formats: ISO (local), toISOString, or old locale string
+        const oldLocale = new Date().toLocaleDateString('hr-HR');
+        if (parsed.date === today || parsed.date === oldLocale) {
             dailyData = parsed.data;
             // Migracija (patch za stare profile)
             if (typeof dailyData.totalBurned === 'undefined') dailyData.totalBurned = 0;
@@ -472,7 +490,7 @@ function loadDailyData() {
 
 function saveDailyData() {
     if (!userProfile.username) return;
-    const today = new Date().toISOString().split('T')[0];
+    const today = getTodayKey();
     safeLocalStorage.setItem('calorieShark_daily_' + userProfile.username, JSON.stringify({
         date: today,
         data: dailyData
@@ -1308,7 +1326,7 @@ function renderSharkAdvisor() {
         <div class="advisor-item" data-meal='${mealJson}' style="background: var(--bg-card); cursor: pointer; border-radius: 8px; padding: 10px; display:flex; flex-direction:column; gap:8px; border-left: 3px solid #00D084; box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: transform 0.1s; position:relative;">
             <div style="display:flex; justify-content:space-between; align-items:flex-start;">
                 <div style="flex:1;">
-                    <h4 style="margin:0; font-size:0.95rem; color:var(--text-main);">${meal.name}</h4>
+                    <h4 style="margin:0; font-size:0.95rem; color:var(--text-main);">${currentLang === 'en' && meal.name_en ? meal.name_en : meal.name}</h4>
                     <div style="margin-top:4px;">${tagsHtml}</div>
                 </div>
                 <div style="text-align:right; display:flex; align-items:center; gap:10px;">
@@ -1322,7 +1340,7 @@ function renderSharkAdvisor() {
                        title="Favorit"></i>
                 </div>
             </div>
-            <p style="margin:0; font-size:0.8rem; color:var(--text-muted); font-style:italic;">${meal.recipe}</p>
+            <p style="margin:0; font-size:0.8rem; color:var(--text-muted); font-style:italic;">${currentLang === 'en' && meal.recipe_en ? meal.recipe_en : meal.recipe}</p>
         </div>
         `;
     });
@@ -1483,7 +1501,7 @@ btnConfirmCrop.addEventListener('click', async () => {
         console.error("Greska pri uploadu okrnjene slike:", err);
         let errorMsg = err.message;
         if (errorMsg.includes("quota") || errorMsg.includes("limit") || errorMsg.includes("429")) {
-            errorMsg = "Gemini API limit! 🦈 Šarka je trenutno prezauzeta analizom (kvota potrošena). Pokušaj ponovno za koju minutu.";
+            errorMsg = "Gemini API limit! 🦈 Shark je trenutno prezauzeta analizom (kvota potrošena). Pokušaj ponovno za koju minutu.";
         }
         mealsList.innerHTML = `<div class="empty-state" style="color:#FF2A2A;"><i class="fas fa-exclamation-triangle"></i><p>Greška: ${errorMsg}</p></div>`;
     }
