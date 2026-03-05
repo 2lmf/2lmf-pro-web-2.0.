@@ -7,7 +7,7 @@ window.onerror = function (msg, url, lineNo, columnNo, error) {
     }
     return false;
 };
-console.log("CalorieShark v58 Initializing...");
+console.log("CalorieShark v59 Initializing...");
 
 // --- TRANSLATIONS (i18n) ---
 const TRANSLATIONS = {
@@ -1084,16 +1084,21 @@ function calculateTDEE() {
 }
 
 function showScreen(screenId) {
-    Object.values(screens).forEach(s => s.classList.add('hidden'));
-    document.getElementById('fabContainer').classList.add('hidden'); // Hide the new container
-    fabMain.classList.add('hidden');
-    textInputBar.classList.add('hidden');
+    Object.values(screens).forEach(s => {
+        if (s) s.classList.add('hidden');
+    });
+
+    const fabContainer = document.getElementById('fabContainer');
+    if (fabContainer) fabContainer.classList.add('hidden');
+
+    if (fabMain) fabMain.classList.add('hidden');
+    if (textInputBar) textInputBar.classList.add('hidden');
 
     if (screenId === 'dashboard') {
-        screens.dashboard.classList.remove('hidden');
-        fabMain.classList.remove('hidden');
-        document.getElementById('fabContainer').classList.remove('hidden'); // Show container instead of just fab
-        textInputBar.classList.remove('hidden');
+        if (screens.dashboard) screens.dashboard.classList.remove('hidden');
+        if (fabMain) fabMain.classList.remove('hidden');
+        if (fabContainer) fabContainer.classList.remove('hidden');
+        if (textInputBar) textInputBar.classList.remove('hidden');
     } else if (screenId === 'onboarding') {
         screens.onboarding.classList.remove('hidden');
     } else if (screenId === 'stats') {
