@@ -35,6 +35,8 @@ const TRANSLATIONS = {
         dash_fat: "MASTI",
         dash_divider: "DNEVNIK OBROKA",
         adv_title: "Trebaš ideju?",
+        fav_title: "Favoriti",
+        fav_empty: "Još niste dodali niti jednu namirnicu u favorite.",
         dash_empty: "Nema zabilježenih obroka danas.",
         dash_input_placeholder: "Upiši ili izgovori obrok...",
         mod_ex_title: "Zabilježi Trening",
@@ -234,6 +236,7 @@ let userProfile = {
     gender: 'male',
     lang: 'hr',
     age: 30,
+    favorites: [],
     height: 180,
     weight: 85,
     tdee: 2500,
@@ -269,12 +272,14 @@ const API_URL = 'https://script.google.com/macros/s/AKfycbzydHpTGEyigElRio20Il0g
 // --- DOM ELEMENTS ---
 const screens = {
     onboarding: document.getElementById('screenOnboarding'),
+    settings: document.getElementById('screenSettings'),
     dashboard: document.getElementById('screenDashboard'),
     stats: document.getElementById('screenStats'),
-    settings: document.getElementById('screenSettings')
+    amount: document.getElementById('screenAmount'),
+    favorites: document.getElementById('screenFavorites')
 };
 
-const fabCamera = document.getElementById('fabCamera');
+const fabMain = document.getElementById('fabMain');
 const inpCamera = document.getElementById('inpCamera');
 const mealsList = document.getElementById('mealsList');
 const textInputBar = document.getElementById('textInputBar');
@@ -330,8 +335,8 @@ function startCooldown() {
     btnVoice.style.pointerEvents = 'none';
     inpTextMeal.disabled = true;
     inpCamera.disabled = true;
-    fabCamera.style.opacity = '0.5';
-    fabCamera.style.pointerEvents = 'none';
+    fabMain.style.opacity = '0.5';
+    fabMain.style.pointerEvents = 'none';
 
     // Prvi render tick
     inpTextMeal.placeholder = `Hlađenje sustava: ${timeLeft}s...`;
@@ -353,8 +358,8 @@ function startCooldown() {
             btnVoice.style.pointerEvents = 'auto';
             inpTextMeal.disabled = false;
             inpCamera.disabled = false;
-            fabCamera.style.opacity = '1';
-            fabCamera.style.pointerEvents = 'auto';
+            fabMain.style.opacity = '1';
+            fabMain.style.pointerEvents = 'auto';
 
             inpTextMeal.placeholder = origPlaceholder;
             btnConfirmCrop.innerHTML = origCropBtnHtml;
@@ -424,7 +429,7 @@ function checkVisionEnergy() {
             } else {
                 visionEnergy.lastUsed = null; // Full
             }
-            saveVisionEnergy();
+            saveProfile();
         }
     }
     renderVisionEnergy();
@@ -436,7 +441,7 @@ function useVisionEnergy() {
         if (!visionEnergy.lastUsed) {
             visionEnergy.lastUsed = new Date().getTime(); // Start the timer if it wasn't running
         }
-        saveVisionEnergy();
+        saveProfile();
         renderVisionEnergy();
         return true;
     }
@@ -512,6 +517,7 @@ function loadProfile() {
 
     if (saved) {
         userProfile = JSON.parse(saved);
+        if (!userProfile.favorites) userProfile.favorites = [];
 
         // Populate inputs for onboarding
         document.getElementById('inpUsername').value = userProfile.username || '';
@@ -769,7 +775,7 @@ function bindEvents() {
     });
 
     // Camera FAB
-    fabCamera.addEventListener('click', () => {
+    fabMain.addEventListener('click', () => {
         inpCamera.click();
     });
 
@@ -797,6 +803,20 @@ function bindEvents() {
     }
 
     inpCamera.addEventListener('change', handleImageUpload);
+
+    // Favorites screen controls
+    if (document.getElementById('btnOpenFavorites')) {
+        document.getElementById('btnOpenFavorites').addEventListener('click', () => {
+            showScreen('favorites');
+            renderFavoritesList();
+        });
+    }
+
+    if (document.getElementById('btnCloseFavorites')) {
+        document.getElementById('btnCloseFavorites').addEventListener('click', () => {
+            showScreen('dashboard');
+        });
+    }
 
     // Settings Button
     document.getElementById('btnSettings').addEventListener('click', () => {
@@ -1067,12 +1087,12 @@ function calculateTDEE() {
 function showScreen(screenId) {
     Object.values(screens).forEach(s => s.classList.add('hidden'));
     document.getElementById('fabContainer').classList.add('hidden'); // Hide the new container
-    fabCamera.classList.add('hidden');
+    fabMain.classList.add('hidden');
     textInputBar.classList.add('hidden');
 
     if (screenId === 'dashboard') {
         screens.dashboard.classList.remove('hidden');
-        fabCamera.classList.remove('hidden');
+        fabMain.classList.remove('hidden');
         document.getElementById('fabContainer').classList.remove('hidden'); // Show container instead of just fab
         textInputBar.classList.remove('hidden');
     } else if (screenId === 'onboarding') {
@@ -1084,6 +1104,10 @@ function showScreen(screenId) {
         document.querySelector('.brand-text').style.cursor = 'pointer';
     } else if (screenId === 'settings') {
         screens.settings.classList.remove('hidden');
+    } else if (screenId === 'amount') {
+        screens.amount.classList.remove('hidden');
+    } else if (screenId === 'favorites') {
+        screens.favorites.classList.remove('hidden');
     }
 }
 
@@ -1688,11 +1712,24 @@ function drawPendingMealUI() {
         const currentKcal = Math.round(item.kcalPer100g * factor);
         totalKcal += currentKcal;
 
+        // Provjeri je li item favorit
+        const isFav = userProfile.favorites && userProfile.favorites.some(f => f.name === item.name);
+
         html += `
         <div class="meal-item-editor" style="background: rgba(255,255,255,0.05); padding:15px; border-radius:8px; margin-bottom:10px; border-left: 3px solid var(--accent-orange);">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                <strong>${item.name}</strong>
+                <div style="font-weight:bold; font-size:1.1rem; color:var(--text-main); text-align:left; flex-grow:1;">
+                    ${item.name}
+                </div>
+                <button class="icon-btn btn-toggle-user-fav" data-index="${index}" style="font-size:1.3rem; color:${isFav ? 'var(--accent-orange)' : '#ccc'}; border:none; background:transparent; margin-left:10px;">
+                    <i class="${isFav ? 'fas' : 'far'} fa-star"></i>
+                </button>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
                 <span style="color:var(--accent-cyan); font-weight:bold;">${currentKcal} kcal</span>
+                <span style="font-size:0.9rem; color:var(--text-muted); text-align:center;">
+                    <i class="fas fa-balance-scale"></i> ${Math.abs(item.kcalPer100g)} kcal / 100g
+                </span>
             </div>
             <div style="display:flex; align-items:center; gap:10px;">
                 <label style="font-size:0.8rem; color:var(--text-muted);">${i18n('meal_weight_label')}</label>
@@ -1730,6 +1767,29 @@ function drawPendingMealUI() {
             const newGrams = parseInt(e.target.value) || 0;
             currentUnsavedMeal.items[idx].estimatedWeightG = newGrams;
             drawPendingMealUI(); // Re-render to update calculations
+        });
+    });
+
+    // Attach Listeners za Favorites zvijezdu
+    document.querySelectorAll('.btn-toggle-user-fav').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const idx = e.currentTarget.getAttribute('data-index');
+            const item = currentUnsavedMeal.items[idx];
+
+            if (!userProfile.favorites) userProfile.favorites = [];
+            const existingIndex = userProfile.favorites.findIndex(f => f.name === item.name);
+
+            if (existingIndex > -1) {
+                userProfile.favorites.splice(existingIndex, 1);
+            } else {
+                userProfile.favorites.push({
+                    name: item.name,
+                    kcalPer100g: item.kcalPer100g,
+                    macrosPer100g: item.macrosPer100g || null
+                });
+            }
+            saveProfile();
+            drawPendingMealUI(); // Re-render da zvijezda promijeni boju
         });
     });
 
@@ -1864,6 +1924,7 @@ async function saveMealToServer() {
 
             // ŠARKOV SUSTAV UČENJA (Nauči nova jela za offline bazu)
             try {
+                const isExercise = totals.kcal < 0; // Define isExercise here
                 if (!isExercise) {
                     let learnedArr = [];
                     const learnedStr = safeLocalStorage.getItem('calorieShark_learnedFoods');
@@ -2117,6 +2178,63 @@ async function deleteMeal(index, skipRender = false) {
         renderDailyMeals();
         updateDashboardUI();
     }
+}
+
+// ==========================================
+// FAVORITES LOGIKA
+// ==========================================
+function renderFavoritesList() {
+    const list = document.getElementById('favoritesList');
+    if (!userProfile.favorites || userProfile.favorites.length === 0) {
+        list.innerHTML = `<div class="empty-state"><i class="far fa-star" style="font-size:3rem; margin-bottom:15px;"></i><p>${i18n('fav_empty')}</p></div>`;
+        return;
+    }
+
+    let html = '';
+    userProfile.favorites.forEach((fav, index) => {
+        html += `
+        <div style="background: var(--bg-card); border-radius: 12px; padding: 15px; margin-bottom: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; border-left: 3px solid var(--accent-orange);">
+            <div style="flex-grow: 1; cursor: pointer;" class="fav-item" data-index="${index}">
+                <div style="font-weight: bold; color: var(--text-main); font-size: 1.1rem;">${fav.name}</div>
+                <div style="font-size: 0.85rem; color: var(--text-muted);"><i class="fas fa-balance-scale"></i> ${Math.abs(fav.kcalPer100g)} kcal / 100g</div>
+            </div>
+            <button class="icon-btn btn-remove-fav" data-index="${index}" style="color: #FF2A2A; border: none; background: transparent; padding: 10px; font-size: 1.2rem;">
+                <i class="fas fa-trash-alt"></i>
+            </button>
+        </div>
+        `;
+    });
+    list.innerHTML = html;
+
+    // Attach listeners
+    document.querySelectorAll('.fav-item').forEach(el => {
+        el.addEventListener('click', (e) => {
+            const idx = e.currentTarget.getAttribute('data-index');
+            const fav = userProfile.favorites[idx];
+
+            // Postavi ga kao pending meal
+            currentUnsavedMeal = {
+                items: [{
+                    name: fav.name,
+                    estimatedWeightG: 100, // Automatskih 100g
+                    kcalPer100g: fav.kcalPer100g,
+                    macrosPer100g: fav.macrosPer100g || null
+                }]
+            };
+            editingMealIndex = null;
+            showScreen('amount');
+            drawPendingMealUI();
+        });
+    });
+
+    document.querySelectorAll('.btn-remove-fav').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const idx = e.currentTarget.getAttribute('data-index');
+            userProfile.favorites.splice(idx, 1);
+            saveProfile();
+            renderFavoritesList();
+        });
+    });
 }
 
 // ==========================================

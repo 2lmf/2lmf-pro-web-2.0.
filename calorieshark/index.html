@@ -340,7 +340,13 @@
             </div>
         </div>
 
-        <div class="divider" data-i18n="dash_divider">DNEVNIK OBROKA</div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <div class="divider" data-i18n="dash_divider" style="margin-bottom: 0; flex: 1;">DNEVNIK OBROKA</div>
+            <button id="btnOpenFavorites"
+                style="background: none; border: none; color: var(--accent-orange); font-size: 1.5rem; cursor: pointer; padding: 0 10px; transition: transform 0.2s;">
+                <i class="fas fa-star"></i>
+            </button>
+        </div>
 
         <!-- SHARK ADVISOR CARD -->
         <div id="advisorCard"
@@ -632,14 +638,30 @@
         </div>
     </div>
 
+    <!-- FAVORITES SCREEN -->
+    <div id="screenFavorites" class="screen hidden" style="padding-top: 80px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <button class="secondary-btn" id="btnCloseFavorites" style="width: auto; padding: 10px 15px;">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <h2 style="color: var(--accent-orange); margin: 0; font-size: 1.4rem;">
+                <i class="fas fa-star"></i> <span data-i18n="fav_title">Favoriti</span>
+            </h2>
+            <div style="width: 44px;"></div> <!-- Spacer -->
+        </div>
+        <div id="favoritesList" style="margin-top: 20px;">
+            <!-- Dinamički se puni -->
+        </div>
+    </div>
+
     <script src="https://unpkg.com/html5-qrcode"></script>
-    <script src="food_database.js?v=55"></script>
-    <script src="food_categories.js?v=55"></script>
-    <script src="food_categories_2.js?v=55"></script>
-    <script src="exercise_database.js?v=55"></script>
-    <script src="advisor_database.js?v=55"></script>
-    <script src="app_v36.js?v=55"></script>
-    <link rel="stylesheet" href="styles.css?v=55">
+    <script src="food_database.js?v=56"></script>
+    <script src="food_categories.js?v=56"></script>
+    <script src="food_categories_2.js?v=56"></script>
+    <script src="exercise_database.js?v=56"></script>
+    <script src="advisor_database.js?v=56"></script>
+    <script src="app_v36.js?v=56"></script>
+    <link rel="stylesheet" href="styles.css?v=56">
 </body>
 
 </html>
