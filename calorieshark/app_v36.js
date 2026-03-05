@@ -7,7 +7,7 @@ window.onerror = function (msg, url, lineNo, columnNo, error) {
     }
     return false;
 };
-console.log("CalorieShark v57 Initializing...");
+console.log("CalorieShark v58 Initializing...");
 
 // --- TRANSLATIONS (i18n) ---
 const TRANSLATIONS = {
@@ -275,7 +275,6 @@ const screens = {
     settings: document.getElementById('screenSettings'),
     dashboard: document.getElementById('screenDashboard'),
     stats: document.getElementById('screenStats'),
-    amount: document.getElementById('screenAmount'),
     favorites: document.getElementById('screenFavorites')
 };
 
@@ -1104,8 +1103,6 @@ function showScreen(screenId) {
         document.querySelector('.brand-text').style.cursor = 'pointer';
     } else if (screenId === 'settings') {
         screens.settings.classList.remove('hidden');
-    } else if (screenId === 'amount') {
-        screens.amount.classList.remove('hidden');
     } else if (screenId === 'favorites') {
         screens.favorites.classList.remove('hidden');
     }
@@ -2223,7 +2220,7 @@ function renderFavoritesList() {
                 }]
             };
             editingMealIndex = null;
-            showScreen('amount');
+            showScreen('dashboard');
             drawPendingMealUI();
         });
     });
