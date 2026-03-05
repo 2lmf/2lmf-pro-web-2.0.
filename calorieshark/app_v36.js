@@ -7,7 +7,7 @@ window.onerror = function (msg, url, lineNo, columnNo, error) {
     }
     return false;
 };
-console.log("CalorieShark v54 Initializing...");
+console.log("CalorieShark v55 Initializing...");
 
 // --- TRANSLATIONS (i18n) ---
 const TRANSLATIONS = {
@@ -2083,6 +2083,13 @@ async function deleteMeal(index, skipRender = false) {
     if (meal.totals.kcal < 0) {
         dailyData.totalBurned = (dailyData.totalBurned || 0) - Math.abs(meal.totals.kcal);
         if (dailyData.totalBurned < 0) dailyData.totalBurned = 0;
+
+        // Ako je ovo bio unos koraka, resetiraj vrijednosti koraka u dnevnim podacima
+        const firstItemName = meal.items && meal.items.length > 0 ? meal.items[0].name : '';
+        if (firstItemName.includes('[KORACI]') || firstItemName.includes('[STEPS]')) {
+            dailyData.steps = 0;
+            dailyData.stepsKcal = 0;
+        }
     } else {
         dailyData.totalKcal -= meal.totals.kcal;
         dailyData.carbs -= meal.totals.carbs;
