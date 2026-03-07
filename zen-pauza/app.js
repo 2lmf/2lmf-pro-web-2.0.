@@ -89,8 +89,9 @@ class ZenPauza {
                 </div>
 
                 <div class="breathing-container">
-                    <div class="breathing-text" id="b-text">START</div>
-                    <div class="breathing-circle" id="b-circle"></div>
+                    <div class="breathing-circle" id="b-circle">
+                        <div class="breathing-text" id="b-text">START</div>
+                    </div>
                 </div>
 
                 <div class="breathing-timer" id="b-timer">Klikni krug za početak</div>
@@ -164,9 +165,15 @@ class ZenPauza {
         // Update UI
         if (circle) {
             circle.className = 'breathing-circle';
-            if (currentPhase === 'inhale') circle.classList.add('circle-inhale');
-            else if (currentPhase === 'exhale') circle.classList.add('circle-exhale');
-            else circle.classList.add('circle-hold');
+            if (currentPhase === 'inhale') {
+                circle.classList.add('circle-inhale');
+            } else if (currentPhase === 'exhale') {
+                circle.classList.add('circle-exhale');
+            } else if (currentPhase === 'hold') {
+                circle.classList.add('circle-hold-inhale');
+            } else if (currentPhase === 'hold2') {
+                circle.classList.add('circle-hold-exhale');
+            }
 
             // Adjust transition duration dynamically
             circle.style.transition = `all ${duration}s ease-in-out`;
