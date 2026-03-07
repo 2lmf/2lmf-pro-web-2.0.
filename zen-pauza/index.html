@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="hr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Zen Pauza | Fokus & Mir</title>
+    <meta name="description" content="Tvoj digitalni prostor za fokus, disanje i zdrave navike. Besplatno i offline.">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0a0a0c">
+    <link rel="icon" href="icon-512.png">
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Background elements for depth -->
+        <div class="glow-orb" id="orb-1"></div>
+        <div class="glow-orb" id="orb-2"></div>
+
+        <header>
+            <div class="logo">ZEN PAUZA</div>
+            <div class="tagline">Pronađi svoj mir</div>
+        </header>
+
+        <main class="dashboard">
+            <!-- FOCUS CARD -->
+            <section class="glass-card module-card" id="card-focus" onclick="showModule('focus')">
+                <div class="card-icon">🌊</div>
+                <div class="card-content">
+                    <h3>Sound Oasis</h3>
+                    <p>Fokus uz Brown & Pink noise</p>
+                </div>
+                <div class="card-arrow">→</div>
+            </section>
+
+            <!-- CALM CARD -->
+            <section class="glass-card module-card" id="card-calm" onclick="showModule('calm')">
+                <div class="card-icon">🧘‍♂️</div>
+                <div class="card-content">
+                    <h3>Vježbe Disanja</h3>
+                    <p>Pronađi mir u sekundi</p>
+                </div>
+                <div class="card-arrow">→</div>
+            </section>
+
+            <!-- HABITS CARD -->
+            <section class="glass-card module-card" id="card-habits" onclick="showModule('habits')">
+                <div class="card-icon">⚡</div>
+                <div class="card-content">
+                    <h3>Habit Tracker</h3>
+                    <p>Gradi boljeg sebe</p>
+                </div>
+                <div class="card-arrow">→</div>
+            </section>
+        </main>
+
+        <!-- MODULE OVERLAYS -->
+        <div id="overlay-container" class="overlay-container">
+            <button class="back-btn" onclick="hideModule()">← Povratak</button>
+            <div id="module-content" class="module-content">
+                <!-- Content injected via JS -->
+            </div>
+        </div>
+
+        <footer>
+            <button class="footer-btn" onclick="showStats()">Moja Statistika</button>
+            <div class="donation-hint">Uživaj u miru bez oglasa ☕</div>
+        </footer>
+    </div>
+
+    <script src="app.js?v=4"></script>
+</body>
+
+</html>
