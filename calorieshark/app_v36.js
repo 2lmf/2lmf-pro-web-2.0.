@@ -1175,6 +1175,23 @@ function setupStepsEvents() {
         });
     }
 
+    const btnWelcomeConnect = document.getElementById('btnWelcomeConnect');
+    if (btnWelcomeConnect) {
+        btnWelcomeConnect.addEventListener('click', () => {
+            if (window.CS_Firebase) {
+                window.CS_Firebase.loginWithGoogle();
+                document.getElementById('welcomeModal').classList.add('hidden');
+            }
+        });
+    }
+
+    const btnWelcomeLater = document.getElementById('btnWelcomeLater');
+    if (btnWelcomeLater) {
+        btnWelcomeLater.addEventListener('click', () => {
+            document.getElementById('welcomeModal').classList.add('hidden');
+        });
+    }
+
     const btnGoogleLogout = document.getElementById('btnGoogleLogout');
     if (btnGoogleLogout) {
         btnGoogleLogout.addEventListener('click', async () => {

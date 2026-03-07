@@ -715,6 +715,38 @@
         </div>
     </div>
 
+    <!-- WELCOME / CLOUD SYNC MODAL -->
+    <div id="welcomeModal" class="modal hidden">
+        <div class="modal-content" style="text-align: center; padding: 30px; border-top: 5px solid var(--accent-cyan);">
+            <div style="font-size: 3rem; margin-bottom: 15px;">🦈☁️</div>
+            <h2 style="color: var(--accent-cyan); margin-bottom: 15px; letter-spacing: 1px;">DOBRODOŠLI U CLOUD!</h2>
+            <p style="color: var(--text-main); font-size: 0.95rem; line-height: 1.6; margin-bottom: 25px;">
+                Tvoj profil je spreman, ali tvoji podaci su trenutno samo na ovom uređaju. Poveži se s Googleom za
+                <strong>Premium Cloud</strong> iskustvo:
+            </p>
+            <ul
+                style="text-align: left; color: var(--text-muted); font-size: 0.85rem; margin-bottom: 30px; list-style: none; padding: 0;">
+                <li style="margin-bottom: 10px;"><i class="fas fa-check-circle" style="color: #00D084;"></i>
+                    <strong>Siguran Backup:</strong> Nikad ne gubiš podatke.
+                </li>
+                <li style="margin-bottom: 10px;"><i class="fas fa-check-circle" style="color: #00D084;"></i>
+                    <strong>Multi-Device:</strong> Prati kalorije na svim uređajima.
+                </li>
+                <li style="margin-bottom: 10px;"><i class="fas fa-check-circle" style="color: #00D084;"></i>
+                    <strong>Real-time Sync:</strong> Trenutna sinkronizacija u oblak.
+                </li>
+            </ul>
+
+            <button id="btnWelcomeConnect" class="primary-btn"
+                style="margin-bottom: 15px; background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));">
+                <i class="fab fa-google"></i> POVEŽI SE S GOOGLEOM
+            </button>
+            <button id="btnWelcomeLater" class="secondary-btn" style="width: 100%; border: none; font-size: 0.8rem;">
+                MOŽDA KASNIJE
+            </button>
+        </div>
+    </div>
+
     <script src="https://unpkg.com/html5-qrcode"></script>
     <!-- Firebase 10 SDK (Modular) -->
     <script type="importmap">
@@ -731,13 +763,13 @@
     <script type="module" src="firebase-core.js"></script>
 
     <!-- Core Databases -->
-    <script src="food_database.js?v=64"></script>
-    <script src="food_categories.js?v=64"></script>
-    <script src="food_categories_2.js?v=64"></script>
-    <script src="exercise_database.js?v=64"></script>
-    <script src="advisor_database.js?v=64"></script>
-    <script src="app_v36.js?v=64"></script>
-    <link rel="stylesheet" href="styles.css?v=64">
+    <script src="food_database.js?v=65"></script>
+    <script src="food_categories.js?v=65"></script>
+    <script src="food_categories_2.js?v=65"></script>
+    <script src="exercise_database.js?v=65"></script>
+    <script src="advisor_database.js?v=65"></script>
+    <script src="app_v36.js?v=65"></script>
+    <link rel="stylesheet" href="styles.css?v=65">
 </body>
 
 </html>
