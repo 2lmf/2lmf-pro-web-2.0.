@@ -65,4 +65,5 @@ onAuthStateChanged(auth, (user) => {
     }
 });
 
+console.log("Firebase Core: Script loaded.");
 export { app, auth, db };

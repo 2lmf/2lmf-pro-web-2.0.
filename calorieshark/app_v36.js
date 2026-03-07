@@ -1097,10 +1097,19 @@ function setupStepsEvents() {
     if (btnGoogleLogin) {
         btnGoogleLogin.addEventListener('click', async () => {
             try {
+                console.log("DEBUG: Google Login Clicked");
+                alert("Pokušavam spajanje s Googleom...");
+
+                if (!window.CS_Firebase) {
+                    alert("GRESKA: Firebase modul nije učitan!");
+                    return;
+                }
+
                 showLog("Spajanje s Googleom...");
                 await window.CS_Firebase.loginWithGoogle();
             } catch (error) {
                 console.error("Login failed:", error);
+                alert("Greška kod prijave: " + error.message);
                 showLog("Greška kod prijave.");
             }
         });
