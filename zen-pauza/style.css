@@ -103,8 +103,11 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 20px 0;
-    margin-bottom: 10px;
+    padding: 10px 0;
+    /* Reduced padding */
+    margin-top: -10px;
+    /* Move up */
+    margin-bottom: 20px;
 }
 
 .app-header h1 {
@@ -497,29 +500,30 @@ footer {
 }
 
 /* HABIT TRACKER v11 - PREMIUM UI */
-.habits-ui {
+.habit-list-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
     width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
 }
 
 /* HABIT CARDS v14 - Today/List Style */
 .habit-card {
     background: #1a1a1e;
-    border-radius: 16px;
-    padding: 15px;
-    margin-bottom: 12px;
+    border-radius: 12px;
+    padding: 10px;
     display: flex;
-    flex-direction: row;
-    /* Horizontal layout for today list */
+    flex-direction: column;
+    /* Vertical for grid */
     align-items: center;
-    gap: 15px;
+    text-align: center;
+    gap: 10px;
     transition: 0.2s;
+    border: 1px solid transparent;
 }
 
 .habit-card.today-item {
-    padding: 12px 15px;
+    padding: 10px;
 }
 
 .habit-icon-box {
@@ -576,21 +580,35 @@ footer {
 /* 7-DAY CIRCLE ROW */
 .habit-week-circles {
     display: flex;
-    justify-content: space-between;
-    margin-top: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+    /* Wrap circles */
+    gap: 4px;
+    width: 100%;
+    margin-top: 5px;
 }
 
 .day-circle {
-    width: 35px;
-    height: 35px;
+    width: 20px;
+    /* Smaller for grid */
+    height: 20px;
     border-radius: 50%;
-    border: 2px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    font-size: 0.6rem;
+    font-size: 0.4rem;
     cursor: pointer;
+}
+
+.day-circle strong {
+    font-size: 0.5rem;
+}
+
+.day-circle span {
+    display: none;
+    /* Hide 'P', 'U' etc. labels to save space in grid */
 }
 
 .day-circle.active {
@@ -606,13 +624,14 @@ footer {
 /* HABIT LIST CARD (Used in 'Habits' view) */
 .habit-card.list-item {
     flex-direction: column;
-    align-items: stretch;
+    align-items: center;
 }
 
 .habit-card.list-item .habit-header {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
     align-items: center;
+    width: 100%;
 }
 
 .habit-card:hover {

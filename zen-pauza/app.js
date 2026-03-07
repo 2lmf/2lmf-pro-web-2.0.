@@ -108,10 +108,9 @@ class ZenPauza {
                         <i class="fas ${meta.icon}"></i>
                     </div>
                     <div class="habit-content-main">
-                        <h3>${meta.name}</h3>
-                        <p>${completed ? 'Završeno' : 'Čeka na tebe'}</p>
+                        <h3 style="font-size:0.75rem;">${meta.name}</h3>
                     </div>
-                    <button class="habit-check-btn" onclick="event.stopPropagation(); app.toggleTodayHabit('${id}')">
+                    <button class="habit-check-btn" onclick="event.stopPropagation(); app.toggleTodayHabit('${id}')" style="width:100%; border-radius:8px; margin-top:5px;">
                         <i class="fas ${completed ? 'fa-check' : 'fa-plus'}"></i>
                     </button>
                 </div>
@@ -559,10 +558,11 @@ class ZenPauza {
         return `
             <div class="habit-card list-item" onclick="app.openHabitModal('${id}')">
                 <div class="habit-header">
-                    <div class="habit-info">
-                        <h3><i class="fas ${meta.icon}"></i> ${meta.name}</h3>
+                    <div class="habit-icon-box" style="background:none; width:auto; height:auto; margin:0;">
+                        <i class="fas ${meta.icon}" style="font-size:1.2rem; color:var(--neon-blue);"></i>
                     </div>
-                    <div class="stat-pill"><i class="fas fa-fire"></i> ${streak}d</div>
+                    <h3 style="font-size:0.7rem; margin: 5px 0;">${meta.name}</h3>
+                    <div class="stat-pill" style="font-size:0.6rem; padding: 2px 5px;"><i class="fas fa-fire"></i> ${streak}d</div>
                 </div>
                 
                 <div class="habit-week-circles">
@@ -571,7 +571,6 @@ class ZenPauza {
             return `
                             <div class="day-circle ${active ? 'active' : ''} ${day.isToday ? 'today' : ''}" 
                                  onclick="event.stopPropagation(); app.toggleHabit('${id}', '${day.date}')">
-                                <span>${day.label}</span>
                                 <strong>${day.date.split('-')[2]}</strong>
                             </div>
                         `;
