@@ -11,7 +11,7 @@ class ZenPauza {
             activeView: 'today', // today, habits, explore
             activeModule: null,
             isSoundPlaying: false,
-            volumes: { white: 0, pink: 0, brown: 0, car: 0, vacuum: 0 },
+            volumes: { white: 0.3, pink: 0.3, brown: 0.3, car: 0, vacuum: 0 },
             breathing: { active: false, method: 'box', phase: 'inhale', timer: 0 },
             habits: JSON.parse(localStorage.getItem('zp_habits_v11')) || {
                 breathing: [], sounds: [], meditation: []
@@ -20,7 +20,8 @@ class ZenPauza {
                 breathing: { name: 'Duboko Disanje', icon: 'fa-lungs', color: '#4FACFE', goal: 7 },
                 sounds: { name: 'Mirni Zvukovi', icon: 'fa-water', color: '#00D084', goal: 7 },
                 meditation: { name: 'Jutarnja Meditacija', icon: 'fa-om', color: '#ff4d6d', goal: 7 }
-            }
+            },
+            expandedHabitId: null
         };
 
         this.breathingInterval = null;
@@ -105,22 +106,52 @@ class ZenPauza {
             const meta = this.state.habitMetadata[id] || { name: id, icon: 'fa-star' };
             const data = this.state.habits[id] || [];
             const completed = data.includes(today);
+            const isExpanded = this.state.expandedHabitId === id;
 
             return `
-                <div class="habit-card today-item ${completed ? 'completed' : ''}" onclick="app.openHabitModal('${id}')">
-                    <div class="habit-icon-box">
-                        <i class="fas ${meta.icon}"></i>
+                <div class="habit-container-inline ${isExpanded ? 'expanded' : ''}">
+                    <div class="habit-card today-item ${completed ? 'completed' : ''}" onclick="app.toggleExpandHabit('${id}')">
+                        <div class="habit-icon-box">
+                            <i class="fas ${meta.icon}"></i>
+                        </div>
+                        <div class="habit-content-main" style="text-align:left; margin-left:15px;">
+                            <h3 style="font-size:0.95rem; margin-bottom:2px;">${meta.name}</h3>
+                        </div>
+                        <div class="status-icon" style="margin-left:auto; font-size:1.2rem; color:${completed ? '#00D084' : 'rgba(255,255,255,0.1)'}" 
+                             onclick="event.stopPropagation(); app.toggleTodayHabit('${id}')">
+                            <i class="fas ${completed ? 'fa-circle-check' : 'fa-circle-xmark'}"></i>
+                        </div>
                     </div>
-                    <div class="habit-content-main" style="text-align:left; margin-left:15px;">
-                        <h3 style="font-size:0.95rem; margin-bottom:2px;">${meta.name}</h3>
-                    </div>
-                    <div class="status-icon" style="margin-left:auto; font-size:1.2rem; color:${completed ? '#00D084' : 'rgba(255,255,255,0.1)'}">
-                        <i class="fas ${completed ? 'fa-circle-check' : 'fa-circle-xmark'}"></i>
-                    </div>
+                    
+                    ${isExpanded ? `
+                        <div class="habit-detail-inline">
+                            <div class="inline-calendar-grid">
+                                ${this.generateFullMonthCalendar(id)}
+                            </div>
+                            <div style="display:flex; justify-content:space-between; margin-top:15px; padding:0 10px;">
+                                <div class="inline-stat">
+                                    <span class="val">${this.getStreak(id)}</span>
+                                    <span class="lbl">Streak</span>
+                                </div>
+                                <div class="inline-stat">
+                                    <span class="val">${this.calculateStats(id).completionRate}%</span>
+                                    <span class="lbl">Cilj</span>
+                                </div>
+                                <button class="action-btn-circle" onclick="app.openHabitModal('${id}')">
+                                    <i class="fas fa-expand-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                    ` : ''}
                 </div>
             `;
         }).join('')}
         `;
+    }
+
+    toggleExpandHabit(id) {
+        this.state.expandedHabitId = this.state.expandedHabitId === id ? null : id;
+        this.renderTodayView();
     }
 
     generateDateChips() {
@@ -291,15 +322,15 @@ class ZenPauza {
                     <div class="controls-grid">
                         <div class="control-group">
                             <label>Povjetarac</label>
-                            <input type="range" min="0" max="1" step="0.01" value="0" oninput="app.updateVolume('white', this.value)">
+                            <input type="range" min="0" max="1" step="0.01" value="${this.state.volumes.white}" oninput="app.updateVolume('white', this.value)">
                         </div>
                         <div class="control-group">
                             <label>Kiša</label>
-                            <input type="range" min="0" max="1" step="0.01" value="0" oninput="app.updateVolume('pink', this.value)">
+                            <input type="range" min="0" max="1" step="0.01" value="${this.state.volumes.pink}" oninput="app.updateVolume('pink', this.value)">
                         </div>
                         <div class="control-group">
                             <label>Ocean</label>
-                            <input type="range" min="0" max="1" step="0.01" value="0" oninput="app.updateVolume('brown', this.value)">
+                            <input type="range" min="0" max="1" step="0.01" value="${this.state.volumes.brown}" oninput="app.updateVolume('brown', this.value)">
                         </div>
                         <div class="control-group">
                             <label>Auto</label>
@@ -345,7 +376,11 @@ class ZenPauza {
             document.getElementById('play-btn').innerText = "PAUZIRAJ";
 
             // Start generators if not already started
-            if (!this.nodes.white) this.createNoiseGenerators();
+            if (!this.nodes.white) {
+                this.createNoiseGenerators();
+                // Apply initial volumes
+                Object.keys(this.state.volumes).forEach(type => this.updateVolume(type, this.state.volumes[type]));
+            }
             this.updateVisualizer();
         }
 
@@ -435,31 +470,52 @@ class ZenPauza {
         this.nodes.brown.connect(this.nodes.brownModGain).connect(this.nodes.brownGain).connect(this.nodes.master);
         this.nodes.brown.start();
 
-        // --- 4. ENGINE DRONE (Auto) ---
-        // Uses Brown noise + a deep oscillator for the engine thrum
+        // --- 4. ENGINE DRONE (Auto v23) ---
         this.nodes.carGain = this.audioCtx.createGain();
         this.nodes.carGain.gain.value = 0;
 
-        this.nodes.carOsc = this.audioCtx.createOscillator();
-        this.nodes.carOsc.type = 'sine'; // Smoother wave to prevent crackling/clipping
-        this.nodes.carOsc.frequency.value = 65;
+        // Base hum - lower frequency detuned triangle waves
+        this.nodes.carOsc1 = this.audioCtx.createOscillator();
+        this.nodes.carOsc1.type = 'triangle';
+        this.nodes.carOsc1.frequency.value = 65;
 
-        this.nodes.carOscGain = this.audioCtx.createGain();
-        this.nodes.carOscGain.gain.value = 0.3; // Reduced gain for headroom
+        this.nodes.carOsc2 = this.audioCtx.createOscillator();
+        this.nodes.carOsc2.type = 'triangle';
+        this.nodes.carOsc2.frequency.value = 65.4; // Detuning for richness
+
+        // Mix group for engine
+        const engineMixGroup = this.audioCtx.createGain();
+        engineMixGroup.gain.value = 0.25;
 
         this.nodes.carFilter = this.audioCtx.createBiquadFilter();
         this.nodes.carFilter.type = 'lowpass';
-        this.nodes.carFilter.frequency.value = 120; // Deeper thrum
+        this.nodes.carFilter.frequency.value = 140;
 
-        // Mix brown noise into the car sound for the road/wind feel
+        // Modulation for "movement"
+        const wobble = this.audioCtx.createOscillator();
+        wobble.type = 'sine';
+        wobble.frequency.value = 0.5; // Slow vibration
+        const wobbleGain = this.audioCtx.createGain();
+        wobbleGain.gain.value = 5; // Variation in Hz
+        wobble.connect(wobbleGain);
+        wobbleGain.connect(this.nodes.carFilter.frequency);
+        wobble.start();
+
+        // Add some "road noise" mixing in brown noise
         const carRoadBuffer = this.createNoiseBuffer('brown', bufferSize);
         this.nodes.carRoad = this.createSource(carRoadBuffer);
+        const carRoadGain = this.audioCtx.createGain();
+        carRoadGain.gain.value = 0.15;
 
-        this.nodes.carOsc.connect(this.nodes.carOscGain).connect(this.nodes.carFilter);
-        this.nodes.carRoad.connect(this.nodes.carFilter);
+        this.nodes.carOsc1.connect(engineMixGroup);
+        this.nodes.carOsc2.connect(engineMixGroup);
+        engineMixGroup.connect(this.nodes.carFilter);
+        this.nodes.carRoad.connect(carRoadGain).connect(this.nodes.carFilter);
+
         this.nodes.carFilter.connect(this.nodes.carGain).connect(this.nodes.master);
 
-        this.nodes.carOsc.start();
+        this.nodes.carOsc1.start();
+        this.nodes.carOsc2.start();
         this.nodes.carRoad.start();
 
         // --- 5. DEEP VACUUM (Sauger) ---
@@ -510,15 +566,14 @@ class ZenPauza {
             }
         }
 
-        // Apply Cross-fade (Seamless Loop)
+        // Apply Cross-fade (Seamless Loop v23)
         for (let i = 0; i < fadeSize; i++) {
             const alpha = i / fadeSize;
-            // Mix the beginning and the end
-            const startVal = data[i];
-            const endVal = data[size - fadeSize + i];
+            const head = data[i];
+            const tail = data[size - fadeSize + i];
 
-            data[i] = startVal * alpha + endVal * (1 - alpha);
-            data[size - fadeSize + i] = endVal * alpha + startVal * (1 - alpha);
+            data[i] = head * alpha + tail * (1 - alpha);
+            data[size - fadeSize + i] = tail * alpha + head * (1 - alpha);
         }
 
         return buffer;

@@ -513,7 +513,19 @@ footer {
     width: 100%;
 }
 
-/* HABIT CARDS v14 - Today/List Style */
+.habit-container-inline {
+    background: #1a1a1e;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.03);
+    overflow: hidden;
+    transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.habit-container-inline.expanded {
+    background: #252529;
+    border-color: rgba(255, 77, 109, 0.2);
+}
+
 .habit-card {
     background: #1a1a1e;
     border-radius: 20px;
@@ -527,9 +539,69 @@ footer {
 }
 
 .habit-card.today-item {
+    background: transparent;
+    border: none;
     flex-direction: row;
     align-items: center;
     padding: 15px 20px;
+}
+
+.habit-detail-inline {
+    padding: 0 20px 20px;
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.inline-calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+    margin-top: 10px;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 10px;
+    border-radius: 12px;
+}
+
+.inline-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.inline-stat .val {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #ff4d6d;
+}
+
+.inline-stat .lbl {
+    font-size: 0.6rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+}
+
+.action-btn-circle {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.05);
+    border: none;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
 }
 
 .habit-icon-box {
