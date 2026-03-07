@@ -446,8 +446,10 @@ footer {
     display: flex;
     align-items: flex-end;
     gap: 8px;
-    height: 80px;
-    margin-bottom: 20px;
+    height: 30px;
+    /* Reduced from 80px */
+    margin-bottom: 5px;
+    /* Reduced from 20px */
 }
 
 .visualizer-bar {
@@ -476,9 +478,11 @@ footer {
 
 .control-group label {
     display: block;
-    font-size: 0.85rem;
+    font-size: 0.75rem;
+    /* Slightly smaller */
     color: var(--text-dim);
-    margin-bottom: 12px;
+    margin-bottom: 4px;
+    /* Reduced from 12px */
     text-transform: uppercase;
     letter-spacing: 1px;
 }
@@ -505,7 +509,8 @@ footer {
 }
 
 .main-play-btn {
-    margin-top: 25px;
+    margin-top: 10px;
+    /* Reduced from 25px */
     width: 100%;
     padding: 16px;
     border-radius: 20px;
@@ -581,8 +586,9 @@ footer {
 
 .method-selector {
     display: flex;
-    gap: 10px;
-    margin-bottom: 30px;
+    gap: 8px;
+    margin-bottom: 10px;
+    /* Reduced from 30px */
     flex-wrap: wrap;
     justify-content: center;
 }

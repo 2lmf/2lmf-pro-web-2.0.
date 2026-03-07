@@ -231,7 +231,7 @@ class ZenPauza {
         container.innerHTML = `
             <div class="mir-section-card">
                 <h3 style="margin-bottom:2px;"><i class="fas fa-volume-up"></i> Sound Oasis</h3>
-                <div class="visualizer-container" style="margin-bottom:6px;">
+                <div class="visualizer-container" style="margin-bottom:2px;">
                     <div class="visualizer-bar" id="v-bar-1"></div>
                     <div class="visualizer-bar" id="v-bar-2"></div>
                     <div class="visualizer-bar" id="v-bar-3"></div>
@@ -272,8 +272,8 @@ class ZenPauza {
                         </button>
                     `).join('')}
                 </div>
-                <div class="breathing-container" style="margin: 10px 0;">
-                    <div class="breathing-circle" id="b-circle">
+                <div class="breathing-container">
+                        <div class="breathing-circle" id="b-circle">
                         <div class="breathing-text" id="b-text">START</div>
                     </div>
                 </div>
