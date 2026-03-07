@@ -411,15 +411,19 @@ async function triggerCloudSync(user) {
     if (!user || !window.CS_Firebase) return;
 
     console.log("App: Triggering Cloud Sync for", user.email);
+    alert("Započinjem Cloud Sync korak 1/2...");
 
     try {
         // 1. Sync Profile
+        alert("Provjeravam profil u oblaku...");
         const remoteProfile = await window.CS_Firebase.loadUserData(user.uid);
+
         if (!remoteProfile) {
-            console.log("App: No remote profile, migrating local to cloud...");
+            alert("Profil ne postoji u oblaku. Šaljem lokalni profil...");
             await window.CS_Firebase.syncProfile(user.uid, userProfile);
+            alert("Profil uspješno poslan!");
         } else {
-            console.log("App: Remote profile found, syncing...");
+            alert("Profil postoji u oblaku. Usklađujem...");
             userProfile = { ...userProfile, ...remoteProfile };
             saveProfile();
             applyLanguage(userProfile.lang);
@@ -427,21 +431,23 @@ async function triggerCloudSync(user) {
         }
 
         // 2. Sync Daily Data
+        alert("Provjeravam današnji dnevnik (korak 2/2)...");
         const today = getTodayKey();
         const remoteDaily = await window.CS_Firebase.loadDailyData(user.uid, today);
+
         if (!remoteDaily) {
-            console.log("App: No remote daily data for today, migrating local...");
+            alert("Dnevnik ne postoji u oblaku. Šaljem lokalne podatke...");
             await window.CS_Firebase.syncDailyData(user.uid, today, dailyData);
-            alert("Cloud Sync: Uspješno povezano! Podaci su u oblaku.");
+            alert("ČESTITAM: Podaci su službeno u Cloudu! Provjeri konzolu.");
         } else {
-            console.log("App: Remote daily data found, merging...");
+            alert("Dnevnik postoji u oblaku. Povlačim podatke...");
             dailyData = remoteDaily;
             saveDailyData();
             updateDashboardUI();
         }
     } catch (e) {
         console.error("Cloud Sync Error:", e);
-        alert("Sync greška: " + e.message);
+        alert("GRESKA (Sync): " + e.message);
     }
 }
 
