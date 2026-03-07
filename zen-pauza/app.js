@@ -50,12 +50,8 @@ class ZenPauza {
             });
         }
 
-        // Prevent scrolling on body, but allow on views (v24 Scroll Fix)
-        // This ensures pull-to-refresh works naturally on mobile
-        document.body.addEventListener('touchmove', (e) => {
-            const scrollable = e.target.closest('.view');
-            if (!scrollable) e.preventDefault();
-        }, { passive: false });
+        // Allow native touch events for scrolling and pull-to-refresh
+        // Removed v24 blocker to allow native browser refresh
     }
 
     refreshUI() {
@@ -197,7 +193,7 @@ class ZenPauza {
         container.innerHTML = `
             <div class="mir-section-card">
                 <h3><i class="fas fa-volume-up"></i> Sound Oasis</h3>
-                <div class="visualizer-container" style="margin-bottom:20px;">
+                <div class="visualizer-container" style="margin-bottom:12px;">
                     <div class="visualizer-bar" id="v-bar-1"></div>
                     <div class="visualizer-bar" id="v-bar-2"></div>
                     <div class="visualizer-bar" id="v-bar-3"></div>
@@ -224,12 +220,12 @@ class ZenPauza {
                         <input type="range" min="0" max="1" step="0.01" value="${this.state.volumes.vacuum}" oninput="app.updateVolume('vacuum', this.value)">
                     </div>
                 </div>
-                <button class="main-play-btn" id="play-btn" onclick="app.toggleSound()">${this.state.isSoundPlaying ? 'PAUZIRAJ' : 'POKRENI MIR'}</button>
+                <button class="main-play-btn" id="play-btn" onclick="app.toggleSound()" style="margin-top:10px;">${this.state.isSoundPlaying ? 'PAUZIRAJ' : 'POKRENI MIR'}</button>
             </div>
 
             <div class="mir-section-card">
                 <h3><i class="fas fa-lungs"></i> Dah (Box Breathing)</h3>
-                <div class="method-selector" style="margin-bottom:20px;">
+                <div class="method-selector" style="margin-bottom:12px;">
                     ${Object.keys(this.breathingMethods).map(id => `
                         <button class="method-btn ${this.state.breathing.method === id ? 'active' : ''}" 
                                 onclick="app.setBreathingMethod('${id}')">
@@ -237,13 +233,13 @@ class ZenPauza {
                         </button>
                     `).join('')}
                 </div>
-                <div class="breathing-container" style="margin: 20px 0;">
+                <div class="breathing-container" style="margin: 10px 0;">
                     <div class="breathing-circle" id="b-circle">
                         <div class="breathing-text" id="b-text">START</div>
                     </div>
                 </div>
                 <div class="breathing-timer" id="b-timer" style="text-align:center;">Klikni krug za početak</div>
-                <button class="main-play-btn" id="b-main-btn" onclick="app.toggleBreathing()">${this.state.breathing.active ? 'ZAUSTAVI' : 'ZAPOČNI'}</button>
+                <button class="main-play-btn" id="b-main-btn" onclick="app.toggleBreathing()" style="margin-top:10px;">${this.state.breathing.active ? 'ZAUSTAVI' : 'ZAPOČNI'}</button>
             </div>
         `;
 

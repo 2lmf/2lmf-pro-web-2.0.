@@ -24,6 +24,8 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    overscroll-behavior-y: contain;
+    /* Allow pull-to-refresh but contain bounce */
 }
 
 .app-container {
@@ -979,18 +981,22 @@ footer {
     background: rgba(255, 255, 255, 0.05);
 }
 
-/* MIR TAB INTEGRATED v24 */
+/* MIR TAB INTEGRATED v25 - Compact */
 .mir-section-card {
     background: #1a1a1e;
     border-radius: 24px;
-    padding: 25px;
-    margin-bottom: 20px;
+    padding: 18px 20px;
+    /* Reduced from 25px */
+    margin-bottom: 12px;
+    /* Reduced from 20px */
     border: 1px solid rgba(255, 255, 255, 0.03);
 }
 
 .mir-section-card h3 {
-    font-size: 1.3rem;
-    margin-bottom: 20px;
+    font-size: 1.1rem;
+    /* Slightly smaller */
+    margin-bottom: 12px;
+    /* Reduced from 20px */
     color: white;
     display: flex;
     align-items: center;
