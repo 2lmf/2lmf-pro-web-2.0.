@@ -5,32 +5,21 @@
 class ZenPauza {
     constructor() {
         this.audioCtx = null;
-        this.nodes = {
-            white: null,
-            pink: null,
-            brown: null,
-            master: null
-        };
+        this.nodes = { white: null, pink: null, brown: null, master: null };
 
         this.state = {
+            activeView: 'today', // today, habits, explore
             activeModule: null,
             isSoundPlaying: false,
             volumes: { white: 0, pink: 0, brown: 0, car: 0, vacuum: 0 },
-            breathing: {
-                active: false,
-                method: 'box',
-                phase: 'inhale', // inhale, hold, exhale, hold2
-                timer: 0
-            },
+            breathing: { active: false, method: 'box', phase: 'inhale', timer: 0 },
             habits: JSON.parse(localStorage.getItem('zp_habits_v11')) || {
-                breathing: [],
-                sounds: [],
-                meditation: []
+                breathing: [], sounds: [], meditation: []
             },
             habitMetadata: JSON.parse(localStorage.getItem('zp_habit_meta_v12')) || {
-                breathing: { name: 'Duboko Disanje', icon: 'fa-lungs', desc: 'Završi vježbu disanja' },
-                sounds: { name: 'Mirni Zvukovi', icon: 'fa-water', desc: 'Slušaj zvukove barem 5 min' },
-                meditation: { name: 'Jutarnja Meditacija', icon: 'fa-om', desc: 'Dnevna doza tišine' }
+                breathing: { name: 'Duboko Disanje', icon: 'fa-lungs', color: '#4FACFE' },
+                sounds: { name: 'Mirni Zvukovi', icon: 'fa-water', color: '#00D084' },
+                meditation: { name: 'Jutarnja Meditacija', icon: 'fa-om', color: '#ff4d6d' }
             }
         };
 
@@ -45,43 +34,93 @@ class ZenPauza {
     }
 
     init() {
-        console.log("Zen Pauza Initialized");
-        this.registerSW();
+        this.renderTodayView();
+
+        // Firebase bridge
+        if (window.onFirebaseStateChange) {
+            window.onFirebaseStateChange((user) => {
+                if (user) {
+                    console.log("Firebase: User logged in", user.email);
+                    this.loadHabitsFromCloud();
+                } else {
+                    console.log("Firebase: No user");
+                }
+                this.refreshUI();
+            });
+        }
     }
 
-    registerSW() {
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js')
-                .then(reg => console.log('SW Registered', reg))
-                .catch(err => console.log('SW Failed', err));
-        }
+    refreshUI() {
+        if (this.state.activeView === 'today') this.renderTodayView();
+        if (this.state.activeView === 'habits') this.renderHabitsModule();
     }
 
     // --- NAVIGATION ---
 
+    switchView(viewId) {
+        this.state.activeView = viewId;
+        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+
+        const targetView = document.getElementById(`view-${viewId}`);
+        const targetBtn = document.getElementById(`nav-${viewId}`);
+        if (targetView) targetView.classList.add('active');
+        if (targetBtn) targetBtn.classList.add('active');
+
+        if (viewId === 'today') this.renderTodayView();
+        if (viewId === 'habits') this.renderHabitsModule();
+    }
+
     showModule(moduleId) {
         const overlay = document.getElementById('overlay-container');
-        const content = document.getElementById('module-content');
-
         overlay.style.display = 'flex';
         this.state.activeModule = moduleId;
+        const content = document.getElementById('module-content');
 
-        if (moduleId === 'focus') {
-            this.renderFocusModule(content);
-        } else if (moduleId === 'calm') {
-            this.renderCalmModule(content);
-        } else if (moduleId === 'habits') {
-            this.renderHabitsModule(content);
-        }
+        if (moduleId === 'breathe') this.renderCalmModule(content);
+        if (moduleId === 'sounds') this.renderFocusModule(content);
     }
 
     hideModule() {
-        const overlay = document.getElementById('overlay-container');
-        overlay.style.display = 'none';
+        document.getElementById('overlay-container').style.display = 'none';
         this.state.activeModule = null;
-
-        // Stop breathing if active
         this.stopBreathing();
+    }
+
+    // --- TODAY VIEW ---
+
+    renderTodayView() {
+        const container = document.getElementById('today-list');
+        if (!container) return;
+
+        const habits = Object.keys(this.state.habitMetadata);
+        const today = new Date().toISOString().split('T')[0];
+
+        container.innerHTML = habits.map(id => {
+            const meta = this.state.habitMetadata[id] || { name: id, icon: 'fa-star' };
+            const data = this.state.habits[id] || [];
+            const completed = data.includes(today);
+
+            return `
+                <div class="habit-card today-item ${completed ? 'completed' : ''}" onclick="app.openHabitModal('${id}')">
+                    <div class="habit-icon-box">
+                        <i class="fas ${meta.icon}"></i>
+                    </div>
+                    <div class="habit-content-main">
+                        <h3>${meta.name}</h3>
+                        <p>${completed ? 'Završeno' : 'Čeka na tebe'}</p>
+                    </div>
+                    <button class="habit-check-btn" onclick="event.stopPropagation(); app.toggleTodayHabit('${id}')">
+                        <i class="fas ${completed ? 'fa-check' : 'fa-plus'}"></i>
+                    </button>
+                </div>
+            `;
+        }).join('');
+    }
+
+    toggleTodayHabit(id) {
+        this.toggleHabit(id, new Date().toISOString().split('T')[0]);
+        this.renderTodayView();
     }
 
     renderCalmModule(container) {
@@ -481,121 +520,146 @@ class ZenPauza {
 
     // --- HABITS MODULE (DAILY ZEN v11) ---
 
-    renderHabitsModule(container) {
-        const user = window.ZP_Firebase ? window.ZP_Firebase.user : null;
+    // --- HABITS VIEW (List with Weekly Circles) ---
+
+    renderHabitsModule() {
+        const container = document.getElementById('all-habits-list');
+        if (!container) return;
+
         const habits = Object.keys(this.state.habitMetadata);
-
-        // Summary Stats
-        const totalCompletions = habits.reduce((acc, id) => acc + (this.state.habits[id] ? this.state.habits[id].length : 0), 0);
-        const avgStreak = Math.round(habits.reduce((acc, id) => acc + this.getStreak(id), 0) / habits.length) || 0;
-
         container.innerHTML = `
-            <div class="habits-ui">
-                <div class="summary-card">
-                    <div class="summary-stat">
-                        <span class="summary-val">${totalCompletions}</span>
-                        <span class="summary-lbl">UKUPNO</span>
-                    </div>
-                    <div class="summary-stat">
-                        <span class="summary-val">${avgStreak}d</span>
-                        <span class="summary-lbl">PROSJEK</span>
-                    </div>
-                </div>
-
+            <div class="habits-list-v14">
                 ${habits.map(id => this.renderHabitCard(id)).join('')}
-
-                <button class="add-habit-btn" onclick="app.addCustomHabit()">
-                    <i class="fas fa-plus"></i> DODAJ NOVU NAVIKU
+                <button class="add-habit-btn" onclick="app.addCustomHabit()" style="width:100%; margin-top:10px;">
+                    <i class="fas fa-plus"></i> NOVA NAVIKA
                 </button>
-
-                <div class="cloud-info-v11">
-                    <i class="fas ${user ? 'fa-cloud' : 'fa-cloud-slash'}"></i>
-                    ${user ? `<span>Sinkronizirano (${user.email})</span>` :
-                `<button class="sync-btn" onclick="app.loginFirebase()">OMOGUĆI CLOUD</button>`}
-                </div>
             </div>
         `;
     }
 
     renderHabitCard(id) {
-        const meta = this.state.habitMetadata[id] || { name: id, icon: 'fa-star', desc: '' };
+        const meta = this.state.habitMetadata[id] || { name: id, icon: 'fa-star' };
         const data = this.state.habits[id] || [];
-        const today = new Date().toISOString().split('T')[0];
-        const completedToday = data.includes(today);
         const streak = this.getStreak(id);
-        const isCustom = !['breathing', 'sounds', 'meditation'].includes(id);
+
+        // 7-day range (Friday to Thursday style as in screenshot)
+        const days = [];
+        const dayNames = ['N', 'P', 'U', 'S', 'Č', 'P', 'S'];
+        for (let i = 6; i >= 0; i--) {
+            const d = new Date();
+            d.setDate(d.getDate() - i);
+            days.push({
+                date: d.toISOString().split('T')[0],
+                label: dayNames[d.getDay()],
+                isToday: i === 0
+            });
+        }
 
         return `
-            <div class="habit-card ${completedToday ? 'completed' : ''}">
+            <div class="habit-card list-item" onclick="app.openHabitModal('${id}')">
                 <div class="habit-header">
                     <div class="habit-info">
                         <h3><i class="fas ${meta.icon}"></i> ${meta.name}</h3>
                     </div>
-                    <div class="habit-stats-row">
-                        <div class="stat-pill"><i class="fas fa-fire"></i> ${streak}d</div>
-                        <button class="habit-action-btn" onclick="app.toggleHabit('${id}')">
-                            <i class="fas ${completedToday ? 'fa-check' : 'fa-plus'}"></i>
-                        </button>
-                    </div>
+                    <div class="stat-pill"><i class="fas fa-fire"></i> ${streak}d</div>
                 </div>
-
-                <div class="calendar-grid">
-                    ${this.generateCalendarDots(id)}
+                
+                <div class="habit-week-circles">
+                    ${days.map(day => {
+            const active = data.includes(day.date);
+            return `
+                            <div class="day-circle ${active ? 'active' : ''} ${day.isToday ? 'today' : ''}" 
+                                 onclick="event.stopPropagation(); app.toggleHabit('${id}', '${day.date}')">
+                                <span>${day.label}</span>
+                                <strong>${day.date.split('-')[2]}</strong>
+                            </div>
+                        `;
+        }).join('')}
                 </div>
-                ${isCustom ? `<button class="delete-habit-btn" onclick="app.deleteHabit('${id}')">briši</button>` : ''}
             </div>
         `;
     }
 
-    addCustomHabit() {
-        const name = prompt("Unesite naziv nove navike:");
-        if (name && name.trim()) {
-            const id = 'custom_' + Date.now();
-            this.state.habitMetadata[id] = { name: name.trim(), icon: 'fa-star', desc: '' };
-            this.state.habits[id] = [];
-            this.saveAndSync();
-            this.renderHabitsModule(document.getElementById('module-content'));
-        }
+    // --- HABIT MODAL (Detail View) ---
+
+    openHabitModal(id) {
+        const modal = document.getElementById('habit-modal');
+        const nameEl = document.getElementById('modal-habit-name');
+        const meta = this.state.habitMetadata[id] || { name: id };
+
+        nameEl.innerText = meta.name;
+        this.renderHabitDetail(id);
+        modal.style.display = 'block';
     }
 
-    deleteHabit(id) {
-        if (confirm("Sigurno želiš obrisati ovu naviku?")) {
-            delete this.state.habits[id];
-            delete this.state.habitMetadata[id];
-            this.saveAndSync();
-            this.renderHabitsModule(document.getElementById('module-content'));
-        }
+    closeHabitModal() {
+        document.getElementById('habit-modal').style.display = 'none';
     }
 
-    generateCalendarDots(id) {
+    renderHabitDetail(id) {
+        const container = document.getElementById('modal-habit-content');
+        const data = this.state.habits[id] || [];
+        const streak = this.getStreak(id);
+        const rate = this.calculateStats(id).completionRate;
+
+        container.innerHTML = `
+            <div class="modal-section">
+                <h4>Statistika</h4>
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <span class="val">${streak} dana</span>
+                        <span class="lbl">Trenutni Streak</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="val">${rate}%</span>
+                        <span class="lbl">Mjesečni prosjek</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-section">
+                <h4>Kalendar (Srpanj)</h4>
+                <div class="big-calendar">
+                    ${this.generateFullMonthCalendar(id)}
+                </div>
+            </div>
+            
+            <button class="delete-habit-btn" onclick="app.deleteHabit('${id}'); app.closeHabitModal();" style="margin-top:20px; color:#ff4d6d;">
+                <i class="fas fa-trash"></i> OBRIŠI NAVIKU
+            </button>
+        `;
+    }
+
+    generateFullMonthCalendar(id) {
         const data = this.state.habits[id] || [];
         const today = new Date();
-        const dots = [];
+        const daysInMonth = 31; // Simplification for UI
+        const html = [];
 
-        // Show last 30 days
-        for (let i = 29; i >= 0; i--) {
-            const d = new Date();
-            d.setDate(today.getDate() - i);
-            const dateStr = d.toISOString().split('T')[0];
+        for (let i = 1; i <= daysInMonth; i++) {
+            const dateStr = `2026-03-${String(i).padStart(2, '0')}`; // Static for demo consistency
             const active = data.includes(dateStr);
-            const isToday = i === 0;
-            dots.push(`<div class="cal-dot ${active ? 'active' : ''} ${isToday ? 'today' : ''}" title="${dateStr}"></div>`);
+            const isToday = i === today.getDate();
+            html.push(`<div class="cal-day-box ${active ? 'active' : ''} ${isToday ? 'today' : ''}">${i}</div>`);
         }
-        return dots.join('');
+        return html.join('');
     }
 
-    toggleHabit(id) {
-        const today = new Date().toISOString().split('T')[0];
+    toggleHabit(id, date) {
+        if (!date) date = new Date().toISOString().split('T')[0];
         if (!this.state.habits[id]) this.state.habits[id] = [];
 
-        if (this.state.habits[id].includes(today)) {
-            this.state.habits[id] = this.state.habits[id].filter(d => d !== today);
+        if (this.state.habits[id].includes(date)) {
+            this.state.habits[id] = this.state.habits[id].filter(d => d !== date);
         } else {
-            this.state.habits[id].push(today);
+            this.state.habits[id].push(date);
         }
 
         this.saveAndSync();
-        this.renderHabitsModule(document.getElementById('module-content'));
+        this.refreshUI();
+        if (document.getElementById('habit-modal').style.display === 'block') {
+            this.renderHabitDetail(id);
+        }
     }
 
     trackHabit(id) {
@@ -604,6 +668,26 @@ class ZenPauza {
         if (!this.state.habits[id].includes(today)) {
             this.state.habits[id].push(today);
             this.saveAndSync();
+        }
+    }
+
+    addCustomHabit() {
+        const name = prompt("Unesite naziv nove navike:");
+        if (name && name.trim()) {
+            const id = 'custom_' + Date.now();
+            this.state.habitMetadata[id] = { name: name.trim(), icon: 'fa-star', color: '#ffcc00' };
+            this.state.habits[id] = [];
+            this.saveAndSync();
+            this.refreshUI();
+        }
+    }
+
+    deleteHabit(id) {
+        if (confirm("Sigurno želiš obrisati ovu naviku?")) {
+            delete this.state.habits[id];
+            delete this.state.habitMetadata[id];
+            this.saveAndSync();
+            this.refreshUI();
         }
     }
 
@@ -683,20 +767,15 @@ class ZenPauza {
                     this.state.habits[id] = [...new Set([...local, ...cloud])];
                 });
 
-                // Merge metadata (for custom habits)
+                // Merge metadata
                 Object.keys(cloudMeta).forEach(id => {
                     if (!this.state.habitMetadata[id]) {
                         this.state.habitMetadata[id] = cloudMeta[id];
                     }
                 });
 
-                localStorage.setItem('zp_habits_v11', JSON.stringify(this.state.habits));
-                localStorage.setItem('zp_habit_meta_v12', JSON.stringify(this.state.habitMetadata));
-
-                if (this.state.activeModule === 'habits') {
-                    const content = document.getElementById('module-content');
-                    if (content) this.renderHabitsModule(content);
-                }
+                this.saveAndSync();
+                this.refreshUI();
             }
         }
     }

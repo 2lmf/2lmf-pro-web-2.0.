@@ -19,55 +19,89 @@
         <div class="glow-orb" id="orb-1"></div>
         <div class="glow-orb" id="orb-2"></div>
 
-        <header>
-            <div class="logo">ZEN PAUZA</div>
-            <div class="tagline">Pronađi svoj mir</div>
-        </header>
-
-        <main class="dashboard">
-            <!-- FOCUS CARD -->
-            <section class="glass-card module-card" id="card-focus" onclick="showModule('focus')">
-                <div class="card-icon">🌊</div>
-                <div class="card-content">
-                    <h3>Sound Oasis</h3>
-                    <p>Fokus uz Brown & Pink noise</p>
+        <!-- Main Dashboard View (HabitNow Style) -->
+        <main id="main-view">
+            <div id="view-today" class="view active">
+                <header class="app-header">
+                    <h1>Danas</h1>
+                    <div class="header-icons">
+                        <i class="fas fa-search"></i>
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                </header>
+                <div id="today-list" class="habit-list-container">
+                    <!-- Today's habits list will be rendered here -->
                 </div>
-                <div class="card-arrow">→</div>
-            </section>
+            </div>
 
-            <!-- CALM CARD -->
-            <section class="glass-card module-card" id="card-calm" onclick="showModule('calm')">
-                <div class="card-icon">🧘‍♂️</div>
-                <div class="card-content">
-                    <h3>Vježbe Disanja</h3>
-                    <p>Pronađi mir u sekundi</p>
+            <div id="view-habits" class="view">
+                <header class="app-header">
+                    <h1>Navike</h1>
+                    <i class="fas fa-search"></i>
+                </header>
+                <div id="all-habits-list" class="habit-list-container">
+                    <!-- Full habits list with 7-day view here -->
                 </div>
-                <div class="card-arrow">→</div>
-            </section>
+            </div>
 
-            <!-- HABITS CARD -->
-            <section class="glass-card module-card" id="card-habits" onclick="showModule('habits')">
-                <div class="card-icon">⚡</div>
-                <div class="card-content">
-                    <h3>Habit Tracker</h3>
-                    <p>Gradi boljeg sebe</p>
+            <div id="view-explore" class="view">
+                <header class="app-header">
+                    <h1>Istraži</h1>
+                </header>
+                <div class="dashboard">
+                    <div class="card breathe-card" onclick="showModule('breathe')">
+                        <div class="card-icon">🧘‍♂️</div>
+                        <h3>Dah</h3>
+                        <p>Box & Relax</p>
+                    </div>
+                    <div class="card sounds-card" onclick="showModule('sounds')">
+                        <div class="card-icon">🌊</div>
+                        <h3>Zvuk</h3>
+                        <p>Sound Oasis</p>
+                    </div>
                 </div>
-                <div class="card-arrow">→</div>
-            </section>
+            </div>
         </main>
 
-        <!-- MODULE OVERLAYS -->
-        <div id="overlay-container" class="overlay-container">
-            <button class="back-btn" onclick="hideModule()">← Povratak</button>
-            <div id="module-content" class="module-content">
-                <!-- Content injected via JS -->
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav">
+            <button class="nav-btn active" id="nav-today" onclick="app.switchView('today')">
+                <i class="fas fa-calendar-day"></i>
+                <span>Danas</span>
+            </button>
+            <button class="nav-btn" id="nav-habits" onclick="app.switchView('habits')">
+                <i class="fas fa-award"></i>
+                <span>Navike</span>
+            </button>
+            <button class="nav-btn" id="nav-explore" onclick="app.switchView('explore')">
+                <i class="fas fa-compass"></i>
+                <span>Istraži</span>
+            </button>
+        </nav>
+    </div>
+
+    <!-- MODULE OVERLAYS -->
+    <div id="overlay-container" class="overlay-container">
+        <button class="back-btn" onclick="hideModule()">← Povratak</button>
+        <div id="module-content" class="module-content">
+            <!-- Content injected via JS -->
+        </div>
+    </div>
+
+    <!-- Habit Detail Modal (HabitNow Style) -->
+    <div id="habit-modal" class="modal">
+        <div class="modal-content full-screen">
+            <header class="modal-header">
+                <button class="close-modal" onclick="app.closeHabitModal()">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <h2 id="modal-habit-name">Naziv Navike</h2>
+                <i class="fas fa-edit"></i>
+            </header>
+            <div id="modal-habit-content">
+                <!-- Detail calendar and stats will be here -->
             </div>
         </div>
-
-        <footer>
-            <button class="footer-btn" onclick="showStats()">Moja Statistika</button>
-            <div class="donation-hint">Uživaj u miru bez oglasa ☕</div>
-        </footer>
     </div>
 
     <script type="importmap">
@@ -79,8 +113,8 @@
       }
     }
     </script>
-    <script type="module" src="firebase-core.js?v=12"></script>
-    <script src="app.js?v=13"></script>
+    <script type="module" src="firebase-core.js?v=14"></script>
+    <script src="app.js?v=14"></script>
 </body>
 
 </html>

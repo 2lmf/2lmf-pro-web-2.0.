@@ -72,6 +72,96 @@ body {
     }
 }
 
+/* APP LAYOUT v14 */
+#main-view {
+    padding-bottom: 80px;
+    /* Space for bottom nav */
+}
+
+.view {
+    display: none;
+    animation: fadeIn 0.3s ease;
+}
+
+.view.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.app-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 0;
+    margin-bottom: 10px;
+}
+
+.app-header h1 {
+    font-size: 1.8rem;
+    font-weight: 800;
+}
+
+.header-icons {
+    display: flex;
+    gap: 20px;
+    font-size: 1.2rem;
+    color: var(--text-dim);
+}
+
+/* BOTTOM NAVIGATION */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 70px;
+    background: #111114;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    z-index: 1000;
+    padding-bottom: env(safe-area-inset-bottom);
+}
+
+.nav-btn {
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    transition: 0.3s;
+    font-size: 0.7rem;
+    width: 33%;
+}
+
+.nav-btn i {
+    font-size: 1.2rem;
+}
+
+.nav-btn.active {
+    color: #ff4d6d;
+    /* HabitNow Pink */
+}
+
+.nav-btn.active i {
+    transform: scale(1.1);
+}
+
 header {
     text-align: center;
     margin-top: 40px;
@@ -414,17 +504,115 @@ footer {
     gap: 20px;
 }
 
+/* HABIT CARDS v14 - Today/List Style */
 .habit-card {
-    background: var(--card-bg);
-    border: 1px solid var(--card-border);
+    background: #1a1a1e;
+    border-radius: 16px;
+    padding: 15px;
+    margin-bottom: 12px;
+    display: flex;
+    flex-direction: row;
+    /* Horizontal layout for today list */
+    align-items: center;
+    gap: 15px;
+    transition: 0.2s;
+}
+
+.habit-card.today-item {
+    padding: 12px 15px;
+}
+
+.habit-icon-box {
+    width: 45px;
+    height: 45px;
+    background: rgba(255, 255, 255, 0.03);
     border-radius: 12px;
-    padding: 10px 12px;
-    text-align: left;
-    position: relative;
-    transition: transform 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+}
+
+.habit-card.completed .habit-icon-box {
+    background: rgba(0, 208, 132, 0.1);
+    color: #00D084;
+}
+
+.habit-content-main {
+    flex: 1;
+}
+
+.habit-content-main h3 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.habit-content-main p {
+    margin: 2px 0 0;
+    font-size: 0.75rem;
+    color: var(--text-dim);
+}
+
+.habit-check-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    background: none;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+}
+
+.habit-card.completed .habit-check-btn {
+    background: #00D084;
+    border-color: #00D084;
+}
+
+/* 7-DAY CIRCLE ROW */
+.habit-week-circles {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+.day-circle {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.1);
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.6rem;
+    cursor: pointer;
+}
+
+.day-circle.active {
+    background: #00D084;
+    border-color: #00D084;
+    color: #000;
+}
+
+.day-circle.today {
+    border-color: #ff4d6d;
+}
+
+/* HABIT LIST CARD (Used in 'Habits' view) */
+.habit-card.list-item {
+    flex-direction: column;
+    align-items: stretch;
+}
+
+.habit-card.list-item .habit-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .habit-card:hover {
@@ -509,6 +697,105 @@ footer {
     border-radius: 3px;
     min-width: 8px;
     position: relative;
+}
+
+/* MODAL v14 */
+.modal-content.full-screen {
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    border-radius: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-header {
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.close-modal {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+#modal-habit-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+}
+
+.modal-section {
+    margin-bottom: 30px;
+}
+
+.modal-section h4 {
+    color: var(--text-dim);
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    letter-spacing: 1px;
+    margin-bottom: 15px;
+}
+
+/* BIG CALENDAR (Modal) */
+.big-calendar {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 10px;
+}
+
+.cal-day-box {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 0.9rem;
+    color: var(--text-dim);
+    border: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.cal-day-box.active {
+    background: #00D084;
+    color: black;
+    font-weight: bold;
+}
+
+.cal-day-box.today {
+    border: 2px solid #ff4d6d;
+}
+
+/* SUMMARY BOXES in Modal */
+.stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.stat-box {
+    background: rgba(255, 255, 255, 0.03);
+    padding: 15px;
+    border-radius: 12px;
+    text-align: center;
+}
+
+.stat-box .val {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #00D084;
+}
+
+.stat-box .lbl {
+    font-size: 0.7rem;
+    color: var(--text-dim);
 }
 
 .cal-dot.active {
