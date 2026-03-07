@@ -130,6 +130,59 @@
             /* Subtle Weight as requested */
         }
 
+        /* --- DROPDOWN --- */
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background-color: rgba(2, 2, 5, 0.98);
+            min-width: 200px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            z-index: 3000;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            backdrop-filter: blur(20px);
+        }
+
+        .dropdown-content a {
+            color: #ccc !important;
+            padding: 15px 20px !important;
+            text-decoration: none;
+            display: block;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.75rem !important;
+            letter-spacing: 2px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s;
+        }
+
+        .dropdown-content a::after {
+            display: none;
+            /* No strike for dropdown items */
+        }
+
+        .dropdown-content a:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-content a:hover {
+            background: rgba(230, 126, 34, 0.1);
+            color: var(--accent-orange) !important;
+            padding-left: 25px !important;
+        }
+
+        /* Show on hover for desktop, will use JS/Click for mobile later if needed */
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
         /* --- STRIKE HIGHLIGHT EFFECT --- */
         .nav-links a::after {
             content: '';
@@ -143,6 +196,10 @@
             transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
             z-index: -1;
             opacity: 0.8;
+        }
+
+        .desktop-only {
+            display: inline-block;
         }
 
         .nav-links a:hover {
@@ -752,17 +809,38 @@
                 height: 500px;
             }
 
-            nav {
-                padding: 20px 30px;
+            .nav-links {
+                display: none;
+                /* Hide standard links on mobile */
             }
 
-            .layer-bg {
-                width: 125%;
-                height: 125%;
+            /* Custom mobile dropdown trigger if needed */
+            .mobile-nav-toggle {
+                display: block;
+                color: var(--accent-orange);
+                font-size: 1.5rem;
+                cursor: pointer;
             }
 
-            .layer-fg {
-                width: 80%;
+            /* The user wants 'Početna' to be the dropdown */
+            .nav-links.mobile-active {
+                display: flex;
+                flex-direction: column;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background: rgba(2, 2, 5, 0.95);
+                padding: 20px;
+                gap: 15px;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            }
+
+            /* Dropdown on mobile should stay open or toggle */
+            @media (max-width: 1100px) {
+                .desktop-only {
+                    display: none;
+                }
             }
         }
     </style>
@@ -806,17 +884,36 @@
             </div>
         </div>
 
-        <div class="nav-links">
-            <a href="index.html">POČETNA</a>
-            <a href="architects_blueprint.html">ARHITEKTURA</a>
-            <a href="kalkulator.html">KATALOG</a>
-            <a href="blog_hub.html">ZNANJE</a>
+        <div class="nav-links" id="mainNav">
+            <div class="dropdown">
+                <a href="index.html" class="dropbtn" onclick="toggleMobileDropdown(event)">POČETNA <i
+                        class="fas fa-chevron-down" style="font-size: 0.6rem; margin-left: 5px;"></i></a>
+                <div class="dropdown-content" id="homeDropdown">
+                    <a href="architects_blueprint.html">Arhitektura</a>
+                    <a href="blog_hub.html">Znanje</a>
+                    <a href="kalkulator.html">Katalog</a>
+                </div>
+            </div>
+            <a href="architects_blueprint.html" class="desktop-only">ARHITEKTURA</a>
+            <a href="kalkulator.html" class="desktop-only">KATALOG</a>
+            <a href="blog_hub.html" class="desktop-only">ZNANJE</a>
             <a href="digitalna_dominacija.html"
                 style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px;">
                 <span class="ss-sharp">SHARP</span><span class="ss-shark">SHARK</span>
             </a>
             <a href="index.html#kontakt">KONTAKT</a>
         </div>
+
+        <!-- Script for Dropdown -->
+        <script>
+            function toggleMobileDropdown(e) {
+                if (window.innerWidth <= 1100) {
+                    e.preventDefault();
+                    const dropdown = document.getElementById('homeDropdown');
+                    dropdown.classList.toggle('mobile-show');
+                }
+            }
+        </script>
     </nav>
 
     <div class="hero">

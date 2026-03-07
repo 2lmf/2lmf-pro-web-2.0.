@@ -139,6 +139,77 @@
             text-transform: uppercase;
         }
 
+        /* --- DROPDOWN --- */
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background-color: rgba(2, 2, 5, 0.98);
+            min-width: 200px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            z-index: 3000;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            backdrop-filter: blur(20px);
+        }
+
+        .dropdown-content a {
+            color: #ccc !important;
+            padding: 15px 20px !important;
+            text-decoration: none;
+            display: block;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.75rem !important;
+            letter-spacing: 2px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s;
+            transform: none !important;
+        }
+
+        .dropdown-content a:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-content a:hover {
+            background: rgba(230, 126, 34, 0.1);
+            color: var(--accent-orange) !important;
+            padding-left: 25px !important;
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        .desktop-only {
+            display: inline-block;
+        }
+
+        @media (max-width: 1100px) {
+            nav {
+                padding: 15px 20px;
+            }
+
+            .desktop-only {
+                display: none;
+            }
+
+            .dropdown-content.mobile-show {
+                display: block;
+                position: static;
+                box-shadow: none;
+                border: none;
+                background: transparent;
+                padding-left: 20px;
+            }
+        }
+
         .nav-links a.ss-link {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -395,12 +466,30 @@
             <div class="tagline"><span class="arch">ARCHITECTURAL</span> <span class="code">CODE</span></div>
         </div>
         <div class="nav-links">
-            <a href="index.html">POČETNA</a>
-            <a href="blog_hub.html">ZNANJE</a>
+            <div class="dropdown">
+                <a href="index.html" class="dropbtn" onclick="toggleMobileDropdown(event)">POČETNA <i
+                        class="fas fa-chevron-down" style="font-size: 0.6rem; margin-left: 5px;"></i></a>
+                <div class="dropdown-content" id="homeDropdown">
+                    <a href="architects_blueprint.html">Arhitektura</a>
+                    <a href="blog_hub.html">Znanje</a>
+                    <a href="kalkulator.html">Katalog</a>
+                </div>
+            </div>
+            <a href="blog_hub.html" class="desktop-only">ZNANJE</a>
             <a href="digitalna_dominacija.html" class="ss-link"><span style="color:var(--accent-cyan)">SHARP</span><span
                     style="color:var(--accent-orange)">SHARK</span></a>
             <a href="index.html#kontakt">KONTAKT</a>
         </div>
+
+        <script>
+            function toggleMobileDropdown(e) {
+                if (window.innerWidth <= 1100) {
+                    e.preventDefault();
+                    const dropdown = document.getElementById('homeDropdown');
+                    dropdown.classList.toggle('mobile-show');
+                }
+            }
+        </script>
     </nav>
 
     <div class="container">
