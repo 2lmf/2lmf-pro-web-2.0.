@@ -12,7 +12,7 @@ class ZenPauza {
             activeModule: null,
             isSoundPlaying: false,
             volumes: { white: 0.3, pink: 0.3, brown: 0.3, car: 0, vacuum: 0 },
-            sheetsUrl: localStorage.getItem('zp_sheets_url') || '', // URL for GAS
+            sheetsUrl: localStorage.getItem('zp_sheets_url') || 'https://script.google.com/macros/s/AKfycbwEfV-DfGrPvXK3bKKRwWvsaQYhWxLzDfocUClOm2IFt0FRfS_u32hX7_8SPteXgpz7/exec', // URL for GAS
             breathing: { active: false, method: 'box', phase: 'inhale', timer: 0 },
             habits: JSON.parse(localStorage.getItem('zp_habits_v11')) || {
                 breathing: [], sounds: [], meditation: []
