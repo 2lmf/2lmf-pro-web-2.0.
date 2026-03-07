@@ -49,6 +49,13 @@ class ZenPauza {
                 this.refreshUI();
             });
         }
+
+        // Prevent scrolling on body, but allow on views (v24 Scroll Fix)
+        // This ensures pull-to-refresh works naturally on mobile
+        document.body.addEventListener('touchmove', (e) => {
+            const scrollable = e.target.closest('.view');
+            if (!scrollable) e.preventDefault();
+        }, { passive: false });
     }
 
     refreshUI() {
@@ -60,6 +67,7 @@ class ZenPauza {
 
     switchView(viewId) {
         this.closeHabitModal();
+        this.expandedHabitId = null; // Close any expanded detail when switching
         this.state.activeView = viewId;
         document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
@@ -71,6 +79,7 @@ class ZenPauza {
 
         if (viewId === 'today') this.renderTodayView();
         if (viewId === 'habits') this.renderHabitsModule();
+        if (viewId === 'explore') this.renderMirView();
     }
 
     showModule(moduleId) {
@@ -174,6 +183,72 @@ class ZenPauza {
     toggleTodayHabit(id) {
         this.toggleHabit(id, new Date().toISOString().split('T')[0]);
         this.renderTodayView();
+
+        // Refresh detail view if it's expanded to show color change
+        if (this.state.expandedHabitId === id) {
+            this.renderTodayView();
+        }
+    }
+
+    renderMirView() {
+        const container = document.getElementById('mir-content');
+        if (!container) return;
+
+        container.innerHTML = `
+            <div class="mir-section-card">
+                <h3><i class="fas fa-volume-up"></i> Sound Oasis</h3>
+                <div class="visualizer-container" style="margin-bottom:20px;">
+                    <div class="visualizer-bar" id="v-bar-1"></div>
+                    <div class="visualizer-bar" id="v-bar-2"></div>
+                    <div class="visualizer-bar" id="v-bar-3"></div>
+                </div>
+                <div class="controls-grid">
+                    <div class="control-group">
+                        <label>Povjetarac</label>
+                        <input type="range" min="0" max="1" step="0.01" value="${this.state.volumes.white}" oninput="app.updateVolume('white', this.value)">
+                    </div>
+                    <div class="control-group">
+                        <label>Kiša</label>
+                        <input type="range" min="0" max="1" step="0.01" value="${this.state.volumes.pink}" oninput="app.updateVolume('pink', this.value)">
+                    </div>
+                    <div class="control-group">
+                        <label>Ocean</label>
+                        <input type="range" min="0" max="1" step="0.01" value="${this.state.volumes.brown}" oninput="app.updateVolume('brown', this.value)">
+                    </div>
+                    <div class="control-group">
+                        <label>Auto</label>
+                        <input type="range" min="0" max="1" step="0.01" value="${this.state.volumes.car}" oninput="app.updateVolume('car', this.value)">
+                    </div>
+                    <div class="control-group">
+                        <label>Sauger</label>
+                        <input type="range" min="0" max="1" step="0.01" value="${this.state.volumes.vacuum}" oninput="app.updateVolume('vacuum', this.value)">
+                    </div>
+                </div>
+                <button class="main-play-btn" id="play-btn" onclick="app.toggleSound()">${this.state.isSoundPlaying ? 'PAUZIRAJ' : 'POKRENI MIR'}</button>
+            </div>
+
+            <div class="mir-section-card">
+                <h3><i class="fas fa-lungs"></i> Dah (Box Breathing)</h3>
+                <div class="method-selector" style="margin-bottom:20px;">
+                    ${Object.keys(this.breathingMethods).map(id => `
+                        <button class="method-btn ${this.state.breathing.method === id ? 'active' : ''}" 
+                                onclick="app.setBreathingMethod('${id}')">
+                            ${this.breathingMethods[id].name}
+                        </button>
+                    `).join('')}
+                </div>
+                <div class="breathing-container" style="margin: 20px 0;">
+                    <div class="breathing-circle" id="b-circle">
+                        <div class="breathing-text" id="b-text">START</div>
+                    </div>
+                </div>
+                <div class="breathing-timer" id="b-timer" style="text-align:center;">Klikni krug za početak</div>
+                <button class="main-play-btn" id="b-main-btn" onclick="app.toggleBreathing()">${this.state.breathing.active ? 'ZAUSTAVI' : 'ZAPOČNI'}</button>
+            </div>
+        `;
+
+        if (this.state.isSoundPlaying) this.updateVisualizer();
+        if (this.state.breathing.active) this.runBreathingCycle();
     }
 
     renderCalmModule(container) {
@@ -206,7 +281,7 @@ class ZenPauza {
     setBreathingMethod(id) {
         this.state.breathing.method = id;
         this.stopBreathing();
-        this.renderCalmModule(document.getElementById('module-content'));
+        this.renderMirView();
     }
 
     toggleBreathing() {
@@ -605,11 +680,9 @@ class ZenPauza {
 
         const habits = Object.keys(this.state.habitMetadata);
         container.innerHTML = `
-            <div class="habits-list-v14">
-                ${habits.map(id => this.renderHabitCard(id)).join('')}
-                <button class="add-habit-btn" onclick="app.addCustomHabit()" style="width:100%; margin-top:10px;">
-                    <i class="fas fa-plus"></i> NOVA NAVIKA
-                </button>
+            ${habits.map(id => this.renderHabitCard(id)).join('')}
+            <div class="add-habit-btn" onclick="app.addCustomHabit()">
+                <i class="fas fa-plus-circle"></i> NOVA NAVIKA
             </div>
         `;
     }

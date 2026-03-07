@@ -42,19 +42,10 @@
 
             <div id="view-explore" class="view">
                 <header class="app-header">
-                    <h1>Relaksacija</h1>
+                    <h1>Svijet Mira</h1>
                 </header>
-                <div class="dashboard">
-                    <div class="card breathe-card" onclick="showModule('breathe')">
-                        <div class="card-icon"><i class="fas fa-lungs"></i></div>
-                        <h3>Dah</h3>
-                        <p>Box & Relax</p>
-                    </div>
-                    <div class="card sounds-card" onclick="showModule('sounds')">
-                        <div class="card-icon"><i class="fas fa-volume-up"></i></div>
-                        <h3>Zvuk</h3>
-                        <p>Sound Oasis</p>
-                    </div>
+                <div id="mir-content" class="mir-container">
+                    <!-- Integrated Sounds & Breathing will be rendered here -->
                 </div>
             </div>
         </main>
@@ -124,7 +115,7 @@
     }
     </script>
     <script type="module" src="firebase-core.js?v=14"></script>
-    <script src="app.js?v=23"></script>
+    <script src="app.js?v=24"></script>
 </body>
 
 </html>

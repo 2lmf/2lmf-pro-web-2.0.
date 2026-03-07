@@ -35,6 +35,8 @@ body {
     flex-direction: column;
     position: relative;
     z-index: 10;
+    overflow: hidden;
+    /* Container fixed, children scroll */
 }
 
 /* Background Glow */
@@ -81,6 +83,12 @@ body {
 .view {
     display: none;
     animation: fadeIn 0.3s ease;
+    height: calc(100vh - 120px);
+    /* Account for header and nav */
+    overflow-y: auto;
+    padding-bottom: 40px;
+    -webkit-overflow-scrolling: touch;
+    /* Smooth iOS scroll */
 }
 
 .view.active {
@@ -104,9 +112,9 @@ body {
     justify-content: space-between;
     align-items: center;
     padding: 10px 0;
-    margin-top: -20px;
-    /* Aligned to top */
+    margin-top: -10px;
     margin-bottom: 25px;
+    flex-shrink: 0;
 }
 
 .app-header h1 {
@@ -374,19 +382,18 @@ footer {
 }
 
 .main-play-btn {
-    margin-top: 40px;
+    margin-top: 25px;
     width: 100%;
-    max-width: 250px;
-    padding: 18px;
-    border-radius: 40px;
+    padding: 16px;
+    border-radius: 20px;
     border: none;
-    background: white;
-    color: var(--bg-dark);
+    background: #ff4d6d;
+    color: white;
     font-size: 1rem;
     font-weight: 800;
     letter-spacing: 1px;
     cursor: pointer;
-    box-shadow: 0 10px 30px rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 15px rgba(255, 77, 109, 0.3);
     transition: 0.3s;
 }
 
@@ -948,29 +955,54 @@ footer {
     margin-bottom: 5px;
 }
 
-/* FAB BUTTON v22 */
-.fab-btn {
-    position: fixed;
-    bottom: 100px;
-    right: 30px;
-    width: 56px;
-    height: 56px;
-    background: #ff4d6d;
-    border-radius: 16px;
-    border: none;
-    color: white;
-    font-size: 1.5rem;
+/* FAB & ADD HABIT v24 */
+.add-habit-btn {
+    background: #252529;
+    border: 1px dashed rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    padding: 20px;
+    color: var(--text-dim);
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 4px 15px rgba(255, 77, 109, 0.4);
+    gap: 15px;
     cursor: pointer;
-    z-index: 900;
     transition: 0.3s;
+    font-size: 1.1rem;
+    font-weight: 700;
+    width: 100%;
+    margin-top: 10px;
 }
 
-.fab-btn:active {
-    transform: scale(0.9);
+.add-habit-btn:active {
+    transform: scale(0.98);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* MIR TAB INTEGRATED v24 */
+.mir-section-card {
+    background: #1a1a1e;
+    border-radius: 24px;
+    padding: 25px;
+    margin-bottom: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.mir-section-card h3 {
+    font-size: 1.3rem;
+    margin-bottom: 20px;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.mir-section-card h3 i {
+    color: #ff4d6d;
+}
+
+.modal-content.full-screen {
+    background: var(--bg-dark);
 }
 
 .delete-habit-btn {
