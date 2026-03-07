@@ -73,26 +73,28 @@ class ZenPauza {
                     <div class="visualizer-bar" id="v-bar-3"></div>
                 </div>
 
-                <div class="controls-container glass-card" style="width: 100%; margin-top: 50px;">
-                    <div class="control-group">
-                        <label>Šum vjetra (Povjetarac)</label>
-                        <input type="range" min="0" max="1" step="0.01" value="0" oninput="app.updateVolume('white', this.value)">
-                    </div>
-                    <div class="control-group">
-                        <label>Nježna kiša</label>
-                        <input type="range" min="0" max="1" step="0.01" value="0" oninput="app.updateVolume('pink', this.value)">
-                    </div>
-                    <div class="control-group">
-                        <label>Valovi oceana (Duboki mir)</label>
-                        <input type="range" min="0" max="1" step="0.01" value="0" oninput="app.updateVolume('brown', this.value)">
-                    </div>
-                    <div class="control-group">
-                        <label>Vožnja autom (Engine Drone)</label>
-                        <input type="range" min="0" max="1" step="0.01" value="0" oninput="app.updateVolume('car', this.value)">
-                    </div>
-                    <div class="control-group">
-                        <label>Mir usisavača (Deep Vacuum)</label>
-                        <input type="range" min="0" max="1" step="0.01" value="0" oninput="app.updateVolume('vacuum', this.value)">
+                <div class="controls-container glass-card" style="width: 100%; margin-top: 30px;">
+                    <div class="controls-grid">
+                        <div class="control-group">
+                            <label>Povjetarac</label>
+                            <input type="range" min="0" max="1" step="0.01" value="0" oninput="app.updateVolume('white', this.value)">
+                        </div>
+                        <div class="control-group">
+                            <label>Kiša</label>
+                            <input type="range" min="0" max="1" step="0.01" value="0" oninput="app.updateVolume('pink', this.value)">
+                        </div>
+                        <div class="control-group">
+                            <label>Ocean</label>
+                            <input type="range" min="0" max="1" step="0.01" value="0" oninput="app.updateVolume('brown', this.value)">
+                        </div>
+                        <div class="control-group">
+                            <label>Auto</label>
+                            <input type="range" min="0" max="1" step="0.01" value="0" oninput="app.updateVolume('car', this.value)">
+                        </div>
+                        <div class="control-group">
+                            <label>Sauger</label>
+                            <input type="range" min="0" max="1" step="0.01" value="0" oninput="app.updateVolume('vacuum', this.value)">
+                        </div>
                     </div>
                 </div>
 
@@ -220,15 +222,15 @@ class ZenPauza {
         this.nodes.carGain.gain.value = 0;
 
         this.nodes.carOsc = this.audioCtx.createOscillator();
-        this.nodes.carOsc.type = 'triangle';
-        this.nodes.carOsc.frequency.value = 65; // Deep hum (E1/F1-ish)
+        this.nodes.carOsc.type = 'sine'; // Smoother wave to prevent crackling/clipping
+        this.nodes.carOsc.frequency.value = 65;
 
         this.nodes.carOscGain = this.audioCtx.createGain();
-        this.nodes.carOscGain.gain.value = 0.5;
+        this.nodes.carOscGain.gain.value = 0.3; // Reduced gain for headroom
 
         this.nodes.carFilter = this.audioCtx.createBiquadFilter();
         this.nodes.carFilter.type = 'lowpass';
-        this.nodes.carFilter.frequency.value = 150;
+        this.nodes.carFilter.frequency.value = 120; // Deeper thrum
 
         // Mix brown noise into the car sound for the road/wind feel
         const carRoadBuffer = this.createNoiseBuffer('brown', bufferSize);

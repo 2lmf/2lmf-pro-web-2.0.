@@ -217,24 +217,31 @@ footer {
     display: flex;
     align-items: flex-end;
     gap: 8px;
-    height: 120px;
-    margin-bottom: 30px;
+    height: 80px;
+    margin-bottom: 20px;
 }
 
 .visualizer-bar {
-    width: 60px;
+    width: 40px;
     background: linear-gradient(to top, var(--neon-blue), var(--neon-indigo));
-    border-radius: 30px;
+    border-radius: 20px;
     transition: height 0.5s ease;
     box-shadow: 0 0 20px rgba(79, 172, 254, 0.4);
 }
 
 .controls-container {
-    padding: 30px 20px;
+    padding: 20px 15px;
+}
+
+.controls-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    width: 100%;
 }
 
 .control-group {
-    margin-bottom: 25px;
+    margin-bottom: 5px;
 }
 
 .control-group label {
