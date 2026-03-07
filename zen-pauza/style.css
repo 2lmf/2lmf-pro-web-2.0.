@@ -757,7 +757,7 @@ footer {
     align-items: center;
     justify-content: center;
     border-radius: 50%;
-    font-size: 0.9rem;
+    font-size: 0.75rem;
     color: var(--text-dim);
     border: 1px solid rgba(255, 255, 255, 0.03);
 }
@@ -788,13 +788,13 @@ footer {
 
 .stat-box .val {
     display: block;
-    font-size: 1.5rem;
+    font-size: 1.1rem;
     font-weight: 800;
     color: #00D084;
 }
 
 .stat-box .lbl {
-    font-size: 0.7rem;
+    font-size: 0.6rem;
     color: var(--text-dim);
 }
 
@@ -848,6 +848,56 @@ footer {
     cursor: pointer;
     margin-left: auto;
     padding: 4px;
+}
+
+/* RELAX VIEW (Mir) v20 */
+#view-explore .dashboard {
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+    justify-content: center;
+    align-items: center;
+    margin-top: 40px;
+    height: 40vh;
+}
+
+#view-explore .card {
+    background: #1a1a1e;
+    border: 1px solid var(--card-border);
+    border-radius: 20px;
+    padding: 20px 10px;
+    text-align: center;
+    width: 140px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+#view-explore .card:active {
+    transform: scale(0.95);
+    border-color: var(--neon-blue);
+}
+
+#view-explore .card-icon {
+    font-size: 1.5rem;
+    color: var(--neon-blue);
+    margin: 0 auto 10px;
+    width: 50px;
+    height: 50px;
+    background: rgba(255, 255, 255, 0.03);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+}
+
+#view-explore .card h3 {
+    font-size: 0.9rem;
+    margin-bottom: 4px;
+}
+
+#view-explore .card p {
+    font-size: 0.65rem;
+    color: var(--text-dim);
 }
 
 /* REUSE RANGE STYLE */
