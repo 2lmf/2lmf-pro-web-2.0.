@@ -81,6 +81,65 @@ function setupCRM() {
       sheetDnevnik.setFrozenRows(1);
   }
 
+  // Set Default Settings if not exists
+  if (!SCRIPT_PROP.getProperty("COMPANY_NAME")) SCRIPT_PROP.setProperty("COMPANY_NAME", "TVRTKA D.O.O.");
+  if (!SCRIPT_PROP.getProperty("COMPANY_OIB")) SCRIPT_PROP.setProperty("COMPANY_OIB", "12345678901");
+  if (!SCRIPT_PROP.getProperty("COMPANY_ADDRESS")) SCRIPT_PROP.setProperty("COMPANY_ADDRESS", "Ulica 1, Zagreb");
+
+  // Setup "Putni nalozi" if not exists
+  var sheetPutni = ss.getSheetByName("Putni nalozi");
+  if (!sheetPutni) {
+      sheetPutni = ss.insertSheet("Putni nalozi");
+      sheetPutni.appendRow(["Datum", "Relacija", "Svrha", "Početni km", "Završni km", "Ukupno km", "Iznos (€)", "Vozač", "Vozilo", "Registracija", "Status"]);
+      sheetPutni.getRange("A1:K1").setFontWeight("bold").setBackground("#cfe2f3");
+      sheetPutni.setFrozenRows(1);
+  } else {
+      // Proširi kolone ako nedostaju
+      var headers = sheetPutni.getRange("A1:K1").getValues()[0];
+      if (headers.indexOf("Vozač") === -1) {
+          sheetPutni.getRange("H1:K1").setValues([["Vozač", "Vozilo", "Registracija", "Status"]]);
+          sheetPutni.getRange("H1:K1").setFontWeight("bold").setBackground("#cfe2f3");
+      }
+  }
+
+  // Setup "Loko vožnja" if not exists
+  var sheetLoko = ss.getSheetByName("Loko vožnja");
+  if (!sheetLoko) {
+      sheetLoko = ss.insertSheet("Loko vožnja");
+      sheetLoko.appendRow(["Mjesec", "Ukupno km", "Iznos (€)", "Vozač", "Vozilo", "Registracija", "Status", "JOPPD Oznaka"]);
+      sheetLoko.getRange("A1:H1").setFontWeight("bold").setBackground("#cfe2f3");
+      sheetLoko.setFrozenRows(1);
+  } else {
+      // Proširi kolone ako nedostaju
+      var headers = sheetLoko.getRange("A1:H1").getValues()[0];
+      if (headers.indexOf("Vozač") === -1) {
+          sheetLoko.getRange("D1:H1").setValues([["Vozač", "Vozilo", "Registracija", "Status", "JOPPD Oznaka"]]);
+          sheetLoko.getRange("D1:H1").setFontWeight("bold").setBackground("#cfe2f3");
+      }
+  }
+
+  // Set Folder IDs for AI OCR
+  SCRIPT_PROP.setProperty("FOLDER_IN_ID", "1kpBzqrSHVWTaBi8kKIUXknKhRtoUEy5g");
+  SCRIPT_PROP.setProperty("FOLDER_OUT_ID", "1N7XfCy5s0XnLrCJaBB2QxhJ3gH6eya_a");
+
+  // Setup "Putni nalozi" if not exists
+  var sheetPutni = ss.getSheetByName("Putni nalozi");
+  if (!sheetPutni) {
+      sheetPutni = ss.insertSheet("Putni nalozi");
+      sheetPutni.appendRow(["Datum", "Relacija", "Svrha", "Početni km", "Završni km", "Ukupno km", "Iznos (€)", "Status"]);
+      sheetPutni.getRange("A1:H1").setFontWeight("bold").setBackground("#cfe2f3");
+      sheetPutni.setFrozenRows(1);
+  }
+
+  // Setup "Loko vožnja" if not exists
+  var sheetLoko = ss.getSheetByName("Loko vožnja");
+  if (!sheetLoko) {
+      sheetLoko = ss.insertSheet("Loko vožnja");
+      sheetLoko.appendRow(["Mjesec", "Ukupno km", "Iznos (€)", "Status", "JOPPD Oznaka"]);
+      sheetLoko.getRange("A1:E1").setFontWeight("bold").setBackground("#cfe2f3");
+      sheetLoko.setFrozenRows(1);
+  }
+
   
   console.log("✅ SUSTAV USPJEŠNO POVEZAN SA STAROM TABLICOM!");
   console.log("ID Tablice: " + EXISTING_ID);
@@ -442,6 +501,16 @@ function onOpen() {
       .addItem('🤖 Pokreni AI skeniranje (URA)', 'processNewInvoices')
       .addSeparator()
       .addItem('💳 Plati označenu URA-u (Dnevnik)', 'paySelectedUra')
+      .addSeparator()
+      .addItem('🚗 Obračunaj Putne Naloge (0.50€)', 'calculateTravelTrips')
+      .addItem('📥 Pošalji Putne na AI Skeniranje', 'syncTravelToAiFolder')
+      .addSeparator()
+      .addItem('🏙️ Obračunaj Loko Vožnju (0.50€)', 'calculateLokoTrips')
+      .addItem('📥 Pošalji Loko na AI Skeniranje', 'syncLokoToAiFolder')
+      .addSeparator()
+      .addItem('🤖 Pokreni AI skeniranje (SVI DOKUMENTI)', 'processNewInvoices')
+      .addSeparator()
+      .addItem('⚙️ Postavke Tvrtke', 'showCompanySettingsDialog')
       .addToUi();
 }
 
@@ -502,6 +571,47 @@ function setupMobileTriggers() {
   }
       
   Browser.msgBox("✅ SPREMNO ZA MOBITEL! Kvačice su u 'Generator Ponuda' (H5, H8) i 'CJENIK' (I2).");
+}
+
+function showCompanySettingsDialog() {
+  var ui = SpreadsheetApp.getUi();
+  var name = SCRIPT_PROP.getProperty("COMPANY_NAME") || "";
+  var oib = SCRIPT_PROP.getProperty("COMPANY_OIB") || "";
+  var address = SCRIPT_PROP.getProperty("COMPANY_ADDRESS") || "";
+  
+  var html = `
+    <div style="font-family: sans-serif; padding: 20px;">
+      <h3>Postavke Tvrtke</h3>
+      <p>Ovi podaci će se pojavljivati u zaglavlju putnih naloga.</p>
+      <label>Naziv Tvrtke:</label><br>
+      <input type="text" id="name" value="${name}" style="width:100%; margin-bottom:10px;"><br>
+      <label>OIB:</label><br>
+      <input type="text" id="oib" value="${oib}" style="width:100%; margin-bottom:10px;"><br>
+      <label>Adresa:</label><br>
+      <input type="text" id="address" value="${address}" style="width:100%; margin-bottom:20px;"><br>
+      <button onclick="save()" style="background:#E67E22; color:white; border:none; padding:10px 20px; border-radius:5px; cursor:pointer;">Spremi</button>
+    </div>
+    <script>
+      function save() {
+        var data = {
+          name: document.getElementById('name').value,
+          oib: document.getElementById('oib').value,
+          address: document.getElementById('address').value
+        };
+        google.script.run.withSuccessHandler(() => google.script.host.close()).saveCompanySettings(data);
+      }
+    </script>
+  `;
+  
+  var output = HtmlService.createHtmlOutput(html).setWidth(400).setHeight(350);
+  ui.showModalDialog(output, "Postavke Tvrtke");
+}
+
+function saveCompanySettings(data) {
+  SCRIPT_PROP.setProperty("COMPANY_NAME", data.name);
+  SCRIPT_PROP.setProperty("COMPANY_OIB", data.oib);
+  SCRIPT_PROP.setProperty("COMPANY_ADDRESS", data.address);
+  SpreadsheetApp.getActiveSpreadsheet().toast("Postavke spremljene!", "Sistem");
 }
 
 function handleMobileEdit(e) {
@@ -1310,8 +1420,8 @@ function addItemsFromCjenik() {
 // --- 4. AI INVOICE OCR PROCESSING ---
 
 function processNewInvoices() {
-  var folderInId = "1kpBzqrSHVWTaBi8kKIUXknKhRtoUEy5g";
-  var folderOutId = "1N7XfCy5s0XnLrCJaBB2QxhJ3gH6eya_a";
+  var folderInId = SCRIPT_PROP.getProperty("FOLDER_IN_ID") || "1kpBzqrSHVWTaBi8kKIUXknKhRtoUEy5g";
+  var folderOutId = SCRIPT_PROP.getProperty("FOLDER_OUT_ID") || "1N7XfCy5s0XnLrCJaBB2QxhJ3gH6eya_a";
   
   var folderIn;
   var folderOut;
@@ -1368,13 +1478,10 @@ function processNewInvoices() {
            return;
         }
         var url = "https://api.openai.com/v1/chat/completions";
-        var prompt = "Pročitaj tekst ovog računa i izvuci podatke u striktnom JSON formatu.\n" +
-                     "Ključevi moraju biti: \n" +
-                     "- dobavljac: Ime tvrtke izdavaoca računa (npr. INA d.d.)\n" +
-                     "- iznos: ukupan iznos računa s PDV-om za plaćanje (broj, npr. 120.50, kao float bez razmaka i sa točkom)\n" +
-                     "- datum: datum izdavanja računa (format DD.MM.YYYY)\n" +
-                     "- vrsta_troska: 'Kancelarijski materijal', 'Gorivo', 'Građevinski materijal', 'Marketing', 'Bankarske usluge' ili 'Usluge'\n\n" +
-                     "Tekst računa:\n" + text;
+        var prompt = "Pročitaj tekst ovog računa ili putnog naloga/loko vožnje i izvuci podatke u JSON formatu.\n" +
+                     "- Ako je račun: dobavljac (naziv), iznos (float), datum (DD.MM.YYYY), vrsta_troska ('Gorivo', 'Ured', 'Marketing', itd.)\n" +
+                     "- Ako je Putni nalog/Loko vožnja: dobavljac bi trebao biti 'Karlo (Zaposlenik)', vrsta_troska: 'Putni trošak', iznos: (ukupno za isplatu), opis: (relacija ili mjesec)\n\n" +
+                     "Tekst dokumenta:\n" + text;
                      
         var payload = {
           model: "gpt-4o-mini",
@@ -1528,3 +1635,218 @@ function savePdfToDrive(pdfBlob, folderName) {
     return "";
   }
 }
+
+// --- TRAVEL & JOPPD MODULE ---
+
+function calculateTravelTrips() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName("Putni nalozi");
+  if (!sheet) return;
+  
+  var data = sheet.getDataRange().getValues();
+  for (var i = 1; i < data.length; i++) {
+    var startKm = parseFloat(data[i][3]);
+    var endKm = parseFloat(data[i][4]);
+    
+    if (!isNaN(startKm) && !isNaN(endKm)) {
+      var totalKm = endKm - startKm;
+      var amount = totalKm * 0.50;
+      sheet.getRange(i + 1, 6).setValue(totalKm);
+      sheet.getRange(i + 1, 7).setValue(amount);
+    }
+  }
+  SpreadsheetApp.getUi().alert("✅ Putni troškovi obračunati (0.50 €/km)!");
+}
+
+function showJoppdDialog() {
+  var ui = SpreadsheetApp.getUi();
+  var result = ui.prompt("Generiraj JOPPD", "Unesite mjesec i godinu (npr. 03.2024):", ui.ButtonSet.OK_CANCEL);
+  if (result.getSelectedButton() == ui.Button.OK) {
+    var period = result.getResponseText();
+    var xml = generateJOPPDXml(period);
+    
+    var html = HtmlService.createHtmlOutput("<p>Vaš JOPPD XML je spreman. Kopirajte tekst ispod:</p><textarea style=\"width:100%;height:300px;\">" + xml + "</textarea>")
+               .setWidth(500).setHeight(400);
+    ui.showModalDialog(html, "JOPPD XML Generator");
+  }
+}
+
+function generateJOPPDXml(period) {
+  var today = Utilities.formatDate(new Date(), "GMT+1", "yyyy-MM-dd");
+  var oibFirme = "12345678901"; 
+  
+  var xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
+  xml += "<JOPPD>\n";
+  xml += "  <StranicaA>\n";
+  xml += "    <DatumIzvjesca>" + today + "</DatumIzvjesca>\n";
+  xml += "    <OIB>" + oibFirme + "</OIB>\n";
+  xml += "    <OznakaIzvjesca>" + period.replace(".", "") + "011</OznakaIzvjesca>\n";
+  xml += "  </StranicaA>\n";
+  xml += "  <StranicaB>\n";
+  xml += "    <Podatak>\n";
+  xml += "      <RedniBroj>1</RedniBroj>\n";
+  xml += "      <OznakaPrimitka>0001</OznakaPrimitka>\n";
+  xml += "      <Iznos>1295.45</Iznos>\n";
+  xml += "    </Podatak>\n";
+  xml += "  </StranicaB>\n";
+  xml += "</JOPPD>";
+  
+  return xml;
+}
+function calculateLokoTrips() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName("Loko vožnja");
+  if (!sheet) return;
+  
+  var data = sheet.getDataRange().getValues();
+  for (var i = 1; i < data.length; i++) {
+    var km = parseFloat(data[i][1]); // Kolona B: Ukupno km
+    
+    if (!isNaN(km)) {
+      var amount = km * 0.50;
+      sheet.getRange(i + 1, 3).setValue(amount); // Kolona C: Iznos
+    }
+  }
+  SpreadsheetApp.getUi().alert("✅ Loko vožnja obračunata (0.50 €/km)!");
+}
+
+function syncTravelToAiFolder() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName("Putni nalozi");
+  var folderId = SCRIPT_PROP.getProperty("FOLDER_IN_ID") || "1kpBzqrSHVWTaBi8kKIUXknKhRtoUEy5g";
+  if (!sheet) return;
+  
+  var data = sheet.getDataRange().getValues();
+  var count = 0;
+  for (var i = 1; i < data.length; i++) {
+    var status = data[i][10]; // Kolona K (vratio sam na K u setupu)
+    if (status !== "KNJIŽENO" && status !== "POSLANO NA OCR") {
+      var dateVal = (data[i][0] instanceof Date) ? data[i][0] : new Date(data[i][0]);
+      if (isNaN(dateVal.getTime())) continue; // Skip if invalid date
+      
+      var rowData = {
+        datum: Utilities.formatDate(dateVal, "GMT+1", "dd.MM.yyyy"),
+        relacija: data[i][1],
+        svrha: data[i][2],
+        km: data[i][5],
+        iznos: data[i][6],
+        vozac: data[i][7],
+        vozilo: data[i][8],
+        registracija: data[i][9]
+      };
+      
+      var html = generateProfessionalHtml("PUTNI NALOG", rowData);
+      var blob = HtmlService.createHtmlOutput(html).getAs("application/pdf");
+      blob.setName("Putni_Nalog_" + rowData.relacija.replace(/\s/g,"_") + "_" + rowData.datum + ".pdf");
+      
+      DriveApp.getFolderById(folderId).createFile(blob);
+      sheet.getRange(i + 1, 11).setValue("POSLANO NA OCR");
+      count++;
+    }
+  }
+  if (count > 0) SpreadsheetApp.getUi().alert("✅ " + count + " naloga poslano u 'ULAZ'.");
+  else SpreadsheetApp.getUi().alert("ℹ️ Nema novih naloga.");
+}
+
+function syncLokoToAiFolder() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName("Loko vožnja");
+  var folderId = SCRIPT_PROP.getProperty("FOLDER_IN_ID") || "1kpBzqrSHVWTaBi8kKIUXknKhRtoUEy5g";
+  if (!sheet) return;
+  
+  var data = sheet.getDataRange().getValues();
+  var count = 0;
+  for (var i = 1; i < data.length; i++) {
+    var status = data[i][6]; // Kolona G
+    if (status !== "KNJIŽENO" && status !== "POSLANO NA OCR") {
+      var mjesecRaw = data[i][0].toString();
+      var currentYear = new Date().getFullYear();
+      var mjesecFormat = mjesecRaw.includes("/") || mjesecRaw.includes(".") ? mjesecRaw : mjesecRaw + "/" + currentYear;
+      
+      var rowData = {
+        mjesec: mjesecFormat,
+        km: data[i][1],
+        iznos: data[i][2],
+        vozac: data[i][3],
+        vozilo: data[i][4],
+        registracija: data[i][5]
+      };
+      
+      var html = generateProfessionalHtml("LOKO VOŽNJA", rowData);
+      var blob = HtmlService.createHtmlOutput(html).getAs("application/pdf");
+      blob.setName("Loko_Voznja_" + rowData.mjesec + ".pdf");
+      
+      DriveApp.getFolderById(folderId).createFile(blob);
+      sheet.getRange(i + 1, 7).setValue("POSLANO NA OCR");
+      count++;
+    }
+  }
+  if (count > 0) SpreadsheetApp.getUi().alert("✅ " + count + " mjesečnih evidencija loko vožnje poslano u 'ULAZ'.");
+  else SpreadsheetApp.getUi().alert("ℹ️ Nema novih loko vožnji.");
+}
+
+function generateProfessionalHtml(type, data) {
+  var compName = SCRIPT_PROP.getProperty("COMPANY_NAME") || "TVRTKA D.O.O.";
+  var compOib = SCRIPT_PROP.getProperty("COMPANY_OIB") || "12345678901";
+  var compAddr = SCRIPT_PROP.getProperty("COMPANY_ADDRESS") || "Ulica 1, Zagreb";
+  
+  var today = Utilities.formatDate(new Date(), "GMT+1", "dd.MM.yyyy");
+  
+  return `
+    <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.6; padding: 10px;">
+      <table style="width: 100%; margin-bottom: 40px; border-bottom: 2px solid #E67E22; padding-bottom: 10px;">
+        <tr>
+          <td>
+            <b style="font-size: 18px; color: #E67E22;">${compName}</b><br>
+            OIB: ${compOib}<br>
+            Adresa: ${compAddr}
+          </td>
+          <td style="text-align: right; vertical-align: top;">
+            <span style="font-size: 14px; color: #888;">Datum dokumenta: ${today}</span>
+          </td>
+        </tr>
+      </table>
+      
+      <h1 style="text-align: center; color: #E67E22; margin-bottom: 30px; border: 1px solid #E67E22; padding: 10px;">${type}</h1>
+      
+      <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
+        <tr>
+          <td style="padding: 10px; border: 1px solid #eee; background: #fafafa; width: 30%;"><b>VOZAČ:</b></td>
+          <td style="padding: 10px; border: 1px solid #eee;">${data.vozac || "-"}</td>
+        </tr>
+        <tr>
+          <td style="padding: 10px; border: 1px solid #eee; background: #fafafa;"><b>VOZILO:</b></td>
+          <td style="padding: 10px; border: 1px solid #eee;">${data.vozilo || "-"} (${data.registracija || "-"})</td>
+        </tr>
+      </table>
+
+      <div style="margin-bottom: 30px;">
+        <h3 style="border-bottom: 1px solid #ddd; padding-bottom: 5px;">DETALJI PUTOVANJA:</h3>
+        <p><b>${data.datum ? "Datum:" : "Period/mjesec:"}</b> ${data.datum || data.mjesec || "-"}</p>
+        <p><b>Relacija:</b> ${data.relacija || "Loko vožnja (prema evidenciji)"}</p>
+        <p><b>Svrha:</b> ${data.svrha || "Službeni sastanci / poslovi"}</p>
+        <p><b>Prijeđeni kilometri:</b> ${data.km || "0"} km</p>
+      </div>
+
+      <div style="margin-top: 40px; text-align: right; font-size: 20px;">
+        <b>UKUPNO ZA ISPLATU: <span style="color: #E67E22;">${data.iznos || "0.00"} EUR</span></b>
+      </div>
+
+      <div style="margin-top: 80px;">
+        <table style="width: 100%;">
+          <tr>
+            <td style="width: 50%; text-align: center;">
+              <hr style="width: 150px; border: 0; border-top: 1px solid #000; margin-bottom: 5px;">
+              Potpis vozača
+            </td>
+            <td style="width: 50%; text-align: center;">
+              <hr style="width: 150px; border: 0; border-top: 1px solid #000; margin-bottom: 5px;">
+              Potpis i pečat poslodavca
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  `;
+}
+
