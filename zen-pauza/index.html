@@ -70,7 +70,17 @@
         </footer>
     </div>
 
-    <script src="app.js?v=9"></script>
+    <script type="importmap">
+    {
+      "imports": {
+        "firebase/app": "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js",
+        "firebase/auth": "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js",
+        "firebase/firestore": "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"
+      }
+    }
+    </script>
+    <script type="module" src="firebase-core.js?v=10"></script>
+    <script src="app.js?v=10"></script>
 </body>
 
 </html>

@@ -256,6 +256,7 @@ footer {
 .control-group input[type="range"] {
     width: 100%;
     -webkit-appearance: none;
+    appearance: none;
     background: rgba(255, 255, 255, 0.1);
     height: 6px;
     border-radius: 3px;
@@ -264,6 +265,7 @@ footer {
 
 .control-group input[type="range"]::-webkit-slider-thumb {
     -webkit-appearance: none;
+    appearance: none;
     width: 20px;
     height: 20px;
     background: white;
@@ -402,4 +404,135 @@ footer {
     transform: scale(1);
     box-shadow: 0 0 30px rgba(79, 172, 254, 0.2);
     opacity: 0.8;
+}
+
+/* HABIT TRACKER */
+.habits-ui {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.streak-container {
+    margin-bottom: 30px;
+}
+
+.streak-badge {
+    background: var(--card-bg);
+    border: 1px solid var(--neon-blue);
+    padding: 15px 30px;
+    border-radius: 40px;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 0 20px rgba(79, 172, 254, 0.2);
+}
+
+.streak-number {
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: white;
+}
+
+.streak-label {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.habit-main-btn {
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    border: none;
+    background: white;
+    color: var(--bg-dark);
+    font-size: 1.1rem;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 10px 40px rgba(255, 255, 255, 0.15);
+    transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    margin-bottom: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.habit-main-btn.checked {
+    background: var(--neon-blue);
+    color: white;
+    box-shadow: 0 0 40px rgba(79, 172, 254, 0.4);
+}
+
+.habit-main-btn i {
+    font-size: 2.5rem;
+}
+
+.days-row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 30px;
+}
+
+.day-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.day-circle {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--card-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    color: var(--text-dim);
+}
+
+.day-circle.active {
+    background: var(--neon-blue);
+    color: white;
+    border-color: var(--neon-blue);
+}
+
+.day-label {
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+}
+
+.cloud-status {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.sync-btn {
+    background: none;
+    border: 1px solid var(--card-border);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 15px;
+    font-size: 0.75rem;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+/* Standard property for range */
+input[type="range"] {
+    appearance: none;
+    -webkit-appearance: none;
 }
