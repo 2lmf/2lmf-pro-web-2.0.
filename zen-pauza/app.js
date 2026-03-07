@@ -17,9 +17,9 @@ class ZenPauza {
                 breathing: [], sounds: [], meditation: []
             },
             habitMetadata: JSON.parse(localStorage.getItem('zp_habit_meta_v12')) || {
-                breathing: { name: 'Duboko Disanje', icon: 'fa-lungs', color: '#4FACFE' },
-                sounds: { name: 'Mirni Zvukovi', icon: 'fa-water', color: '#00D084' },
-                meditation: { name: 'Jutarnja Meditacija', icon: 'fa-om', color: '#ff4d6d' }
+                breathing: { name: 'Duboko Disanje', icon: 'fa-lungs', color: '#4FACFE', goal: 7 },
+                sounds: { name: 'Mirni Zvukovi', icon: 'fa-water', color: '#00D084', goal: 7 },
+                meditation: { name: 'Jutarnja Meditacija', icon: 'fa-om', color: '#ff4d6d', goal: 7 }
             }
         };
 
@@ -58,6 +58,7 @@ class ZenPauza {
     // --- NAVIGATION ---
 
     switchView(viewId) {
+        this.closeHabitModal();
         this.state.activeView = viewId;
         document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
@@ -599,21 +600,32 @@ class ZenPauza {
     renderHabitDetail(id) {
         const container = document.getElementById('modal-habit-content');
         const data = this.state.habits[id] || [];
+        const meta = this.state.habitMetadata[id] || { goal: 7 };
         const streak = this.getStreak(id);
         const rate = this.calculateStats(id).completionRate;
+        const goal = meta.goal || 7;
 
         container.innerHTML = `
             <div class="modal-section">
-                <h4>Statistika</h4>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                    <h4>Cilj i Statistika</h4>
+                    <button class="edit-goal-btn" onclick="app.editHabit('${id}')" style="background:none; border:1px solid rgba(255,255,255,0.2); color:white; padding:5px 10px; border-radius:8px; font-size:0.7rem;">
+                        <i class="fas fa-edit"></i> UREDI CILJ
+                    </button>
+                </div>
                 <div class="stats-grid">
                     <div class="stat-box">
                         <span class="val">${streak} dana</span>
                         <span class="lbl">Trenutni Streak</span>
                     </div>
                     <div class="stat-box">
-                        <span class="val">${rate}%</span>
-                        <span class="lbl">Mjesečni prosjek</span>
+                        <span class="val">${goal}x tjedno</span>
+                        <span class="lbl">Tvoj Cilj</span>
                     </div>
+                </div>
+                <div style="margin-top:15px; background:rgba(255,255,255,0.03); padding:15px; border-radius:12px; text-align:center;">
+                    <span class="val" style="display:block; font-size:1.5rem; font-weight:800; color:#00D084;">${rate}%</span>
+                    <span class="lbl" style="font-size:0.7rem; color:var(--text-dim);">Mjesečni prosjek</span>
                 </div>
             </div>
 
@@ -671,11 +683,22 @@ class ZenPauza {
         }
     }
 
+    editHabit(id) {
+        const meta = this.state.habitMetadata[id];
+        const newGoal = prompt(`Koliko puta tjedno želiš raditi "${meta.name}"? (1-7)`, meta.goal || 7);
+        if (newGoal && !isNaN(newGoal)) {
+            const goalNum = Math.min(Math.max(parseInt(newGoal), 1), 7);
+            this.state.habitMetadata[id].goal = goalNum;
+            this.saveAndSync();
+            this.renderHabitDetail(id);
+        }
+    }
+
     addCustomHabit() {
         const name = prompt("Unesite naziv nove navike:");
         if (name && name.trim()) {
             const id = 'custom_' + Date.now();
-            this.state.habitMetadata[id] = { name: name.trim(), icon: 'fa-star', color: '#ffcc00' };
+            this.state.habitMetadata[id] = { name: name.trim(), icon: 'fa-star', color: '#ffcc00', goal: 7 };
             this.state.habits[id] = [];
             this.saveAndSync();
             this.refreshUI();
