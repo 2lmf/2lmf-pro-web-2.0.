@@ -492,21 +492,22 @@ footer {
     color: var(--neon-blue);
 }
 
-/* MINI CALENDAR GRID (v12 Ultra-compact) */
+/* MINI CALENDAR GRID (v13 Balanced) */
 .calendar-grid {
     display: grid;
-    grid-template-columns: repeat(15, 1fr);
-    gap: 2px;
-    margin-top: 4px;
-    padding-top: 6px;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 4px;
+    margin-top: 6px;
+    padding-top: 8px;
     border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .cal-dot {
     width: 100%;
     aspect-ratio: 1;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 1px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 3px;
+    min-width: 8px;
     position: relative;
 }
 

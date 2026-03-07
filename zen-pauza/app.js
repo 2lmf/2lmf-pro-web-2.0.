@@ -483,7 +483,7 @@ class ZenPauza {
 
     renderHabitsModule(container) {
         const user = window.ZP_Firebase ? window.ZP_Firebase.user : null;
-        const habits = Object.keys(this.habitMetadata);
+        const habits = Object.keys(this.state.habitMetadata);
 
         // Summary Stats
         const totalCompletions = habits.reduce((acc, id) => acc + (this.state.habits[id] ? this.state.habits[id].length : 0), 0);
