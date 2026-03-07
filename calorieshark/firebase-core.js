@@ -62,6 +62,7 @@ window.CS_Firebase = {
             }, { merge: true });
         } catch (error) {
             console.error("Firebase Profile Sync Error:", error);
+            throw error; // Prosljeđujemo grešku dalje
         }
     },
 
@@ -73,6 +74,7 @@ window.CS_Firebase = {
             });
         } catch (error) {
             console.error("Firebase Daily Sync Error:", error);
+            throw error; // Prosljeđujemo grešku dalje
         }
     },
 
