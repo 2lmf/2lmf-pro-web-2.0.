@@ -408,22 +408,20 @@ window.onFirebaseStateChange = (user) => {
 };
 
 async function triggerCloudSync(user) {
-    if (!user || !window.CS_Firebase) return;
+    if (!user || !window.CS_Firebase || !userProfile.username) return;
 
     console.log("App: Triggering Cloud Sync for", user.email);
-    alert("Započinjem Cloud Sync korak 1/2...");
+    const docId = userProfile.username;
 
     try {
         // 1. Sync Profile
-        alert("Provjeravam profil u oblaku...");
-        const remoteProfile = await window.CS_Firebase.loadUserData(user.uid);
+        const remoteProfile = await window.CS_Firebase.loadUserData(docId);
 
         if (!remoteProfile) {
-            alert("Profil ne postoji u oblaku. Šaljem lokalni profil...");
-            await window.CS_Firebase.syncProfile(user.uid, userProfile);
-            alert("Profil uspješno poslan!");
+            console.log("App: No remote profile, migrating local to cloud...");
+            await window.CS_Firebase.syncProfile(docId, userProfile);
         } else {
-            alert("Profil postoji u oblaku. Usklađujem...");
+            console.log("App: Remote profile found, syncing...");
             userProfile = { ...userProfile, ...remoteProfile };
             saveProfile();
             applyLanguage(userProfile.lang);
@@ -431,23 +429,20 @@ async function triggerCloudSync(user) {
         }
 
         // 2. Sync Daily Data
-        alert("Provjeravam današnji dnevnik (korak 2/2)...");
         const today = getTodayKey();
-        const remoteDaily = await window.CS_Firebase.loadDailyData(user.uid, today);
+        const remoteDaily = await window.CS_Firebase.loadDailyData(docId, today);
 
         if (!remoteDaily) {
-            alert("Dnevnik ne postoji u oblaku. Šaljem lokalne podatke...");
-            await window.CS_Firebase.syncDailyData(user.uid, today, dailyData);
-            alert("ČESTITAM: Podaci su službeno u Cloudu! Provjeri konzolu.");
+            console.log("App: No remote daily data for today, migrating local...");
+            await window.CS_Firebase.syncDailyData(docId, today, dailyData);
         } else {
-            alert("Dnevnik postoji u oblaku. Povlačim podatke...");
+            console.log("App: Remote daily data found, merging...");
             dailyData = remoteDaily;
             saveDailyData();
             updateDashboardUI();
         }
     } catch (e) {
         console.error("Cloud Sync Error:", e);
-        alert("GRESKA (Sync): " + e.message);
     }
 }
 
