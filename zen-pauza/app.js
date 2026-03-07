@@ -86,6 +86,14 @@ class ZenPauza {
                         <label>Valovi oceana (Duboki mir)</label>
                         <input type="range" min="0" max="1" step="0.01" value="0" oninput="app.updateVolume('brown', this.value)">
                     </div>
+                    <div class="control-group">
+                        <label>Vožnja autom (Engine Drone)</label>
+                        <input type="range" min="0" max="1" step="0.01" value="0" oninput="app.updateVolume('car', this.value)">
+                    </div>
+                    <div class="control-group">
+                        <label>Mir usisavača (Deep Vacuum)</label>
+                        <input type="range" min="0" max="1" step="0.01" value="0" oninput="app.updateVolume('vacuum', this.value)">
+                    </div>
                 </div>
 
                 <button class="main-play-btn" id="play-btn" onclick="app.toggleSound()">POKRENI MIR</button>
@@ -205,6 +213,49 @@ class ZenPauza {
 
         this.nodes.brown.connect(this.nodes.brownModGain).connect(this.nodes.brownGain).connect(this.nodes.master);
         this.nodes.brown.start();
+
+        // --- 4. ENGINE DRONE (Auto) ---
+        // Uses Brown noise + a deep oscillator for the engine thrum
+        this.nodes.carGain = this.audioCtx.createGain();
+        this.nodes.carGain.gain.value = 0;
+
+        this.nodes.carOsc = this.audioCtx.createOscillator();
+        this.nodes.carOsc.type = 'triangle';
+        this.nodes.carOsc.frequency.value = 65; // Deep hum (E1/F1-ish)
+
+        this.nodes.carOscGain = this.audioCtx.createGain();
+        this.nodes.carOscGain.gain.value = 0.5;
+
+        this.nodes.carFilter = this.audioCtx.createBiquadFilter();
+        this.nodes.carFilter.type = 'lowpass';
+        this.nodes.carFilter.frequency.value = 150;
+
+        // Mix brown noise into the car sound for the road/wind feel
+        const carRoadBuffer = this.createNoiseBuffer('brown', bufferSize);
+        this.nodes.carRoad = this.createSource(carRoadBuffer);
+
+        this.nodes.carOsc.connect(this.nodes.carOscGain).connect(this.nodes.carFilter);
+        this.nodes.carRoad.connect(this.nodes.carFilter);
+        this.nodes.carFilter.connect(this.nodes.carGain).connect(this.nodes.master);
+
+        this.nodes.carOsc.start();
+        this.nodes.carRoad.start();
+
+        // --- 5. DEEP VACUUM (Sauger) ---
+        // Specifically filtered Pink noise for that "industrial" white noise
+        this.nodes.vacuumGain = this.audioCtx.createGain();
+        this.nodes.vacuumGain.gain.value = 0;
+
+        this.nodes.vacuumFilter = this.audioCtx.createBiquadFilter();
+        this.nodes.vacuumFilter.type = 'bandpass';
+        this.nodes.vacuumFilter.frequency.value = 450;
+        this.nodes.vacuumFilter.Q.value = 1.0;
+
+        const vacuumBuffer = this.createNoiseBuffer('pink', bufferSize);
+        this.nodes.vacuumNoise = this.createSource(vacuumBuffer);
+
+        this.nodes.vacuumNoise.connect(this.nodes.vacuumFilter).connect(this.nodes.vacuumGain).connect(this.nodes.master);
+        this.nodes.vacuumNoise.start();
     }
 
     createNoiseBuffer(type, size) {
