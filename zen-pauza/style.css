@@ -417,12 +417,14 @@ footer {
 .habit-card {
     background: var(--card-bg);
     border: 1px solid var(--card-border);
-    border-radius: 16px;
-    padding: 15px;
+    border-radius: 12px;
+    padding: 10px 12px;
     text-align: left;
     position: relative;
-    overflow: hidden;
-    transition: transform 0.3s ease;
+    transition: transform 0.2s;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
 .habit-card:hover {
@@ -433,35 +435,35 @@ footer {
 .habit-header {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 15px;
+    align-items: center;
 }
 
 .habit-info h3 {
     margin: 0;
-    font-size: 1.2rem;
+    font-size: 1rem;
     color: white;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .habit-info p {
-    margin: 4px 0 0;
-    font-size: 0.8rem;
-    color: var(--text-dim);
+    display: none;
+    /* Hide description on compact mobile view */
 }
 
 .habit-action-btn {
-    width: 42px;
-    height: 42px;
-    border-radius: 12px;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
     border: none;
     background: rgba(255, 255, 255, 0.05);
     color: var(--text-dim);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.2rem;
+    font-size: 1rem;
     cursor: pointer;
-    transition: 0.3s;
 }
 
 .habit-card.completed .habit-action-btn {
@@ -472,32 +474,31 @@ footer {
 
 .habit-stats-row {
     display: flex;
-    gap: 15px;
-    margin-bottom: 15px;
+    gap: 10px;
 }
 
 .stat-pill {
     background: rgba(255, 255, 255, 0.03);
-    padding: 6px 12px;
-    border-radius: 12px;
-    font-size: 0.75rem;
+    padding: 3px 8px;
+    border-radius: 8px;
+    font-size: 0.7rem;
     display: flex;
     align-items: center;
-    gap: 6px;
-    color: var(--text-main);
+    gap: 4px;
+    color: var(--text-dim);
 }
 
 .stat-pill i {
     color: var(--neon-blue);
 }
 
-/* MINI CALENDAR GRID (Heat-map style) */
+/* MINI CALENDAR GRID (v12 Ultra-compact) */
 .calendar-grid {
     display: grid;
-    grid-template-columns: repeat(11, 1fr);
-    gap: 3px;
-    margin-top: 8px;
-    padding-top: 8px;
+    grid-template-columns: repeat(15, 1fr);
+    gap: 2px;
+    margin-top: 4px;
+    padding-top: 6px;
     border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
@@ -505,7 +506,7 @@ footer {
     width: 100%;
     aspect-ratio: 1;
     background: rgba(255, 255, 255, 0.05);
-    border-radius: 2px;
+    border-radius: 1px;
     position: relative;
 }
 
@@ -530,40 +531,35 @@ footer {
     margin-bottom: 5px;
 }
 
-.summary-stat {
-    text-align: center;
-}
-
-.summary-val {
-    display: block;
-    font-size: 1.8rem;
-    font-weight: 900;
-    color: white;
-}
-
-.summary-lbl {
-    font-size: 0.7rem;
-    color: var(--text-dim);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.cloud-info-v11 {
-    font-size: 0.7rem;
+.add-habit-btn {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px dashed var(--card-border);
+    border-radius: 12px;
+    padding: 12px;
     color: var(--text-dim);
     display: flex;
-    justify-content: center;
     align-items: center;
-    gap: 8px;
-    margin-top: 10px;
+    justify-content: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: 0.3s;
+    font-size: 0.9rem;
 }
 
-.sync-pill {
-    background: rgba(0, 208, 132, 0.1);
-    color: #00D084;
-    padding: 2px 8px;
-    border-radius: 10px;
-    font-weight: 700;
+.add-habit-btn:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: white;
+    border-color: var(--neon-blue);
+}
+
+.delete-habit-btn {
+    background: none;
+    border: none;
+    color: rgba(255, 50, 50, 0.4);
+    font-size: 0.8rem;
+    cursor: pointer;
+    margin-left: auto;
+    padding: 4px;
 }
 
 /* REUSE RANGE STYLE */

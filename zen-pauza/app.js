@@ -26,13 +26,12 @@ class ZenPauza {
                 breathing: [],
                 sounds: [],
                 meditation: []
+            },
+            habitMetadata: JSON.parse(localStorage.getItem('zp_habit_meta_v12')) || {
+                breathing: { name: 'Duboko Disanje', icon: 'fa-lungs', desc: 'Završi vježbu disanja' },
+                sounds: { name: 'Mirni Zvukovi', icon: 'fa-water', desc: 'Slušaj zvukove barem 5 min' },
+                meditation: { name: 'Jutarnja Meditacija', icon: 'fa-om', desc: 'Dnevna doza tišine' }
             }
-        };
-
-        this.habitMetadata = {
-            breathing: { name: 'Duboko Disanje', icon: 'fa-lungs', desc: 'Završi vježbu disanja' },
-            sounds: { name: 'Mirni Zvukovi', icon: 'fa-water', desc: 'Slušaj zvukove barem 5 min' },
-            meditation: { name: 'Jutarnja Meditacija', icon: 'fa-om', desc: 'Dnevna doza tišine' }
         };
 
         this.breathingInterval = null;
@@ -488,69 +487,84 @@ class ZenPauza {
 
         // Summary Stats
         const totalCompletions = habits.reduce((acc, id) => acc + (this.state.habits[id] ? this.state.habits[id].length : 0), 0);
-        const avgStreak = Math.round(habits.reduce((acc, id) => acc + this.getStreak(id), 0) / habits.length);
+        const avgStreak = Math.round(habits.reduce((acc, id) => acc + this.getStreak(id), 0) / habits.length) || 0;
 
         container.innerHTML = `
             <div class="habits-ui">
-                <h2 style="margin-bottom: 20px;">Habit Tracker</h2>
-
                 <div class="summary-card">
                     <div class="summary-stat">
                         <span class="summary-val">${totalCompletions}</span>
                         <span class="summary-lbl">UKUPNO</span>
                     </div>
                     <div class="summary-stat">
-                        <span class="summary-val">${avgStreak}</span>
-                        <span class="summary-lbl">AVG STREAK</span>
-                    </div>
-                    <div class="summary-stat">
-                        <span class="summary-val">🦈</span>
-                        <span class="summary-lbl">ZEN STATUS</span>
+                        <span class="summary-val">${avgStreak}d</span>
+                        <span class="summary-lbl">PROSJEK</span>
                     </div>
                 </div>
 
                 ${habits.map(id => this.renderHabitCard(id)).join('')}
 
+                <button class="add-habit-btn" onclick="app.addCustomHabit()">
+                    <i class="fas fa-plus"></i> DODAJ NOVU NAVIKU
+                </button>
+
                 <div class="cloud-info-v11">
-                    <i class="fas ${user ? 'fa-check-circle' : 'fa-exclamation-triangle'}"></i>
-                    ${user ? `<span class="sync-pill">CLOUD SYNC AKTIVAN</span> <span>${user.email}</span>` :
-                `<span>Podaci su samo lokalno.</span> <button class="sync-btn" onclick="app.loginFirebase()">PRIJAVI SE</button>`}
+                    <i class="fas ${user ? 'fa-cloud' : 'fa-cloud-slash'}"></i>
+                    ${user ? `<span>Sinkronizirano (${user.email})</span>` :
+                `<button class="sync-btn" onclick="app.loginFirebase()">OMOGUĆI CLOUD</button>`}
                 </div>
             </div>
         `;
     }
 
     renderHabitCard(id) {
-        const meta = this.habitMetadata[id];
+        const meta = this.state.habitMetadata[id] || { name: id, icon: 'fa-star', desc: '' };
         const data = this.state.habits[id] || [];
         const today = new Date().toISOString().split('T')[0];
         const completedToday = data.includes(today);
-        const stats = this.calculateStats(id);
         const streak = this.getStreak(id);
+        const isCustom = !['breathing', 'sounds', 'meditation'].includes(id);
 
         return `
             <div class="habit-card ${completedToday ? 'completed' : ''}">
                 <div class="habit-header">
                     <div class="habit-info">
                         <h3><i class="fas ${meta.icon}"></i> ${meta.name}</h3>
-                        <p>${meta.desc}</p>
                     </div>
-                    <button class="habit-action-btn" onclick="app.toggleHabit('${id}')">
-                        <i class="fas ${completedToday ? 'fa-check' : 'fa-plus'}"></i>
-                    </button>
-                </div>
-
-                <div class="habit-stats-row">
-                    <div class="stat-pill"><i class="fas fa-fire"></i> ${streak}d streak</div>
-                    <div class="stat-pill"><i class="fas fa-chart-line"></i> ${stats.completionRate}%</div>
-                    <div class="stat-pill"><i class="fas fa-calendar-check"></i> ${data.length} dana</div>
+                    <div class="habit-stats-row">
+                        <div class="stat-pill"><i class="fas fa-fire"></i> ${streak}d</div>
+                        <button class="habit-action-btn" onclick="app.toggleHabit('${id}')">
+                            <i class="fas ${completedToday ? 'fa-check' : 'fa-plus'}"></i>
+                        </button>
+                    </div>
                 </div>
 
                 <div class="calendar-grid">
                     ${this.generateCalendarDots(id)}
                 </div>
+                ${isCustom ? `<button class="delete-habit-btn" onclick="app.deleteHabit('${id}')">briši</button>` : ''}
             </div>
         `;
+    }
+
+    addCustomHabit() {
+        const name = prompt("Unesite naziv nove navike:");
+        if (name && name.trim()) {
+            const id = 'custom_' + Date.now();
+            this.state.habitMetadata[id] = { name: name.trim(), icon: 'fa-star', desc: '' };
+            this.state.habits[id] = [];
+            this.saveAndSync();
+            this.renderHabitsModule(document.getElementById('module-content'));
+        }
+    }
+
+    deleteHabit(id) {
+        if (confirm("Sigurno želiš obrisati ovu naviku?")) {
+            delete this.state.habits[id];
+            delete this.state.habitMetadata[id];
+            this.saveAndSync();
+            this.renderHabitsModule(document.getElementById('module-content'));
+        }
     }
 
     generateCalendarDots(id) {
@@ -558,8 +572,8 @@ class ZenPauza {
         const today = new Date();
         const dots = [];
 
-        // Show last 31 days
-        for (let i = 30; i >= 0; i--) {
+        // Show last 30 days
+        for (let i = 29; i >= 0; i--) {
             const d = new Date();
             d.setDate(today.getDate() - i);
             const dateStr = d.toISOString().split('T')[0];
@@ -595,6 +609,7 @@ class ZenPauza {
 
     saveAndSync() {
         localStorage.setItem('zp_habits_v11', JSON.stringify(this.state.habits));
+        localStorage.setItem('zp_habit_meta_v12', JSON.stringify(this.state.habitMetadata));
         this.syncHabitsToCloud();
     }
 
@@ -649,22 +664,35 @@ class ZenPauza {
     async syncHabitsToCloud() {
         const user = window.ZP_Firebase ? window.ZP_Firebase.user : null;
         if (user) {
-            await window.ZP_Firebase.saveHabits(user.uid, this.state.habits);
+            await window.ZP_Firebase.saveHabits(user.uid, this.state.habits, this.state.habitMetadata);
         }
     }
 
     async loadHabitsFromCloud() {
         const user = window.ZP_Firebase ? window.ZP_Firebase.user : null;
         if (user) {
-            const cloudHabits = await window.ZP_Firebase.loadHabits(user.uid);
-            if (cloudHabits && typeof cloudHabits === 'object') {
-                // Proper merge per habit
+            const data = await window.ZP_Firebase.loadHabits(user.uid);
+            if (data && typeof data === 'object') {
+                const cloudHabits = data.habits || {};
+                const cloudMeta = data.metadata || {};
+
+                // Merge habits
                 Object.keys(cloudHabits).forEach(id => {
                     const local = this.state.habits[id] || [];
                     const cloud = cloudHabits[id] || [];
                     this.state.habits[id] = [...new Set([...local, ...cloud])];
                 });
+
+                // Merge metadata (for custom habits)
+                Object.keys(cloudMeta).forEach(id => {
+                    if (!this.state.habitMetadata[id]) {
+                        this.state.habitMetadata[id] = cloudMeta[id];
+                    }
+                });
+
                 localStorage.setItem('zp_habits_v11', JSON.stringify(this.state.habits));
+                localStorage.setItem('zp_habit_meta_v12', JSON.stringify(this.state.habitMetadata));
+
                 if (this.state.activeModule === 'habits') {
                     const content = document.getElementById('module-content');
                     if (content) this.renderHabitsModule(content);

@@ -32,26 +32,29 @@ window.ZP_Firebase = {
 
     logout: () => signOut(auth),
 
-    saveHabits: async (uid, habits) => {
+    saveHabits: async (uid, habits, metadata) => {
         try {
-            await setDoc(doc(db, "zenpauza_users", uid), {
+            await setDoc(doc(db, "zen_pauza", uid), {
                 habits: habits,
-                lastSync: new Date().toISOString()
+                metadata: metadata,
+                updatedAt: new Date().toISOString()
             }, { merge: true });
-        } catch (error) {
-            console.error("Firebase Save Habits Error:", error);
+            console.log("Firebase: Habits & Metadata saved");
+        } catch (e) {
+            console.error("Firebase: Save error", e);
         }
     },
 
     loadHabits: async (uid) => {
         try {
-            const docRef = doc(db, "zenpauza_users", uid);
-            const docSnap = await getDoc(docRef);
-            return docSnap.exists() ? docSnap.data().habits : null;
-        } catch (error) {
-            console.error("Firebase Load Habits Error:", error);
-            return null;
+            const snap = await getDoc(doc(db, "zen_pauza", uid));
+            if (snap.exists()) {
+                return snap.data(); // Returns { habits, metadata }
+            }
+        } catch (e) {
+            console.error("Firebase: Load error", e);
         }
+        return null;
     }
 };
 
