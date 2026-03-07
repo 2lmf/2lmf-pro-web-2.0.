@@ -114,6 +114,15 @@
       }
     }
     </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(reg => console.log('SW registriran:', reg.scope))
+                    .catch(err => console.log('SW greška:', err));
+            });
+        }
+    </script>
     <script type="module" src="firebase-core.js?v=14"></script>
     <script src="app.js?v=25"></script>
 </body>

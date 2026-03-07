@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="hr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="canonical" href="https://2lmf-pro.hr/zenpauza.html" />
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-M46VSK431N"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-M46VSK431N');
+    </script>
+    <title>Industrija mira: Zašto plaćamo za slušanje kiše? | 2LMF PRO</title>
+    <!-- Favicon / App Icon -->
+    <link rel="icon" type="image/png" href="/icons/icon-192.png">
+    <link rel="apple-touch-icon" href="/icons/icon-192.png">
+    <meta name="description"
+        content="Zašto plaćamo 70 € godišnje za zvuk kiše? Otkrijte kako besplatno dobiti premium mir uz Zen Pauza PWA aplikaciju i Web Audio tehnologiju.">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Outfit:wght@300;400;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-dark: #020205;
+            --accent-orange: #E67E22;
+            --accent-cyan: #00F2FF;
+            --line-color: rgba(255, 255, 255, 0.1);
+            --card-bg: rgba(255, 255, 255, 0.03);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: white;
+            font-family: 'Outfit', sans-serif;
+            line-height: 1.6;
+            padding-top: 100px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 40px;
+        }
+
+        /* --- NAVIGATION --- */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 20px 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(2, 2, 5, 0.95);
+            backdrop-filter: blur(30px);
+            z-index: 2000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .nav-logos {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 5px;
+        }
+
+        .logos-row {
+            display: flex;
+            align-items: center;
+            gap: 50px;
+        }
+
+        .branding {
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .lmf-brand {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            color: #eee;
+            font-size: 1.25rem;
+            letter-spacing: 3px;
+        }
+
+        .lmf-brand span {
+            color: var(--accent-orange);
+        }
+
+        .tagline {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.6rem;
+            letter-spacing: 5px;
+            font-weight: 900;
+            text-align: left;
+            width: 100%;
+            padding-left: 2px;
+        }
+
+        .tagline .arch {
+            color: var(--accent-orange);
+        }
+
+        .tagline .code {
+            color: var(--accent-cyan);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            color: var(--accent-orange);
+            text-decoration: none;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            padding: 5px 15px;
+            text-transform: uppercase;
+        }
+
+        .nav-links a.ss-link {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+
+        /* --- ARTICLE STYLE --- */
+        .article-header {
+            padding: 60px 0;
+            border-bottom: 1px solid var(--line-color);
+            margin-bottom: 60px;
+            text-align: center;
+        }
+
+        .label {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--accent-cyan);
+            font-size: 0.8rem;
+            letter-spacing: 4px;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            line-height: 1.2;
+            margin-bottom: 20px;
+        }
+
+        .meta {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.7rem;
+            color: #666;
+            letter-spacing: 2px;
+        }
+
+        .content {
+            font-size: 1.1rem;
+            color: #ccc;
+        }
+
+        .content h2,
+        .content h3 {
+            font-family: 'Orbitron', sans-serif;
+            color: white;
+            margin: 40px 0 20px;
+        }
+
+        .content p {
+            margin-bottom: 25px;
+        }
+
+        .content ul,
+        .content ol {
+            margin-bottom: 25px;
+            padding-left: 20px;
+        }
+
+        .content li {
+            margin-bottom: 10px;
+        }
+
+        .content strong {
+            color: var(--accent-orange);
+        }
+
+        .featured-img {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+            border: 1px solid var(--line-color);
+            margin-bottom: 40px;
+            border-radius: 12px;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--accent-cyan);
+            text-decoration: none;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.8rem;
+            margin-bottom: 40px;
+            transition: gap 0.3s;
+        }
+
+        .back-link:hover {
+            gap: 15px;
+        }
+
+        /* --- TABLE STYLE --- */
+        .comparison-table-wrapper {
+            overflow-x: auto;
+            margin: 40px 0;
+            border: 1px solid var(--line-color);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            min-width: 600px;
+        }
+
+        th,
+        td {
+            padding: 20px;
+            border-bottom: 1px solid var(--line-color);
+        }
+
+        th {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            color: var(--accent-cyan);
+            background: rgba(0, 242, 255, 0.05);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        td:first-child {
+            font-weight: bold;
+            color: white;
+        }
+
+        /* --- MODAL --- */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 3000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(2, 2, 5, 0.9);
+            backdrop-filter: blur(10px);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: var(--card-bg);
+            border: 1px solid var(--accent-cyan);
+            border-radius: 12px;
+            padding: 40px;
+            max-width: 500px;
+            text-align: center;
+            position: relative;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close-btn:hover {
+            color: white;
+        }
+
+        .cta-consult {
+            display: inline-block;
+            background: var(--accent-orange);
+            color: #000;
+            text-decoration: none;
+            padding: 15px 30px;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: bold;
+            border-radius: 5px;
+            margin-top: 20px;
+            text-transform: uppercase;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .cta-consult:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 20px rgba(230, 126, 34, 0.3);
+            color: #fff;
+        }
+
+        .btn-pwa {
+            background: var(--bg-dark);
+            color: var(--accent-cyan);
+            border: 1px solid var(--accent-cyan);
+            padding: 15px 30px;
+            border-radius: 30px;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1rem;
+        }
+
+        .btn-pwa:hover {
+            background: var(--accent-cyan);
+            color: var(--bg-dark);
+            box-shadow: 0 10px 20px rgba(0, 242, 255, 0.3);
+            transform: scale(1.05);
+        }
+
+        /* --- FOOTER --- */
+        .seo-footer {
+            background: #000;
+            padding: 40px 0;
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            margin-top: 100px;
+        }
+
+        .seo-footer .hashtags {
+            font-size: 0.65rem;
+            font-style: italic;
+            opacity: 0.3;
+            line-height: 1.8;
+            color: #aaa;
+            letter-spacing: 1px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 40px;
+        }
+
+        .copyright {
+            background: #000;
+            color: #fff;
+            text-align: center;
+            padding: 30px 0;
+            font-weight: 900;
+            font-family: 'Orbitron';
+            font-size: 0.75rem;
+            letter-spacing: 3px;
+            border-top: 1px solid rgba(255, 255, 255, 0.03);
+        }
+    </style>
+</head>
+
+<body>
+    <nav>
+        <div class="nav-logos">
+            <div class="logos-row">
+                <a href="index.html" class="branding">
+                    <div class="lmf-brand">2LMF <span>PRO</span></div>
+                </a>
+            </div>
+            <div class="tagline"><span class="arch">ARCHITECTURAL</span> <span class="code">CODE</span></div>
+        </div>
+        <div class="nav-links">
+            <a href="index.html">POČETNA</a>
+            <a href="blog_hub.html">ZNANJE</a>
+            <a href="digitalna_dominacija.html" class="ss-link"><span style="color:var(--accent-cyan)">SHARP</span><span
+                    style="color:var(--accent-orange)">SHARK</span></a>
+            <a href="index.html#kontakt">KONTAKT</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <a href="blog_hub.html" class="back-link"><i class="fas fa-arrow-left"></i> POVRATAK NA HUB</a>
+
+        <header class="article-header">
+            <span class="label">TEHNOLOGIJA MIRA & FOKUSA</span>
+            <h1>Industrija mira: Zašto plaćamo 70 € godišnje za slušanje kiše?</h1>
+            <div class="meta">OBJAVLJENO: 7. OŽUJKA 2026. | AUTOR: SHARPSHARK DIGITAL</div>
+        </header>
+
+        <div class="content">
+            <img src="https://images.unsplash.com/photo-1515023115689-1db9b3a4a180?auto=format&fit=crop&w=1000&q=80&fm=webp"
+                alt="Meditation and Peace" class="featured-img">
+
+            <p style="font-size: 1.2rem; font-weight: 300; color: #fff;">Jeste li ikada pokušali meditirati, učiti ili
+                jednostavno zaspati uz neku od popularnih aplikacija za opuštanje? Otvorite aplikaciju, namjestite zvuk
+                kiše, zatvorite oči i taman kad krenete tonuti u san... <strong>BAM!</strong> Glasna reklama za mobilnu
+                igricu. Želite li maknuti reklame i slušati zvuk duže od 2 sata? Nema problema, to će vas koštati 6,99 €
+                mjesečno.
+            </p>
+
+            <p style="font-size: 1.2rem; font-weight: 300; color: #fff;">Danas plaćamo <strong>"porez na mir"</strong>.
+                Aplikacije za fokus, vježbe disanja i praćenje navika (habit trackeri) postale su luksuz. Zašto nam
+                naplaćuju pristup nečemu tako jednostavnom kao što je duboko disanje ili generiranje bijelog šuma? I još
+                važnije – što oni zapravo rade s podacima o vašim navikama?
+            </p>
+
+            <hr style="border: none; border-top: 1px solid var(--line-color); margin: 40px 0;">
+
+            <h3>Problem: Rascjepkanost i skriveni troškovi</h3>
+            <p>Da biste danas imali "idealan" set alata za produktivnost, mobitel vam izgleda ovako:</p>
+            <ul>
+                <li>Jedna aplikacija za bijeli šum (koja guta bateriju jer skida ogromne audio datoteke).</li>
+                <li>Druga aplikacija za vježbe disanja (koja vas tjera da napravite korisnički račun).</li>
+                <li>Treća aplikacija za praćenje navika (koja vaše podatke sprema na tko-zna-koje servere).</li>
+            </ul>
+            <p>Sve to zajedno košta, usporava mobitel i šalje vam 15 notifikacija dnevno.</p>
+
+            <h3>Usporedba: "Premium" Aplikacije vs. Naša Zen Pauza</h3>
+            <p>Odlučili smo tome stati na kraj. Napravili smo vlastiti alat koji spaja fokus, smirenje i praćenje
+                navika. Zove se <strong>Zen Pauza</strong> i nalazi se upravo ovdje, na ovoj web stranici.</p>
+
+            <div class="comparison-table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Značajka</th>
+                            <th>Klasične "Premium" Aplikacije</th>
+                            <th>Naša "Zen Pauza" 🚀</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Cijena</td>
+                            <td>30 € – 70 € godišnje</td>
+                            <td>100% Besplatno (Zauvijek)</td>
+                        </tr>
+                        <tr>
+                            <td>Kvaliteta zvuka</td>
+                            <td>Komprimirane MP3 snimke (loopovi)</td>
+                            <td>Matematički generiran zvuk u realnom vremenu</td>
+                        </tr>
+                        <tr>
+                            <td>Trajanje timera</td>
+                            <td>Ograničeno (besplatna verzija)</td>
+                            <td>Neograničeno (Slušaj 24/7)</td>
+                        </tr>
+                        <tr>
+                            <td>Internet i Reklame</td>
+                            <td>Ovisno o internetu i oglasima</td>
+                            <td>Radi offline, bez reklama</td>
+                        </tr>
+                        <tr>
+                            <td>Privatnost</td>
+                            <td>Prodaja podataka oglašivačima</td>
+                            <td>Anonimno. Podaci ostaju u tvom pregledniku.</td>
+                        </tr>
+                        <tr>
+                            <td>Instalacija</td>
+                            <td>100+ MB prostora</td>
+                            <td>0 MB. PWA Tehnologija.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>Kako je moguće da je ovo besplatno i tako kvalitetno?</h3>
+            <p>Nema kvake, samo pametnija tehnologija. Velike aplikacije moraju naplaćivati pretplatu jer koriste skupe
+                servere s kojih vam šalju teške audio datoteke. Mi smo <strong>Zen Pauzu</strong> programirali tako da
+                vaš vlastiti mobitel sam generira zvuk pomoću ugrađenog <strong>Web Audio API-ja</strong>.</p>
+            <p>Budući da nemamo troškove skupih servera i ne preprodajemo vaše podatke – nemamo vam razloga naplaćivati
+                pretplatu!</p>
+
+            <h3>Što sve dobivate u aplikaciji?</h3>
+            <ul>
+                <li><strong>Sound Oasis (Fokus):</strong> Neograničeni bijeli, smeđi i ružičasti šum, uz nove "Auto" i
+                    "Vacuum" modove za savršenu zvučnu izolaciju.</li>
+                <li><strong>Vodič za Disanje:</strong> Tri znanstveno dokazane metode (Box, 4-7-8 i Relax) za trenutačno
+                    spuštanje stresa.</li>
+                <li><strong>Privatni Habit Tracker:</strong> Zabilježite svoj dnevni napredak bez straha od gubitka
+                    privatnosti.</li>
+            </ul>
+
+            <p style="text-align: center; margin-top: 40px;">
+                Isprobajte odmah, bez skidanja i bez ostavljanja kreditne kartice.<br>
+                <button onclick="document.getElementById('pwaModal').style.display='flex';" class="btn-pwa"
+                    style="margin-top:20px;">
+                    POKRENI ZEN PAUZU BESPLATNO <i class="fas fa-external-link-alt" style="margin-left: 5px;"></i>
+                </button>
+            </p>
+
+            <hr style="border: none; border-top: 1px solid var(--line-color); margin: 40px 0;">
+
+            <p style="text-align: center; font-size: 0.9rem; color: #888;">
+                Sviđa vam se ovaj alat? Podijelite ga s kolegama koji trebaju malo više mira u radnom danu.
+            </p>
+        </div>
+    </div>
+
+    <!-- PWA Installation Logic Modal -->
+    <div id="pwaModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="document.getElementById('pwaModal').style.display='none';">&times;</span>
+            <i class="fas fa-wind" style="font-size: 3rem; color: var(--accent-cyan); margin-bottom: 20px;"></i>
+            <h3 style="font-family: 'Orbitron', sans-serif; margin-bottom: 15px;">Ulazite u prostor mira</h3>
+            <p style="margin-bottom: 15px; font-size: 0.95rem; color: #ccc;">Aplikacija <strong>Zen Pauza</strong> radi
+                kao PWA. Možete je instalirati na svoj mobitel jednim klikom unutar aplikacije (Gumb 'Dodaj na početni
+                zaslon').</p>
+            <a href="zen-pauza/" class="cta-consult" style="background: var(--accent-cyan); border-radius: 5px;">
+                NASTAVI U APLIKACIJU
+            </a>
+        </div>
+    </div>
+
+    <script>
+        window.onclick = function (event) {
+            var modal = document.getElementById('pwaModal');
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+    </script>
+
+    <footer class="seo-footer">
+        <p class="hashtags">
+            #ventiliranefasade #fasada #webshop #freewebshop #sharpshark #besplatno #besplatniwebshop
+            #3dpanel #2dpanel #panelograda #konfigurator #fiskalizacija #rezervacijasmještaja
+            #channelmanager #webdesign #SEO #konfiguratorograda #calorieshark #pwa #zenpauza
+            #fokus #mir #meditacija #bijelišum #whitenoise #breathingexercises #vježbedisanja
+            #arhitektura #kalkulator #2lmfpro #gradnja2026
+        </p>
+    </footer>
+
+    <div class="copyright">
+        &copy; 2026. 2LMF <span style="color:var(--accent-orange)">PRO</span> j.d.o.o. ZAGREB, HRVATSKA
+    </div>
+</body>
+
+</html>
