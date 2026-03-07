@@ -412,34 +412,36 @@ async function triggerCloudSync(user) {
 
     console.log("App: Triggering Cloud Sync for", user.email);
 
-    // 1. Sync Profile
-    // Ako imamo lokalni profil, a u Cloudu ga nema, šaljemo ga
-    const remoteProfile = await window.CS_Firebase.loadUserData(user.uid);
-    if (!remoteProfile) {
-        console.log("App: No remote profile, migrating local to cloud...");
-        await window.CS_Firebase.syncProfile(user.uid, userProfile);
-    } else {
-        // Ovdje bismo mogli raditi merge, ali za sada uzimamo Remote kao master
-        // ako korisnik već ima profil u oblaku
-        console.log("App: Remote profile found, syncing...");
-        userProfile = { ...userProfile, ...remoteProfile };
-        saveProfile(); // update local
-        applyLanguage(userProfile.lang);
-        updateDashboardUI();
-    }
+    try {
+        // 1. Sync Profile
+        const remoteProfile = await window.CS_Firebase.loadUserData(user.uid);
+        if (!remoteProfile) {
+            console.log("App: No remote profile, migrating local to cloud...");
+            await window.CS_Firebase.syncProfile(user.uid, userProfile);
+        } else {
+            console.log("App: Remote profile found, syncing...");
+            userProfile = { ...userProfile, ...remoteProfile };
+            saveProfile();
+            applyLanguage(userProfile.lang);
+            updateDashboardUI();
+        }
 
-    // 2. Sync Daily Data (Today)
-    const today = getTodayKey();
-    const remoteDaily = await window.CS_Firebase.loadDailyData(user.uid, today);
-    if (!remoteDaily) {
-        console.log("App: No remote daily data for today, migrating local...");
-        await window.CS_Firebase.syncDailyData(user.uid, today, dailyData);
-    } else {
-        console.log("App: Remote daily data found, merging...");
-        // Jednostavni merge: remote pobjeđuje
-        dailyData = remoteDaily;
-        saveDailyData(); // update local
-        updateDashboardUI();
+        // 2. Sync Daily Data
+        const today = getTodayKey();
+        const remoteDaily = await window.CS_Firebase.loadDailyData(user.uid, today);
+        if (!remoteDaily) {
+            console.log("App: No remote daily data for today, migrating local...");
+            await window.CS_Firebase.syncDailyData(user.uid, today, dailyData);
+            alert("Cloud Sync: Uspješno povezano! Podaci su u oblaku.");
+        } else {
+            console.log("App: Remote daily data found, merging...");
+            dailyData = remoteDaily;
+            saveDailyData();
+            updateDashboardUI();
+        }
+    } catch (e) {
+        console.error("Cloud Sync Error:", e);
+        alert("Sync greška: " + e.message);
     }
 }
 
