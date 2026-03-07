@@ -321,9 +321,6 @@ footer {
     border-radius: 50%;
     box-shadow: 0 0 50px rgba(79, 172, 254, 0.3);
     transition: all 0.5s ease-in-out;
-    display: flex;
-    justify-content: center;
-    align-items: center;
     position: relative;
     z-index: 2;
 }
@@ -339,12 +336,18 @@ footer {
 }
 
 .breathing-text {
-    font-size: 1.4rem;
+    position: absolute;
+    top: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 1.6rem;
     font-weight: 800;
     color: white;
     text-transform: uppercase;
-    letter-spacing: 2px;
+    letter-spacing: 3px;
     text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    white-space: nowrap;
+    width: 100%;
 }
 
 .method-selector {

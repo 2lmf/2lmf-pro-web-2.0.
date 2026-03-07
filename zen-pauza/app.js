@@ -89,9 +89,8 @@ class ZenPauza {
                 </div>
 
                 <div class="breathing-container">
-                    <div class="breathing-circle" id="b-circle">
-                        <div class="breathing-text" id="b-text">START</div>
-                    </div>
+                    <div class="breathing-text" id="b-text">START</div>
+                    <div class="breathing-circle" id="b-circle"></div>
                 </div>
 
                 <div class="breathing-timer" id="b-timer">Klikni krug za početak</div>
