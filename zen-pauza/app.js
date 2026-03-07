@@ -22,7 +22,17 @@ class ZenPauza {
                 phase: 'inhale', // inhale, hold, exhale, hold2
                 timer: 0
             },
-            habits: JSON.parse(localStorage.getItem('zp_habits')) || []
+            habits: JSON.parse(localStorage.getItem('zp_habits_v11')) || {
+                breathing: [],
+                sounds: [],
+                meditation: []
+            }
+        };
+
+        this.habitMetadata = {
+            breathing: { name: 'Duboko Disanje', icon: 'fa-lungs', desc: 'Završi vježbu disanja' },
+            sounds: { name: 'Mirni Zvukovi', icon: 'fa-water', desc: 'Slušaj zvukove barem 5 min' },
+            meditation: { name: 'Jutarnja Meditacija', icon: 'fa-om', desc: 'Dnevna doza tišine' }
         };
 
         this.breathingInterval = null;
@@ -122,6 +132,9 @@ class ZenPauza {
         const method = this.breathingMethods[this.state.breathing.method];
         const btn = document.getElementById('b-main-btn');
         if (btn) btn.innerText = "ZAUSTAVI";
+
+        // Auto-track breathing when started (or could be on finish, let's do start for instant feedback)
+        this.trackHabit('breathing');
 
         this.runBreathingCycle();
     }
@@ -262,8 +275,13 @@ class ZenPauza {
             this.audioCtx.suspend();
             document.getElementById('play-btn').innerText = "POKRENI MIR";
             if (this.visualReq) cancelAnimationFrame(this.visualReq);
+            if (this.soundStartTime) {
+                const duration = (Date.now() - this.soundStartTime) / 1000;
+                if (duration > 300) this.trackHabit('sounds'); // 5 minutes
+            }
         } else {
             this.audioCtx.resume();
+            this.soundStartTime = Date.now();
             document.getElementById('play-btn').innerText = "PAUZIRAJ";
 
             // Start generators if not already started
@@ -462,87 +480,145 @@ class ZenPauza {
         }
     }
 
-    // --- HABITS MODULE (DAILY ZEN) ---
+    // --- HABITS MODULE (DAILY ZEN v11) ---
 
     renderHabitsModule(container) {
-        const today = new Date().toISOString().split('T')[0];
-        const isCheckedToday = this.state.habits.includes(today);
-        const streak = this.getStreak();
         const user = window.ZP_Firebase ? window.ZP_Firebase.user : null;
+        const habits = Object.keys(this.habitMetadata);
+
+        // Summary Stats
+        const totalCompletions = habits.reduce((acc, id) => acc + (this.state.habits[id] ? this.state.habits[id].length : 0), 0);
+        const avgStreak = Math.round(habits.reduce((acc, id) => acc + this.getStreak(id), 0) / habits.length);
 
         container.innerHTML = `
             <div class="habits-ui">
-                <h2 style="margin-bottom: 20px;">Dnevni Mir</h2>
-                
-                <div class="streak-container">
-                    <div class="streak-badge">
-                        <span class="streak-number">${streak}</span>
-                        <div class="streak-label">DANA <br>ZAREDOM</div>
-                        <div style="font-size: 2rem;">🦈</div>
+                <h2 style="margin-bottom: 20px;">Habit Tracker</h2>
+
+                <div class="summary-card">
+                    <div class="summary-stat">
+                        <span class="summary-val">${totalCompletions}</span>
+                        <span class="summary-lbl">UKUPNO</span>
+                    </div>
+                    <div class="summary-stat">
+                        <span class="summary-val">${avgStreak}</span>
+                        <span class="summary-lbl">AVG STREAK</span>
+                    </div>
+                    <div class="summary-stat">
+                        <span class="summary-val">🦈</span>
+                        <span class="summary-lbl">ZEN STATUS</span>
                     </div>
                 </div>
 
-                <button class="habit-main-btn ${isCheckedToday ? 'checked' : ''}" 
-                        onclick="app.toggleDailyHabit()">
-                    <i class="fas ${isCheckedToday ? 'fa-check-circle' : 'fa-circle-notch'}"></i>
-                    <span>${isCheckedToday ? 'GOTOVO' : 'OZNAČI DAN'}</span>
-                </button>
+                ${habits.map(id => this.renderHabitCard(id)).join('')}
 
-                <div class="days-row">
-                    ${this.getLast7Days().map(day => `
-                        <div class="day-item">
-                            <div class="day-circle ${this.state.habits.includes(day.date) ? 'active' : ''}">
-                                ${this.state.habits.includes(day.date) ? '<i class="fas fa-check"></i>' : day.label}
-                            </div>
-                            <div class="day-label">${day.short}</div>
-                        </div>
-                    `).join('')}
-                </div>
-
-                <div class="cloud-status">
-                    <i class="fas ${user ? 'fa-cloud-meatball' : 'fa-cloud-slash'}"></i>
-                    <span>${user ? `Sinkronizirano: ${user.email}` : 'Spremljeno samo lokalno'}</span>
-                    ${!user ? `<button class="sync-btn" onclick="app.loginFirebase()">POVEŽI OBLAK</button>` : ''}
+                <div class="cloud-info-v11">
+                    <i class="fas ${user ? 'fa-check-circle' : 'fa-exclamation-triangle'}"></i>
+                    ${user ? `<span class="sync-pill">CLOUD SYNC AKTIVAN</span> <span>${user.email}</span>` :
+                `<span>Podaci su samo lokalno.</span> <button class="sync-btn" onclick="app.loginFirebase()">PRIJAVI SE</button>`}
                 </div>
             </div>
         `;
     }
 
-    toggleDailyHabit() {
+    renderHabitCard(id) {
+        const meta = this.habitMetadata[id];
+        const data = this.state.habits[id] || [];
         const today = new Date().toISOString().split('T')[0];
-        if (this.state.habits.includes(today)) {
-            this.state.habits = this.state.habits.filter(d => d !== today);
+        const completedToday = data.includes(today);
+        const stats = this.calculateStats(id);
+        const streak = this.getStreak(id);
+
+        return `
+            <div class="habit-card ${completedToday ? 'completed' : ''}">
+                <div class="habit-header">
+                    <div class="habit-info">
+                        <h3><i class="fas ${meta.icon}"></i> ${meta.name}</h3>
+                        <p>${meta.desc}</p>
+                    </div>
+                    <button class="habit-action-btn" onclick="app.toggleHabit('${id}')">
+                        <i class="fas ${completedToday ? 'fa-check' : 'fa-plus'}"></i>
+                    </button>
+                </div>
+
+                <div class="habit-stats-row">
+                    <div class="stat-pill"><i class="fas fa-fire"></i> ${streak}d streak</div>
+                    <div class="stat-pill"><i class="fas fa-chart-line"></i> ${stats.completionRate}%</div>
+                    <div class="stat-pill"><i class="fas fa-calendar-check"></i> ${data.length} dana</div>
+                </div>
+
+                <div class="calendar-grid">
+                    ${this.generateCalendarDots(id)}
+                </div>
+            </div>
+        `;
+    }
+
+    generateCalendarDots(id) {
+        const data = this.state.habits[id] || [];
+        const today = new Date();
+        const dots = [];
+
+        // Show last 31 days
+        for (let i = 30; i >= 0; i--) {
+            const d = new Date();
+            d.setDate(today.getDate() - i);
+            const dateStr = d.toISOString().split('T')[0];
+            const active = data.includes(dateStr);
+            const isToday = i === 0;
+            dots.push(`<div class="cal-dot ${active ? 'active' : ''} ${isToday ? 'today' : ''}" title="${dateStr}"></div>`);
+        }
+        return dots.join('');
+    }
+
+    toggleHabit(id) {
+        const today = new Date().toISOString().split('T')[0];
+        if (!this.state.habits[id]) this.state.habits[id] = [];
+
+        if (this.state.habits[id].includes(today)) {
+            this.state.habits[id] = this.state.habits[id].filter(d => d !== today);
         } else {
-            this.state.habits.push(today);
+            this.state.habits[id].push(today);
         }
 
-        localStorage.setItem('zp_habits', JSON.stringify(this.state.habits));
-        this.syncHabitsToCloud();
+        this.saveAndSync();
         this.renderHabitsModule(document.getElementById('module-content'));
     }
 
-    getLast7Days() {
-        const days = [];
-        const names = ['NED', 'PON', 'UTO', 'SRI', 'ČET', 'PET', 'SUB'];
-        for (let i = 6; i >= 0; i--) {
-            const d = new Date();
-            d.setDate(d.getDate() - i);
-            days.push({
-                date: d.toISOString().split('T')[0],
-                short: names[d.getDay()],
-                label: d.getDate()
-            });
+    trackHabit(id) {
+        const today = new Date().toISOString().split('T')[0];
+        if (!this.state.habits[id]) this.state.habits[id] = [];
+        if (!this.state.habits[id].includes(today)) {
+            this.state.habits[id].push(today);
+            this.saveAndSync();
         }
-        return days;
     }
 
-    getStreak() {
-        if (this.state.habits.length === 0) return 0;
-        const sorted = [...this.state.habits].sort().reverse();
+    saveAndSync() {
+        localStorage.setItem('zp_habits_v11', JSON.stringify(this.state.habits));
+        this.syncHabitsToCloud();
+    }
+
+    calculateStats(id) {
+        const data = this.state.habits[id] || [];
+        const totalDays = 31; // Based on our dot view
+        const completions = data.filter(d => {
+            const date = new Date(d);
+            const diff = (new Date() - date) / (1000 * 60 * 60 * 24);
+            return diff <= totalDays;
+        }).length;
+
+        return {
+            completionRate: Math.round((completions / totalDays) * 100)
+        };
+    }
+
+    getStreak(id) {
+        const data = this.state.habits[id] || [];
+        if (data.length === 0) return 0;
+        const sorted = [...data].sort().reverse();
         let streak = 0;
         let checkDate = new Date();
 
-        // If today not done, check if yesterday was done to continue streak
         const todayStr = checkDate.toISOString().split('T')[0];
         if (!sorted.includes(todayStr)) {
             checkDate.setDate(checkDate.getDate() - 1);
@@ -556,6 +632,7 @@ class ZenPauza {
             } else {
                 break;
             }
+            if (streak > 365) break;
         }
         return streak;
     }
@@ -580,11 +657,14 @@ class ZenPauza {
         const user = window.ZP_Firebase ? window.ZP_Firebase.user : null;
         if (user) {
             const cloudHabits = await window.ZP_Firebase.loadHabits(user.uid);
-            if (cloudHabits && Array.isArray(cloudHabits)) {
-                // Merge cloud habits with local ones to avoid data loss
-                const merged = [...new Set([...this.state.habits, ...cloudHabits])];
-                this.state.habits = merged;
-                localStorage.setItem('zp_habits', JSON.stringify(this.state.habits));
+            if (cloudHabits && typeof cloudHabits === 'object') {
+                // Proper merge per habit
+                Object.keys(cloudHabits).forEach(id => {
+                    const local = this.state.habits[id] || [];
+                    const cloud = cloudHabits[id] || [];
+                    this.state.habits[id] = [...new Set([...local, ...cloud])];
+                });
+                localStorage.setItem('zp_habits_v11', JSON.stringify(this.state.habits));
                 if (this.state.activeModule === 'habits') {
                     const content = document.getElementById('module-content');
                     if (content) this.renderHabitsModule(content);
