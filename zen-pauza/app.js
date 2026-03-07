@@ -15,7 +15,20 @@ class ZenPauza {
         this.state = {
             activeModule: null,
             isSoundPlaying: false,
-            volumes: { white: 0, pink: 0, brown: 0 }
+            volumes: { white: 0, pink: 0, brown: 0, car: 0, vacuum: 0 },
+            breathing: {
+                active: false,
+                method: 'box',
+                phase: 'inhale', // inhale, hold, exhale, hold2
+                timer: 0
+            }
+        };
+
+        this.breathingInterval = null;
+        this.breathingMethods = {
+            box: { name: 'Box Breathing', inhale: 4, hold: 4, exhale: 4, hold2: 4 },
+            relax: { name: 'Relax (4-6)', inhale: 4, hold: 0, exhale: 6, hold2: 0 },
+            power: { name: '4-7-8 (Sleep)', inhale: 4, hold: 7, exhale: 8, hold2: 0 }
         };
 
         this.init();
@@ -46,7 +59,7 @@ class ZenPauza {
         if (moduleId === 'focus') {
             this.renderFocusModule(content);
         } else if (moduleId === 'calm') {
-            content.innerHTML = `<h2>Uskoro...</h2><p>Vježbe disanja stižu za trenutak.</p>`;
+            this.renderCalmModule(content);
         } else if (moduleId === 'habits') {
             content.innerHTML = `<h2>Uskoro...</h2><p>Habit tracker stiže za trenutak.</p>`;
         }
@@ -57,7 +70,128 @@ class ZenPauza {
         overlay.style.display = 'none';
         this.state.activeModule = null;
 
-        // Stop any active processes if needed
+        // Stop breathing if active
+        this.stopBreathing();
+    }
+
+    renderCalmModule(container) {
+        container.innerHTML = `
+            <div class="calm-ui">
+                <h2 style="margin-bottom: 20px;">Vježbe Disanja</h2>
+                
+                <div class="method-selector">
+                    ${Object.keys(this.breathingMethods).map(id => `
+                        <button class="method-btn ${this.state.breathing.method === id ? 'active' : ''}" 
+                                onclick="app.setBreathingMethod('${id}')">
+                            ${this.breathingMethods[id].name}
+                        </button>
+                    `).join('')}
+                </div>
+
+                <div class="breathing-container">
+                    <div class="breathing-circle" id="b-circle">
+                        <div class="breathing-text" id="b-text">START</div>
+                    </div>
+                </div>
+
+                <div class="breathing-timer" id="b-timer">Klikni krug za početak</div>
+                
+                <button class="main-play-btn" id="b-main-btn" onclick="app.toggleBreathing()" style="margin-top: 20px;">ZAPOČNI</button>
+            </div>
+        `;
+    }
+
+    setBreathingMethod(id) {
+        this.state.breathing.method = id;
+        this.stopBreathing();
+        this.renderCalmModule(document.getElementById('module-content'));
+    }
+
+    toggleBreathing() {
+        if (this.state.breathing.active) {
+            this.stopBreathing();
+        } else {
+            this.startBreathing();
+        }
+    }
+
+    startBreathing() {
+        this.state.breathing.active = true;
+        this.state.breathing.phase = 'inhale';
+        const method = this.breathingMethods[this.state.breathing.method];
+        const btn = document.getElementById('b-main-btn');
+        if (btn) btn.innerText = "ZAUSTAVI";
+
+        this.runBreathingCycle();
+    }
+
+    stopBreathing() {
+        this.state.breathing.active = false;
+        if (this.breathingTimeout) clearTimeout(this.breathingTimeout);
+        if (this.breathingCountInterval) clearInterval(this.breathingCountInterval);
+
+        const circle = document.getElementById('b-circle');
+        const text = document.getElementById('b-text');
+        const btn = document.getElementById('b-main-btn');
+        const timer = document.getElementById('b-timer');
+
+        if (circle) circle.className = 'breathing-circle';
+        if (text) text.innerText = 'START';
+        if (btn) btn.innerText = 'ZAPOČNI';
+        if (timer) timer.innerText = 'Klikni krug za početak';
+    }
+
+    runBreathingCycle() {
+        if (!this.state.breathing.active) return;
+
+        const method = this.breathingMethods[this.state.breathing.method];
+        const circle = document.getElementById('b-circle');
+        const text = document.getElementById('b-text');
+        const timer = document.getElementById('b-timer');
+
+        const phases = ['inhale', 'hold', 'exhale', 'hold2'];
+        let currentIndex = phases.indexOf(this.state.breathing.phase);
+
+        const currentPhase = phases[currentIndex];
+        const duration = method[currentPhase];
+
+        // Skip phase if duration is 0
+        if (duration === 0) {
+            this.state.breathing.phase = phases[(currentIndex + 1) % 4];
+            this.runBreathingCycle();
+            return;
+        }
+
+        // Update UI
+        if (circle) {
+            circle.className = 'breathing-circle';
+            if (currentPhase === 'inhale') circle.classList.add('circle-inhale');
+            else if (currentPhase === 'exhale') circle.classList.add('circle-exhale');
+            else circle.classList.add('circle-hold');
+
+            // Adjust transition duration dynamically
+            circle.style.transition = `all ${duration}s ease-in-out`;
+        }
+
+        if (text) {
+            const labels = { inhale: 'Udahni', hold: 'Zadrži', exhale: 'Izdahni', hold2: 'Zadrži' };
+            text.innerText = labels[currentPhase];
+        }
+
+        // Timer
+        let timeLeft = duration;
+        if (timer) timer.innerText = `${timeLeft}s`;
+
+        if (this.breathingCountInterval) clearInterval(this.breathingCountInterval);
+        this.breathingCountInterval = setInterval(() => {
+            timeLeft--;
+            if (timer && timeLeft > 0) timer.innerText = `${timeLeft}s`;
+        }, 1000);
+
+        this.breathingTimeout = setTimeout(() => {
+            this.state.breathing.phase = phases[(currentIndex + 1) % 4];
+            this.runBreathingCycle();
+        }, duration * 1000);
     }
 
     // --- FOCUS MODULE (SOUND OASIS) ---
