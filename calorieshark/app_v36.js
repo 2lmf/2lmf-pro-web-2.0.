@@ -383,11 +383,13 @@ let scannerTimeoutTimer = null;
 window.onFirebaseStateChange = (user) => {
     const loggedOutDiv = document.getElementById('cloudStatusLoggedOut');
     const loggedInDiv = document.getElementById('cloudStatusLoggedIn');
+    const promoBanner = document.getElementById('cloudPromoBanner');
 
     if (user) {
         console.log("App: User logged into Firebase:", user.email);
         if (loggedOutDiv) loggedOutDiv.classList.add('hidden');
         if (loggedInDiv) loggedInDiv.classList.remove('hidden');
+        if (promoBanner) promoBanner.classList.add('hidden'); // Sakrij banner ako je prijavljen
 
         // Update user info in settings UI
         const photoEl = document.getElementById('userPhoto');
@@ -404,6 +406,7 @@ window.onFirebaseStateChange = (user) => {
         console.log("App: No Firebase user.");
         if (loggedOutDiv) loggedOutDiv.classList.remove('hidden');
         if (loggedInDiv) loggedInDiv.classList.add('hidden');
+        if (promoBanner) promoBanner.classList.remove('hidden'); // Prikaži banner ako nije prijavljen
     }
 };
 
@@ -1152,6 +1155,22 @@ function setupStepsEvents() {
                 await window.CS_Firebase.loginWithGoogle();
             } catch (error) {
                 console.error("Login failed:", error);
+            }
+        });
+    }
+
+    // Cloud Promo Banner Click
+    const cloudPromoBanner = document.getElementById('cloudPromoBanner');
+    if (cloudPromoBanner) {
+        cloudPromoBanner.addEventListener('click', () => {
+            showScreen('screenSettings');
+            // Skrolaj do Cloud Sync sekcije
+            const cloudSyncSection = document.getElementById('btnGoogleLogin')?.closest('.settings-card');
+            if (cloudSyncSection) {
+                cloudSyncSection.scrollIntoView({ behavior: 'smooth' });
+                // Dodaj kratki "flash" efekt
+                cloudSyncSection.style.boxShadow = "0 0 20px var(--accent-cyan)";
+                setTimeout(() => cloudSyncSection.style.boxShadow = "", 1500);
             }
         });
     }
