@@ -97,7 +97,11 @@ class ZenPauza {
         const habits = Object.keys(this.state.habitMetadata);
         const today = new Date().toISOString().split('T')[0];
 
-        container.innerHTML = habits.map(id => {
+        container.innerHTML = `
+            <div class="today-date-chips" style="display:flex; gap:10px; overflow-x:auto; margin-bottom:20px; padding-bottom:10px;">
+                ${this.generateDateChips()}
+            </div>
+            ${habits.map(id => {
             const meta = this.state.habitMetadata[id] || { name: id, icon: 'fa-star' };
             const data = this.state.habits[id] || [];
             const completed = data.includes(today);
@@ -107,15 +111,33 @@ class ZenPauza {
                     <div class="habit-icon-box">
                         <i class="fas ${meta.icon}"></i>
                     </div>
-                    <div class="habit-content-main">
-                        <h3 style="font-size:0.75rem;">${meta.name}</h3>
+                    <div class="habit-content-main" style="text-align:left; margin-left:15px;">
+                        <h3 style="font-size:0.95rem; margin-bottom:2px;">${meta.name}</h3>
                     </div>
-                    <button class="habit-check-btn" onclick="event.stopPropagation(); app.toggleTodayHabit('${id}')" style="width:100%; border-radius:8px; margin-top:5px;">
-                        <i class="fas ${completed ? 'fa-check' : 'fa-plus'}"></i>
-                    </button>
+                    <div class="status-icon" style="margin-left:auto; font-size:1.2rem; color:${completed ? '#00D084' : 'rgba(255,255,255,0.1)'}">
+                        <i class="fas ${completed ? 'fa-circle-check' : 'fa-circle-xmark'}"></i>
+                    </div>
                 </div>
             `;
-        }).join('');
+        }).join('')}
+        `;
+    }
+
+    generateDateChips() {
+        const days = [];
+        const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        for (let i = -3; i <= 3; i++) {
+            const d = new Date();
+            d.setDate(d.getDate() + i);
+            const isToday = i === 0;
+            days.push(`
+                <div class="date-chip ${isToday ? 'active' : ''}" style="display:flex; flex-direction:column; align-items:center; min-width:45px; padding:10px; border-radius:12px; background:${isToday ? '#ff4d6d' : 'transparent'}; color:${isToday ? 'white' : 'var(--text-dim)'}">
+                    <span style="font-size:0.6rem; text-transform:uppercase;">${dayNames[d.getDay()]}</span>
+                    <strong style="font-size:1.1rem;">${d.getDate()}</strong>
+                </div>
+            `);
+        }
+        return days.join('');
     }
 
     toggleTodayHabit(id) {
@@ -541,40 +563,52 @@ class ZenPauza {
         const meta = this.state.habitMetadata[id] || { name: id, icon: 'fa-star' };
         const data = this.state.habits[id] || [];
         const streak = this.getStreak(id);
+        const rate = this.calculateStats(id).completionRate;
 
         // 7-day range (Friday to Thursday style as in screenshot)
         const days = [];
-        const dayNames = ['N', 'P', 'U', 'S', 'Č', 'P', 'S'];
+        const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        const dayShorts = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+
         for (let i = 6; i >= 0; i--) {
             const d = new Date();
             d.setDate(d.getDate() - i);
             days.push({
                 date: d.toISOString().split('T')[0],
-                label: dayNames[d.getDay()],
+                label: dayShorts[d.getDay()],
                 isToday: i === 0
             });
         }
 
         return `
             <div class="habit-card list-item" onclick="app.openHabitModal('${id}')">
-                <div class="habit-header">
-                    <div class="habit-icon-box" style="background:none; width:auto; height:auto; margin:0;">
-                        <i class="fas ${meta.icon}" style="font-size:1.2rem; color:var(--neon-blue);"></i>
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; width:100%;">
+                    <div>
+                        <h3 style="font-size:1rem; font-weight:700; color:white; margin-bottom:4px;">${meta.name}</h3>
+                        <p style="font-size:0.65rem; color:#ffcc00; font-weight:600; text-transform:uppercase;">EVERY DAY</p>
                     </div>
-                    <h3 style="font-size:0.7rem; margin: 5px 0;">${meta.name}</h3>
-                    <div class="stat-pill" style="font-size:0.6rem; padding: 2px 5px;"><i class="fas fa-fire"></i> ${streak}d</div>
+                    <div class="habit-icon-box" style="width:40px; height:40px; background:rgba(255,255,255,0.03);">
+                        <i class="fas ${meta.icon}" style="font-size:1.1rem; color:#ff4d6d;"></i>
+                    </div>
                 </div>
-                
+
                 <div class="habit-week-circles">
                     ${days.map(day => {
             const active = data.includes(day.date);
             return `
                             <div class="day-circle ${active ? 'active' : ''} ${day.isToday ? 'today' : ''}" 
-                                 onclick="event.stopPropagation(); app.toggleHabit('${id}', '${day.date}')">
-                                <strong>${day.date.split('-')[2]}</strong>
+                                 onclick="event.stopPropagation(); app.toggleHabit('${id}', '${day.date}')"
+                                 style="background:${active ? '#00D084' : '#252529'}; border-color:${active ? '#00D084' : 'rgba(255,255,255,0.05)'}">
+                                <span style="font-size:0.5rem; margin-bottom:2px; color:var(--text-dim);">${day.label}</span>
+                                <strong style="font-size:0.8rem; color:${active ? '#000' : '#fff'};">${day.date.split('-')[2]}</strong>
                             </div>
                         `;
         }).join('')}
+                </div>
+
+                <div style="display:flex; gap:15px; margin-top:5px;">
+                    <span style="font-size:0.65rem; color:var(--text-dim);"><i class="fas fa-link" style="color:#ff4d6d; margin-right:4px;"></i> ${streak}</span>
+                    <span style="font-size:0.65rem; color:var(--text-dim);"><i class="fas fa-circle-check" style="color:#00D084; margin-right:4px;"></i> ${rate}%</span>
                 </div>
             </div>
         `;
@@ -587,9 +621,23 @@ class ZenPauza {
         const nameEl = document.getElementById('modal-habit-name');
         const meta = this.state.habitMetadata[id] || { name: id };
 
+        this.state.currentHabitId = id;
+        this.state.currentModalTab = 'calendar';
         nameEl.innerText = meta.name;
-        this.renderHabitDetail(id);
+
+        this.switchModalTab('calendar');
         modal.style.display = 'block';
+    }
+
+    switchModalTab(tabId) {
+        this.state.currentModalTab = tabId;
+
+        // Update tab buttons
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.innerText.toLowerCase().includes(tabId === 'stats' ? 'stat' : tabId));
+        });
+
+        this.renderHabitDetail(this.state.currentHabitId);
     }
 
     closeHabitModal() {
@@ -598,47 +646,93 @@ class ZenPauza {
 
     renderHabitDetail(id) {
         const container = document.getElementById('modal-habit-content');
-        const data = this.state.habits[id] || [];
-        const meta = this.state.habitMetadata[id] || { goal: 7 };
-        const streak = this.getStreak(id);
-        const rate = this.calculateStats(id).completionRate;
-        const goal = meta.goal || 7;
+        const tab = this.state.currentModalTab;
 
-        container.innerHTML = `
-            <div class="modal-section">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                    <h4>Cilj i Statistika</h4>
-                    <button class="edit-goal-btn" onclick="app.editHabit('${id}')" style="background:none; border:1px solid rgba(255,255,255,0.2); color:white; padding:5px 10px; border-radius:8px; font-size:0.7rem;">
-                        <i class="fas fa-edit"></i> UREDI CILJ
-                    </button>
-                </div>
-                <div class="stats-grid">
-                    <div class="stat-box">
-                        <span class="val">${streak} dana</span>
-                        <span class="lbl">Trenutni Streak</span>
+        if (tab === 'calendar') {
+            container.innerHTML = `
+                <div class="modal-section" style="text-align:center;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                        <i class="fas fa-chevron-left" style="color:var(--text-dim); cursor:pointer;"></i>
+                        <h4 style="color:white; font-size:1.1rem; margin:0;">Ožujak <span style="color:var(--text-dim); font-weight:400;">2026</span></h4>
+                        <i class="fas fa-chevron-right" style="color:var(--text-dim); cursor:pointer;"></i>
                     </div>
-                    <div class="stat-box">
-                        <span class="val">${goal}x tjedno</span>
-                        <span class="lbl">Tvoj Cilj</span>
+                    <div class="big-calendar">
+                        <div class="cal-day-box lbl">Mon</div><div class="cal-day-box lbl">Tue</div><div class="cal-day-box lbl">Wed</div>
+                        <div class="cal-day-box lbl">Thu</div><div class="cal-day-box lbl">Fri</div><div class="cal-day-box lbl">Sat</div><div class="cal-day-box lbl">Sun</div>
+                        ${this.generateFullMonthCalendar(id)}
                     </div>
                 </div>
-                <div style="margin-top:15px; background:rgba(255,255,255,0.03); padding:15px; border-radius:12px; text-align:center;">
-                    <span class="val" style="display:block; font-size:1.5rem; font-weight:800; color:#00D084;">${rate}%</span>
-                    <span class="lbl" style="font-size:0.7rem; color:var(--text-dim);">Mjesečni prosjek</span>
-                </div>
-            </div>
 
-            <div class="modal-section">
-                <h4>Kalendar (Srpanj)</h4>
-                <div class="big-calendar">
-                    ${this.generateFullMonthCalendar(id)}
+                <div class="detail-card-section" style="background:#1a1a1e; border-radius:20px; padding:20px; margin-top:20px; display:flex; align-items:center; gap:20px;">
+                    <div style="background:rgba(255,77,109,0.1); width:40px; height:40px; border-radius:10px; display:flex; align-items:center; justify-content:center; color:#ff4d6d;">
+                        <i class="fas fa-link"></i>
+                    </div>
+                    <div>
+                        <p style="font-size:0.7rem; color:var(--text-dim); text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;">Streak</p>
+                        <h4 style="color:#ff4d6d; font-size:1.2rem; font-weight:800; margin:0;">${this.getStreak(id)} DAYS</h4>
+                    </div>
                 </div>
-            </div>
-            
-            <button class="delete-habit-btn" onclick="app.deleteHabit('${id}'); app.closeHabitModal();" style="margin-top:20px; color:#ff4d6d;">
-                <i class="fas fa-trash"></i> OBRIŠI NAVIKU
-            </button>
-        `;
+
+                <div class="detail-card-section" style="background:#1a1a1e; border-radius:20px; padding:20px; margin-top:15px; display:flex; align-items:center; gap:20px;">
+                    <div style="background:rgba(0,208,132,0.1); width:40px; height:40px; border-radius:10px; display:flex; align-items:center; justify-content:center; color:#00D084;">
+                        <i class="fas fa-comment-dots"></i>
+                    </div>
+                    <div>
+                        <p style="font-size:0.7rem; color:var(--text-dim); text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;">Zabilješke</p>
+                        <h4 style="color:var(--text-dim); font-size:0.9rem; font-weight:400; margin:0;">Nema zabilješki za ovaj mjesec</h4>
+                    </div>
+                </div>
+            `;
+        } else if (tab === 'stats') {
+            const stats = this.calculateStats(id);
+            container.innerHTML = `
+                <div class="modal-section">
+                    <h4 style="color:white; margin-bottom:20px;">Statistika Navike</h4>
+                    <div class="stats-grid">
+                        <div class="stat-box" style="background:#1a1a1e; padding:20px; border-radius:20px; text-align:center;">
+                            <span class="val" style="color:#ff4d6d; font-size:1.5rem;">${this.getStreak(id)}</span>
+                            <span class="lbl" style="display:block; font-size:0.7rem; color:var(--text-dim); text-transform:uppercase; margin-top:5px;">Streak</span>
+                        </div>
+                        <div class="stat-box" style="background:#1a1a1e; padding:20px; border-radius:20px; text-align:center;">
+                            <span class="val" style="color:#00D084; font-size:1.5rem;">${stats.completionRate}%</span>
+                            <span class="lbl" style="display:block; font-size:0.7rem; color:var(--text-dim); text-transform:uppercase; margin-top:5px;">Učestalost</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        } else if (tab === 'edit') {
+            const meta = this.state.habitMetadata[id];
+            container.innerHTML = `
+                <div class="modal-section">
+                    <h4 style="color:white; margin-bottom:20px;">Uredi Naviku</h4>
+                    <div style="background:#1a1a1e; padding:25px; border-radius:20px;">
+                        <label style="display:block; font-size:0.7rem; color:var(--text-dim); margin-bottom:10px; text-transform:uppercase;">Naziv cilja</label>
+                        <input type="text" id="edit-habit-name" value="${meta.name}" style="width:100%; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); padding:15px; border-radius:12px; color:white; margin-bottom:20px;">
+                        
+                        <label style="display:block; font-size:0.7rem; color:var(--text-dim); margin-bottom:10px; text-transform:uppercase;">Tjedni cilj</label>
+                        <select id="edit-habit-goal" style="width:100%; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); padding:15px; border-radius:12px; color:white; margin-bottom:30px;">
+                            ${[1, 2, 3, 4, 5, 6, 7].map(g => `<option value="${g}" ${meta.goal === g ? 'selected' : ''}>${g} puta tjedno</option>`).join('')}
+                        </select>
+
+                        <button onclick="app.saveHabitEdit('${id}')" style="width:100%; background:#ff4d6d; color:white; padding:18px; border-radius:15px; border:none; font-weight:800; cursor:pointer;">SPREMI PROMJENE</button>
+                        <button onclick="app.deleteHabit('${id}'); app.closeHabitModal();" style="width:100%; background:none; border:1px solid rgba(255,77,109,0.3); color:#ff4d6d; padding:15px; border-radius:15px; margin-top:15px; font-weight:600; cursor:pointer;">OBRIŠI NAVIKU</button>
+                    </div>
+                </div>
+            `;
+        }
+    }
+
+    saveHabitEdit(id) {
+        const name = document.getElementById('edit-habit-name').value;
+        const goal = document.getElementById('edit-habit-goal').value;
+        if (name && name.trim()) {
+            this.state.habitMetadata[id].name = name.trim();
+            this.state.habitMetadata[id].goal = parseInt(goal);
+            this.saveAndSync();
+            this.refreshUI();
+            document.getElementById('modal-habit-name').innerText = name.trim();
+            this.switchModalTab('calendar');
+        }
     }
 
     generateFullMonthCalendar(id) {

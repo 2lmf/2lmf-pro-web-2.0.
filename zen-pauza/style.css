@@ -104,10 +104,9 @@ body {
     justify-content: space-between;
     align-items: center;
     padding: 10px 0;
-    /* Reduced padding */
-    margin-top: -10px;
-    /* Move up */
-    margin-bottom: 20px;
+    margin-top: -20px;
+    /* Aligned to top */
+    margin-bottom: 25px;
 }
 
 .app-header h1 {
@@ -159,10 +158,17 @@ body {
 .nav-btn.active {
     color: #ff4d6d;
     /* HabitNow Pink */
+    position: relative;
 }
 
-.nav-btn.active i {
-    transform: scale(1.1);
+.nav-btn.active::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    width: 20px;
+    height: 3px;
+    background: #ff4d6d;
+    border-radius: 10px;
 }
 
 header {
@@ -501,40 +507,41 @@ footer {
 
 /* HABIT TRACKER v11 - PREMIUM UI */
 .habit-list-container {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
     width: 100%;
 }
 
 /* HABIT CARDS v14 - Today/List Style */
 .habit-card {
     background: #1a1a1e;
-    border-radius: 12px;
-    padding: 10px;
+    border-radius: 20px;
+    padding: 18px;
     display: flex;
     flex-direction: column;
-    /* Vertical for grid */
-    align-items: center;
-    text-align: center;
-    gap: 10px;
+    gap: 15px;
     transition: 0.2s;
-    border: 1px solid transparent;
+    border: 1px solid rgba(255, 255, 255, 0.03);
+    position: relative;
 }
 
 .habit-card.today-item {
-    padding: 10px;
+    flex-direction: row;
+    align-items: center;
+    padding: 15px 20px;
 }
 
 .habit-icon-box {
-    width: 45px;
-    height: 45px;
-    background: rgba(255, 255, 255, 0.03);
-    border-radius: 12px;
+    width: 50px;
+    height: 50px;
+    background: #252529;
+    border-radius: 14px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.2rem;
+    font-size: 1.4rem;
+    color: var(--neon-blue);
 }
 
 .habit-card.completed .habit-icon-box {
@@ -580,35 +587,33 @@ footer {
 /* 7-DAY CIRCLE ROW */
 .habit-week-circles {
     display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    /* Wrap circles */
-    gap: 4px;
+    justify-content: space-between;
     width: 100%;
-    margin-top: 5px;
+    margin-top: 10px;
 }
 
 .day-circle {
-    width: 20px;
-    /* Smaller for grid */
-    height: 20px;
+    width: 38px;
+    height: 38px;
     border-radius: 50%;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.1);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    font-size: 0.4rem;
+    font-size: 0.7rem;
     cursor: pointer;
+    transition: 0.2s;
 }
 
 .day-circle strong {
-    font-size: 0.5rem;
+    font-size: 0.8rem;
 }
 
 .day-circle span {
-    display: none;
-    /* Hide 'P', 'U' etc. labels to save space in grid */
+    font-size: 0.6rem;
+    margin-bottom: 2px;
+    color: var(--text-dim);
 }
 
 .day-circle.active {
@@ -741,8 +746,41 @@ footer {
     background: none;
     border: none;
     color: white;
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     cursor: pointer;
+    padding: 10px;
+}
+
+.modal-tabs {
+    display: flex;
+    padding: 0 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.tab-btn {
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    padding: 15px 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    position: relative;
+}
+
+.tab-btn.active {
+    color: #ff4d6d;
+}
+
+.tab-btn.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 20px;
+    right: 20px;
+    height: 3px;
+    background: #ff4d6d;
+    border-radius: 10px;
 }
 
 #modal-habit-content {
@@ -838,25 +876,29 @@ footer {
     margin-bottom: 5px;
 }
 
-.add-habit-btn {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px dashed var(--card-border);
-    border-radius: 12px;
-    padding: 12px;
-    color: var(--text-dim);
+/* FAB BUTTON v22 */
+.fab-btn {
+    position: fixed;
+    bottom: 100px;
+    right: 30px;
+    width: 56px;
+    height: 56px;
+    background: #ff4d6d;
+    border-radius: 16px;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
+    box-shadow: 0 4px 15px rgba(255, 77, 109, 0.4);
     cursor: pointer;
+    z-index: 900;
     transition: 0.3s;
-    font-size: 0.9rem;
 }
 
-.add-habit-btn:hover {
-    background: rgba(255, 255, 255, 0.05);
-    color: white;
-    border-color: var(--neon-blue);
+.fab-btn:active {
+    transform: scale(0.9);
 }
 
 .delete-habit-btn {
