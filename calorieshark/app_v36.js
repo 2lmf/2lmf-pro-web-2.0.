@@ -379,6 +379,33 @@ const btnConfirmInstall = document.getElementById('btnConfirmInstall');
 let html5QrCode = null;
 let scannerTimeoutTimer = null;
 
+/// --- FIREBASE BRIDGE ---
+window.onFirebaseStateChange = (user) => {
+    const loggedOutDiv = document.getElementById('cloudStatusLoggedOut');
+    const loggedInDiv = document.getElementById('cloudStatusLoggedIn');
+
+    if (user) {
+        console.log("App: User logged into Firebase:", user.email);
+        if (loggedOutDiv) loggedOutDiv.classList.add('hidden');
+        if (loggedInDiv) loggedInDiv.classList.remove('hidden');
+
+        // Update user info in settings UI
+        const photoEl = document.getElementById('userPhoto');
+        const nameEl = document.getElementById('userName');
+        const emailEl = document.getElementById('userEmail');
+
+        if (photoEl) photoEl.src = user.photoURL || 'https://via.placeholder.com/40';
+        if (nameEl) nameEl.textContent = user.displayName || user.email.split('@')[0];
+        if (emailEl) emailEl.textContent = user.email;
+
+        // Ovdje ćemo kasnije dodati Cloud Sync okidač
+    } else {
+        console.log("App: No Firebase user.");
+        if (loggedOutDiv) loggedOutDiv.classList.remove('hidden');
+        if (loggedInDiv) loggedInDiv.classList.add('hidden');
+    }
+};
+
 // --- INITIALIZATION ---
 function init() {
     bindEvents(); // Bind events FIRST
@@ -1062,6 +1089,32 @@ function setupStepsEvents() {
             saveDailyData();
             updateDashboardUI();
             stepsModal.classList.add('hidden');
+        });
+    }
+
+    // --- CLOUD SYNC LISTENERS ---
+    const btnGoogleLogin = document.getElementById('btnGoogleLogin');
+    if (btnGoogleLogin) {
+        btnGoogleLogin.addEventListener('click', async () => {
+            try {
+                showLog("Spajanje s Googleom...");
+                await window.CS_Firebase.loginWithGoogle();
+            } catch (error) {
+                console.error("Login failed:", error);
+                showLog("Greška kod prijave.");
+            }
+        });
+    }
+
+    const btnGoogleLogout = document.getElementById('btnGoogleLogout');
+    if (btnGoogleLogout) {
+        btnGoogleLogout.addEventListener('click', async () => {
+            try {
+                await window.CS_Firebase.logout();
+                showLog("Cloud odjava uspješna.");
+            } catch (error) {
+                console.error("Logout failed:", error);
+            }
         });
     }
 }

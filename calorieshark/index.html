@@ -244,6 +244,47 @@
                 </ul>
             </div>
 
+            <!-- Cloud Sync (Firebase) -->
+            <div class="settings-card"
+                style="background: rgba(255,255,255,0.8); border: 1px solid var(--glass-border); border-radius: 12px; padding: 20px; text-align: center; margin-top: 20px; border-top: 4px solid var(--accent-cyan);">
+                <h3
+                    style="margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 8px; color: var(--accent-cyan);">
+                    <i class="fas fa-cloud"></i> Cloud Sync (PREMIUM)
+                </h3>
+                <p style="font-size: 0.85rem; color: #444; margin-bottom: 15px;">
+                    Prijavi se za sinkronizaciju podataka između svih svojih uređaja i siguran backup.
+                </p>
+
+                <div id="cloudStatusLoggedOut">
+                    <button id="btnGoogleLogin" class="primary-btn"
+                        style="background: #fff; color: #444; border: 1px solid #ddd; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); width: 100%;">
+                        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18"
+                            height="18" alt="Google">
+                        <span>Sign in with Google</span>
+                    </button>
+                </div>
+
+                <div id="cloudStatusLoggedIn" class="hidden"
+                    style="background: rgba(0, 208, 132, 0.05); padding: 15px; border-radius: 8px; border: 1px solid rgba(0, 208, 132, 0.2);">
+                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 10px;">
+                        <img id="userPhoto" src=""
+                            style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--accent-cyan);">
+                        <div style="flex-grow: 1; text-align: left;">
+                            <div id="userName" style="font-weight: bold; font-size: 0.9rem; color: #222;">Korisnik</div>
+                            <div id="userEmail" style="font-size: 0.75rem; color: #666;">email@example.com</div>
+                        </div>
+                    </div>
+                    <div
+                        style="font-size: 0.8rem; color: #00D084; font-weight: bold; margin-bottom: 12px; display: flex; align-items: center; gap: 5px; justify-content: center;">
+                        <i class="fas fa-check-circle"></i> SINKRONIZACIJA AKTIVNA
+                    </div>
+                    <button id="btnGoogleLogout" class="secondary-btn"
+                        style="width: 100%; font-size: 0.85rem; padding: 8px; border-color: var(--accent-orange); color: var(--accent-orange);">
+                        Odjavi Cloud račun
+                    </button>
+                </div>
+            </div>
+
             <!-- ABOUT APP SECTION -->
             <div
                 style="background: rgba(255,255,255,0.8); border: 1px solid var(--glass-border); border-radius: 12px; padding: 20px; text-align: center; margin-top: 20px;">
@@ -660,6 +701,21 @@
     </div>
 
     <script src="https://unpkg.com/html5-qrcode"></script>
+    <!-- Firebase 10 SDK (Modular) -->
+    <script type="importmap">
+    {
+      "imports": {
+        "firebase/app": "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js",
+        "firebase/auth": "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js",
+        "firebase/firestore": "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"
+      }
+    }
+    </script>
+
+    <!-- Firebase Core Module (Logic) -->
+    <script type="module" src="firebase-core.js"></script>
+
+    <!-- Core Databases -->
     <script src="food_database.js?v=61"></script>
     <script src="food_categories.js?v=61"></script>
     <script src="food_categories_2.js?v=61"></script>
