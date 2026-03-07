@@ -518,13 +518,11 @@ footer {
 .breathing-container {
     position: relative;
     width: 200px;
-    /* Bit smaller */
     height: 200px;
     display: flex;
     justify-content: center;
     align-items: center;
     margin: 10px auto;
-    /* Centered */
 }
 
 .breathing-circle {
@@ -1149,9 +1147,7 @@ footer {
 
 .mir-section-card h3 {
     font-size: 1rem;
-    /* Slightly smaller */
-    margin-bottom: 8px;
-    /* Reduced from 12px */
+    margin-bottom: 4px;
     color: white;
     display: flex;
     align-items: center;
