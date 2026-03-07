@@ -26,8 +26,10 @@
                 <header class="app-header">
                     <h1>Danas</h1>
                     <div class="header-icons">
-                        <i class="fas fa-cloud cloud-sync-btn" id="cloud-status" onclick="app.showLoginOverlay()"
-                            title="Cloud Sync"></i>
+                        <div class="cloud-sync-pill" id="cloud-status" onclick="app.showLoginOverlay()">
+                            <i class="fas fa-cloud"></i>
+                            <span>SINKRONIZACIJA</span>
+                        </div>
                     </div>
                 </header>
                 <div id="today-list" class="habit-list-container">
@@ -127,8 +129,8 @@
             });
         }
     </script>
-    <script type="module" src="firebase-core.js?v=25"></script>
-    <script src="app.js?v=35"></script>
+    <script type="module" src="firebase-core.js?v=30"></script>
+    <script src="app.js?v=42"></script>
 </body>
 
 </html>

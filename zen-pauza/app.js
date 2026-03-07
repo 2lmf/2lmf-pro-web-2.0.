@@ -230,8 +230,8 @@ class ZenPauza {
 
         container.innerHTML = `
             <div class="mir-section-card">
-                <h3 style="margin-bottom:4px;"><i class="fas fa-volume-up"></i> Sound Oasis</h3>
-                <div class="visualizer-container" style="margin-bottom:12px;">
+                <h3 style="margin-bottom:2px;"><i class="fas fa-volume-up"></i> Sound Oasis</h3>
+                <div class="visualizer-container" style="margin-bottom:6px;">
                     <div class="visualizer-bar" id="v-bar-1"></div>
                     <div class="visualizer-bar" id="v-bar-2"></div>
                     <div class="visualizer-bar" id="v-bar-3"></div>
@@ -262,8 +262,8 @@ class ZenPauza {
             </div>
 
             <div class="mir-section-card">
-                <h3><i class="fas fa-lungs"></i> Dah</h3>
-                <p style="color:var(--text-dim); font-size:0.75rem; margin-top:4px; margin-bottom:10px; font-weight:600;">(Box Breathing)</p>
+                <h3 style="margin-bottom:2px;"><i class="fas fa-lungs"></i> Dah</h3>
+                <p style="color:var(--text-dim); font-size:0.75rem; margin-top:10px; margin-bottom:15px; font-weight:700;">(Box Breathing)</p>
                 <div class="method-selector" style="margin-bottom:12px;">
                     ${Object.keys(this.breathingMethods).map(id => `
                         <button class="method-btn ${this.state.breathing.method === id ? 'active' : ''}" 

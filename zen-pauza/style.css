@@ -169,14 +169,34 @@ body {
     color: var(--text-dim);
 }
 
-.cloud-sync-btn {
+.cloud-sync-pill {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: var(--text-dim);
     cursor: pointer;
     transition: 0.3s;
+    border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.cloud-sync-btn.active {
+.cloud-sync-pill i {
+    font-size: 0.9rem;
+}
+
+.cloud-sync-pill.active {
+    background: rgba(79, 172, 254, 0.1);
     color: var(--neon-blue);
-    text-shadow: 0 0 10px rgba(79, 172, 254, 0.4);
+    border-color: rgba(79, 172, 254, 0.2);
+    box-shadow: 0 0 15px rgba(79, 172, 254, 0.1);
+}
+
+.cloud-sync-pill:active {
+    transform: scale(0.95);
 }
 
 /* BOTTOM NAVIGATION */
@@ -1146,8 +1166,10 @@ footer {
 }
 
 .mir-section-card h3 {
-    font-size: 1rem;
-    margin-bottom: 4px;
+    font-size: 0.95rem;
+    /* Even smaller */
+    margin-bottom: 2px !important;
+    /* Forces minimal gap */
     color: white;
     display: flex;
     align-items: center;
