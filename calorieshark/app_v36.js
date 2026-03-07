@@ -578,8 +578,8 @@ function saveDailyData() {
     safeLocalStorage.setItem('calorieShark_daily_' + userProfile.username, JSON.stringify(payload));
 
     // Cloud Sync
-    if (window.CS_Firebase && window.CS_Firebase.user) {
-        window.CS_Firebase.syncDailyData(window.CS_Firebase.user.uid, today, dailyData);
+    if (window.CS_Firebase && window.CS_Firebase.user && userProfile.username) {
+        window.CS_Firebase.syncDailyData(userProfile.username, today, dailyData);
     }
 }
 
@@ -657,8 +657,8 @@ function saveProfile() {
         safeLocalStorage.setItem('calorieShark_profile_' + userProfile.username, JSON.stringify(userProfile));
 
         // Cloud Sync
-        if (window.CS_Firebase && window.CS_Firebase.user) {
-            window.CS_Firebase.syncProfile(window.CS_Firebase.user.uid, userProfile);
+        if (window.CS_Firebase && window.CS_Firebase.user && userProfile.username) {
+            window.CS_Firebase.syncProfile(userProfile.username, userProfile);
         }
     }
 }
