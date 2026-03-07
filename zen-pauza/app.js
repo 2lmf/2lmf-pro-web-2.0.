@@ -12,6 +12,7 @@ class ZenPauza {
             activeModule: null,
             isSoundPlaying: false,
             volumes: { white: 0.3, pink: 0.3, brown: 0.3, car: 0, vacuum: 0 },
+            sheetsUrl: localStorage.getItem('zp_sheets_url') || '', // URL for GAS
             breathing: { active: false, method: 'box', phase: 'inhale', timer: 0 },
             habits: JSON.parse(localStorage.getItem('zp_habits_v11')) || {
                 breathing: [], sounds: [], meditation: []
@@ -34,17 +35,54 @@ class ZenPauza {
         this.init();
     }
 
+    // --- CLOUD & SHEETS ---
+    async showLoginOverlay() {
+        if (window.ZP_Firebase.user) {
+            if (confirm("Odjaviti se?")) {
+                window.ZP_Firebase.logout();
+            }
+            return;
+        }
+
+        try {
+            await window.ZP_Firebase.login();
+        } catch (e) {
+            alert("Greška kod prijave.");
+        }
+    }
+
+    async syncToSheets(habitId, action) {
+        if (!this.state.sheetsUrl) return;
+
+        try {
+            fetch(this.state.sheetsUrl, {
+                method: 'POST',
+                mode: 'no-cors',
+                body: JSON.stringify({
+                    email: window.ZP_Firebase.user ? window.ZP_Firebase.user.email : 'Anonymous',
+                    habitId: habitId,
+                    action: action
+                })
+            });
+        } catch (e) {
+            console.error("Sheets Sync Error:", e);
+        }
+    }
+
     init() {
         this.renderTodayView();
 
         // Firebase bridge
         if (window.onFirebaseStateChange) {
             window.onFirebaseStateChange((user) => {
+                const cloudIcon = document.getElementById('cloud-status');
                 if (user) {
                     console.log("Firebase: User logged in", user.email);
+                    if (cloudIcon) cloudIcon.classList.add('active');
                     this.loadHabitsFromCloud();
                 } else {
                     console.log("Firebase: No user");
+                    if (cloudIcon) cloudIcon.classList.remove('active');
                 }
                 this.refreshUI();
             });
@@ -238,7 +276,7 @@ class ZenPauza {
                         <div class="breathing-text" id="b-text">START</div>
                     </div>
                 </div>
-                <div class="breathing-timer" id="b-timer" style="text-align:center;">Klikni krug za početak</div>
+                <div class="breathing-timer" id="b-timer" style="text-align:center;">Klikni dolje za početak</div>
                 <button class="main-play-btn" id="b-main-btn" onclick="app.toggleBreathing()" style="margin-top:10px;">${this.state.breathing.active ? 'ZAUSTAVI' : 'ZAPOČNI'}</button>
             </div>
         `;
@@ -267,7 +305,7 @@ class ZenPauza {
                     </div>
                 </div>
 
-                <div class="breathing-timer" id="b-timer">Klikni krug za početak</div>
+                <div class="breathing-timer" id="b-timer">Klikni dolje za početak</div>
                 
                 <button class="main-play-btn" id="b-main-btn" onclick="app.toggleBreathing()" style="margin-top: 20px;">ZAPOČNI</button>
             </div>
@@ -314,7 +352,7 @@ class ZenPauza {
         if (circle) circle.className = 'breathing-circle';
         if (text) text.innerText = 'START';
         if (btn) btn.innerText = 'ZAPOČNI';
-        if (timer) timer.innerText = 'Klikni krug za početak';
+        if (timer) timer.innerText = 'Klikni dolje za početak';
     }
 
     runBreathingCycle() {
@@ -880,8 +918,10 @@ class ZenPauza {
 
         if (this.state.habits[id].includes(date)) {
             this.state.habits[id] = this.state.habits[id].filter(d => d !== date);
+            this.syncToSheets(id, 'uncheck');
         } else {
             this.state.habits[id].push(date);
+            this.syncToSheets(id, 'check');
         }
 
         this.saveAndSync();
@@ -896,6 +936,7 @@ class ZenPauza {
         if (!this.state.habits[id]) this.state.habits[id] = [];
         if (!this.state.habits[id].includes(today)) {
             this.state.habits[id].push(today);
+            this.syncToSheets(id, 'track_auto');
             this.saveAndSync();
         }
     }
