@@ -38,7 +38,7 @@ window.ZP_Firebase = {
                 habits: habits,
                 metadata: metadata,
                 updatedAt: new Date().toISOString()
-            }, { merge: true });
+            });
             console.log("Firebase: Habits & Metadata saved");
         } catch (e) {
             console.error("Firebase: Save error", e);
