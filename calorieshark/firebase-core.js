@@ -51,6 +51,40 @@ window.CS_Firebase = {
             console.error("Firestore Load Error:", error);
             return null;
         }
+    },
+
+    // Specific Sync Helpers
+    syncProfile: async (uid, profileData) => {
+        try {
+            await setDoc(doc(db, "users", uid), {
+                ...profileData,
+                lastSync: new Date().toISOString()
+            }, { merge: true });
+        } catch (error) {
+            console.error("Firebase Profile Sync Error:", error);
+        }
+    },
+
+    syncDailyData: async (uid, dateKey, dailyData) => {
+        try {
+            await setDoc(doc(db, "users", uid, "daily", dateKey), {
+                ...dailyData,
+                lastSync: new Date().toISOString()
+            });
+        } catch (error) {
+            console.error("Firebase Daily Sync Error:", error);
+        }
+    },
+
+    loadDailyData: async (uid, dateKey) => {
+        try {
+            const docRef = doc(db, "users", uid, "daily", dateKey);
+            const docSnap = await getDoc(docRef);
+            return docSnap.exists() ? docSnap.data() : null;
+        } catch (error) {
+            console.error("Firebase Daily Load Error:", error);
+            return null;
+        }
     }
 };
 

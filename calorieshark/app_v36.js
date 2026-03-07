@@ -398,13 +398,50 @@ window.onFirebaseStateChange = (user) => {
         if (nameEl) nameEl.textContent = user.displayName || user.email.split('@')[0];
         if (emailEl) emailEl.textContent = user.email;
 
-        // Ovdje ćemo kasnije dodati Cloud Sync okidač
+        // Trigger Cloud Sync / Migration
+        triggerCloudSync(user);
     } else {
         console.log("App: No Firebase user.");
         if (loggedOutDiv) loggedOutDiv.classList.remove('hidden');
         if (loggedInDiv) loggedInDiv.classList.add('hidden');
     }
 };
+
+async function triggerCloudSync(user) {
+    if (!user || !window.CS_Firebase) return;
+
+    console.log("App: Triggering Cloud Sync for", user.email);
+
+    // 1. Sync Profile
+    // Ako imamo lokalni profil, a u Cloudu ga nema, šaljemo ga
+    const remoteProfile = await window.CS_Firebase.loadUserData(user.uid);
+    if (!remoteProfile) {
+        console.log("App: No remote profile, migrating local to cloud...");
+        await window.CS_Firebase.syncProfile(user.uid, userProfile);
+    } else {
+        // Ovdje bismo mogli raditi merge, ali za sada uzimamo Remote kao master
+        // ako korisnik već ima profil u oblaku
+        console.log("App: Remote profile found, syncing...");
+        userProfile = { ...userProfile, ...remoteProfile };
+        saveProfile(); // update local
+        applyLanguage(userProfile.lang);
+        updateDashboardUI();
+    }
+
+    // 2. Sync Daily Data (Today)
+    const today = getTodayKey();
+    const remoteDaily = await window.CS_Firebase.loadDailyData(user.uid, today);
+    if (!remoteDaily) {
+        console.log("App: No remote daily data for today, migrating local...");
+        await window.CS_Firebase.syncDailyData(user.uid, today, dailyData);
+    } else {
+        console.log("App: Remote daily data found, merging...");
+        // Jednostavni merge: remote pobjeđuje
+        dailyData = remoteDaily;
+        saveDailyData(); // update local
+        updateDashboardUI();
+    }
+}
 
 // --- INITIALIZATION ---
 function init() {
@@ -526,10 +563,16 @@ function loadDailyData() {
 function saveDailyData() {
     if (!userProfile.username) return;
     const today = getTodayKey();
-    safeLocalStorage.setItem('calorieShark_daily_' + userProfile.username, JSON.stringify({
+    const payload = {
         date: today,
         data: dailyData
-    }));
+    };
+    safeLocalStorage.setItem('calorieShark_daily_' + userProfile.username, JSON.stringify(payload));
+
+    // Cloud Sync
+    if (window.CS_Firebase && window.CS_Firebase.user) {
+        window.CS_Firebase.syncDailyData(window.CS_Firebase.user.uid, today, dailyData);
+    }
 }
 
 function loadProfile() {
@@ -604,6 +647,11 @@ function saveProfile() {
     if (userProfile.username) {
         safeLocalStorage.setItem('calorieShark_activeUser', userProfile.username);
         safeLocalStorage.setItem('calorieShark_profile_' + userProfile.username, JSON.stringify(userProfile));
+
+        // Cloud Sync
+        if (window.CS_Firebase && window.CS_Firebase.user) {
+            window.CS_Firebase.syncProfile(window.CS_Firebase.user.uid, userProfile);
+        }
     }
 }
 
@@ -1097,19 +1145,10 @@ function setupStepsEvents() {
     if (btnGoogleLogin) {
         btnGoogleLogin.addEventListener('click', async () => {
             try {
-                console.log("DEBUG: Google Login Clicked");
-                alert("Pokušavam spajanje s Googleom...");
-
-                if (!window.CS_Firebase) {
-                    alert("GRESKA: Firebase modul nije učitan!");
-                    return;
-                }
-
-                console.log("App: Spajanje s Googleom...");
+                if (!window.CS_Firebase) return;
                 await window.CS_Firebase.loginWithGoogle();
             } catch (error) {
                 console.error("Login failed:", error);
-                alert("Greška kod prijave: " + error.message);
             }
         });
     }
