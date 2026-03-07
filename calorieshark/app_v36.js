@@ -1105,12 +1105,11 @@ function setupStepsEvents() {
                     return;
                 }
 
-                showLog("Spajanje s Googleom...");
+                console.log("App: Spajanje s Googleom...");
                 await window.CS_Firebase.loginWithGoogle();
             } catch (error) {
                 console.error("Login failed:", error);
                 alert("Greška kod prijave: " + error.message);
-                showLog("Greška kod prijave.");
             }
         });
     }
@@ -1120,7 +1119,7 @@ function setupStepsEvents() {
         btnGoogleLogout.addEventListener('click', async () => {
             try {
                 await window.CS_Firebase.logout();
-                showLog("Cloud odjava uspješna.");
+                console.log("App: Cloud odjava uspješna.");
             } catch (error) {
                 console.error("Logout failed:", error);
             }
