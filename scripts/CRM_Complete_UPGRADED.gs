@@ -1956,7 +1956,8 @@ function sendZohoEmail(options) {
         var blob = options.inlineImages[cid];
         var attachInfo = uploadZohoAttachment(blob, accessToken, accountId, true);
         if (attachInfo) {
-          attachInfo["contentId"] = cid;
+          attachInfo["contentId"] = cid; // Required for CID mapping
+          attachInfo["isInline"] = true;
           zohoAttachments.push(attachInfo);
         }
       }
@@ -1974,6 +1975,8 @@ function sendZohoEmail(options) {
     if (zohoAttachments.length > 0) {
       payload["attachments"] = zohoAttachments;
     }
+
+    console.log("Zoho Send Payload: " + JSON.stringify(payload));
 
     // 3. Send Email
     var response = UrlFetchApp.fetch(apiBase + "/messages", {
@@ -2028,9 +2031,10 @@ function getZohoAccessToken(config) {
  */
 function uploadZohoAttachment(blob, accessToken, accountId, isInline) {
   var url = "https://mail.zoho.eu/api/accounts/" + accountId + "/messages/attachments";
-  if (isInline) url += "?isInline=true";
   
   var payload = {
+    "uploadType": "multipart",
+    "isInline": isInline ? "true" : "false",
     "attach": blob
   };
 
@@ -2043,14 +2047,16 @@ function uploadZohoAttachment(blob, accessToken, accountId, isInline) {
     "muteHttpExceptions": true
   });
 
-  var res = JSON.parse(response.getContentText());
+  var resJSON = response.getContentText();
+  console.log("Zoho Upload Response: " + resJSON);
+  
+  var res = JSON.parse(resJSON);
   if (res.data && res.data.length > 0) {
     var data = res.data[0];
     return {
       "storeName": data.storeName,
       "attachmentName": data.attachmentName,
-      "attachmentPath": data.attachmentPath,
-      "isInline": isInline || false
+      "attachmentPath": data.attachmentPath
     };
   }
   return null;
