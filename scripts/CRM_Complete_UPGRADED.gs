@@ -826,12 +826,12 @@ function sendCustomOffer(isMobile) {
   // SAVE TO DRIVE
   savePdfToDrive(pdfBlob, "Ponude za plaćanje");
 
-  // Prepare Email Body for CID
-  var emailHtml = htmlBody;
+  // Prepare QR Blob for Zoho (Placeholder will be replaced inside sendZohoEmail)
   var inlineImages = {};
   if (qrBlob && qrDataUri) {
-    emailHtml = htmlBody.replace(qrDataUri, "cid:qrCode");
-    inlineImages["qrCode"] = qrBlob;
+    qrBlob.setName("qrcode.png");
+    inlineImages["{{QR_CODE_PLACEHOLDER}}"] = qrBlob;
+    emailHtml = htmlBody.replace(qrDataUri, "{{QR_CODE_PLACEHOLDER}}");
   }
 
   // --- SEND EMAIL via ZOHO MAIL API ---
@@ -920,6 +920,7 @@ function sendCustomInvoice(isMobile) {
     to: email,
     subject: "Račun br. " + docId + " - 2LMF PRO",
     htmlBody: htmlBody,
+    inlineImages: {}, // Empty for invoices as per user request
     attachments: [pdfBlob],
     name: "2LMF PRO"
   };
@@ -1942,23 +1943,31 @@ function sendZohoEmail(options) {
     // 1. Upload Attachments & Inline Images
     var zohoAttachments = [];
     
-    // Handle Attachments
+    // Handle Normal Attachments
     if (options.attachments && options.attachments.length > 0) {
       options.attachments.forEach(function(blob) {
-        var attachInfo = uploadZohoAttachment(blob, accessToken, accountId, false);
-        if (attachInfo) zohoAttachments.push(attachInfo);
+        var info = uploadZohoAttachment(blob, accessToken, accountId, false);
+        if (info) {
+          info["isInline"] = false;
+          info["fileName"] = info.attachmentName;
+          zohoAttachments.push(info);
+        }
       });
     }
 
     // Handle Inline Images (CID)
     if (options.inlineImages) {
-      for (var cid in options.inlineImages) {
-        var blob = options.inlineImages[cid];
-        var attachInfo = uploadZohoAttachment(blob, accessToken, accountId, true);
-        if (attachInfo) {
-          attachInfo["contentId"] = cid; // Required for CID mapping
-          attachInfo["isInline"] = true;
-          zohoAttachments.push(attachInfo);
+      for (var placeholder in options.inlineImages) {
+        var blob = options.inlineImages[placeholder];
+        var info = uploadZohoAttachment(blob, accessToken, accountId, true);
+        if (info) {
+          info["isInline"] = true;
+          info["fileName"] = info.attachmentName; // Backup key
+          zohoAttachments.push(info);
+          
+          // CRITICAL: Replace placeholder with the actual CID Zoho assigned
+          payload.content = payload.content.replace(placeholder, "cid:" + info.attachmentName);
+          console.log("Mapped placeholder " + placeholder + " to cid:" + info.attachmentName);
         }
       }
     }
@@ -1969,12 +1978,11 @@ function sendZohoEmail(options) {
       "toAddress": options.to,
       "subject": options.subject,
       "content": options.htmlBody,
-      "mailFormat": "html"
+      "mailFormat": "html",
+      "attachments": zohoAttachments
     };
 
-    if (zohoAttachments.length > 0) {
-      payload["attachments"] = zohoAttachments;
-    }
+    console.log("Zoho Send FINAL Payload: " + JSON.stringify(payload));
 
     console.log("Zoho Send Payload: " + JSON.stringify(payload));
 
@@ -2030,12 +2038,12 @@ function getZohoAccessToken(config) {
  * Učitava datoteku na Zoho server (potrebno za privitke).
  */
 function uploadZohoAttachment(blob, accessToken, accountId, isInline) {
-  var url = "https://mail.zoho.eu/api/accounts/" + accountId + "/messages/attachments";
+  // Try lowercase 'isinline' which is common in newer Zoho API versions
+  var url = "https://mail.zoho.eu/api/accounts/" + accountId + "/messages/attachments?isinline=" + (isInline ? "true" : "false");
   
   var payload = {
-    "uploadType": "multipart",
-    "isInline": isInline ? "true" : "false",
-    "attach": blob
+    "attach": blob,
+    "isinline": isInline ? "true" : "false"
   };
 
   var response = UrlFetchApp.fetch(url, {
@@ -2048,7 +2056,8 @@ function uploadZohoAttachment(blob, accessToken, accountId, isInline) {
   });
 
   var resJSON = response.getContentText();
-  console.log("Zoho Upload Response: " + resJSON);
+  console.log("Zoho Upload [" + blob.getName() + "] Status: " + response.getResponseCode());
+  console.log("Zoho Response: " + resJSON);
   
   var res = JSON.parse(resJSON);
   if (res.data && res.data.length > 0) {
@@ -2056,7 +2065,8 @@ function uploadZohoAttachment(blob, accessToken, accountId, isInline) {
     return {
       "storeName": data.storeName,
       "attachmentName": data.attachmentName,
-      "attachmentPath": data.attachmentPath
+      "attachmentPath": data.attachmentPath,
+      "isInline": isInline || false
     };
   }
   return null;
@@ -2066,12 +2076,36 @@ function uploadZohoAttachment(blob, accessToken, accountId, isInline) {
  * Centralno mjesto za konfiguraciju (sigurno pohranjeno).
  */
 function getZohoConfig() {
-  return {
+  var props = PropertiesService.getScriptProperties();
+  var accountId = props.getProperty("ZOHO_ACCOUNT_ID");
+  
+  var config = {
     clientId: "1000.A3PDPBPN8U2PUIDIWWJNQ1SEP1SA5B",
     clientSecret: "81db097b1ccca18bbfa18297e9fc5a40b3caa799c4",
     refreshToken: "1000.f6545a5ca136ed9079358eaaa554e89e.d197a5edca672277508098a572885584",
-    accountId: "8195587000000002002"
+    accountId: accountId || "8195587000000002002"
   };
+
+  // If no account ID is stored, try to fetch it once
+  if (!accountId) {
+    try {
+      var token = getZohoAccessToken(config);
+      var response = UrlFetchApp.fetch("https://mail.zoho.eu/api/accounts", {
+        headers: { "Authorization": "Bearer " + token }
+      });
+      var data = JSON.parse(response.getContentText());
+      if (data.data && data.data.length > 0) {
+        accountId = data.data[0].accountId;
+        props.setProperty("ZOHO_ACCOUNT_ID", accountId);
+        config.accountId = accountId;
+        console.log("Automatically detected Zoho Account ID: " + accountId);
+      }
+    } catch (e) {
+      console.log("Failed to auto-detect Account ID: " + e.message);
+    }
+  }
+
+  return config;
 }
 
 
