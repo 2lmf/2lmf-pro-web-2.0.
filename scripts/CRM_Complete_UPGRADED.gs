@@ -1019,16 +1019,16 @@ function generateHtml(items, name, isAutoReply, inquiryId, color, isHidro, subje
              
              // PDF SPECIFIC OVERRIDES
              "@media print { " +
-               "html, body { height: 100%; margin: 0 !important; padding: 0 !important; overflow: hidden; display: flex; flex-direction: column; }" +
-               ".page-wrapper { height: 100vh; display: flex; flex-direction: column; flex: 1; }" +
-               ".container { flex: 1; display: flex; flex-direction: column; width: 100%; max-width: none; }" +
-               ".content { flex: 1; }" +
+               "html, body { height: auto !important; margin: 0 !important; padding: 0 !important; overflow: visible !important; }" +
+               ".page-wrapper { min-height: 100%; display: block; }" +
+               ".container { width: 100%; max-width: none; background: #fff !important; }" +
+               ".content { padding: 20px 0; }" +
                ".header { background: #fff !important; border-bottom: 2px solid #333 !important; } " +
                ".th { background: #eee !important; color: #000 !important; } " +
-               ".total-block { background: #fff !important; border: 2px solid #333 !important; } " +
-               ".footer { background: #fff !important; border-top: 2px solid #333 !important; position: relative; bottom: 0; width: 100%; box-sizing: border-box; margin-top: auto; flex-shrink: 0; } " +
+               ".total-block, .note, .qr-box { page-break-inside: avoid; } " +
+               ".footer { background: #fff !important; border-top: 1px solid #333 !important; position: relative; width: 100%; margin-top: 50px; } " +
              "} " + 
-             "</style></head><body><div class='page-wrapper'>" +
+             "</style></head><body><div class='page-wrapper' style='padding: 20px;'>" +
              // --- NEW INV24 STYLE HEADER ---
              "<table width='100%' cellpadding='0' cellspacing='0' border='0' style='margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 20px;'>" +
              "<tr>" +
@@ -1067,9 +1067,8 @@ function generateHtml(items, name, isAutoReply, inquiryId, color, isHidro, subje
              "<h1 style='font-size: 26px; font-weight: 800; color: #000; margin: 0; text-transform: uppercase;'>" + title + " br. " + inquiryId + "</h1>" +
              "</div>" +
 
-             "<div class='content'>" +
-             "<div class='content'>" +
-             "<table class='table-wrapper'><thead><tr class='tr-h'><th class='th' style='width:40%'>STAVKA</th><th class='th' style='text-align:center;'>JED. CIJENA</th><th class='th' style='text-align:center;'>KOL.</th><th class='th' style='text-align:right;'>UKUPNO</th></tr></thead><tbody>";
+             "<div class='content' style='padding: 0 20px;'>" +
+             "<table class='table-wrapper' style='width: 100%; border-collapse: collapse; margin-top: 10px;'><thead><tr class='tr-h'><th class='th' style='width:40%'>STAVKA</th><th class='th' style='text-align:center;'>JED. CIJENA</th><th class='th' style='text-align:center;'>KOL.</th><th class='th' style='text-align:right;'>UKUPNO</th></tr></thead><tbody>";
 
     items.forEach(function(item) {
         var lineTotal = 0; if (item.line_total) lineTotal = item.line_total; else lineTotal = (parseFloat(item.qty) || 0) * (parseFloat(item.price_sell) || 0);
@@ -1087,10 +1086,12 @@ function generateHtml(items, name, isAutoReply, inquiryId, color, isHidro, subje
         html += "<div class='note'><b>Uvjeti kupnje:</b><br><ul style='margin-top:5px; padding-left:20px; margin-bottom:10px;'><li>Plaćanje: avans - uplatom na žiro račun</li><li>Minimalni iznos kupovine: 200,00 eur</li><li>Sve cijene su sa PDV-om*</li></ul></div>";
     }
 
-    // QR Code logic: Using Base64 URI for PDF stability
-    if (!isAutoReply && qrDataUri && !isInvoice) {
-        html += "<div class='qr-box'><img src='" + qrDataUri + "' style='width:150px;'>" +
-                "<div style='margin-top:10px; font-size:11px; color:#666; font-weight:bold;'>SKENIRAJ I PLATI (HUB3 STANDARD)</div></div>";
+    // QR Code logic: Using Base64 URI for PDF stability (Show only for Offers)
+    if (qrDataUri && !isInvoice) {
+        html += "<div class='qr-box' style='margin-top: 40px; border: 1px dashed #ccc; padding: 25px; border-radius: 12px; background: #fff;'>" +
+                "<img src='" + qrDataUri + "' style='width:180px; height: 180px; display: block; margin: 0 auto;'>" +
+                "<div style='margin-top: 15px; font-size: 11px; color: #333; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;'>SKENIRAJ I PLATI (HUB3 STANDARD)</div>" +
+                "<div style='font-size: 9px; color: #888; margin-top: 5px;'>2LMF PRO - Sigurno plaćanje putem mobilnog bankarstva</div></div>";
     }
 
     html += "</div></div><div class='footer'>" +
