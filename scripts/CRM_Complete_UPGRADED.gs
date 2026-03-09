@@ -997,7 +997,7 @@ function generateHtml(items, name, isAutoReply, inquiryId, color, isHidro, subje
   if (oib) kupacHtml += "<br>OIB: " + oib;
 
   var html = "<!DOCTYPE html><html><head>" +
-             "<link href='https://fonts.googleapis.com/css2?family=Montserrat:wght@800&family=Inter:wght@400;600;700&display=swap' rel='stylesheet'>" +
+             "<link href='https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Montserrat:wght@800&family=Inter:wght@400;600;700&display=swap' rel='stylesheet'>" +
              "<style>" +
              "body { margin:0; padding:0; background-color: " + (isAutoReply ? "#fff" : "#f8f9fa") + "; font-family: 'Inter', " + fontStack + "; }" +
              ".page-wrapper { }" +
@@ -1033,7 +1033,8 @@ function generateHtml(items, name, isAutoReply, inquiryId, color, isHidro, subje
              "<table width='100%' cellpadding='0' cellspacing='0' border='0' style='margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 20px;'>" +
              "<tr>" +
              "<td style='vertical-align: top;'>" +
-             "<div style='font-family: \"Montserrat\", sans-serif; font-size: 32px; font-weight: 800; color: #000; letter-spacing: 2px;'>" +
+             // LOGO - ORBITRON STYLE
+             "<div style='font-family: \"Orbitron\", sans-serif; font-size: 32px; font-weight: 900; color: #000; letter-spacing: 3px;'>" +
              "2LMF <span style='color: " + primaryColor + ";'>PRO</span>" +
              "</div>" +
              "<div style='font-size: 10px; color: #666; margin-top: 5px; text-transform: uppercase; letter-spacing: 1px;'>HIDRO & TERMO IZOLACIJA • FASADE • OGRADE</div>" +
