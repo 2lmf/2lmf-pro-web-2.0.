@@ -826,12 +826,13 @@ function sendCustomOffer(isMobile) {
   // SAVE TO DRIVE
   savePdfToDrive(pdfBlob, "Ponude za plaćanje");
 
-  // Prepare QR Blob for Zoho (Placeholder will be replaced inside sendZohoEmail)
+  // Prepare QR Blob for Zoho
   var inlineImages = {};
+  var emailHtml = htmlBody;
   if (qrBlob && qrDataUri) {
     qrBlob.setName("qrcode.png");
-    inlineImages["{{QR_CODE_PLACEHOLDER}}"] = qrBlob;
-    emailHtml = htmlBody.replace(qrDataUri, "{{QR_CODE_PLACEHOLDER}}");
+    inlineImages["QR_CODE_CID"] = qrBlob;
+    emailHtml = htmlBody.replace(qrDataUri, "cid:QR_CODE_CID");
   }
 
   // --- SEND EMAIL via ZOHO MAIL API ---
@@ -1940,6 +1941,8 @@ function sendZohoEmail(options) {
     var accountId = config.accountId;
     var apiBase = "https://mail.zoho.eu/api/accounts/" + accountId;
 
+    var zohoAttachments = [];
+    
     // 2. Prepare INITIAL Email Body
     var payload = {
       "fromAddress": "info@2lmf-pro.hr",
@@ -1949,9 +1952,6 @@ function sendZohoEmail(options) {
       "mailFormat": "html",
       "attachments": zohoAttachments
     };
-
-    // 1. Upload Attachments & Inline Images
-    // Handle Normal Attachments
     if (options.attachments && options.attachments.length > 0) {
       options.attachments.forEach(function(blob) {
         var info = uploadZohoAttachment(blob, accessToken, accountId, false);
@@ -1972,7 +1972,8 @@ function sendZohoEmail(options) {
           zohoAttachments.push(info);
           
           // REPLACE Placeholder with ACTUAL CID
-          payload.content = payload.content.replace(new RegExp(placeholder, 'g'), "cid:" + info.attachmentName);
+          // We use global search to be sure
+          payload.content = payload.content.split(placeholder).join("cid:" + info.attachmentName);
           console.log("Mapped placeholder " + placeholder + " to cid:" + info.attachmentName);
         }
       }
