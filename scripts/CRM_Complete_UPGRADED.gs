@@ -826,7 +826,7 @@ function sendCustomOffer(isMobile) {
   // SAVE TO DRIVE
   savePdfToDrive(pdfBlob, "Ponude za plaćanje");
 
-  // SEND EMAIL with Inline QR
+  // Prepare Email Body for CID
   var emailHtml = htmlBody;
   var inlineImages = {};
   if (qrBlob && qrDataUri) {
@@ -834,14 +834,29 @@ function sendCustomOffer(isMobile) {
     inlineImages["qrCode"] = qrBlob;
   }
 
-  MailApp.sendEmail({
+  // --- SEND EMAIL via ZOHO MAIL API ---
+  var sendOptions = {
     to: email,
     subject: "Službena Ponuda - 2LMF PRO",
     htmlBody: emailHtml,
     inlineImages: inlineImages,
     attachments: [pdfBlob],
     name: "2LMF PRO"
-  });
+  };
+
+  var success = sendZohoEmail(sendOptions);
+  
+  if (!success) {
+    console.log("Zoho failed, falling back to Gmail...");
+    MailApp.sendEmail({
+      to: email,
+      subject: "Službena Ponuda - 2LMF PRO (Backup)",
+      htmlBody: emailHtml,
+      inlineImages: inlineImages,
+      attachments: [pdfBlob],
+      name: "2LMF PRO"
+    });
+  }
   
   // Update Status in Log
   var id = sheetGen.getRange("B3").getValue();
@@ -900,13 +915,27 @@ function sendCustomInvoice(isMobile) {
   // SAVE TO DRIVE
   var pdfDriveUrl = savePdfToDrive(pdfBlob, "Izlazni računi");
 
-  MailApp.sendEmail({
+  // --- SEND EMAIL via ZOHO MAIL API ---
+  var sendOptions = {
     to: email,
     subject: "Račun br. " + docId + " - 2LMF PRO",
     htmlBody: htmlBody,
     attachments: [pdfBlob],
     name: "2LMF PRO"
-  });
+  };
+
+  var success = sendZohoEmail(sendOptions);
+  
+  if (!success) {
+    console.log("Zoho failed, falling back to Gmail...");
+    MailApp.sendEmail({
+      to: email,
+      subject: "Račun br. " + docId + " - 2LMF PRO (Backup)",
+      htmlBody: htmlBody,
+      attachments: [pdfBlob],
+      name: "2LMF PRO"
+    });
+  }
   
   var data = sheetLog.getDataRange().getValues();
   for (var i = 1; i < data.length; i++) {
@@ -1892,4 +1921,151 @@ function generateProfessionalHtml(type, data) {
     </div>
   `;
 }
+
+// ==========================================
+// --- ZOHO MAIL API INTEGRATION (v3.0) ---
+// ==========================================
+
+/**
+ * Glavna funkcija za slanje maila preko Zoho-a.
+ * Automatski rješava autentifikaciju i upload privitaka.
+ */
+function sendZohoEmail(options) {
+  try {
+    var config = getZohoConfig();
+    var accessToken = getZohoAccessToken(config);
+    if (!accessToken) throw new Error("Could not get Zoho Access Token");
+
+    var accountId = config.accountId;
+    var apiBase = "https://mail.zoho.eu/api/accounts/" + accountId;
+
+    // 1. Upload Attachments & Inline Images
+    var zohoAttachments = [];
+    
+    // Handle Attachments
+    if (options.attachments && options.attachments.length > 0) {
+      options.attachments.forEach(function(blob) {
+        var attachInfo = uploadZohoAttachment(blob, accessToken, accountId, false);
+        if (attachInfo) zohoAttachments.push(attachInfo);
+      });
+    }
+
+    // Handle Inline Images (CID)
+    if (options.inlineImages) {
+      for (var cid in options.inlineImages) {
+        var blob = options.inlineImages[cid];
+        var attachInfo = uploadZohoAttachment(blob, accessToken, accountId, true);
+        if (attachInfo) {
+          attachInfo["contentId"] = cid;
+          zohoAttachments.push(attachInfo);
+        }
+      }
+    }
+
+    // 2. Prepare Email Body
+    var payload = {
+      "fromAddress": "info@2lmf-pro.hr",
+      "toAddress": options.to,
+      "subject": options.subject,
+      "content": options.htmlBody,
+      "mailFormat": "html"
+    };
+
+    if (zohoAttachments.length > 0) {
+      payload["attachments"] = zohoAttachments;
+    }
+
+    // 3. Send Email
+    var response = UrlFetchApp.fetch(apiBase + "/messages", {
+      "method": "post",
+      "contentType": "application/json",
+      "headers": {
+        "Authorization": "Bearer " + accessToken
+      },
+      "payload": JSON.stringify(payload),
+      "muteHttpExceptions": true
+    });
+
+    var result = JSON.parse(response.getContentText());
+    if (result.status && result.status.code === 200) {
+      console.log("Zoho Email Sent Successfully to " + options.to);
+      return true;
+    } else {
+      console.log("Zoho API Error: " + response.getContentText());
+      return false;
+    }
+
+  } catch (e) {
+    console.log("CRITICAL ZOHO ERROR: " + e.message);
+    return false;
+  }
+}
+
+/**
+ * Dohvaća privremeni Access Token koristeći Refresh Token.
+ */
+function getZohoAccessToken(config) {
+  var url = "https://accounts.zoho.eu/oauth/v2/token";
+  var payload = {
+    "refresh_token": config.refreshToken,
+    "client_id": config.clientId,
+    "client_secret": config.clientSecret,
+    "grant_type": "refresh_token"
+  };
+
+  var response = UrlFetchApp.fetch(url, {
+    "method": "post",
+    "payload": payload,
+    "muteHttpExceptions": true
+  });
+
+  var res = JSON.parse(response.getContentText());
+  return res.access_token || null;
+}
+
+/**
+ * Učitava datoteku na Zoho server (potrebno za privitke).
+ */
+function uploadZohoAttachment(blob, accessToken, accountId, isInline) {
+  var url = "https://mail.zoho.eu/api/accounts/" + accountId + "/messages/attachments";
+  if (isInline) url += "?isInline=true";
+  
+  var payload = {
+    "attach": blob
+  };
+
+  var response = UrlFetchApp.fetch(url, {
+    "method": "post",
+    "headers": {
+      "Authorization": "Bearer " + accessToken
+    },
+    "payload": payload,
+    "muteHttpExceptions": true
+  });
+
+  var res = JSON.parse(response.getContentText());
+  if (res.data && res.data.length > 0) {
+    var data = res.data[0];
+    return {
+      "storeName": data.storeName,
+      "attachmentName": data.attachmentName,
+      "attachmentPath": data.attachmentPath,
+      "isInline": isInline || false
+    };
+  }
+  return null;
+}
+
+/**
+ * Centralno mjesto za konfiguraciju (sigurno pohranjeno).
+ */
+function getZohoConfig() {
+  return {
+    clientId: "1000.A3PDPBPN8U2PUIDIWWJNQ1SEP1SA5B",
+    clientSecret: "81db097b1ccca18bbfa18297e9fc5a40b3caa799c4",
+    refreshToken: "1000.f6545a5ca136ed9079358eaaa554e89e.d197a5edca672277508098a572885584",
+    accountId: "8195587000000002002"
+  };
+}
+
 
