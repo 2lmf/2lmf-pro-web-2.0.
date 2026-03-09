@@ -2108,4 +2108,31 @@ function getZohoConfig() {
   return config;
 }
 
+/**
+ * TESTNA FUNKCIJA - Pokreni ovo u Apps Script editoru za provjeru!
+ */
+function testZohoConnection() {
+  console.log("--- ZAPOČINJEM ZOHO TEST ---");
+  try {
+    var config = getZohoConfig();
+    console.log("Korišten Account ID: " + config.accountId);
+    
+    var token = getZohoAccessToken(config);
+    if (token) {
+      console.log("✅ USPJEH: Access Token dohvaćen!");
+      
+      // Pokušaj dohvatiti info o profilu
+      var response = UrlFetchApp.fetch("https://mail.zoho.eu/api/accounts", {
+        headers: { "Authorization": "Bearer " + token }
+      });
+      console.log("✅ ODGOVOR SERVERA: " + response.getContentText().substring(0, 100) + "...");
+    } else {
+      console.log("❌ GREŠKA: Token je prazan. Provjeri Client ID/Secret/Refresh Token.");
+    }
+  } catch (e) {
+    console.log("❌ KRITIČNA GREŠKA: " + e.message);
+  }
+  console.log("--- TEST ZAVRŠEN ---");
+}
+
 
