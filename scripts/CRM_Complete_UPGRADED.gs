@@ -1068,14 +1068,7 @@ function generateHtml(items, name, isAutoReply, inquiryId, color, isHidro, subje
              "</div>" +
 
              "<div class='content'>" +
-              (color ? 
-                "<div style='margin-bottom:25px; display:flex; align-items:center; background:#f9f9f9; padding:15px; border-radius:8px; border:1px solid #eee;'>" +
-                "<div style='width:35px; height:35px; background:" + primaryColor + "; border-radius:6px; margin-right:15px; border:2px solid #fff; box-shadow:0 1px 3px rgba(0,0,0,0.1);'></div>" +
-                "<div>" +
-                "<div style='font-size:10px; color:#888; text-transform:uppercase; letter-spacing:1px;'>" + (isHidro ? "Konfiguracija sustava" : "Odabrana opcija") + "</div>" +
-                "<div style='font-size:15px; font-weight:bold; color:#333;'>" + (isHidro ? color : (isNaN(parseInt(color)) ? color : ("RAL " + color))) + "</div>" +
-                "</div>" +
-                "</div>" : "") +
+             "<div class='content'>" +
              "<table class='table-wrapper'><thead><tr class='tr-h'><th class='th' style='width:40%'>STAVKA</th><th class='th' style='text-align:center;'>JED. CIJENA</th><th class='th' style='text-align:center;'>KOL.</th><th class='th' style='text-align:right;'>UKUPNO</th></tr></thead><tbody>";
 
     items.forEach(function(item) {
