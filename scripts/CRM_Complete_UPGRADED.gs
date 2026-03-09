@@ -1029,13 +1029,44 @@ function generateHtml(items, name, isAutoReply, inquiryId, color, isHidro, subje
                ".footer { background: #fff !important; border-top: 2px solid #333 !important; position: relative; bottom: 0; width: 100%; box-sizing: border-box; margin-top: auto; flex-shrink: 0; } " +
              "} " + 
              "</style></head><body><div class='page-wrapper'>" +
-             "<table width='100%' cellpadding='0' cellspacing='0' border='0' style='max-width: 650px; margin: 0 auto;'><tr>" +
-             "<td style='padding: 30px 20px 20px 20px; font-size: 14px; color: #333; line-height: 1.6; vertical-align: top;'>" + kupacHtml + "</td>" +
-             "<td style='padding: 30px 20px 20px 20px; font-size: 14px; color: #333; line-height: 1.6; text-align: right; vertical-align: top; white-space: nowrap;'>Datum i vrijeme izdavanja:<br><b>" + Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "dd.MM.yyyy., HH:mm") + "</b></td>" +
-             "</tr></table>" +
-             "<div class='container'>" +
-             "<div class='header'><h1 class='logo-text'>2LMF PRO</h1><div class='sub-header'>HIDRO & TERMO IZOLACIJA • FASADE • OGRADE</div></div>" +
-             "<div class='content'><h2 class='title'>" + title + " br. " + inquiryId + "</h2>" +
+             // --- NEW INV24 STYLE HEADER ---
+             "<table width='100%' cellpadding='0' cellspacing='0' border='0' style='margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 20px;'>" +
+             "<tr>" +
+             "<td style='vertical-align: top;'>" +
+             "<div style='font-family: \"Montserrat\", sans-serif; font-size: 32px; font-weight: 800; color: #000; letter-spacing: 2px;'>" +
+             "2LMF <span style='color: " + primaryColor + ";'>PRO</span>" +
+             "</div>" +
+             "<div style='font-size: 10px; color: #666; margin-top: 5px; text-transform: uppercase; letter-spacing: 1px;'>HIDRO & TERMO IZOLACIJA • FASADE • OGRADE</div>" +
+             "</td>" +
+             "<td style='text-align: right; vertical-align: top; font-size: 11px; color: #333; line-height: 1.5;'>" +
+             "<b>2LMF PRO j.d.o.o.</b><br>" +
+             "Orešje 7, 10090 Zagreb<br>" +
+             "OIB: 41356727940<br>" +
+             "Telefon: +385 (0) 91 111 2132<br>" +
+             "Email: info@2lmf-pro.hr" +
+             "</td>" +
+             "</tr>" +
+             "</table>" +
+             // --- CUSTOMER & METADATA BLOCK ---
+             "<table width='100%' cellpadding='0' cellspacing='0' border='0' style='margin-bottom: 30px;'>" +
+             "<tr>" +
+             "<td style='vertical-align: top; width: 60%;'>" +
+             "<div style='font-size: 11px; color: #888; margin-bottom: 5px; text-transform: uppercase; font-weight: bold;'>Kupac:</div>" +
+             "<div style='font-size: 14px; color: #000; line-height: 1.4;'>" + kupacHtml + "</div>" +
+             "</td>" +
+             "<td style='text-align: right; vertical-align: top; font-size: 12px; color: #333; line-height: 1.6;'>" +
+             "Datum i vrijeme izdavanja:<br><b>" + Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "dd.MM.yyyy., HH:mm") + "</b><br>" +
+             "Mjesto izdavanja: <b>Zagreb</b>" +
+             "</td>" +
+             "</tr>" +
+             "</table>" +
+
+             // --- CENTERED TITLE ---
+             "<div style='text-align: center; margin-bottom: 30px; border-bottom: 2px solid #eee; padding-bottom: 10px;'>" +
+             "<h1 style='font-size: 26px; font-weight: 800; color: #000; margin: 0; text-transform: uppercase;'>" + title + " br. " + inquiryId + "</h1>" +
+             "</div>" +
+
+             "<div class='content'>" +
               (color ? 
                 "<div style='margin-bottom:25px; display:flex; align-items:center; background:#f9f9f9; padding:15px; border-radius:8px; border:1px solid #eee;'>" +
                 "<div style='width:35px; height:35px; background:" + primaryColor + "; border-radius:6px; margin-right:15px; border:2px solid #fff; box-shadow:0 1px 3px rgba(0,0,0,0.1);'></div>" +
