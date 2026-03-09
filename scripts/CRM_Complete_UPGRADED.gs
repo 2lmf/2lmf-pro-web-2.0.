@@ -1940,16 +1940,23 @@ function sendZohoEmail(options) {
     var accountId = config.accountId;
     var apiBase = "https://mail.zoho.eu/api/accounts/" + accountId;
 
+    // 2. Prepare INITIAL Email Body
+    var payload = {
+      "fromAddress": "info@2lmf-pro.hr",
+      "toAddress": options.to,
+      "subject": options.subject,
+      "content": options.htmlBody,
+      "mailFormat": "html",
+      "attachments": zohoAttachments
+    };
+
     // 1. Upload Attachments & Inline Images
-    var zohoAttachments = [];
-    
     // Handle Normal Attachments
     if (options.attachments && options.attachments.length > 0) {
       options.attachments.forEach(function(blob) {
         var info = uploadZohoAttachment(blob, accessToken, accountId, false);
         if (info) {
           info["isInline"] = false;
-          info["fileName"] = info.attachmentName;
           zohoAttachments.push(info);
         }
       });
@@ -1962,25 +1969,14 @@ function sendZohoEmail(options) {
         var info = uploadZohoAttachment(blob, accessToken, accountId, true);
         if (info) {
           info["isInline"] = true;
-          info["fileName"] = info.attachmentName; // Backup key
           zohoAttachments.push(info);
           
-          // CRITICAL: Replace placeholder with the actual CID Zoho assigned
-          payload.content = payload.content.replace(placeholder, "cid:" + info.attachmentName);
+          // REPLACE Placeholder with ACTUAL CID
+          payload.content = payload.content.replace(new RegExp(placeholder, 'g'), "cid:" + info.attachmentName);
           console.log("Mapped placeholder " + placeholder + " to cid:" + info.attachmentName);
         }
       }
     }
-
-    // 2. Prepare Email Body
-    var payload = {
-      "fromAddress": "info@2lmf-pro.hr",
-      "toAddress": options.to,
-      "subject": options.subject,
-      "content": options.htmlBody,
-      "mailFormat": "html",
-      "attachments": zohoAttachments
-    };
 
     console.log("Zoho Send FINAL Payload: " + JSON.stringify(payload));
 
@@ -2133,6 +2129,34 @@ function testZohoConnection() {
     console.log("❌ KRITIČNA GREŠKA: " + e.message);
   }
   console.log("--- TEST ZAVRŠEN ---");
+}
+
+/**
+ * FULL TEST - Šalje pravi mail s PDF-om!
+ */
+function testZohoFullSend() {
+  console.log("--- POKREĆEM FULL SEND TEST ---");
+  var userEmail = "2lmf.info@gmail.com"; // Tvoj testni mail
+  
+  // Test PDF
+  var pdfBlob = Utilities.newBlob("Ovo je testni PDF dokument.", "application/pdf", "Test_Dokument.pdf");
+  
+  // Test HTML s placeholderom za sliku (iako je nema, testiramo slanje)
+  var html = "<h1>Zoho Test</h1><p>Ovo je testni mail poslan direktno iz Apps Scripta.</p><p>PDF bi trebao biti u privitku.</p>";
+  
+  var options = {
+    to: userEmail,
+    subject: "ZOHO FULL SEND TEST 🦈🔥",
+    htmlBody: html,
+    attachments: [pdfBlob]
+  };
+  
+  var success = sendZohoEmail(options);
+  if (success) {
+    console.log("✅ Mail je uspješno predan Zoho API-ju!");
+  } else {
+    console.log("❌ Mail NIJE poslan. Provjeri gornje logove za grešku.");
+  }
 }
 
 
