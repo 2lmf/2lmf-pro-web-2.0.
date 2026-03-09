@@ -814,7 +814,10 @@ function sendCustomOffer(isMobile) {
   // For now, let's assume if the color field contains "HIDRO" it's a hidro offer.
   // A more robust solution might involve a dedicated field or parsing the items.
   var isHidro = String(color || "").toUpperCase().indexOf("HIDRO") !== -1;
-  var htmlBody = generateHtml(items, name, false, inquiryId, color, isHidro, "Službena Ponuda - 2LMF PRO", address, oib);
+  var result = generateHtml(items, name, false, inquiryId, color, isHidro, "Službena Ponuda - 2LMF PRO", address, oib);
+  var htmlBody = result.html;
+  var qrBlob = result.qrBlob;
+  var qrDataUri = result.qrDataUri;
   
   // PDF GENERATION
   var pdfBlob = HtmlService.createHtmlOutput(htmlBody).setTitle("Ponuda").getAs('application/pdf');
@@ -823,11 +826,19 @@ function sendCustomOffer(isMobile) {
   // SAVE TO DRIVE
   savePdfToDrive(pdfBlob, "Ponude za plaćanje");
 
-  // SEND EMAIL
+  // SEND EMAIL with Inline QR
+  var emailHtml = htmlBody;
+  var inlineImages = {};
+  if (qrBlob && qrDataUri) {
+    emailHtml = htmlBody.replace(qrDataUri, "cid:qrCode");
+    inlineImages["qrCode"] = qrBlob;
+  }
+
   MailApp.sendEmail({
     to: email,
     subject: "Službena Ponuda - 2LMF PRO",
-    htmlBody: htmlBody,
+    htmlBody: emailHtml,
+    inlineImages: inlineImages,
     attachments: [pdfBlob],
     name: "2LMF PRO"
   });
@@ -880,7 +891,8 @@ function sendCustomInvoice(isMobile) {
   }
   
   var isHidro = String(color || "").toUpperCase().indexOf("HIDRO") !== -1;
-  var htmlBody = generateHtml(items, name, false, docId, color, isHidro, "Račun br. "+docId + " - 2LMF PRO", address, oib);
+  var result = generateHtml(items, name, false, docId, color, isHidro, "Račun br. "+docId + " - 2LMF PRO", address, oib);
+  var htmlBody = result.html;
   
   var pdfBlob = HtmlService.createHtmlOutput(htmlBody).setTitle("Racun").getAs('application/pdf');
   pdfBlob.setName("Racun_" + docId + ".pdf");
@@ -965,10 +977,11 @@ function generateHtml(items, name, isAutoReply, inquiryId, color, isHidro, subje
 
   // --- BASE64 QR FOR PDF RELIABILITY ---
   var qrDataUri = "";
+  var qrBlob = null;
   if (!isAutoReply) {
     try {
       var qrUrl = "https://quickchart.io/qr?size=250&text=" + encodeURIComponent(qrContent);
-      var qrBlob = UrlFetchApp.fetch(qrUrl).getBlob();
+      qrBlob = UrlFetchApp.fetch(qrUrl).getBlob();
       qrDataUri = "data:image/png;base64," + Utilities.base64Encode(qrBlob.getBytes());
     } catch(e) {
       console.log("QR Fetch failed: " + e);
@@ -1101,7 +1114,11 @@ function generateHtml(items, name, isAutoReply, inquiryId, color, isHidro, subje
             "Privredna banka Zagreb d.d. | Radnička cesta 50, 10000 Zagreb, Hrvatska<br>" +
             "Broj bankovnog računa: IBAN: <b>HR3123400091111213241</b>" +
             "</div></div></body></html>";
-    return html;
+    return {
+      html: html,
+      qrBlob: qrBlob,
+      qrDataUri: qrDataUri
+    };
 }
 
 // --- HELPER: ENRICH ITEMS WITH COSTS (Backend Logic) ---
