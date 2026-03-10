@@ -1099,7 +1099,7 @@ function generateHtml(items, name, isAutoReply, inquiryId, color, isHidro, subje
              "<div style='font-size: 11px; color: #888; margin-bottom: 5px; text-transform: uppercase; font-weight: bold;'>Kupac:</div>" +
              "<div style='font-size: 14px; color: #000; line-height: 1.4;'>" + kupacHtml + "</div>" +
               "<div style='font-size: 11px; margin-top: 10px;'>" +
-              "Plaćanje na IBAN: <b>HR3123400091111213241</b> (OTP Banka)<br>" +
+              "Plaćanje na IBAN: <b>HR3123400091111213241</b><br>" +
               "Poziv na broj: <b>" + inquiryId + "</b>" +
               "</div>" +
              "</td>" +
