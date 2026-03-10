@@ -1143,8 +1143,8 @@ function generateHtml(items, name, isAutoReply, inquiryId, color, isHidro, subje
     }
 
     html += "</div></div><div class='footer'>" +
-            "Operater / Dokument izdao: Jelena Praštalo, OIB: 41356727940 | Način plaćanja: transakcijski račun<br>" +
-            "Članovi uprave: Jelena Praštalo, OIB: 41356727940 | Temeljni kapital: 1,00 eur, uplaćen u cijelosti<br>" +
+            "Operater / Dokument izdao: Karlo Fantoni, OIB: 80717062661 | Način plaćanja: transakcijski račun<br>" +
+            "Članovi uprave: Karlo Fantoni, OIB: 80717062661 | Temeljni kapital: 1,00 eur, uplaćen u cijelosti<br>" +
             "Sud: Upisano u Sudski registar Trgovačkog suda u Zagrebu pod brojem 081477933<br><br>" +
             "Privredna banka Zagreb d.d. | Radnička cesta 50, 10000 Zagreb, Hrvatska<br>" +
             "Broj bankovnog računa: IBAN: <b>HR3123400091111213241</b>" +
