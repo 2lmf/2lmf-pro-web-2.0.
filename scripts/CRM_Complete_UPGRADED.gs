@@ -1084,11 +1084,11 @@ function generateHtml(items, name, isAutoReply, inquiryId, color, isHidro, subje
              "<div style='font-size: 10px; color: #666; margin-top: 5px; text-transform: uppercase; letter-spacing: 1px;'>HIDRO & TERMO IZOLACIJA • FASADE • OGRADE</div>" +
              "</td>" +
              "<td style='text-align: right; vertical-align: top; font-size: 11px; color: #333; line-height: 1.5;'>" +
-             "<b>2LMF PRO j.d.o.o.</b><br>" +
-             "Orešje 7, 10090 Zagreb<br>" +
-             "OIB: 41356727940<br>" +
-             "Telefon: +385 (0) 91 111 2132<br>" +
-             "Email: info@2lmf-pro.hr" +
+              "<b>2LMF PRO j.d.o.o.</b><br>" +
+              "Orešje 7, 10090 Zagreb, Hrvatska<br>" +
+              "OIB: 29766043828 ◼ MB: 081477933<br>" +
+              "Telefon: +385 95 311 5007<br>" +
+              "Email: info@2lmf-pro.hr" +
              "</td>" +
              "</tr>" +
              "</table>" +
@@ -1098,6 +1098,10 @@ function generateHtml(items, name, isAutoReply, inquiryId, color, isHidro, subje
              "<td style='vertical-align: top; width: 60%;'>" +
              "<div style='font-size: 11px; color: #888; margin-bottom: 5px; text-transform: uppercase; font-weight: bold;'>Kupac:</div>" +
              "<div style='font-size: 14px; color: #000; line-height: 1.4;'>" + kupacHtml + "</div>" +
+              "<div style='font-size: 11px; margin-top: 10px;'>" +
+              "Plaćanje na IBAN: <b>HR3123400091111213241</b> (OTP Banka)<br>" +
+              "Poziv na broj: <b>" + inquiryId + "</b>" +
+              "</div>" +
              "</td>" +
              "<td style='text-align: right; vertical-align: top; font-size: 12px; color: #333; line-height: 1.6;'>" +
              "Datum i vrijeme izdavanja:<br><b>" + Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "dd.MM.yyyy., HH:mm") + "</b><br>" +
