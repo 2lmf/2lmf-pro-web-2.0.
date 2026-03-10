@@ -831,8 +831,8 @@ function sendCustomOffer(isMobile) {
   var emailHtml = htmlBody;
   if (qrBlob && qrDataUri) {
     qrBlob.setName("qrcode.png");
-    inlineImages["QR_CODE_CID"] = qrBlob;
-    emailHtml = htmlBody.replace(qrDataUri, "cid:QR_CODE_CID");
+    inlineImages["{{QR_BARCODE}}"] = qrBlob;
+    emailHtml = htmlBody.replace(qrDataUri, "{{QR_BARCODE}}");
   }
 
   // --- SEND EMAIL via ZOHO MAIL API ---
@@ -849,11 +849,13 @@ function sendCustomOffer(isMobile) {
   
   if (!success) {
     console.log("Zoho failed, falling back to Gmail...");
+    // Gmail fallback needs cid: prefix in HTML
+    var gmailHtml = emailHtml.replace("{{QR_BARCODE}}", "cid:qrcode.png");
     MailApp.sendEmail({
       to: email,
-      subject: "Službena Ponuda - 2LMF PRO (Backup)",
-      htmlBody: emailHtml,
-      inlineImages: inlineImages,
+      subject: "Službena Ponuda - 2LMF PRO", // Removed (Backup)
+      htmlBody: gmailHtml,
+      inlineImages: { "qrcode.png": qrBlob },
       attachments: [pdfBlob],
       name: "2LMF PRO"
     });
@@ -932,7 +934,7 @@ function sendCustomInvoice(isMobile) {
     console.log("Zoho failed, falling back to Gmail...");
     MailApp.sendEmail({
       to: email,
-      subject: "Račun br. " + docId + " - 2LMF PRO (Backup)",
+      subject: "Račun br. " + docId + " - 2LMF PRO", // Removed (Backup)
       htmlBody: htmlBody,
       attachments: [pdfBlob],
       name: "2LMF PRO"
@@ -1965,17 +1967,17 @@ function sendZohoEmail(options) {
     // Handle Inline Images (CID)
     if (options.inlineImages) {
       for (var placeholder in options.inlineImages) {
-        var blob = options.inlineImages[placeholder];
-        var info = uploadZohoAttachment(blob, accessToken, accountId, true);
-        if (info) {
-          info["isInline"] = true;
-          zohoAttachments.push(info);
-          
-          // REPLACE Placeholder with ACTUAL CID
-          // We use global search to be sure
-          payload.content = payload.content.split(placeholder).join("cid:" + info.attachmentName);
-          console.log("Mapped placeholder " + placeholder + " to cid:" + info.attachmentName);
-        }
+         var blob = options.inlineImages[placeholder];
+         var info = uploadZohoAttachment(blob, accessToken, accountId, true);
+         if (info) {
+           info["isInline"] = true;
+           zohoAttachments.push(info);
+           
+           // Replace placeholder (e.g. {{QR_BARCODE}}) with cid:filename
+           var targetCid = "cid:" + info.attachmentName;
+           payload.content = payload.content.split(placeholder).join(targetCid);
+           console.log("Zoho: Replaced " + placeholder + " with " + targetCid);
+         }
       }
     }
 
@@ -2136,27 +2138,40 @@ function testZohoConnection() {
  * FULL TEST - Šalje pravi mail s PDF-om!
  */
 function testZohoFullSend() {
-  console.log("--- POKREĆEM FULL SEND TEST ---");
-  var userEmail = "2lmf.info@gmail.com"; // Tvoj testni mail
+  console.log("--- POKREĆEM FULL SEND TEST (v3.2) ---");
+  var userEmail = "2lmf.info@gmail.com"; 
   
   // Test PDF
   var pdfBlob = Utilities.newBlob("Ovo je testni PDF dokument.", "application/pdf", "Test_Dokument.pdf");
   
-  // Test HTML s placeholderom za sliku (iako je nema, testiramo slanje)
-  var html = "<h1>Zoho Test</h1><p>Ovo je testni mail poslan direktno iz Apps Scripta.</p><p>PDF bi trebao biti u privitku.</p>";
+  // Test QR (dummy image)
+  var qrBlob = Utilities.newBlob("DUMMY_QR_DATA", "image/png", "qrcode.png");
+  
+  // Test HTML s placeholderom
+  var html = "<h1>Zoho Test v3.2</h1><p>Barkod ispod ovog teksta:</p><p>{{QR_BARCODE}}</p><p>PDF u privitku.</p>";
   
   var options = {
     to: userEmail,
-    subject: "ZOHO FULL SEND TEST 🦈🔥",
+    subject: "ZOHO TEST - " + Utilities.formatDate(new Date(), "GMT+1", "HH:mm:ss"),
     htmlBody: html,
+    inlineImages: { "{{QR_BARCODE}}": qrBlob },
     attachments: [pdfBlob]
   };
   
   var success = sendZohoEmail(options);
   if (success) {
-    console.log("✅ Mail je uspješno predan Zoho API-ju!");
+    console.log("✅ Mail uspješno predan Zoho-u!");
   } else {
-    console.log("❌ Mail NIJE poslan. Provjeri gornje logove za grešku.");
+    console.log("❌ Zoho failed, falling back to Gmail (No Backup tag)...");
+    var gmailHtml = html.replace("{{QR_BARCODE}}", "cid:qrcode");
+    MailApp.sendEmail({
+      to: userEmail,
+      subject: options.subject,
+      htmlBody: gmailHtml,
+      inlineImages: { "qrcode": qrBlob },
+      attachments: [pdfBlob],
+      name: "2LMF PRO"
+    });
   }
 }
 
