@@ -48,8 +48,9 @@
                     window.location = url;
                 }
             };
+            // NAPOMENA: AW- ID i Label su placeholderi. Koristimo GA4 događaje za praćenje konverzija.
             gtag('event', 'conversion', {
-                'send_to': 'AW-XXXXXXXXXX/YYYYYYYYYYYY',
+                'send_to': 'G-M46VSK431N', 
                 'event_callback': callback
             });
         }
@@ -1646,6 +1647,21 @@
                                         gtag_report_conversion();
                                     }
 
+                                    // GA4 CUSTOM EVENTS
+                                    if (typeof gtag === 'function') {
+                                        console.log("SharkAds: Tracking GA4 events (SUBMIT_LEAD_FORM, REQUEST_QUOTE)...");
+                                        gtag('event', 'SUBMIT_LEAD_FORM', {
+                                            'event_category': 'Engagement',
+                                            'event_label': moduleName,
+                                            'value': 1.0
+                                        });
+                                        gtag('event', 'REQUEST_QUOTE', {
+                                            'event_category': 'Conversion',
+                                            'event_label': moduleName,
+                                            'value': 1.0
+                                        });
+                                    }
+
                                     resolve(res);
                                 }
                             })
@@ -1666,13 +1682,26 @@
                         }).then(() => {
                             alert("✅ Upit je poslan! (GitHub Mode)");
 
-                            // GOOGLE ADS CONVERSION TRIGGER
-                            if (typeof gtag_report_conversion === 'function') {
-                                console.log("SharkAds: Tracking successful conversion (GitHub Mode)...");
-                                gtag_report_conversion();
-                            }
+                             // GOOGLE ADS CONVERSION TRIGGER
+                             if (typeof gtag_report_conversion === 'function') {
+                                 console.log("SharkAds: Tracking successful conversion (GitHub Mode)...");
+                                 gtag_report_conversion(); // Trigger Google Ads conversion
+                             }
 
-                            resolve({ result: 'success' });
+                             // GA4 CUSTOM EVENTS (GitHub Mode)
+                             if (typeof gtag === 'function') {
+                                 console.log("SharkAds: Tracking GA4 events (GitHub Mode)...");
+                                 gtag('event', 'SUBMIT_LEAD_FORM', {
+                                     'module': moduleName,
+                                     'source': 'CalculatorV2_GitHub'
+                                 });
+                                 gtag('event', 'REQUEST_QUOTE', {
+                                     'module': moduleName,
+                                     'source': 'CalculatorV2_GitHub'
+                                 });
+                             }
+
+                             resolve({ result: 'success' });
                         }).catch(err => {
                             console.error("Fetch error:", err);
                             alert("Greška pri slanju na GitHubu. Provjerite konzolu.");
