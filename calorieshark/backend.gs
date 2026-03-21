@@ -88,25 +88,26 @@ function analyzeWithGemini(params) {
   const apiKey = PropertiesService.getScriptProperties().getProperty("GEMINI_API_KEY");
   if (!apiKey) throw new Error("Nedostaje GEMINI_API_KEY.");
 
-  // Pokušat ćemo više modela dok jedan ne uspije (zbog 404 grešaka na nekim računima)
-  const modelsToTry = [
-    "gemini-1.5-flash",
-    "gemini-1.5-pro",
-    "gemini-1.5-flash-latest",
-    "gemini-pro-vision" // Legacy backup
+  // Najširi mogući izbor modela i verzija
+  const configurations = [
+    { ver: "v1beta", model: "gemini-1.5-flash" },
+    { ver: "v1",     model: "gemini-1.5-flash" },
+    { ver: "v1beta", model: "gemini-1.5-pro" },
+    { ver: "v1",     model: "gemini-1.5-pro" },
+    { ver: "v1beta", model: "gemini-pro" },
+    { ver: "v1",     model: "gemini-pro" }
   ];
 
-  let lastError = null;
+  let errors = [];
 
-  for (const modelName of modelsToTry) {
+  for (const config of configurations) {
     try {
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
+      const url = `https://generativelanguage.googleapis.com/${config.ver}/models/${config.model}:generateContent?key=${apiKey}`;
       
       const systemInstruction = `
-        MORAŠ VRATITI ISKLJUČIVO STROGI JSON BEZ MARKDOWN BLOKOVA.
-        Ti si "Shark Advisor" – ton ti je DUHOVIT, BRUTALAN i IZRAVAN.
-        Analiziraj sliku/tekst i vrati JSON sa 'items' i 'sharkComment'.
-        Imena na HRVATSKOM.
+        TI SI SHARK ADVISOR ZA CALORIESHARK. Tvoj ton je BRUTALAN, DUHOVIT i ISKREN.
+        VRATI ISKLJUČIVO JSON OBJEKT {"items": [], "sharkComment": ""}. 
+        NEMA MARKDOWN BLOKOVA.
       `;
 
       let parts = [{ text: systemInstruction }];
@@ -118,9 +119,9 @@ function analyzeWithGemini(params) {
           }
         });
       }
-      if (params.textDescription) parts.push({ text: "Kontekst: " + params.textDescription });
+      if (params.textDescription) parts.push({ text: "Korisnik: " + params.textDescription });
       if (params.userGoal || params.userStatus) {
-        parts.push({ text: `CIILJ: ${params.userGoal}. STATUS: ${params.userStatus}` });
+        parts.push({ text: `Cilj: ${params.userGoal}. Status: ${params.userStatus}` });
       }
 
       const options = {
@@ -131,23 +132,26 @@ function analyzeWithGemini(params) {
       };
 
       const response = UrlFetchApp.fetch(url, options);
-      const responseData = JSON.parse(response.getContentText());
+      const responseCode = response.getResponseCode();
+      const responseText = response.getContentText();
+      const responseData = JSON.parse(responseText);
 
-      if (response.getResponseCode() === 200 && !responseData.error) {
+      if (responseCode === 200 && !responseData.error) {
         const aiText = responseData.candidates[0].content.parts[0].text;
-        let cleanedText = aiText.replace(/```json/g, "").replace(/```/g, "").trim();
+        const cleanedText = aiText.replace(/```json/g, "").replace(/```/g, "").trim();
         return JSON.parse(cleanedText);
       } else {
-        lastError = responseData.error ? responseData.error.message : "Status code: " + response.getResponseCode();
-        continue; // Probaj sljedeći model
+        const msg = responseData.error ? `${config.model}(${config.ver}): ${responseData.error.message}` : `${config.model}(${config.ver}): HTTP ${responseCode}`;
+        errors.push(msg);
+        continue;
       }
     } catch (e) {
-      lastError = e.toString();
+      errors.push(`${config.model}(${config.ver}): ${e.toString()}`);
       continue;
     }
   }
 
-  throw new Error("Svi Gemini modeli su zakazali (404/Greška). Zadnja greška: " + lastError);
+  throw new Error("Svi AI pokušaji su zakazali. Provjeri API ključ u AI Studio. Detalji grešaka: " + errors.join(" | "));
 }
 
 // ==========================================
