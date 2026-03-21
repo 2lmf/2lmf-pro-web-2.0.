@@ -86,89 +86,68 @@ function doPost(e) {
 // ==========================================
 function analyzeWithGemini(params) {
   const apiKey = PropertiesService.getScriptProperties().getProperty("GEMINI_API_KEY");
-  
-  if (!apiKey) {
-    throw new Error("Nedostaje GEMINI_API_KEY u Script Properties.");
-  }
+  if (!apiKey) throw new Error("Nedostaje GEMINI_API_KEY.");
 
-  const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+  // Pokušat ćemo više modela dok jedan ne uspije (zbog 404 grešaka na nekim računima)
+  const modelsToTry = [
+    "gemini-1.5-flash",
+    "gemini-1.5-pro",
+    "gemini-1.5-flash-latest",
+    "gemini-pro-vision" // Legacy backup
+  ];
 
-  // Specifičan JSON Prompt prema našem planu iz arhitekture
-  const systemInstruction = `
-    Ti si "Shark Advisor" unutar CalorieShark aplikacije – tvoj ton je DUHOVIT, BRUTALAN, IZRAVNO ISKREN i pomalo IRONIČAN. Nemaš dlake na jeziku.
-    Ako korisnik jede nešto nezdravo, a želi smršaviti, prozovi ga (ali ostani u duhu asistenta). Ako jede dobro, daj mu priznanje, ali uz dozu sarkazma.
-    
-    Zadatak ti je analizirati:
-    1. Sliku obroka (vizualna analiza)
-    2. Tekstualni/glasovni opis (kontekst, npr. "Samo sam pola pojeo")
-    3. Trenutni status korisnika (Cilj i preostale kalorije - ako su poslani)
-    
-    Tvoje procjene gramaže moraju biti realne za restoranske porcije. 
-    Imena namirnica MORAJU BITI NA HRVATSKOM (npr. "Burek", "Ćevapi", "Miješana salata").
+  let lastError = null;
 
-    MORAŠ vratiti isključivo strogi, validni JSON format BEZ markdown blokova (```json) i bez ikakvog popratnog teksta:
-    {
-      "items": [
-        {
-          "name": "Ime na HR",
-          "estimatedWeightG": broj,
-          "kcalPer100g": broj,
-          "macrosPer100g": {"carbs": broj, "protein": broj, "fat": broj}
-        }
-      ],
-      "sharkComment": "Tvoj duhoviti/brutalni komentar na hrvatskom jeziku (max 200 znakova)."
-    }
-  `;
+  for (const modelName of modelsToTry) {
+    try {
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
+      
+      const systemInstruction = `
+        MORAŠ VRATITI ISKLJUČIVO STROGI JSON BEZ MARKDOWN BLOKOVA.
+        Ti si "Shark Advisor" – ton ti je DUHOVIT, BRUTALAN i IZRAVAN.
+        Analiziraj sliku/tekst i vrati JSON sa 'items' i 'sharkComment'.
+        Imena na HRVATSKOM.
+      `;
 
-  let parts = [{ text: systemInstruction }];
-
-  if (params.imageBase64) {
-    const cleanBase64 = params.imageBase64.replace(/^data:image\/(png|jpeg|webp);base64,/, "");
-    parts.push({
-      inlineData: {
-        mimeType: "image/jpeg",
-        data: cleanBase64
+      let parts = [{ text: systemInstruction }];
+      if (params.imageBase64) {
+        parts.push({
+          inlineData: {
+            mimeType: "image/jpeg",
+            data: params.imageBase64.replace(/^data:image\/(png|jpeg|webp);base64,/, "")
+          }
+        });
       }
-    });
-  }
-
-  if (params.textDescription) {
-    parts.push({ text: "Korisnikov dodatni opis/kontekst: " + params.textDescription });
-  }
-
-  if (params.userGoal || params.userStatus) {
-    parts.push({ text: `KONTEKST KORISNIKA: Cilj je ${params.userGoal || 'mršavljenje'}. Današnji status: ${params.userStatus || 'tek počinje'}. Na temelju ovoga prilagodi svoj 'sharkComment'.` });
-  }
-
-  const requestBody = {
-    contents: [
-      {
-        parts: parts
+      if (params.textDescription) parts.push({ text: "Kontekst: " + params.textDescription });
+      if (params.userGoal || params.userStatus) {
+        parts.push({ text: `CIILJ: ${params.userGoal}. STATUS: ${params.userStatus}` });
       }
-    ],
-    generationConfig: {
-      temperature: 0.7
+
+      const options = {
+        method: "POST",
+        contentType: "application/json",
+        payload: JSON.stringify({ contents: [{ parts: parts }], generationConfig: { temperature: 0.7 } }),
+        muteHttpExceptions: true
+      };
+
+      const response = UrlFetchApp.fetch(url, options);
+      const responseData = JSON.parse(response.getContentText());
+
+      if (response.getResponseCode() === 200 && !responseData.error) {
+        const aiText = responseData.candidates[0].content.parts[0].text;
+        let cleanedText = aiText.replace(/```json/g, "").replace(/```/g, "").trim();
+        return JSON.parse(cleanedText);
+      } else {
+        lastError = responseData.error ? responseData.error.message : "Status code: " + response.getResponseCode();
+        continue; // Probaj sljedeći model
+      }
+    } catch (e) {
+      lastError = e.toString();
+      continue;
     }
-  };
-
-  const options = {
-    method: "POST",
-    contentType: "application/json",
-    payload: JSON.stringify(requestBody),
-    muteHttpExceptions: true
-  };
-
-  const response = UrlFetchApp.fetch(url, options);
-  const responseData = JSON.parse(response.getContentText());
-
-  if (response.getResponseCode() !== 200 || responseData.error) {
-    throw new Error("Gemini API Error: " + JSON.stringify(responseData.error));
   }
 
-  // Ekstrahiranje JSON odgovora iz Geminija
-  // Gemini će vratiti string koji je čisti JSON ili JSON unutar markdown bloka
-  let cleanedText = aiText.replace(/```json/g, "").replace(/```/g, "").trim();
-  return JSON.parse(cleanedText);
+  throw new Error("Svi Gemini modeli su zakazali (404/Greška). Zadnja greška: " + lastError);
 }
 
 // ==========================================
