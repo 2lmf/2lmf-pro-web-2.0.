@@ -91,7 +91,7 @@ function analyzeWithGemini(params) {
     throw new Error("Nedostaje GEMINI_API_KEY u Script Properties.");
   }
 
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;
+  const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
 
   // Specifičan JSON Prompt prema našem planu iz arhitekture
   const systemInstruction = `
