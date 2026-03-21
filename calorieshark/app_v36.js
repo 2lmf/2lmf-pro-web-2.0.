@@ -623,14 +623,16 @@ function loadProfile() {
         if (inpSHeight) inpSHeight.value = userProfile.height || 180;
         if (inpSWeight) inpSWeight.value = userProfile.weight || 85;
 
-        // Populate active gender & lang
+        // Populate active gender, lang & goal
         document.querySelectorAll('.toggle-btn').forEach(btn => {
             if (btn.dataset.gender === userProfile.gender) {
                 btn.classList.add('active');
             } else if (btn.dataset.lang === userProfile.lang) {
                 btn.classList.add('active');
+            } else if (btn.dataset.goal === userProfile.goal) {
+                btn.classList.add('active');
             } else {
-                if (btn.dataset.gender || btn.dataset.lang) {
+                if (btn.dataset.gender || btn.dataset.lang || btn.dataset.goal) {
                     btn.classList.remove('active');
                 }
             }
@@ -2821,6 +2823,39 @@ function setupExerciseEvents() {
         // Instant spremanje na server (i u lokalni dnevnik)
         saveMealToServer();
     });
+}
+
+function renderSharkPersona() {
+    const container = document.getElementById('sharkAdvisorContainer');
+    const msgEl = document.getElementById('sharkMessage');
+    if (!container || !msgEl) return;
+
+    if (!userProfile.goal) userProfile.goal = 'lose';
+
+    // Različiti nivoi statusa prema kalorijama
+    const target = userProfile.tdee || 2000;
+    const eaten = dailyData.totalKcal || 0;
+    const pct = eaten / target;
+
+    let state = 'low';
+    if (pct > 0.4 && pct <= 0.8) state = 'mid';
+    else if (pct > 0.8 && pct <= 1.0) state = 'high';
+    else if (pct > 1.0) state = 'over';
+
+    const phrases = sharkAdvisorPhrases[userProfile.goal] ? sharkAdvisorPhrases[userProfile.goal][state] : [];
+    if (phrases && phrases.length > 0) {
+        // Nasumični odabir iz baze
+        const randomIdx = Math.floor(Math.random() * phrases.length);
+        msgEl.textContent = phrases[randomIdx];
+    }
+}
+
+function triggerSharkAnimation() {
+    const container = document.getElementById('sharkAdvisorContainer');
+    if (!container) return;
+    container.classList.remove('active');
+    void container.offsetWidth;
+    container.classList.add('active');
 }
 
 // Boot
