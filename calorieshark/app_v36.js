@@ -1936,10 +1936,15 @@ function drawPendingMealUI() {
     let totalKcal = 0;
 
     currentUnsavedMeal.items.forEach((item, index) => {
-        // Izračun trenutnih kalorija na bazi procijenjene gramaže
+        // Izračun trenutnih kalorija i makrosa na bazi procijenjene gramaže
         const factor = item.estimatedWeightG / 100;
         const currentKcal = Math.round(item.kcalPer100g * factor);
         totalKcal += currentKcal;
+
+        // Izračun makrosa
+        const p = Math.round((item.macrosPer100g ? item.macrosPer100g.protein : 0) * factor);
+        const u = Math.round((item.macrosPer100g ? item.macrosPer100g.carbs : 0) * factor);
+        const m = Math.round((item.macrosPer100g ? item.macrosPer100g.fat : 0) * factor);
 
         // Provjeri je li item favorit
         if (!userProfile.favorites) userProfile.favorites = [];
@@ -1956,17 +1961,17 @@ function drawPendingMealUI() {
                 </button>
             </div>
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                <span style="color:var(--accent-cyan); font-weight:bold;">${currentKcal} kcal</span>
-                ${item.kcalPer100g > 0 ? `
-                <span style="font-size:0.9rem; color:var(--text-muted); text-align:center;">
-                    <i class="fas fa-balance-scale"></i> ${Math.abs(item.kcalPer100g)} kcal / 100g
-                </span>
-                ` : ''}
+                <span style="color:var(--accent-cyan); font-weight:bold; font-size:1.1rem;">${currentKcal} kcal</span>
+                <div style="display:flex; gap:4px;">
+                    <span class="macro-badge badge-p">P: ${p}g</span>
+                    <span class="macro-badge badge-u">U: ${u}g</span>
+                    <span class="macro-badge badge-m">M: ${m}g</span>
+                </div>
             </div>
-            <div style="display:flex; align-items:center; gap:10px;">
+            <div style="display:flex; align-items:center; gap:10px; padding-top:10px; border-top:1px solid rgba(255,255,255,0.05);">
                 <label style="font-size:0.8rem; color:var(--text-muted);">${i18n('meal_weight_label')}</label>
                 <input type="number" class="gram-input" data-index="${index}" value="${item.estimatedWeightG}" style="width:70px; padding:5px; border-radius:4px; border:1px solid var(--border-color); background:#FAFCFF; color:#2C3E50; text-align:center;">
-                <span style="font-size:0.8rem; color:var(--text-muted);">${item.kcalPer100g > 0 ? 'g' : ''}</span>
+                <span style="font-size:0.8rem; color:var(--text-muted);">${item.kcalPer100g !== 0 ? 'g' : ''}</span>
                 <button class="icon-btn btn-delete-pending" data-index="${index}" style="margin-left:auto; color:#FF2A2A; padding:5px; border:none; background:transparent;"><i class="fas fa-times"></i></button>
             </div>
         </div>`;
@@ -1977,13 +1982,28 @@ function drawPendingMealUI() {
     const headerIcon = isExercise ? "fa-running" : "fa-robot";
     const confirmBtnTxt = isExercise ? i18n('meal_confirm_ex') : i18n('meal_confirm');
 
+    // Shark Comment unutar kutije
+    let sharkComment = currentUnsavedMeal.sharkComment || "";
+    if (!sharkComment) {
+        // Generiraj dinamički ako AI nije poslao (ili na promjenu gramaže)
+        sharkComment = getDynamicSharkComment(totalKcal);
+    }
+
     // Ubacujemo dinamični naslov na dno nakon zbrajanja
     let finalHtml = `<div class="pending-meal">
         <h3 style="color:${isExercise ? '#00D084' : 'var(--accent-cyan)'}; margin-bottom:15px;"><i class="fas ${headerIcon}"></i> ${headerTitle}</h3>
         ${html}
-        <div style="display:flex; justify-content:space-between; align-items:center; margin: 20px 0; padding-top:15px; border-top: 1px solid var(--border-color);">
-            <strong style="font-size:1.2rem;">${i18n('meal_total')}</strong>
-            <strong style="font-size:1.5rem; color:${isExercise ? '#00D084' : 'var(--accent-orange)'};">${Math.abs(totalKcal)} kcal</strong>
+        
+        <div class="shark-inline-bubble">
+            <i class="fas fa-shark"></i>
+            <p id="sharkPendingMessage">${sharkComment}</p>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:10px; margin: 20px 0; padding-top:15px; border-top: 1px solid var(--border-color);">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <strong style="font-size:1.2rem;">${i18n('meal_total')}</strong>
+                <strong style="font-size:1.5rem; color:${isExercise ? '#00D084' : 'var(--accent-orange)'};">${Math.abs(totalKcal)} kcal</strong>
+            </div>
         </div>
         ${!isExercise ? `<button id="btnAddMissingItem" class="secondary-btn" style="width:100%; margin-bottom:15px; font-size:0.9rem; border: 1px dashed var(--accent-cyan); color: var(--accent-cyan);"><i class="fas fa-plus"></i> ${i18n('meal_add_missing_btn')}</button>` : ''}
         <button id="btnConfirmMeal" class="primary-btn" style="background:${isExercise ? '#00D084' : 'var(--accent-orange)'};"><i class="fas fa-check"></i> ${confirmBtnTxt}</button>
@@ -1998,6 +2018,10 @@ function drawPendingMealUI() {
             const idx = e.target.getAttribute('data-index');
             const newGrams = parseInt(e.target.value) || 0;
             currentUnsavedMeal.items[idx].estimatedWeightG = newGrams;
+
+            // Očisti stari AI komentar jer se gramaža promjenila - trigaj novi dinamički
+            currentUnsavedMeal.sharkComment = null;
+
             drawPendingMealUI(); // Re-render to update calculations
         });
     });
@@ -2710,14 +2734,30 @@ function renderStatsUI(meals) {
 
         let mealDesc = meal.items.map(i => `${i.name} (${i.estimatedWeightG}g)`).join(', ');
 
+        // Sumiranje makrosa za povijest
+        let pTotal = 0, uTotal = 0, mTotal = 0;
+        meal.items.forEach(i => {
+            const f = (i.estimatedWeightG || 100) / 100;
+            if (i.macrosPer100g) {
+                pTotal += (i.macrosPer100g.protein || 0) * f;
+                uTotal += (i.macrosPer100g.carbs || 0) * f;
+                mTotal += (i.macrosPer100g.fat || 0) * f;
+            }
+        });
+
         html += `
-        <div style="background: var(--bg-card); padding: 10px; border-radius: 6px; margin-bottom: 5px; border-left: 3px solid var(--text-muted); display:flex; justify-content:space-between; align-items:center;">
+        <div style="background: var(--bg-card); padding: 12px; border-radius: 8px; margin-bottom: 8px; border-left: 3px solid var(--text-muted); display:flex; justify-content:space-between; align-items:center;">
             <div style="flex:1;">
-                <div style="font-size:0.75rem; color:var(--text-muted);"><i class="fas fa-clock"></i> ${meal.time}</div>
-                <div style="font-size:0.9rem; color:var(--text-main); line-height:1.2;">${mealDesc}</div>
+                <div style="font-size:0.7rem; color:var(--text-muted); margin-bottom:4px;"><i class="fas fa-clock"></i> ${meal.time}</div>
+                <div style="font-size:0.9rem; color:var(--text-main); line-height:1.2; font-weight:500;">${mealDesc}</div>
+                <div style="display:flex; gap:6px; margin-top:6px; opacity:0.8;">
+                    <span style="font-size:0.7rem; color:var(--accent-orange);">P: ${Math.round(pTotal)}g</span>
+                    <span style="font-size:0.7rem; color:var(--accent-cyan);">U: ${Math.round(uTotal)}g</span>
+                    <span style="font-size:0.7rem; color:#FF2A2A;">M: ${Math.round(mTotal)}g</span>
+                </div>
             </div>
-            <div style="font-size:1rem; font-weight:bold; color:var(--accent-orange); margin-left:10px;">
-                ${Math.round(meal.totals.kcal)} <span style="font-size:0.6rem; color:var(--text-muted);">kcal</span>
+            <div style="font-size:1.1rem; font-weight:900; color:var(--accent-orange); margin-left:15px; text-align:right;">
+                ${Math.round(meal.totals.kcal)} <span style="font-size:0.6rem; color:var(--text-muted); display:block;">kcal</span>
             </div>
         </div>
         `;
@@ -2826,6 +2866,23 @@ function setupExerciseEvents() {
         // Instant spremanje na server (i u lokalni dnevnik)
         saveMealToServer();
     });
+}
+
+function getDynamicSharkComment(currentKcal) {
+    if (!userProfile.goal) userProfile.goal = 'lose';
+
+    const target = userProfile.tdee || 2000;
+    const dailySoFar = dailyData.totalKcal || 0;
+    const totalPotential = dailySoFar + currentKcal;
+    const pct = totalPotential / target;
+
+    let state = 'low';
+    if (pct > 0.4 && pct <= 0.8) state = 'mid';
+    else if (pct > 0.8 && pct <= 1.0) state = 'high';
+    else if (pct > 1.0) state = 'over';
+
+    const phrases = sharkAdvisorPhrases[userProfile.goal] ? sharkAdvisorPhrases[userProfile.goal][state] : ["Zanimljivo..."];
+    return phrases[Math.floor(Math.random() * phrases.length)];
 }
 
 function renderSharkPersona() {
