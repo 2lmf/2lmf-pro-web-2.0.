@@ -611,4 +611,94 @@ body {
     border-radius: 16px;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
     animation: fadeInSlide 0.3s ease-out;
+
+    /* Shark Advisor Styles */
+    .shark-advisor-container {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin: 20px 0;
+        padding: 15px;
+        background: rgba(255, 255, 255, 0.6);
+        border-radius: 20px;
+        border: 1px solid rgba(0, 168, 181, 0.1);
+        animation: fadeInSlide 0.6s ease-out;
+    }
+
+    .shark-avatar {
+        position: relative;
+        width: 60px;
+        height: 60px;
+        flex-shrink: 0;
+    }
+
+    .shark-avatar img {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        border: 2px solid var(--accent-orange);
+        object-fit: cover;
+        background: white;
+    }
+
+    .shark-badge {
+        position: absolute;
+        bottom: -5px;
+        right: -5px;
+        background: var(--accent-cyan);
+        color: white;
+        font-size: 0.6rem;
+        padding: 2px 6px;
+        border-radius: 10px;
+        font-weight: 900;
+    }
+
+    .shark-bubble {
+        position: relative;
+        background: white;
+        padding: 12px 18px;
+        border-radius: 15px;
+        border-bottom-left-radius: 2px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        flex: 1;
+    }
+
+    .shark-bubble p {
+        font-size: 0.85rem;
+        line-height: 1.4;
+        color: var(--text-main);
+        font-style: italic;
+        margin: 0;
+    }
+
+    .shark-bubble::after {
+        content: '';
+        position: absolute;
+        left: -10px;
+        bottom: 0;
+        width: 0;
+        height: 0;
+        border-right: 10px solid white;
+        border-top: 10px solid transparent;
+    }
+
+    @keyframes sharkPop {
+        0% {
+            transform: scale(0.8);
+            opacity: 0;
+        }
+
+        70% {
+            transform: scale(1.1);
+        }
+
+        100% {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+
+    .shark-advisor-container.active {
+        animation: sharkPop 0.5s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+    }
 }

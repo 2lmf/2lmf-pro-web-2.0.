@@ -24,6 +24,10 @@ const TRANSLATIONS = {
         onb_height: "Visina (cm)",
         onb_weight: "Trenutna težina (kg)",
         onb_diet: "Prehrambene navike (Opcionalno)",
+        onb_goal: "Tvoj Cilj",
+        goal_lose: "MRŠAVLJENJE",
+        goal_maintain: "ODRŽAVANJE",
+        goal_gain: "MASA",
         diet_gf: "Bez Glutena",
         onb_start: "ZAPOČNI",
         set_save: "SPREMI PROMJENE",
@@ -103,6 +107,10 @@ const TRANSLATIONS = {
         onb_height: "Height (cm)",
         onb_weight: "Current weight (kg)",
         onb_diet: "Dietary preferences (Optional)",
+        onb_goal: "Your Goal",
+        goal_lose: "WEIGHT LOSS",
+        goal_maintain: "MAINTENANCE",
+        goal_gain: "MUSCLE GAIN",
         diet_gf: "Gluten Free",
         onb_start: "START",
         set_save: "SAVE CHANGES",
@@ -240,6 +248,7 @@ let userProfile = {
     height: 180,
     weight: 85,
     tdee: 2500,
+    goal: 'lose',
     dietPrefs: {
         vege: false,
         vegan: false,
@@ -631,6 +640,15 @@ function loadProfile() {
             applyLanguage(userProfile.lang);
         }
 
+        // Populate active goal toggles
+        document.querySelectorAll('.toggle-btn').forEach(btn => {
+            if (btn.dataset.goal === userProfile.goal) {
+                btn.classList.add('active');
+            } else if (btn.dataset.goal) {
+                btn.classList.remove('active');
+            }
+        });
+
         // Populate checkboxes safely
         if (userProfile.dietPrefs) {
             const chkVege = document.getElementById('chkSetVege');
@@ -812,6 +830,17 @@ function bindEvents() {
         });
     });
 
+    // Goal Toggles
+    const goalBtns = document.querySelectorAll('#goalToggleGroup .toggle-btn, #goalToggleGroupSettings .toggle-btn');
+    goalBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const group = e.currentTarget.parentElement;
+            group.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+            e.currentTarget.classList.add('active');
+            userProfile.goal = e.currentTarget.dataset.goal;
+        });
+    });
+
     // Save Profile
     document.getElementById('btnSaveProfile').addEventListener('click', () => {
         try {
@@ -840,6 +869,10 @@ function bindEvents() {
                 vegan: chkVegan ? chkVegan.checked : false,
                 glutenFree: chkGluten ? chkGluten.checked : false
             };
+
+            // Save Goal
+            const activeGoalBtn = document.querySelector('#goalToggleGroup .toggle-btn.active');
+            userProfile.goal = activeGoalBtn ? activeGoalBtn.dataset.goal : 'lose';
 
             calculateTDEE();
             saveProfile();
@@ -934,6 +967,16 @@ function bindEvents() {
         if (chkVegan) chkVegan.checked = (userProfile.dietPrefs && userProfile.dietPrefs.vegan) || false;
         if (chkGluten) chkGluten.checked = (userProfile.dietPrefs && userProfile.dietPrefs.glutenFree) || false;
 
+        // Pre-fill goal in settings
+        const goalToggleBtns = document.querySelectorAll('#goalToggleGroupSettings .toggle-btn');
+        goalToggleBtns.forEach(btn => {
+            if (btn.dataset.goal === userProfile.goal) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
+
         showScreen('settings');
     });
 
@@ -977,6 +1020,10 @@ function bindEvents() {
                 vegan: chkVegan ? chkVegan.checked : false,
                 glutenFree: chkGluten ? chkGluten.checked : false
             };
+
+            // Save Goal from settings
+            const agg = document.querySelector('#goalToggleGroupSettings .toggle-btn.active');
+            userProfile.goal = agg ? agg.dataset.goal : 'lose';
 
             calculateTDEE();
             saveProfile(); // Use the standard saveProfile function
@@ -1388,6 +1435,7 @@ function updateDashboardUI() {
     }
 
     // Prikaz Shark Advisora
+    renderSharkPersona();
     renderSharkAdvisor();
 
     // Obavezno iscrtaj povijest
@@ -1678,7 +1726,9 @@ btnConfirmCrop.addEventListener('click', async () => {
             },
             body: JSON.stringify({
                 action: 'analyzeImage',
-                imageBase64: croppedBase64 // Šaljemo izrezani base64 umjesto originala
+                imageBase64: croppedBase64, // Šaljemo izrezani base64 umjesto originala
+                userGoal: userProfile.goal || 'lose',
+                userStatus: generateCurrentStatusText()
             })
         });
 
@@ -1761,7 +1811,9 @@ async function handleTextUpload(text) {
             body: JSON.stringify({
                 action: 'analyzeMeal',
                 textDescription: text + (currentLang === 'en' ? " (Please respond in English)" : ""),
-                language: currentLang
+                language: currentLang,
+                userGoal: userProfile.goal || 'lose',
+                userStatus: generateCurrentStatusText()
             })
         });
 
@@ -1850,8 +1902,28 @@ function renderAIResult(aiJson) {
         return;
     }
 
+    // Prikaz Shark komentara s AI-ja ako postoji
+    if (aiJson.sharkComment) {
+        const msgEl = document.getElementById('sharkMessage');
+        const container = document.getElementById('sharkAdvisorContainer');
+        if (msgEl && container) {
+            msgEl.textContent = aiJson.sharkComment;
+            container.classList.remove('active');
+            void container.offsetWidth;
+            container.classList.add('active');
+        }
+    }
+
     currentUnsavedMeal = aiJson;
     drawPendingMealUI();
+}
+
+function generateCurrentStatusText() {
+    const target = userProfile.tdee || 2000;
+    const eaten = dailyData.totalKcal || 0;
+    const remaining = target - eaten;
+    const goal = userProfile.goal === 'lose' ? 'mršavljenje' : (userProfile.goal === 'gain' ? 'masu' : 'održavanje');
+    return `Korisnik želi ${goal}. Do sada je pojeo ${Math.round(eaten)} kcal od ${Math.round(target)} kcal. Preostalo mu je još ${Math.round(remaining)} kcal.`;
 }
 
 function drawPendingMealUI() {
@@ -2004,7 +2076,9 @@ async function handleMissingItemAdd() {
             },
             body: JSON.stringify({
                 action: 'analyzeMeal',
-                textDescription: itemName
+                textDescription: itemName,
+                userGoal: userProfile.goal || 'lose',
+                userStatus: generateCurrentStatusText()
             })
         });
 
@@ -2160,6 +2234,37 @@ function applyMealToDashboard(items, totals, id = null) {
 
     saveDailyData();
     updateDashboardUI();
+}
+
+function renderSharkPersona() {
+    const msgEl = document.getElementById('sharkMessage');
+    const container = document.getElementById('sharkAdvisorContainer');
+    if (!msgEl || !container) return;
+
+    const goal = userProfile.goal || 'lose';
+    const target = userProfile.tdee || 2000;
+    const eaten = dailyData.totalKcal || 0;
+    const percent = eaten / target;
+
+    let category = 'low';
+    if (percent >= 1.1) category = 'over';
+    else if (percent >= 0.8) category = 'high';
+    else if (percent >= 0.3) category = 'mid';
+
+    // Get phrases from advisor_database.js (loaded in index.html before app.js)
+    if (typeof sharkAdvisorPhrases !== 'undefined' && sharkAdvisorPhrases[goal] && sharkAdvisorPhrases[goal][category]) {
+        const phrases = sharkAdvisorPhrases[goal][category];
+        const randomPhrase = phrases[Math.floor(Math.random() * phrases.length)];
+
+        // Only update if it's a new "render" cycle to avoid flickering, 
+        // but here we want it to feel "live" when items are added.
+        msgEl.textContent = randomPhrase;
+
+        // Trigger animation
+        container.classList.remove('active');
+        void container.offsetWidth; // trigger reflow
+        container.classList.add('active');
+    }
 }
 
 function renderDailyMeals() {

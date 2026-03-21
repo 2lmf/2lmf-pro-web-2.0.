@@ -47,7 +47,9 @@ function doPost(e) {
       // Šaljemo parametre funkciji (bilo sliku, bilo tekstualni opis)
       const result = analyzeWithGemini({
         imageBase64: data.imageBase64,
-        textDescription: data.textDescription
+        textDescription: data.textDescription,
+        userGoal: data.userGoal,
+        userStatus: data.userStatus
       });
       return ContentService.createTextOutput(JSON.stringify({ status: "success", data: result }))
         .setMimeType(ContentService.MimeType.JSON);
@@ -93,26 +95,28 @@ function analyzeWithGemini(params) {
 
   // Specifičan JSON Prompt prema našem planu iz arhitekture
   const systemInstruction = `
-    Ti si stručni nutricionist i asistent za praćenje unosa kalorija po imenu CalorieShark.
-    Zadatak ti je analizirati sliku obroka, tekstualni opis obroka, ILI restoranski meni (jelovnik slikan kamerom) i prepoznati sve namirnice i jela.
-    Ako korisnik uslika JELOVNIK (restoranski meni) ili tekstualno navede cijelo kompleksno jelo (npr. 'Burger s pomfrijem i cola'), moraš to jelo razbiti na logične komponente (Meso, Pecivo, Krompir, Umak) ili ga tretirati kao gotovo restoransko jelo, dajući najbolju stručnu procjenu prosječne restoranske gramaže za takvu porciju.
-    Tvoji odgovori (imena namirnica) MORAJU BITI ISKLJUČIVO NA HRVATSKOM JEZIKU (npr. "Pileća prsa", "Sir", "Kruh"). 
-    Ako ne postoji poznata hrvatska riječ, koristi englesku riječ uz kratko objašnjenje u zagradi na hrvatskom.
-    MORAŠ vratiti isključivo strogi, validni JSON format, bez markdown blokova i bez dodatnog objašnjavanja.
-    Format mora izgledati ovako:
+    Ti si "Shark Advisor" unutar CalorieShark aplikacije – tvoj ton je DUHOVIT, BRUTALAN, IZRAVNO ISKREN i pomalo IRONIČAN. Nemaš dlake na jeziku.
+    Ako korisnik jede nešto nezdravo, a želi smršaviti, prozovi ga (ali ostani u duhu asistenta). Ako jede dobro, daj mu priznanje, ali uz dozu sarkazma.
+    
+    Zadatak ti je analizirati:
+    1. Sliku obroka (vizualna analiza)
+    2. Tekstualni/glasovni opis (kontekst, npr. "Samo sam pola pojeo")
+    3. Trenutni status korisnika (Cilj i preostale kalorije - ako su poslani)
+    
+    Tvoje procjene gramaže moraju biti realne za restoranske porcije. 
+    Imena namirnica MORAJU BITI NA HRVATSKOM (npr. "Burek", "Ćevapi", "Miješana salata").
+
+    MORAŠ vratiti isključivo strogi, validni JSON format:
     {
       "items": [
         {
-          "name": "Ime namirnice na HRVATSKOM (npr. Pečena pileća prsa s ružmarinom)",
-          "estimatedWeightG": broj g (tvoja najbolja procjena mase na slici ILI pretvaranje mase iz poslanog teksta),
-          "kcalPer100g": broj kcal,
-          "macrosPer100g": {
-            "carbs": broj,
-            "protein": broj,
-            "fat": broj
-          }
+          "name": "Ime na HR",
+          "estimatedWeightG": broj,
+          "kcalPer100g": broj,
+          "macrosPer100g": {"carbs": broj, "protein": broj, "fat": broj}
         }
-      ]
+      ],
+      "sharkComment": "Tvoj duhoviti/brutalni komentar na hrvatskom jeziku (max 200 znakova)."
     }
   `;
 
@@ -129,7 +133,11 @@ function analyzeWithGemini(params) {
   }
 
   if (params.textDescription) {
-    parts.push({ text: "Korisnikov opis obroka: " + params.textDescription });
+    parts.push({ text: "Korisnikov dodatni opis/kontekst: " + params.textDescription });
+  }
+
+  if (params.userGoal || params.userStatus) {
+    parts.push({ text: `KONTEKST KORISNIKA: Cilj je ${params.userGoal || 'mršavljenje'}. Današnji status: ${params.userStatus || 'tek počinje'}. Na temelju ovoga prilagodi svoj 'sharkComment'.` });
   }
 
   const requestBody = {

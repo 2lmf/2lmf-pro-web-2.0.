@@ -224,4 +224,74 @@ const advisorMeals = [
         recipe: "Maksimalno 40g (dva reda) tamne čokolade s preko 75% kakaa.",
         recipe_en: "Maximum 40g (two rows) of dark chocolate with over 75% cocoa."
     }
+
 ];
+
+const sharkAdvisorPhrases = {
+    lose: {
+        low: [
+            "Dobro je krenulo, ali ne opuštaj se. Glad je tvoj saveznik danas.",
+            "Samo toliko? Da bar ja imam tvoju disciplinu... ili je to samo doručak?",
+            "Vidi se trud. Nastavi tako i možda ćeš se zapravo vidjeti u ogledalu."
+        ],
+        mid: [
+            "Polovica dana je gotova. Nemoj sada pokleknuti pred onim keksom.",
+            "Solidno držiš liniju. Ali pazi, ormar ti i dalje ne oprašta grijehe.",
+            "Umjereno i pametno. Skoro pa sam ponosan na tebe."
+        ],
+        high: [
+            "Približavamo se opasnoj zoni. Je li ta torta stvarno bila vrijedna?",
+            "Skoro si dosegao dno... odnosno vrh budžeta. Koči malo!",
+            "Tvoj deficit se topi brže nego sladoled na suncu. Stani!"
+        ],
+        over: [
+            "I službeno si potonuo. Sutra želim vidjeti samo salatu i suze.",
+            "Čestitam, upravo si pojeo i sutrašnji doručak. Jesi sretan sad?",
+            "Vaga vrišti u tvojoj glavi. Ja samo gledam i ne vjerujem."
+        ]
+    },
+    gain: {
+        low: [
+            "Ako misliš rasti, moraš JESTI! Ovo je za vrapca, ne za morskog psa.",
+            "Gdje su proteini? Mišići neće sami narasti od zraka.",
+            "Spavamo na poslu? Hajde, ubaci nešto konkretno u taj dnevnik."
+        ],
+        mid: [
+            "U pola si puta. Dodaj još malo mase, nemoj biti tanak.",
+            "Dobro puniš gorivo. Još jedan shake i na konju smo.",
+            "Osjeti se napredak. Ne staj sada."
+        ],
+        high: [
+            "E to se traži! Još malo pa ćemo imati biceps veći od tvoje glave.",
+            "Dobar unos. Iskoristi tu energiju na treningu, nemoj samo ležati.",
+            "Danas se gradi ozbiljna masa. Samo naprijed!"
+        ],
+        over: [
+            "Pazi da masa ne postane 'masa oko struka'. Malo smo pretjerali.",
+            "Ok, htio si dobiti na težini, ali ne sve u jednom danu!",
+            "Eksplozija kalorija! Nadam se da si bar podigao nešto teško danas."
+        ]
+    },
+    maintain: {
+        low: [
+            "Balans je ključ. Trenutno si malo previše lagan, daj si oduška.",
+            "Držiš se dobro, ali ne zaboravi pojesti dovoljno da ostaneš tu gdje jesi.",
+            "Mirno more. Sve je pod kontrolom."
+        ],
+        mid: [
+            "Savršena sredina. Točno tamo gdje morki pas voli biti.",
+            "Stabilno i sigurno. Tvoj metabolizam te voli danas.",
+            "Dobar tempo. Ni previše, ni premalo. Baš kako treba."
+        ],
+        high: [
+            "Dosegli smo limit. Sad samo održavaj tu ravnotežu.",
+            "Malo više aktivnosti ne bi škodilo ako misliš još nešto pojesti.",
+            "Na granici si. Ostani pametan do kraja dana."
+        ],
+        over: [
+            "Otišli smo malo preko ruba. Sutra se vrati u balans.",
+            "Znam da je bilo fino, ali sutra ćemo malo pripaziti, dogovoreno?",
+            "Ups, vaga bi mogla malo mrdnuti. Sutra je novi dan za ravnotežu."
+        ]
+    }
+};
