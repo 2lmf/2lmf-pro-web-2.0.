@@ -54,9 +54,6 @@
                 'event_callback': callback
             });
         }
-
-        // TESTNI DOGAĐAJ: Pokreće se odmah za provjeru veze s GA4
-        gtag('event', 'SHARK_DEBUG_INITIALIZED', { 'status': 'active' });
     </script>
 
     <!-- Schema.org Organization -->
@@ -1668,17 +1665,12 @@
                                             gtag_report_conversion();
                                         }
                                         console.log("SharkAds: Events pushed to dataLayer.");
-                                    } catch (e) {
-                                        console.error("SharkAds: Tracking error:", e);
+
+                                        const msg = res.pdfAttached ? "Upit poslan s PDF-om!" : "Upit poslan (HTML mail, PDF nije uspio).";
+                                        alert("✅ " + msg + "\nID: " + res.id);
+
+                                        resolve(res);
                                     }
-
-                                    const msg = res.pdfAttached ? "Upit poslan s PDF-om!" : "Upit poslan (HTML mail, PDF nije uspio).";
-                                    console.log("SharkAds success message:", msg);
-                                    // Sklonit ćemo alert na trenutak da vidimo utječe li na slanje
-                                    // alert("✅ " + msg + "\nID: " + res.id); 
-
-                                    resolve(res);
-                                }
                             })
                             .withFailureHandler((err) => {
                                 console.error("Server failure:", err);
