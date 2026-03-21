@@ -50,7 +50,7 @@
             };
             // NAPOMENA: AW- ID i Label su placeholderi. Koristimo GA4 događaje za praćenje konverzija.
             gtag('event', 'conversion', {
-                'send_to': 'G-M46VSK431N', 
+                'send_to': 'G-M46VSK431N',
                 'event_callback': callback
             });
         }
@@ -1638,18 +1638,9 @@
                                     alert("Greška na serveru: " + res.error);
                                     reject(res.error);
                                 } else {
-                                    const msg = res.pdfAttached ? "Upit poslan s PDF-om!" : "Upit poslan (HTML mail, PDF nije uspio).";
-                                    alert("✅ " + msg + "\nID: " + res.id);
-
-                                    // GOOGLE ADS CONVERSION TRIGGER
-                                    if (typeof gtag_report_conversion === 'function') {
-                                        console.log("SharkAds: Tracking successful conversion...");
-                                        gtag_report_conversion();
-                                    }
-
-                                    // GA4 CUSTOM EVENTS
+                                    // GA4 CUSTOM EVENTS & ADS TRIGGER (Moved before alert to avoid blocking)
                                     if (typeof gtag === 'function') {
-                                        console.log("SharkAds: Tracking GA4 events (SUBMIT_LEAD_FORM, REQUEST_QUOTE)...");
+                                        console.log("SharkAds: Tracking GA4 events for module:", moduleName);
                                         gtag('event', 'SUBMIT_LEAD_FORM', {
                                             'event_category': 'Engagement',
                                             'event_label': moduleName,
@@ -1661,6 +1652,14 @@
                                             'value': 1.0
                                         });
                                     }
+
+                                    if (typeof gtag_report_conversion === 'function') {
+                                        console.log("SharkAds: Tracking successful conversion...");
+                                        gtag_report_conversion();
+                                    }
+
+                                    const msg = res.pdfAttached ? "Upit poslan s PDF-om!" : "Upit poslan (HTML mail, PDF nije uspio).";
+                                    alert("✅ " + msg + "\nID: " + res.id);
 
                                     resolve(res);
                                 }
@@ -1680,28 +1679,26 @@
                             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                             body: new URLSearchParams(payload)
                         }).then(() => {
+                            // GA4 CUSTOM EVENTS & ADS TRIGGER (Moved before alert to avoid blocking)
+                            if (typeof gtag === 'function') {
+                                console.log("SharkAds: Tracking GA4 events (GitHub Mode) for:", moduleName);
+                                gtag('event', 'SUBMIT_LEAD_FORM', {
+                                    'module': moduleName,
+                                    'source': 'CalculatorV2_GitHub'
+                                });
+                                gtag('event', 'REQUEST_QUOTE', {
+                                    'module': moduleName,
+                                    'source': 'CalculatorV2_GitHub'
+                                });
+                            }
+
+                            if (typeof gtag_report_conversion === 'function') {
+                                console.log("SharkAds: Tracking successful conversion (GitHub Mode)...");
+                                gtag_report_conversion();
+                            }
+
                             alert("✅ Upit je poslan! (GitHub Mode)");
-
-                             // GOOGLE ADS CONVERSION TRIGGER
-                             if (typeof gtag_report_conversion === 'function') {
-                                 console.log("SharkAds: Tracking successful conversion (GitHub Mode)...");
-                                 gtag_report_conversion(); // Trigger Google Ads conversion
-                             }
-
-                             // GA4 CUSTOM EVENTS (GitHub Mode)
-                             if (typeof gtag === 'function') {
-                                 console.log("SharkAds: Tracking GA4 events (GitHub Mode)...");
-                                 gtag('event', 'SUBMIT_LEAD_FORM', {
-                                     'module': moduleName,
-                                     'source': 'CalculatorV2_GitHub'
-                                 });
-                                 gtag('event', 'REQUEST_QUOTE', {
-                                     'module': moduleName,
-                                     'source': 'CalculatorV2_GitHub'
-                                 });
-                             }
-
-                             resolve({ result: 'success' });
+                            resolve({ result: 'success' });
                         }).catch(err => {
                             console.error("Fetch error:", err);
                             alert("Greška pri slanju na GitHubu. Provjerite konzolu.");
