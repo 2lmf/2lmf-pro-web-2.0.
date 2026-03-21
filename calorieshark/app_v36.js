@@ -1789,7 +1789,9 @@ async function handleTextUpload(text) {
             };
 
             // Trenutno prebacivanje u UI (bez ikakvih napomena i čekanja)
+            renderSharkPersona(); // Dodaj drski komentar za lokalnu pizzu!
             renderAIResult(fakeAPIResponse);
+            triggerSharkAnimation();
             return; // Prekini, NE ŠALJI na Google API! Tvoj novčanik je spašen.
         }
     }
@@ -1904,16 +1906,17 @@ function renderAIResult(aiJson) {
         return;
     }
 
-    // Prikaz Shark komentara s AI-ja ako postoji
-    if (aiJson.sharkComment) {
-        const msgEl = document.getElementById('sharkMessage');
-        const container = document.getElementById('sharkAdvisorContainer');
-        if (msgEl && container) {
+    // Prikaz Shark komentara s AI-ja ako postoji, inače koristi bazu
+    const msgEl = document.getElementById('sharkMessage');
+    const container = document.getElementById('sharkAdvisorContainer');
+
+    if (msgEl && container) {
+        if (aiJson.sharkComment) {
             msgEl.textContent = aiJson.sharkComment;
-            container.classList.remove('active');
-            void container.offsetWidth;
-            container.classList.add('active');
+        } else {
+            renderSharkPersona(); // Fallback na lokalne fraze
         }
+        triggerSharkAnimation();
     }
 
     currentUnsavedMeal = aiJson;
