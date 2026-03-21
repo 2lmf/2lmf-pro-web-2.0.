@@ -106,7 +106,7 @@ function analyzeWithGemini(params) {
     Tvoje procjene gramaže moraju biti realne za restoranske porcije. 
     Imena namirnica MORAJU BITI NA HRVATSKOM (npr. "Burek", "Ćevapi", "Miješana salata").
 
-    MORAŠ vratiti isključivo strogi, validni JSON format:
+    MORAŠ vratiti isključivo strogi, validni JSON format BEZ markdown blokova (```json) i bez ikakvog popratnog teksta:
     {
       "items": [
         {
@@ -147,8 +147,7 @@ function analyzeWithGemini(params) {
       }
     ],
     generationConfig: {
-      temperature: 0.0,
-      responseMimeType: "application/json" // Nativno tjera model da vrati JSON
+      temperature: 0.7
     }
   };
 
@@ -167,10 +166,9 @@ function analyzeWithGemini(params) {
   }
 
   // Ekstrahiranje JSON odgovora iz Geminija
-  const aiText = responseData.candidates[0].content.parts[0].text;
-  
-  // Gemini će vratiti string koji je čisti JSON
-  return JSON.parse(aiText);
+  // Gemini će vratiti string koji je čisti JSON ili JSON unutar markdown bloka
+  let cleanedText = aiText.replace(/```json/g, "").replace(/```/g, "").trim();
+  return JSON.parse(cleanedText);
 }
 
 // ==========================================
