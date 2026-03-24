@@ -7,11 +7,27 @@
     <link rel="canonical" href="https://2lmf-pro.hr/" />
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-M46VSK431N"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=AW-5327504092"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
         function gtag() { dataLayer.push(arguments); }
         gtag('js', new Date());
         gtag('config', 'G-M46VSK431N');
+        gtag('config', 'AW-5327504092');
+
+        // Helper function for conversions
+        function gtagSendEvent(url) {
+            var callback = function () {
+                if (typeof url === 'string') {
+                    window.location = url;
+                }
+            };
+            gtag('event', 'conversion_event_submit_lead_form_1', {
+                'event_callback': callback,
+                'event_timeout': 2000
+            });
+            return false;
+        }
     </script>
     <title>2LMF PRO | Arhitektura, nabava materijala & digitalna rješenja</title>
     <!-- Favicon / App Icon -->
