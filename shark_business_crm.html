@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="hr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="canonical" href="https://2lmf-pro.hr/shark_business_crm.html" />
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-M46VSK431N"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-M46VSK431N');
+    </script>
+    <title>Shark Business CRM: Kako smo spojili Google Sheets i AI | 2LMF PRO</title>
+    <!-- Favicon / App Icon -->
+    <link rel="icon" type="image/png" href="/icons/icon-192.png">
+    <link rel="apple-touch-icon" href="/icons/icon-192.png">
+    <meta name="description"
+        content="Zašto je Shark Business CRM bolji izbor od skupih pretplata? Saznajte kako AI skeniranje i vlasništvo nad podacima mijenjaju rad na terenu.">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Outfit:wght@300;400;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-dark: #020205;
+            --accent-orange: #E67E22;
+            --accent-cyan: #00F2FF;
+            --line-color: rgba(255, 255, 255, 0.1);
+            --card-bg: rgba(255, 255, 255, 0.03);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: white;
+            font-family: 'Outfit', sans-serif;
+            line-height: 1.6;
+            padding-top: 100px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 40px;
+        }
+
+        /* --- NAVIGATION --- */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 20px 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(2, 2, 5, 0.95);
+            backdrop-filter: blur(30px);
+            z-index: 2000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .nav-logos {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 5px;
+        }
+
+        .logos-row {
+            display: flex;
+            align-items: center;
+            gap: 50px;
+        }
+
+        .branding {
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .lmf-brand {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            color: #eee;
+            font-size: 1.25rem;
+            letter-spacing: 3px;
+        }
+
+        .lmf-brand span {
+            color: var(--accent-orange);
+        }
+
+        .tagline {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.6rem;
+            letter-spacing: 5px;
+            font-weight: 900;
+            text-align: left;
+            width: 100%;
+            padding-left: 2px;
+        }
+
+        .tagline .arch {
+            color: var(--accent-orange);
+        }
+
+        .tagline .code {
+            color: var(--accent-cyan);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            color: var(--accent-orange);
+            text-decoration: none;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            padding: 5px 15px;
+            text-transform: uppercase;
+        }
+
+        .nav-links a.ss-link {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+
+        /* --- ARTICLE STYLE --- */
+        .article-header {
+            padding: 60px 0;
+            border-bottom: 1px solid var(--line-color);
+            margin-bottom: 60px;
+            text-align: center;
+        }
+
+        .label {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--accent-cyan);
+            font-size: 0.8rem;
+            letter-spacing: 4px;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.8rem;
+            line-height: 1.2;
+            margin-bottom: 20px;
+        }
+
+        .meta {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.7rem;
+            color: #666;
+            letter-spacing: 2px;
+        }
+
+        .content {
+            font-size: 1.1rem;
+            color: #ccc;
+        }
+
+        .content h2,
+        .content h3 {
+            font-family: 'Orbitron', sans-serif;
+            color: white;
+            margin: 40px 0 20px;
+        }
+
+        .content p {
+            margin-bottom: 25px;
+        }
+
+        .content ul,
+        .content ol {
+            margin-bottom: 25px;
+            padding-left: 20px;
+        }
+
+        .content li {
+            margin-bottom: 10px;
+        }
+
+        .content strong {
+            color: var(--accent-orange);
+        }
+
+        .featured-img {
+            width: 100%;
+            height: 500px;
+            object-fit: cover;
+            border: 1px solid var(--line-color);
+            margin-bottom: 40px;
+            border-radius: 12px;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--accent-cyan);
+            text-decoration: none;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.8rem;
+            margin-bottom: 40px;
+            transition: gap 0.3s;
+        }
+
+        .back-link:hover {
+            gap: 15px;
+        }
+
+        /* --- PRICING BOXES --- */
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 40px 0;
+        }
+
+        .pricing-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--line-color);
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-orange);
+        }
+
+        .pricing-card h4 {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--accent-orange);
+            margin-bottom: 15px;
+        }
+
+        .price {
+            font-size: 2rem;
+            font-family: 'Orbitron', sans-serif;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .pricing-card ul {
+            list-style: none;
+            padding: 0;
+            text-align: left;
+            font-size: 0.9rem;
+        }
+
+        .pricing-card li {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .pricing-card li i {
+            color: var(--accent-cyan);
+            font-size: 0.8rem;
+        }
+
+        .cta-consult {
+            display: inline-block;
+            background: var(--accent-orange);
+            color: #000;
+            text-decoration: none;
+            padding: 15px 30px;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: bold;
+            border-radius: 5px;
+            margin-top: 20px;
+            text-transform: uppercase;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .cta-consult:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 20px rgba(230, 126, 34, 0.3);
+            color: #fff;
+        }
+
+        /* --- FOOTER --- */
+        .seo-footer {
+            background: #000;
+            padding: 40px 0;
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            margin-top: 100px;
+        }
+
+        .seo-footer .hashtags {
+            font-size: 0.65rem;
+            font-style: italic;
+            opacity: 0.3;
+            line-height: 1.8;
+            color: #aaa;
+            letter-spacing: 1px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 40px;
+        }
+
+        .copyright {
+            background: #000;
+            color: #fff;
+            text-align: center;
+            padding: 30px 0;
+            font-weight: 900;
+            font-family: 'Orbitron';
+            font-size: 0.75rem;
+            letter-spacing: 3px;
+        }
+    </style>
+</head>
+
+<body>
+    <nav>
+        <div class="nav-logos">
+            <div class="logos-row">
+                <a href="index.html" class="branding">
+                    <div class="lmf-brand">2LMF <span>PRO</span></div>
+                </a>
+            </div>
+            <div class="tagline"><span class="arch">ARCHITECTURAL</span> <span class="code">CODE</span></div>
+        </div>
+        <div class="nav-links">
+            <a href="blog_hub.html" class="desktop-only">ZNANJE</a>
+            <a href="digitalna_dominacija.html" class="ss-link"><span style="color:var(--accent-cyan)">SHARP</span><span
+                    style="color:var(--accent-orange)">SHARK</span></a>
+            <a href="index.html#kontakt">KONTAKT</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <a href="blog_hub.html" class="back-link"><i class="fas fa-arrow-left"></i> POVRATAK NA HUB</a>
+
+        <header class="article-header">
+            <span class="label">KNOWLEDGE HUB | CRM & AI</span>
+            <h1>Zašto je Shark Business CRM jedini alat koji treba vašem poslovanju na terenu?</h1>
+            <div class="meta">OBJAVLJENO: 24. OŽUJKA 2026. | AUTOR: 2LMF PRO DIGITAL</div>
+        </header>
+
+        <div class="content">
+            <img src="assets/shark_crm_blog.png" alt="Shark Business AI App" class="featured-img">
+
+            <p style="font-size: 1.2rem; font-weight: 300; color: #fff;">U svijetu gdje vas svaka aplikacija želi
+                "zaključati" u mjesečnu pretplatu, mi donosimo nešto sasvim drugačije. Razvili smo sustav koji nije samo
+                alat za izradu ponuda, već vaš partner koji misli umjesto vas dok ste vi u blatu, na krovu ili na
+                gradilištu.
+            </p>
+
+            <h3>Problem: Računovodstvo vs. Teren</h3>
+            <p>Većina dostupnih programa su izvrsni alati – ali za vaše <strong>knjigovođe</strong>. Oni su napravljeni
+                za sjedenje u uredu, s hrpom opcija koje vam na terenu samo smetaju. <strong>Shark Business</strong> je
+                nastao iz potrebe da se posao završi <strong>ODMAH</strong>. Dok ste kod klijenta, dok je dogovor još
+                "vruć".</p>
+
+            <hr style="border: none; border-top: 1px solid var(--line-color); margin: 40px 0;">
+
+            <h3>Pobjedničke funkcije koje štede sate rada:</h3>
+            <ul>
+                <li><strong>AI SCAN (Budućnost je stigla):</strong> Zaboravite ručno tipkanje troškova. Uslikajte račun
+                    za materijal ili benzin, a naš AI sustav će sam unijeti stavke u vašu bazu.</li>
+                <li><strong>QR CODE PLAĆANJE:</strong> Svaka ponuda sadrži dinamički 2D bar kôd. Vaš klijent samo
+                    skenira i plaća. Brže za njega, još brže za vaš račun.</li>
+                <li><strong>VLASNIŠTVO NAD PODACIMA:</strong> Podaci nisu na našem serveru, nego u <strong>VAŠEM Google
+                        Sheetu</strong>. Vi ste vlasnik svega – zauvijek.</li>
+            </ul>
+
+            <h3>Odaberite svoju brzinu rada:</h3>
+
+            <div class="pricing-grid">
+                <!-- START -->
+                <div class="pricing-card">
+                    <h4>SHARK START</h4>
+                    <span class="price">99 €</span>
+                    <p style="font-size: 0.8rem; margin-bottom: 15px;">Jednokratno</p>
+                    <ul>
+                        <li><i class="fas fa-check"></i> Google Sheet Master</li>
+                        <li><i class="fas fa-check"></i> Izvorni Apps Script</li>
+                        <li><i class="fas fa-check"></i> Video upute</li>
+                        <li><i class="fas fa-info-circle"></i> Bez podrške za Google promjene</li>
+                        <li><i class="fas fa-tools"></i> Fix fee: 50 €</li>
+                    </ul>
+                </div>
+
+                <!-- PRO -->
+                <div class="pricing-card"
+                    style="border-color: var(--accent-orange); background: rgba(230,126,34,0.05);">
+                    <h4>SHARK PRO</h4>
+                    <span class="price">249 €</span>
+                    <p style="font-size: 0.8rem; margin-bottom: 15px;">Najpopularnije</p>
+                    <ul>
+                        <li><i class="fas fa-check"></i> <strong>Full Technical Setup</strong></li>
+                        <li><i class="fas fa-check"></i> Personalizacija & Logo</li>
+                        <li><i class="fas fa-check"></i> Uvoz kataloga artikala</li>
+                        <li><i class="fas fa-check"></i> <strong>6 mj. Premium podrške</strong></li>
+                        <li><i class="fas fa-check"></i> 1-na-1 Video obuka</li>
+                    </ul>
+                </div>
+
+                <!-- PARTNER -->
+                <div class="pricing-card">
+                    <h4>SHARK PARTNER</h4>
+                    <span class="price">15 €</span>
+                    <p style="font-size: 0.8rem; margin-bottom: 15px;">Mjesečno (Osiguranje)</p>
+                    <ul>
+                        <li><i class="fas fa-check"></i> <strong>AI SCAN Modul aktivan</strong></li>
+                        <li><i class="fas fa-check"></i> Knjigovodstvena automatizacija</li>
+                        <li><i class="fas fa-check"></i> Prioritetna WA podrška</li>
+                        <li><i class="fas fa-check"></i> Redoviti updatei & backup</li>
+                        <li><i class="fas fa-check"></i> Bez brige o Google promjenama</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3>Naša "Fair Play" Garancija</h3>
+            <p>Vjerujemo u ono što gradimo. Svaki naš klijent dobiva garantiranu tehničku ispravnost sustava pri
+                isporuci. Budući da je sustav baziran na Google infrastrukturi, on je neovisan o našoj tvrtki – što vam
+                daje najveću moguću sigurnost u dugovječnost vaših podataka.</p>
+
+            <p style="text-align: center; margin-top: 40px;">
+                Trebate slično rješenje ili želite demo Shark AI skeniranja?<br>
+                <a href="index.html#kontakt" class="cta-consult">Zatražite besplatni demo!</a>
+            </p>
+        </div>
+    </div>
+
+    <footer class="seo-footer">
+        <p class="hashtags">
+            #digitalizacija #marketing #googleads #crm #pwa #aiscan #automatizacija #knjigovodstvo #2lmfpro #sharpshark
+            #terenskirad #qrkod #isplativost #vlasnistvopodataka
+        </p>
+    </footer>
+
+    <div class="copyright">
+        &copy; 2026. 2LMF <span style="color:var(--accent-orange)">PRO</span> j.d.o.o. ZAGREB, HRVATSKA
+    </div>
+</body>
+
+</html>
