@@ -269,7 +269,7 @@ function processInquiry(params) {
   try {
     // --- 1. PRAĆENJE PRVOG KLIKA U KALKULATORU ---
     if (params.action === 'log_interaction') {
-      var sheetId = SCRIPT_PROP.getProperty("SHEET_ID");
+      var sheetId = SCRIPT_PROP.getProperty("SHEET_ID") || "1YmRZMeomWxAmfi6rsLN6qKrHrrAeHOnGVbnfsZXP3w4";
       if (sheetId) {
         var ss = SpreadsheetApp.openById(sheetId);
         var sheetInterakcije = ss.getSheetByName("Interakcije");
@@ -277,7 +277,7 @@ function processInquiry(params) {
           sheetInterakcije = ss.insertSheet("Interakcije");
           sheetInterakcije.appendRow(["Vrijeme", "Modul", "Izvor"]);
         }
-        sheetInterakcije.appendRow([params.timestamp || new Date(), params.module, params.source]);
+        sheetInterakcije.appendRow([params.timestamp || new Date(), params.module || "nepoznato", params.source || "nepoznato"]);
       }
       return { result: 'success' };
     }

@@ -1704,6 +1704,12 @@
         };
 
         document.addEventListener('DOMContentLoaded', async () => {
+            // 1. Immediately determine active module from hash to prevent race condition tracking wrong module
+            const hash = window.location.hash.replace('#', '');
+            const validModules = ['ograde', 'hidro', 'fasade', 'termo', 'katalog'];
+            const defaultMod = validModules.includes(hash) ? hash : 'katalog';
+            activeModule = defaultMod; // Set global right away
+
             initNavigation();
             setupInquiryLogic();
 
@@ -1711,7 +1717,7 @@
             const trackInteraction = () => {
                 if (!sessionStorage.getItem('2lmf_interacted')) {
                     sessionStorage.setItem('2lmf_interacted', 'true');
-                    console.log("Tracking first interaction...");
+                    console.log("Tracking first interaction for:", activeModule);
 
                     const payload = {
                         action: 'log_interaction',
@@ -1724,6 +1730,7 @@
                         fetch(GOOGLE_SCRIPT_URL, {
                             method: 'POST',
                             mode: 'no-cors',
+                            keepalive: true, // ENSURE it sends even if user clicks a link and leaves page
                             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                             body: new URLSearchParams(payload)
                         }).catch(e => console.error("Tracking error:", e));
@@ -1732,21 +1739,18 @@
                     }
                 }
             };
-            const configArea = document.querySelector('.config-area');
-            if (configArea) configArea.addEventListener('click', trackInteraction, { once: true });
-            else document.body.addEventListener('click', trackInteraction, { once: true });
+
+            // Re-apply listeners to body
+            document.body.addEventListener('click', trackInteraction, { once: true });
 
             await initPriceFetch(); // Wait for prices!
-            const hash = window.location.hash.replace('#', '');
-            const validModules = ['ograde', 'hidro', 'fasade', 'termo', 'katalog'];
-            const defaultMod = validModules.includes(hash) ? hash : 'katalog';
 
             document.querySelectorAll('.v2-nav-item').forEach(n => {
-                if (n.dataset.mod === defaultMod) n.classList.add('active');
+                if (n.dataset.mod === activeModule) n.classList.add('active');
                 else n.classList.remove('active');
             });
 
-            loadModule(defaultMod);
+            loadModule(activeModule);
         });
 
         function initNavigation() {
