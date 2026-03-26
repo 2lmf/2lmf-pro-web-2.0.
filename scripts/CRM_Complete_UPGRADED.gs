@@ -190,16 +190,19 @@ function setupGeneratorLayout(sheet) {
 
 // --- 2. WEB APP HANDLER ---
 function doGet(e) {
+  console.log("📥 RECEIVED GET: " + JSON.stringify(e.parameter));
+  
   // 1. Check for API actions (e.g., from Web Kalkulator)
   if (e.parameter.action === 'get_prices') {
     var pricing = getLatestPricing();
-    // Return flat prices object as expected by kalkulator.js
     return ContentService.createTextOutput(JSON.stringify(pricing.prices))
         .setMimeType(ContentService.MimeType.JSON);
   }
   
   if (e.parameter.action === 'log_interaction') {
+    console.log("➡️ Processing log_interaction...");
     var result = processInquiry(e.parameter);
+    console.log("✅ Result: " + JSON.stringify(result));
     return ContentService.createTextOutput(JSON.stringify(result))
         .setMimeType(ContentService.MimeType.JSON);
   }
@@ -276,14 +279,19 @@ function processInquiry(params) {
     // --- 1. PRAĆENJE PRVOG KLIKA U KALKULATORU ---
     if (params.action === 'log_interaction') {
       var sheetId = SCRIPT_PROP.getProperty("SHEET_ID") || "1YmRZMeomWxAmfi6rsLN6qKrHrrAeHOnGVbnfsZXP3w4";
+      console.log("📄 Target Sheet ID: " + sheetId);
       if (sheetId) {
         var ss = SpreadsheetApp.openById(sheetId);
+        console.log("📂 Spreadsheet opened: " + ss.getName());
         var sheetInterakcije = ss.getSheetByName("Interakcije");
         if (!sheetInterakcije) {
+          console.log("➕ Creating 'Interakcije' sheet...");
           sheetInterakcije = ss.insertSheet("Interakcije");
           sheetInterakcije.appendRow(["Vrijeme", "Modul", "Izvor"]);
         }
+        console.log("✍️ Appending row...");
         sheetInterakcije.appendRow([params.timestamp || new Date(), params.module || "nepoznato", params.source || "nepoznato"]);
+        console.log("✨ Done appending!");
       }
       return { result: 'success' };
     }
