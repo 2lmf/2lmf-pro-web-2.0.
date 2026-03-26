@@ -2485,20 +2485,40 @@ function sendMailCore(ss, inquiry, type) {
       if (Array.isArray(raw) && raw.length > 0) items = raw;
     } catch(e) {}
     
+    // --- ADAPTER: Map PWA field names to CRM field names for generateHtml ---
+    var normalizedItems = items.map(function(item) {
+      return {
+        name: item.name || item.naziv || "Stavka",
+        qty: parseFloat(item.qty || item.kolicina || 0),
+        price_sell: parseFloat(item.price_sell || item.price || item.cijena || 0),
+        unit: item.unit || item.jedinica || "kom",
+        line_total: item.line_total || ((parseFloat(item.qty || item.kolicina || 0)) * (parseFloat(item.price_sell || item.price || item.cijena || 0)))
+      };
+    });
+
     var isHidro = (inquiry.subject || "").toUpperCase().indexOf("HIDRO") !== -1;
-    var result = generateProfessionalHtml(items, inquiry.name, inquiry.id, isHidro, type === "RACUN", inquiry.subject);
+    var isAutoReply = false; // PWA always sends real offers, not auto-reply
+    var subject = inquiry.subject || "";
+    if (type === "RACUN") subject = "RAČUN " + subject; // So generateHtml detects it as invoice
+
+    // Use the SAME professional generateHtml as Sheet
+    var result = generateHtml(normalizedItems, inquiry.name, isAutoReply, inquiry.id, null, isHidro, subject, null, null);
+    
     var pdfBlob = HtmlService.createHtmlOutput(result.html).setTitle(type + "_" + inquiry.id).getAs('application/pdf');
     pdfBlob.setName(type + "_" + inquiry.id + ".pdf");
     
     var mailOptions = {
       to: inquiry.email,
       subject: (type === "RACUN" ? "Račun br. " : "Ponuda - ") + inquiry.id + " | 2LMF PRO",
-      htmlBody: result.html.replace(result.qrDataUri, "cid:qrcode"),
-      inlineImages: { "qrcode": result.qrBlob },
+      htmlBody: result.html,
       attachments: [pdfBlob],
       name: "2LMF PRO"
     };
+    
+    // Attach QR as inline image if available
     if (result.qrBlob) {
+      mailOptions.htmlBody = result.html.replace(result.qrDataUri, "cid:qrcode");
+      mailOptions.inlineImages = { "qrcode": result.qrBlob };
       result.qrBlob.setName("QR_Kod_Placanje.png");
       mailOptions.attachments.push(result.qrBlob);
     }
@@ -2507,7 +2527,7 @@ function sendMailCore(ss, inquiry, type) {
     if (!success) { MailApp.sendEmail(mailOptions); success = true; }
     if (success) updateInquiryStatus(ss, inquiry.id, type === "RACUN" ? "RAČUN POSLAN" : "POSLANO");
     return success;
-  } catch(err) { return false; }
+  } catch(err) { console.error("sendMailCore error: " + err); return false; }
 }
 
 function generateProfessionalHtml(items, name, id, isHidro, isInvoice, subject) {
