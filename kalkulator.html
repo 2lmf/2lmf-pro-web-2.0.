@@ -1714,19 +1714,21 @@
             setupInquiryLogic();
 
             // --- TRACK FIRST INTERACTION ---
-            const trackInteraction = () => {
-                if (!sessionStorage.getItem('2lmf_interacted')) {
+            const trackInteraction = (e) => {
+                if (!sessionStorage.getItem('2lmf_interacted') || window.location.search.includes('debug=true')) {
                     sessionStorage.setItem('2lmf_interacted', 'true');
-                    console.log("Tracking first interaction for:", activeModule);
+                    console.log("🚀 TRACKING: Sending first interaction...", activeModule);
 
                     const payload = {
                         action: 'log_interaction',
                         module: activeModule,
                         source: 'CalculatorV2',
-                        timestamp: new Date().toISOString()
+                        timestamp: new Date().toISOString(),
+                        debug: window.location.search.includes('debug=true') ? 'true' : 'false'
                     };
 
                     if (typeof google === 'undefined') {
+                        console.log("📡 Mode: Fetch (GitHub/Local)");
                         fetch(GOOGLE_SCRIPT_URL, {
                             method: 'POST',
                             mode: 'no-cors',
