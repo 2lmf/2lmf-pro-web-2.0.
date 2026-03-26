@@ -2414,47 +2414,144 @@ function getProducts(ss) {
 function calculateAdvancedStats(ss) {
   var sheetDnevnik = ss.getSheetByName("Dnevnik knjiženja");
   var allData = sheetDnevnik ? sheetDnevnik.getDataRange().getValues() : [];
-  var data = allData.length > 500 ? allData.slice(-500).reverse() : (allData.length > 1 ? allData.slice(1).reverse() : []);
+  var data = allData.length > 1000 ? allData.slice(-1000).reverse() : (allData.length > 1 ? allData.slice(1).reverse() : []);
   
   var today = new Date();
   var currentYear = today.getFullYear();
   var currentMonth = today.getMonth();
   var yearlyStats = Array.from({length: 12}, function(_, i) { return { month: i + 1, revenue: 0, expenses: 0 }; });
   var totals = { rm: 0, em: 0, ry: 0, ey: 0 };
+  var recentRaw = [];
+  var bankProcessed = {};
 
   data.forEach(function(row) {
-    if (row.length < 9) return;
-    var rawDate = row[0];
-    var d = (rawDate instanceof Date) ? rawDate : parseDate(String(rawDate));
-    if (!d) return;
-
     var duguje = parseFloat(row[7]) || 0;
     var potrazuje = parseFloat(row[8]) || 0;
+    if (duguje === 0 && potrazuje === 0) return;
+    var d = parseDate(row[0]); if (!d) return;
+    var dokument = String(row[4]);
     var konto = String(row[5]);
     
-    if (konto === "1000") { // Bank account
-       if (d.getFullYear() === currentYear) {
+    if (konto === "1000") {
+      var key = d.getTime() + "_" + dokument + "_" + duguje + "_" + potrazuje;
+      if (!bankProcessed[key]) {
+        bankProcessed[key] = true;
+        if (d.getFullYear() === currentYear) {
           yearlyStats[d.getMonth()].revenue += duguje;
           yearlyStats[d.getMonth()].expenses += potrazuje;
           totals.ry += duguje; totals.ey += potrazuje;
           if (d.getMonth() === currentMonth) { totals.rm += duguje; totals.em += potrazuje; }
-       }
+        }
+      }
+    }
+    var vrDok = String(row[1]).toUpperCase();
+    if ((vrDok === "IRA" && (konto === "1200" || konto === "7500")) || (vrDok === "URA" && (konto === "2200" || konto.startsWith("4")))) {
+      recentRaw.push({
+        datum: Utilities.formatDate(d, "GMT+1", "dd.MM.yyyy"),
+        vrsta: vrDok, stranka: String(row[2]), opis: String(row[3]),
+        iznos: vrDok === "IRA" ? duguje : potrazuje,
+        dok: dokument, timestamp: d.getTime()
+      });
     }
   });
+
+  var activityMap = {};
+  recentRaw.forEach(function(item) { if (!activityMap[item.dok]) activityMap[item.dok] = item; });
 
   return {
     revenue: totals.rm, expenses: totals.em,
     yearlyRevenue: totals.ry, yearlyExpenses: totals.ey,
-    yearlyStats: yearlyStats
+    yearlyStats: yearlyStats,
+    recentActivities: Object.values(activityMap).sort(function(a,b){ return b.timestamp - a.timestamp; }).slice(0, 60)
   };
 }
 
 function parseDate(val) {
   if (!val) return null;
   if (val instanceof Date) return val;
-  var parts = String(val).split('.');
-  if (parts.length >= 3) return new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
+  if (typeof val === 'string') {
+    var parts = val.split('.');
+    if (parts.length >= 3) return new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
+  }
   return null;
+}
+
+function sendMailCore(ss, inquiry, type) {
+  try {
+    var items = [];
+    try {
+      var raw = JSON.parse(inquiry.jsonData || "{}");
+      items = raw.stavke || raw.items || raw.products || [];
+      if (Array.isArray(raw) && raw.length > 0) items = raw;
+    } catch(e) {}
+    
+    var isHidro = (inquiry.subject || "").toUpperCase().indexOf("HIDRO") !== -1;
+    var result = generateProfessionalHtml(items, inquiry.name, inquiry.id, isHidro, type === "RACUN", inquiry.subject);
+    var pdfBlob = HtmlService.createHtmlOutput(result.html).setTitle(type + "_" + inquiry.id).getAs('application/pdf');
+    pdfBlob.setName(type + "_" + inquiry.id + ".pdf");
+    
+    var mailOptions = {
+      to: inquiry.email,
+      subject: (type === "RACUN" ? "Račun br. " : "Ponuda - ") + inquiry.id + " | 2LMF PRO",
+      htmlBody: result.html.replace(result.qrDataUri, "cid:qrcode"),
+      inlineImages: { "qrcode": result.qrBlob },
+      attachments: [pdfBlob],
+      name: "2LMF PRO"
+    };
+    if (result.qrBlob) {
+      result.qrBlob.setName("QR_Kod_Placanje.png");
+      mailOptions.attachments.push(result.qrBlob);
+    }
+
+    var success = sendZohoEmail(mailOptions);
+    if (!success) { MailApp.sendEmail(mailOptions); success = true; }
+    if (success) updateInquiryStatus(ss, inquiry.id, type === "RACUN" ? "RAČUN POSLAN" : "POSLANO");
+    return success;
+  } catch(err) { return false; }
+}
+
+function generateProfessionalHtml(items, name, id, isHidro, isInvoice, subject) {
+  var primaryColor = isHidro ? "#007bff" : "#E67E22";
+  var total = 0;
+  var itemsHtml = (items || []).map(function(item) {
+    var qty = parseFloat(item.kolicina || item.qty || 0);
+    var price = parseFloat(item.cijena || item.price || 0);
+    var lineTotal = qty * price; total += lineTotal;
+    var unit = item.unit || item.jedinica || "kom";
+    return '<tr><td style="padding:12px; border-bottom:1px solid #eee;">' + (item.naziv || item.name || "Stavka") + '</td><td style="padding:12px; border-bottom:1px solid #eee; text-align:center;">' + price.toFixed(2).replace('.', ',') + ' €</td><td style="padding:12px; border-bottom:1px solid #eee; text-align:center;">' + qty.toFixed(2).replace('.', ',') + ' ' + unit + '</td><td style="padding:12px; border-bottom:1px solid #eee; text-align:right; font-weight:bold;">' + lineTotal.toFixed(2).replace('.', ',') + ' €</td></tr>';
+  }).join("");
+
+  var qrDataUri = ""; var qrBlob = null;
+  var qrContent = "BCD\n002\n1\nSCT\n\n2LMF PRO j.d.o.o.\nHR3123400091111213241\nEUR" + total.toFixed(2) + "\n\n\nUplata po ponudi " + (id || "");
+  var qrUrl = "https://api.qrserver.com/v1/create-qr-code/?size=250x250&margin=10&data=" + encodeURIComponent(qrContent);
+  
+  try {
+    var resp = UrlFetchApp.fetch(qrUrl, { muteHttpExceptions: true });
+    if (resp.getResponseCode() === 200) {
+      qrBlob = resp.getBlob();
+      qrDataUri = "data:image/png;base64," + Utilities.base64Encode(qrBlob.getBytes());
+    }
+  } catch(e) { Logger.log("QR Error: " + e.toString()); }
+
+  var dateStr = Utilities.formatDate(new Date(), "GMT+1", "dd.MM.yyyy., HH:mm");
+
+  var html = '<html><body><div style="max-width: 800px; margin: auto; padding: 40px; border: 1px solid #eee;">' +
+      '<h1 style="font-family:Orbitron;">2LMF <span style="color:' + primaryColor + '">PRO</span></h1>' +
+      '<p>Kupac: ' + name + '</p>' +
+      '<p>Datum: ' + dateStr + '</p>' +
+      '<table style="width:100%;">' + itemsHtml + '</table>' +
+      '<h2>Ukupno: ' + total.toFixed(2).replace('.', ',') + ' €</h2>' +
+      '<img src="' + qrUrl + '" style="width:160px;">' +
+    '</div></body></html>';
+  return { html: html, qrDataUri: qrDataUri, qrBlob: qrBlob };
+}
+
+function updateInquiryStatus(ss, id, status) {
+  var sheet = ss.getSheetByName("Upiti");
+  var data = sheet.getDataRange().getValues();
+  for (var i = 1; i < data.length; i++) {
+    if (String(data[i][1]) === String(id)) { sheet.getRange(i + 1, 9).setValue(status); break; }
+  }
 }
 
 
