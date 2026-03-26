@@ -190,31 +190,53 @@ function setupGeneratorLayout(sheet) {
 
 // --- 2. WEB APP HANDLER ---
 function doGet(e) {
-  console.log("📥 RECEIVED GET: " + JSON.stringify(e.parameter));
-  
-  // 1. Check for API actions (e.g., from Web Kalkulator)
-  if (e.parameter.action === 'get_prices') {
-    var pricing = getLatestPricing();
-    return ContentService.createTextOutput(JSON.stringify(pricing.prices))
-        .setMimeType(ContentService.MimeType.JSON);
-  }
-  
-  if (e.parameter.action === 'log_interaction') {
-    console.log("➡️ Processing log_interaction...");
-    var result = processInquiry(e.parameter);
-    console.log("✅ Result: " + JSON.stringify(result));
-    return ContentService.createTextOutput(JSON.stringify(result))
-        .setMimeType(ContentService.MimeType.JSON);
-  }
+  try {
+    var action = e.parameter.action;
+    var sheetId = SCRIPT_PROP.getProperty("SHEET_ID") || "1YmRZMeomWxAmfi6rsLN6qKrHrrAeHOnGVbnfsZXP3w4";
+    var ss = SpreadsheetApp.openById(sheetId);
+    
+    console.log("📥 UNIFIED GET [" + action + "]: " + JSON.stringify(e.parameter));
 
-  // 2. Default: Show HTML UI for Sheet Admin
-  var pricing = getLatestPricing();
-  var tmpl = HtmlService.createTemplateFromFile('Index');
-  tmpl.livePricing = JSON.stringify(pricing); // Inject into template
-  
-  return tmpl.evaluate()
-      .setTitle('2LMF PRO | Kalkulator')
-      .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+    // 1. CRM / CALCULATOR ACTIONS
+    if (action === 'get_prices') {
+      var pricing = getLatestPricing();
+      return ContentService.createTextOutput(JSON.stringify(pricing.prices)).setMimeType(ContentService.MimeType.JSON);
+    }
+    if (action === 'log_interaction') {
+      var result = processInquiry(e.parameter);
+      return ContentService.createTextOutput(JSON.stringify(result)).setMimeType(ContentService.MimeType.JSON);
+    }
+
+    // 2. PWA DASHBOARD ACTIONS
+    if (action === 'get_dashboard_data') {
+      var inquiries = getInquiriesWithLimit(ss, 250); 
+      var stats = calculateAdvancedStats(ss);
+      var result = { status: "success", inquiries: inquiries, stats: stats, locations: getLocations(ss) };
+      return ContentService.createTextOutput(JSON.stringify(result)).setMimeType(ContentService.MimeType.JSON);
+    }
+    if (action === 'get_products') {
+      var result = { status: "success", products: getProducts(ss) };
+      return ContentService.createTextOutput(JSON.stringify(result)).setMimeType(ContentService.MimeType.JSON);
+    }
+    if (action === 'get_locations') {
+      var result = { status: "success", locations: getLocations(ss) };
+      return ContentService.createTextOutput(JSON.stringify(result)).setMimeType(ContentService.MimeType.JSON);
+    }
+
+    // 3. DEFAULT: Serve CRM/Calculator Admin UI
+    var pricing = getLatestPricing();
+    var tmpl = HtmlService.createTemplateFromFile('Index');
+    tmpl.livePricing = JSON.stringify(pricing);
+    return tmpl.evaluate()
+        .setTitle('2LMF PRO | Unified Backend')
+        .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL)
+        .addMetaTag('viewport', 'width=device-width, initial-scale=1');
+
+  } catch (err) {
+    console.error("CRITICAL GET ERROR: " + err.message);
+    return ContentService.createTextOutput(JSON.stringify({ status: "error", message: err.toString() }))
+        .setMimeType(ContentService.MimeType.JSON);
+  }
 }
 
 function getLatestPricing() {
@@ -270,8 +292,60 @@ function manualTriggerPermissions() {
 }
 
 function doPost(e) {
-  var result = processInquiry(e.parameter);
-  return ContentService.createTextOutput(JSON.stringify(result)).setMimeType(ContentService.MimeType.JSON);
+  try {
+    var postData;
+    // PWA typically sends JSON in postData.contents
+    if (e.postData && e.postData.contents) {
+      try {
+        postData = JSON.parse(e.postData.contents);
+      } catch (err) {
+        postData = e.parameter;
+      }
+    } else {
+      postData = e.parameter;
+    }
+    
+    var action = postData.action;
+    var sheetId = SCRIPT_PROP.getProperty("SHEET_ID") || "1YmRZMeomWxAmfi6rsLN6qKrHrrAeHOnGVbnfsZXP3w4";
+    var ss = SpreadsheetApp.openById(sheetId);
+    
+    console.log("📥 UNIFIED POST [" + action + "]: " + JSON.stringify(postData));
+
+    var result;
+    if (action === 'log_interaction') { 
+      result = processInquiry(postData); 
+    }
+    else if (action === 'updateInquiry') { 
+      result = handleUpdateInquiry(ss, postData); 
+    }
+    else if (action === 'createInquiry') { 
+      result = handleCreateManualInquiry(ss, postData); 
+    }
+    else if (action === 'saveLocation') { 
+      result = saveLocation(ss, postData); 
+    }
+    else if (action === 'uploadPhoto') { 
+      result = uploadPhoto(postData); 
+    }
+    else if (action === 'sendOffer' || action === 'sendInvoice') {
+      var inquiry = getInquiryById(ss, postData.id);
+      if (!inquiry) result = { status: "error", message: "Upit nije pronađen" };
+      else {
+        var success = (action === 'sendOffer') ? sendInquiryOffer(ss, inquiry) : sendInquiryInvoice(ss, inquiry);
+        result = { status: success ? "success" : "error" };
+      }
+    } else {
+      // Regular CRM Inquiry (Form POST)
+      result = processInquiry(postData);
+    }
+    
+    return ContentService.createTextOutput(JSON.stringify(result)).setMimeType(ContentService.MimeType.JSON);
+
+  } catch (err) {
+    console.error("CRITICAL POST ERROR: " + err.message);
+    return ContentService.createTextOutput(JSON.stringify({ status: "error", message: err.toString() }))
+        .setMimeType(ContentService.MimeType.JSON);
+  }
 }
 
 function processInquiry(params) {
@@ -2187,6 +2261,199 @@ function testZohoFullSend() {
       name: "2LMF PRO"
     });
   }
+
+// ==========================================
+// --- PWA & SHARK BUSINESS MODULES ---
+// ==========================================
+
+function getInquiriesWithLimit(ss, limit) {
+  var sheet = ss.getSheetByName("Upiti");
+  if (!sheet) return [];
+  var data = sheet.getDataRange().getValues().slice(1).reverse().slice(0, limit);
+  return data.map(function(row) {
+    return {
+      date: String(row[0]), id: String(row[1]), name: String(row[2]),
+      email: String(row[3]), subject: String(row[5]),
+      amount: row[6] || 0, status: String(row[8]), jsonData: row[9] || "{}"
+    };
+  });
+}
+
+function getInquiryById(ss, id) {
+  var sheet = ss.getSheetByName("Upiti");
+  var data = sheet.getDataRange().getValues();
+  for (var i = 1; i < data.length; i++) {
+    if (String(data[i][1]) === String(id)) {
+      return { 
+        date: String(data[i][0]), id: String(data[i][1]), name: String(data[i][2]), 
+        email: String(data[i][3]), subject: String(data[i][5]), 
+        amount: data[i][6] || 0, status: String(data[i][8]), jsonData: data[i][9] || "{}" 
+      };
+    }
+  }
+}
+
+function handleUpdateInquiry(ss, postData) {
+  var sheet = ss.getSheetByName("Upiti");
+  var data = sheet.getDataRange().getValues();
+  var id = String(postData.id);
+  for (var i = 1; i < data.length; i++) {
+    if (String(data[i][1]) === id) {
+      sheet.getRange(i + 1, 7).setValue(postData.amount);
+      if (postData.jsonData) sheet.getRange(i + 1, 10).setValue(JSON.stringify(postData.jsonData));
+      return { status: "success" };
+    }
+  }
+  return { status: "error", message: "ID not found" };
+}
+
+function handleCreateManualInquiry(ss, postData) {
+  var sheet = ss.getSheetByName("Upiti");
+  var data = sheet.getRange("B:B").getValues();
+  var maxNum = 0;
+  for (var i = 1; i < data.length; i++) {
+    var val = String(data[i][0]).trim();
+    if (val.charAt(0).toUpperCase() === 'U') {
+      var numPart = val.substring(1).replace(/\D/g, ''); 
+      var num = parseInt(numPart) || 0;
+      if (num > maxNum) maxNum = num;
+    }
+  }
+  var id = "U" + ("00000" + (maxNum + 1)).slice(-5);
+  var dateStr = Utilities.formatDate(new Date(), "GMT+1", "dd.MM.yyyy., HH:mm");
+  var total = 0;
+  var items = postData.items || [];
+  items.forEach(function(it) {
+    var p = parseFloat(String(it.cijena || it.price || 0).replace(',', '.'));
+    var q = parseFloat(String(it.kolicina || it.qty || 1).replace(',', '.'));
+    total += (p * q);
+  });
+  sheet.appendRow([dateStr, id, postData.name, postData.email, "", postData.subject, total, "", "NOVO", JSON.stringify({ stavke: items })]);
+  
+  if (postData.email && postData.email.indexOf("@") !== -1) {
+    var inquiry = { id: id, name: postData.name, email: postData.email, subject: postData.subject, amount: total, jsonData: JSON.stringify({ stavke: items }) };
+    sendInquiryOffer(ss, inquiry); // PWA helper uses this
+  }
+  return { status: "success", id: id };
+}
+
+function sendInquiryOffer(ss, inquiry) { return sendMailCore(ss, inquiry, "PONUDA"); }
+function sendInquiryInvoice(ss, inquiry) { return sendMailCore(ss, inquiry, "RACUN"); }
+
+function saveLocation(ss, data) {
+  try {
+    let sheet = ss.getSheetByName('Lokacije');
+    if (!sheet) {
+      sheet = ss.insertSheet('Lokacije');
+      sheet.appendRow(['Datum', 'Sat', 'Lat', 'Lng', 'Maps Link', 'Bilješka', 'Foto Link']);
+      sheet.getRange(1, 1, 1, 7).setBackground('#1a1a2e').setFontColor('#ffffff').setFontWeight('bold');
+    }
+    var now = new Date();
+    var datum = Utilities.formatDate(now, 'Europe/Zagreb', 'dd.MM.yyyy');
+    var sat = Utilities.formatDate(now, 'Europe/Zagreb', 'HH:mm');
+    var mapsLink = "https://www.google.com/maps?q=" + data.lat + "," + data.lng;
+    sheet.appendRow([datum, sat, data.lat, data.lng, mapsLink, data.note || '', '']);
+    sheet.getRange(sheet.getLastRow(), 5).setFormula('=HYPERLINK("' + mapsLink + '","📍 Otvori")');
+    return { success: true, status: "success" };
+  } catch (e) { return { success: false, status: "error", message: e.toString() }; }
+}
+
+function getLocations(ss) {
+  try {
+    var sheet = ss.getSheetByName('Lokacije');
+    if (!sheet || sheet.getLastRow() <= 1) return [];
+    var data = sheet.getDataRange().getValues().slice(1);
+    return data.reverse().map(function(row) {
+      return { datum: row[0], sat: row[1], lat: row[2], lng: row[3], mapsLink: row[4], biljeska: row[5], fotoLink: row[6] };
+    });
+  } catch (e) { return []; }
+}
+
+function uploadPhoto(data) {
+  try {
+    var folderName = "Shark Business Slike";
+    var folder;
+    var folders = DriveApp.getFoldersByName(folderName);
+    if (folders.hasNext()) folder = folders.next();
+    else folder = DriveApp.createFolder(folderName);
+
+    var base64Data = data.imageBase64.replace(/^data:image\/\w+;base64,/, '');
+    var blob = Utilities.newBlob(Utilities.base64Decode(base64Data), 'image/jpeg', data.filename || ('site_' + Date.now() + '.jpg'));
+    var file = folder.createFile(blob);
+    file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+    var fileUrl = file.getUrl();
+    
+    var ssId = SCRIPT_PROP.getProperty("SHEET_ID") || "1YmRZMeomWxAmfi6rsLN6qKrHrrAeHOnGVbnfsZXP3w4";
+    var ss = SpreadsheetApp.openById(ssId);
+    var sheet = ss.getSheetByName('Lokacije');
+    if (sheet) sheet.getRange(sheet.getLastRow(), 7).setValue(fileUrl); 
+
+    return { success: true, status: "success", url: fileUrl };
+  } catch (e) { return { success: false, status: "error", message: e.toString() }; }
+}
+
+function getProducts(ss) {
+  var sheetNames = ["Proizvodi", "Cjenik", "CJENIK", "Katalog", "Products"];
+  var sheet = null;
+  for (var i = 0; i < sheetNames.length; i++) {
+    sheet = ss.getSheetByName(sheetNames[i]);
+    if (sheet) break;
+  }
+  if (!sheet) return [];
+  var data = sheet.getDataRange().getValues();
+  if (data.length <= 1) return [];
+  return data.slice(1).map(function(row) {
+    return { 
+      sku: String(row[0]), name: String(row[1]), unit: String(row[2]) || "kom", 
+      price: parseFloat(row[4]) || 0, category: String(row[7]) || "-" 
+    };
+  });
+}
+
+function calculateAdvancedStats(ss) {
+  var sheetDnevnik = ss.getSheetByName("Dnevnik knjiženja");
+  var allData = sheetDnevnik ? sheetDnevnik.getDataRange().getValues() : [];
+  var data = allData.length > 500 ? allData.slice(-500).reverse() : (allData.length > 1 ? allData.slice(1).reverse() : []);
+  
+  var today = new Date();
+  var currentYear = today.getFullYear();
+  var currentMonth = today.getMonth();
+  var yearlyStats = Array.from({length: 12}, function(_, i) { return { month: i + 1, revenue: 0, expenses: 0 }; });
+  var totals = { rm: 0, em: 0, ry: 0, ey: 0 };
+
+  data.forEach(function(row) {
+    if (row.length < 9) return;
+    var rawDate = row[0];
+    var d = (rawDate instanceof Date) ? rawDate : parseDate(String(rawDate));
+    if (!d) return;
+
+    var duguje = parseFloat(row[7]) || 0;
+    var potrazuje = parseFloat(row[8]) || 0;
+    var konto = String(row[5]);
+    
+    if (konto === "1000") { // Bank account
+       if (d.getFullYear() === currentYear) {
+          yearlyStats[d.getMonth()].revenue += duguje;
+          yearlyStats[d.getMonth()].expenses += potrazuje;
+          totals.ry += duguje; totals.ey += potrazuje;
+          if (d.getMonth() === currentMonth) { totals.rm += duguje; totals.em += potrazuje; }
+       }
+    }
+  });
+
+  return {
+    revenue: totals.rm, expenses: totals.em,
+    yearlyRevenue: totals.ry, yearlyExpenses: totals.ey,
+    yearlyStats: yearlyStats
+  };
+}
+
+function parseDate(val) {
+  if (!val) return null;
+  if (val instanceof Date) return val;
+  var parts = String(val).split('.');
+  if (parts.length >= 3) return new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
+  return null;
 }
 
 
