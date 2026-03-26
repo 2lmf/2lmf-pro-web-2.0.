@@ -954,10 +954,10 @@
         <div class="v2-nav-container">
             <a href="index.html" class="v2-nav-item nav-home">🏠 Početna</a>
             <div class="v2-nav-item" data-mod="ograde">🏗️ Ograde</div>
-            <div class="v2-nav-item active" data-mod="hidro">💧 Hidro</div>
+            <div class="v2-nav-item" data-mod="hidro">💧 Hidro</div>
             <div class="v2-nav-item" data-mod="fasade">🧱 Fasade</div>
             <div class="v2-nav-item" data-mod="termo">🌡️ Termo</div>
-            <div class="v2-nav-item" data-mod="katalog">🛒 Katalog</div>
+            <div class="v2-nav-item active" data-mod="katalog">🛒 Katalog</div>
         </div>
     </nav>
 
@@ -968,10 +968,10 @@
                 <div id="dynamicStage" class="preview-stage"></div>
             </div>
             <div id="ograde-view" class="module-view"></div>
-            <div id="hidro-view" class="module-view active"></div>
+            <div id="hidro-view" class="module-view"></div>
             <div id="fasade-view" class="module-view"></div>
             <div id="termo-view" class="module-view"></div>
-            <div id="katalog-view" class="module-view"></div>
+            <div id="katalog-view" class="module-view active"></div>
         </div>
 
         <aside class="recap-sidebar">
@@ -1351,7 +1351,7 @@
         // --- 1. CORE DATA & PRICING ---
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx4TQ6cFNr8X-fNRHE0Ai571pAioDeny_mSSrTVQm3OHbTKOhfIEDiKDFM2shZ5zDFLrA/exec";
 
-        let activeModule = 'hidro', systemItems = [], manualItems = [], isAuthorized = false;
+        let activeModule = 'katalog', systemItems = [], manualItems = [], isAuthorized = false;
 
         async function initPriceFetch() {
             if (!GOOGLE_SCRIPT_URL) return;
@@ -2722,7 +2722,7 @@
 
         // --- CENTRAL INITIALIZATION ---
         function checkHash() {
-            const h = window.location.hash.replace('#', '') || 'hidro';
+            const h = window.location.hash.replace('#', '') || 'katalog';
             activeModule = h;
 
             // Highlight nav
