@@ -1729,15 +1729,26 @@
 
                     if (typeof google === 'undefined') {
                         console.log("📡 Mode: Fetch (GitHub/Local)");
+                        if (window.location.search.includes('debug=true')) alert("📡 Šaljem (Fetch)...");
                         fetch(GOOGLE_SCRIPT_URL, {
                             method: 'POST',
                             mode: 'no-cors',
                             keepalive: true, // ENSURE it sends even if user clicks a link and leaves page
                             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                             body: new URLSearchParams(payload)
-                        }).catch(e => console.error("Tracking error:", e));
+                        }).then(() => {
+                            if (window.location.search.includes('debug=true')) alert("✅ Poslano (Success)!");
+                        }).catch(e => {
+                            console.error("Tracking error:", e);
+                            if (window.location.search.includes('debug=true')) alert("❌ Greška: " + e.message);
+                        });
                     } else if (google.script && google.script.run) {
-                        google.script.run.doPostManual(payload);
+                        if (window.location.search.includes('debug=true')) alert("📡 Šaljem (google.script)...");
+                        google.script.run
+                            .withSuccessHandler(() => {
+                                if (window.location.search.includes('debug=true')) alert("✅ Poslano (google.script Success)!");
+                            })
+                            .doPostManual(payload);
                     }
                 }
             };
