@@ -1351,7 +1351,7 @@
         // --- 1. CORE DATA & PRICING ---
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx4TQ6cFNr8X-fNRHE0Ai571pAioDeny_mSSrTVQm3OHbTKOhfIEDiKDFM2shZ5zDFLrA/exec";
 
-        let activeModule = 'ograde', systemItems = [], manualItems = [], isAuthorized = false;
+        let activeModule = 'hidro', systemItems = [], manualItems = [], isAuthorized = false;
 
         async function initPriceFetch() {
             if (!GOOGLE_SCRIPT_URL) return;
@@ -2722,7 +2722,7 @@
 
         // --- CENTRAL INITIALIZATION ---
         function checkHash() {
-            const h = window.location.hash.replace('#', '') || 'katalog';
+            const h = window.location.hash.replace('#', '') || 'hidro';
             activeModule = h;
 
             // Highlight nav
