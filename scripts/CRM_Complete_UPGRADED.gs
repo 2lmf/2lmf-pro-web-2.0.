@@ -197,6 +197,12 @@ function doGet(e) {
     return ContentService.createTextOutput(JSON.stringify(pricing.prices))
         .setMimeType(ContentService.MimeType.JSON);
   }
+  
+  if (e.parameter.action === 'log_interaction') {
+    var result = processInquiry(e.parameter);
+    return ContentService.createTextOutput(JSON.stringify(result))
+        .setMimeType(ContentService.MimeType.JSON);
+  }
 
   // 2. Default: Show HTML UI for Sheet Admin
   var pricing = getLatestPricing();
