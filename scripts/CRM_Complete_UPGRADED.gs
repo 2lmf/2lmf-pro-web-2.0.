@@ -363,9 +363,10 @@ function processInquiry(params) {
           sheetInterakcije = ss.insertSheet("Interakcije");
           sheetInterakcije.appendRow(["Vrijeme", "Modul", "Izvor"]);
         }
-        console.log("✍️ Appending row...");
-        sheetInterakcije.appendRow([params.timestamp || new Date(), params.module || "nepoznato", params.source || "nepoznato"]);
-        console.log("✨ Done appending!");
+        console.log("✍️ Appending interaction row...");
+        var timestampCET = Utilities.formatDate(new Date(), "Europe/Zagreb", "dd.MM.yyyy HH:mm:ss");
+        sheetInterakcije.appendRow([timestampCET, params.module || "nepoznato", params.source || "nepoznato"]);
+        console.log("✨ Interaction logged [CET]: " + timestampCET);
       }
       return { result: 'success' };
     }
@@ -518,7 +519,8 @@ function logToCRM(id, name, email, phone, subject, amount, color, status, rawDat
     var ss = SpreadsheetApp.openById(sheetId);
     var sheetLog = ss.getSheetByName("Upiti");
     if (sheetLog) {
-      sheetLog.appendRow([new Date(), id, name, email, phone, subject, amount, color, status, rawData]);
+      var timestampCET = Utilities.formatDate(new Date(), "Europe/Zagreb", "dd.MM.yyyy HH:mm:ss");
+      sheetLog.appendRow([timestampCET, id, name, email, phone, subject, amount, color, status, rawData]);
     }
   } catch (err) {
     console.error("CRM Log failed: " + err);
