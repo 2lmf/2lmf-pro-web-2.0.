@@ -1360,21 +1360,30 @@
                 const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=get_prices&t=${Date.now()}`);
                 const liveData = await response.json();
 
-                if (liveData && Object.keys(liveData).length > 0) {
+                if (liveData && (liveData.prices || Object.keys(liveData).length > 0)) {
+                    // Support both old format (flat prices obj) and new format ({prices, catalog})
+                    const livePrices = liveData.prices || liveData;
+                    const liveCatalog = liveData.catalog || null;
+
                     if (LIVE_PRICES && LIVE_PRICES.prices) {
                         // 1. Update the price lookup map
-                        Object.assign(LIVE_PRICES.prices, liveData);
+                        Object.assign(LIVE_PRICES.prices, livePrices);
 
-                        // 2. Update prices inside the catalog array
-                        if (LIVE_PRICES.catalog && LIVE_PRICES.catalog.length > 0) {
+                        // 2. Update catalog prices AND units from live sheet data
+                        if (liveCatalog && liveCatalog.length > 0) {
+                            // Replace entire catalog with live data (has correct units from column J)
+                            LIVE_PRICES.catalog = liveCatalog;
+                            console.log("📦 Live catalog loaded with units:", liveCatalog.length, "items");
+                        } else if (LIVE_PRICES.catalog && LIVE_PRICES.catalog.length > 0) {
+                            // Fallback: just update prices
                             LIVE_PRICES.catalog.forEach(item => {
-                                if (liveData[item.sku] !== undefined) {
-                                    item.price = liveData[item.sku];
+                                if (livePrices[item.sku] !== undefined) {
+                                    item.price = livePrices[item.sku];
                                 }
                             });
                         }
 
-                        console.log("✅ Live prices active!", liveData);
+                        console.log("✅ Live prices active!", livePrices);
                         showLiveIndicator();
 
                         // If we are already initialized, refresh the active module

@@ -200,7 +200,8 @@ function doGet(e) {
     // 1. CRM / CALCULATOR ACTIONS
     if (action === 'get_prices') {
       var pricing = getLatestPricing();
-      return ContentService.createTextOutput(JSON.stringify(pricing.prices)).setMimeType(ContentService.MimeType.JSON);
+      // Return both prices and catalog (with unit info) so frontend can show correct units
+      return ContentService.createTextOutput(JSON.stringify({ prices: pricing.prices, catalog: pricing.catalog })).setMimeType(ContentService.MimeType.JSON);
     }
     if (action === 'log_interaction') {
       var result = processInquiry(e.parameter);
