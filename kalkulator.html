@@ -918,7 +918,14 @@
                 transform: translateY(0);
             }
         }
-    </style>
+        .item-locked {
+        filter: blur(4px);
+        opacity: 0.6;
+        pointer-events: none;
+        user-select: none;
+        transition: all 0.5s ease;
+    }
+</style>
 </head>
 
 <body>
@@ -987,19 +994,19 @@
                     KONTAKT PODACI</h4>
                 <input type="text" id="custName" placeholder="Ime i prezime" class="custom-input small">
                 <input type="email" id="custEmail" placeholder="Email adresa *" class="custom-input small" required>
-                <input type="tel" id="custPhone" placeholder="Broj mobitela *" class="custom-input small" required>
+                <input type="tel" id="custPhone" placeholder="Broj mobitela (opcionalno)" class="custom-input small">
                 <input type="text" id="custAddress" placeholder="Lokacija gradnje" class="custom-input small">
             </div>
             <div class="total-panel" style="margin-top: 1.5rem;">
-                <span style="font-size: 0.6rem; opacity: 0.8; letter-spacing:1px;">SVEUKUPNI IZNOS (MPC)</span>
-                <span class="price-display" id="globalTotalPrice">??? €</span>
-                <small style="font-size: 0.5rem; opacity: 0.6;">Prikazano nakon slanja upita</small>
+                <span style="font-size: 0.6rem; opacity: 0.8; letter-spacing:1px;">OKVIRNI IZNOS (INFORMATIVNO)</span>
+                <span class="price-display" id="globalTotalPrice">0,00 €</span>
+                <small style="font-size: 0.5rem; opacity: 0.6;">Stavke se otključavaju nakon slanja upita</small>
             </div>
             <div style="text-align: center; margin-top: 15px; margin-bottom: 5px;">
                 <span style="color: #aaa; font-size: 0.65rem;"><i class="fas fa-lock" style="margin-right: 4px;"></i>Vaš
                     upit ne predstavlja obvezu kupnje</span>
             </div>
-            <button class="submit-btn" id="btnSubmitInquiry">POŠALJI UPIT I OTKLJUČAJ UKUPNU CIJENU</button>
+            <button class="submit-btn" id="btnSubmitInquiry">PREUZMI DETALJNU PONUDU I SPECIFIKACIJU</button>
         </aside>
     </main>
 
@@ -1825,8 +1832,11 @@
                     qtyDisplay = `${format(it.manualInput)} ${it.manualUnit} (${format(it.qty)} ${it.unit})`;
                 }
 
+                // Add 'locked' class to items to blur them until authorized
+                const itemClass = isAuthorized ? 'line-item' : 'line-item item-locked';
+
                 return `
-                    <div class="line-item">
+                    <div class="${itemClass}">
                         <div style="flex:1;">
                             <div class="name">${it.name}${removeBtn}</div>
                             <div class="details">${qtyDisplay} x ${format(it.price)} €</div>
@@ -1834,7 +1844,9 @@
                         <div class="price">${format(itemTotal)} €</div>
                     </div>`;
             }).join('');
-            totalDisplay.textContent = isAuthorized ? format(total) + ' €' : '??? €';
+
+            // ALWAYS show total, no more ??? 
+            totalDisplay.textContent = format(total) + ' €';
         };
 
         window.removeFromManualCart = (index) => {
@@ -1845,7 +1857,7 @@
         function setupInquiryLogic() {
             document.getElementById('btnSubmitInquiry').onclick = async () => {
                 const data = { name: document.getElementById('custName').value, email: document.getElementById('custEmail').value, phone: document.getElementById('custPhone').value, location: document.getElementById('custAddress').value };
-                if (!data.email || !data.phone) return alert("Molimo unesite email i broj mobitela.");
+                if (!data.email) return alert("Molimo unesite email adresu.");
                 isAuthorized = true;
                 const fullCart = [...systemItems, ...manualItems];
                 window.updateGlobalCart(systemItems, true); // Refresh UI with prices
