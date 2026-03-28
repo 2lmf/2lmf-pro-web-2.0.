@@ -918,13 +918,6 @@
                 transform: translateY(0);
             }
         }
-        .item-locked {
-        filter: blur(4px);
-        opacity: 0.6;
-        pointer-events: none;
-        user-select: none;
-        transition: all 0.5s ease;
-    }
 </style>
 </head>
 
@@ -1832,11 +1825,8 @@
                     qtyDisplay = `${format(it.manualInput)} ${it.manualUnit} (${format(it.qty)} ${it.unit})`;
                 }
 
-                // Add 'locked' class to items to blur them until authorized
-                const itemClass = isAuthorized ? 'line-item' : 'line-item item-locked';
-
                 return `
-                    <div class="${itemClass}">
+                    <div class="line-item">
                         <div style="flex:1;">
                             <div class="name">${it.name}${removeBtn}</div>
                             <div class="details">${qtyDisplay} x ${format(it.price)} €</div>
