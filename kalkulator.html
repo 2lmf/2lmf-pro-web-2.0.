@@ -1806,6 +1806,24 @@
             }
         }
 
+        // Helper: gets packaging info from catalog unit column (e.g. "rola, 42m2" -> {label:'rola', m2:42})
+        // Returns null if item is sold by simple unit (kom, m2 without package)
+        window.getPackagingMeta = (sku) => {
+            const catalogItem = (LIVE_PRICES.catalog || []).find(p => p.sku === sku);
+            if (!catalogItem || !catalogItem.unit) return null;
+            const u = catalogItem.unit.trim().toLowerCase();
+            // Format: "rola, 42m2" or "paket, 6m2" or "vreća, 25kg"
+            const match = u.match(/^([^,]+),\s*([\d.]+)\s*(m2|m|kg|l|kom)$/);
+            if (match) {
+                return {
+                    label: match[1].trim(),       // e.g. "rola"
+                    size: parseFloat(match[2]),    // e.g. 42
+                    unit: match[3]                 // e.g. "m2"
+                };
+            }
+            return null;
+        };
+
         window.updateGlobalCart = (items, isSystemUpdate = false) => {
             if (isSystemUpdate) systemItems = items;
 
@@ -1824,27 +1842,47 @@
 
             let total = 0;
             container.innerHTML = itemsToDisplay.map((it, idx) => {
-                const itemTotal = Math.round(it.total * 100) / 100;
-                total += itemTotal;
                 const isManual = manualItems.some(m => m === it);
-                const removeBtn = isManual ? `<span class="remove-item" onclick="removeFromManualCart(${manualItems.indexOf(it)})" style="cursor:pointer; color:#e74c3c; margin-left:8px; font-weight:bold;">&times;</span>` : '';
 
-                let qtyDisplay = `${format(it.qty)} ${it.unit}`;
-                if (it.manualInput && it.manualUnit) {
-                    qtyDisplay = `${format(it.manualInput)} ${it.manualUnit} (${format(it.qty)} ${it.unit})`;
+                let displayQty, displayUnit, itemTotal;
+
+                if (isManual && it.manualInput && it.manualUnit) {
+                    // Katalog manual items: already handled by addToManualCart
+                    displayQty = format(it.manualInput);
+                    displayUnit = it.manualUnit;
+                    itemTotal = Math.round(it.total * 100) / 100;
+                } else {
+                    // System items from calculators: check packaging
+                    const pkg = it.sku ? window.getPackagingMeta(it.sku) : null;
+                    if (pkg && it.unit === pkg.unit) {
+                        // Round UP to full packages
+                        const numPackages = Math.ceil(it.qty / pkg.size);
+                        const totalM2 = numPackages * pkg.size;
+                        displayQty = `${numPackages} ${pkg.label} (${format(totalM2)} ${pkg.unit})`;
+                        displayUnit = '';
+                        // Recalculate total based on rounded qty
+                        itemTotal = Math.round(totalM2 * it.price * 100) / 100;
+                    } else {
+                        displayQty = format(it.qty);
+                        displayUnit = it.unit;
+                        itemTotal = Math.round(it.total * 100) / 100;
+                    }
                 }
+
+                total += itemTotal;
+                const removeBtn = isManual ? `<span class="remove-item" onclick="removeFromManualCart(${manualItems.indexOf(it)})" style="cursor:pointer; color:#e74c3c; margin-left:8px; font-weight:bold;">&times;</span>` : '';
 
                 return `
                     <div class="line-item">
                         <div style="flex:1;">
                             <div class="name">${it.name}${removeBtn}</div>
-                            <div class="details">${qtyDisplay} x ${format(it.price)} €</div>
+                            <div class="details">${displayQty}${displayUnit ? ' ' + displayUnit : ''} × ${format(it.price)} € / ${it.unit}</div>
                         </div>
                         <div class="price">${format(itemTotal)} €</div>
                     </div>`;
             }).join('');
 
-            // ALWAYS show total, no more ??? 
+            // ALWAYS show total, no more ???
             totalDisplay.textContent = format(total) + ' €';
         };
 
