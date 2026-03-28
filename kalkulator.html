@@ -2534,13 +2534,20 @@
                     }
                 }
 
-                // 3. Roll/Package with numbers (e.g., "rola, 42m2", "vreća, 25kg")
+                // 3. Roll/Package with numbers (e.g., "rola, 42m2", "kanta, 9l", "vreća, 25kg")
                 const numMatch = u.match(/([\d.]+)\s*(m2|kg|l|m)/);
                 if (numMatch) {
-                    m = parseFloat(numMatch[1]);
                     const rawLabel = u.split(',')[0].trim();
-                    label = rawLabel || 'kom';
-                    return { m, label, unit: numMatch[2] };
+                    if (numMatch[2] === 'm2') {
+                        // Price is per m2 (area) → multiplier applies (e.g. rola, 42m2)
+                        m = parseFloat(numMatch[1]);
+                        label = rawLabel || 'kom';
+                        return { m, label, unit: 'm2' };
+                    } else {
+                        // Container type (kanta, vreća, etc.) → price is per container/kom
+                        // e.g. "kanta, 9l" → 1 kanta, price per kanta, just label it
+                        return { m: 1, label: rawLabel || 'kom', unit: 'kom' };
+                    }
                 }
 
                 // 4. Fallback
