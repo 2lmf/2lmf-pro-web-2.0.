@@ -2012,14 +2012,54 @@
         };
 
         function setupInquiryLogic() {
-            document.getElementById('btnSubmitInquiry').onclick = async () => {
-                const data = { name: document.getElementById('custName').value, email: document.getElementById('custEmail').value, phone: document.getElementById('custPhone').value, location: document.getElementById('custAddress').value };
-                if (!data.email) return alert("Molimo unesite email adresu.");
+            const btn = document.getElementById('btnSubmitInquiry');
+            if (!btn) return;
+
+            btn.onclick = async () => {
+                const data = { 
+                    name: document.getElementById('custName').value, 
+                    email: document.getElementById('custEmail').value, 
+                    phone: document.getElementById('custPhone').value, 
+                    location: document.getElementById('custAddress').value 
+                };
+
+                if (!data.email) {
+                    const emailInput = document.getElementById('custEmail');
+                    emailInput.style.border = "2px solid #e74c3c";
+                    emailInput.focus();
+                    return;
+                }
+
+                // UI State: Sending
+                const originalText = btn.textContent;
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> SLANJE PONUDE...';
+                btn.style.opacity = "0.7";
+                btn.style.cursor = "wait";
+
                 isAuthorized = true;
                 const fullCart = [...systemItems, ...manualItems];
                 window.updateGlobalCart(systemItems, true); // Refresh UI with prices
-                await APIBridge.sendOffer(data, fullCart, activeModule);
-                alert("Upit je poslan!");
+
+                try {
+                    await APIBridge.sendOffer(data, fullCart, activeModule);
+                    
+                    // UI State: Success
+                    btn.innerHTML = '✅ PONUDA POSLANA!';
+                    btn.style.background = "#27ae60";
+                    btn.style.color = "#fff";
+                    btn.style.opacity = "1";
+                    btn.style.boxShadow = "0 0 20px rgba(39,174,96,0.4)";
+                    
+                    // Optional: Reset form or button after 10s if needed
+                } catch (err) {
+                    console.error("Submission error:", err);
+                    btn.disabled = false;
+                    btn.textContent = "POKUŠAJTE PONOVO";
+                    btn.style.background = "#e74c3c";
+                    btn.style.opacity = "1";
+                    btn.style.cursor = "pointer";
+                }
             };
         }
 
