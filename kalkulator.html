@@ -740,6 +740,27 @@
         }
 
         @media (max-width: 600px) {
+            .option-group {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+                width: 100%;
+            }
+
+            .option-group .choice-pill {
+                text-align: center;
+                padding: 10px 4px;
+                width: 100%;
+                box-sizing: border-box;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 0.65rem;
+                min-height: 44px; /* Better touch target */
+            }
+        }
+
+        @media (max-width: 600px) {
             .choice-pill {
                 padding: 8px 12px;
                 font-size: 0.65rem;
@@ -2107,9 +2128,10 @@
                 const soilH = 50;
                 vWrapper.style = `display:flex; align-items:flex-end; gap:3px; height:240px; position:relative; overflow-x:auto; padding:20px 20px ${soilH}px 20px; border-bottom:1px solid #333; width:100%; justify-content:center; background: rgba(0,0,0,0.2); transition: 0.3s;`;
 
+                const isMobileView = window.innerWidth < 1100;
                 const postColor = s.color == '7016' ? '#2c3e50' : '#05392d';
                 const panelColor = s.color == '7016' ? 'rgba(44, 62, 80, 0.9)' : 'rgba(5, 57, 45, 0.9)';
-                const scale = 0.45;
+                const scale = isMobileView ? 0.35 : 0.45;
                 const heightPX = parseInt(s.height) * scale;
                 const panelWidthPX = 250 * scale;
                 const gateWidthPX = 100 * scale;
@@ -2181,7 +2203,7 @@
                     return p;
                 };
 
-                const displayCount = Math.min(count, 4);
+                const displayCount = Math.min(count, isMobileView ? 3 : 4);
                 stage.appendChild(vWrapper);
 
                 const half = Math.floor(displayCount / 2);
