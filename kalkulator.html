@@ -918,6 +918,71 @@
                 transform: translateY(0);
             }
         }
+
+        /* Sticky Mobile Bar */
+        .mobile-sticky-bar {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(10, 10, 20, 0.95);
+            backdrop-filter: blur(15px);
+            border-top: 1px solid var(--accent);
+            padding: 12px 20px;
+            z-index: 4000;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.5);
+            animation: slideUp 0.5s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+
+        @media (max-width: 1100px) {
+            .mobile-sticky-bar {
+                display: flex;
+            }
+            body {
+                padding-bottom: 80px; /* Space for the bar */
+            }
+        }
+
+        .sticky-price-box {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sticky-price-label {
+            font-size: 0.6rem;
+            color: #aaa;
+            font-family: 'Orbitron';
+            letter-spacing: 1px;
+        }
+
+        .sticky-price-value {
+            font-size: 1.2rem;
+            font-weight: 900;
+            color: var(--accent);
+            font-family: 'Orbitron';
+        }
+
+        .sticky-btn {
+            background: var(--accent);
+            color: #000;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-family: 'Orbitron';
+            font-weight: 900;
+            font-size: 0.75rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            box-shadow: 0 0 15px var(--accent-glow);
+        }
 </style>
 </head>
 
@@ -993,13 +1058,12 @@
             <div class="total-panel" style="margin-top: 1.5rem;">
                 <span style="font-size: 0.6rem; opacity: 0.8; letter-spacing:1px;">OKVIRNI IZNOS (INFORMATIVNO)</span>
                 <span class="price-display" id="globalTotalPrice">0,00 €</span>
-                <small style="font-size: 0.5rem; opacity: 0.6;">Stavke se otključavaju nakon slanja upita</small>
             </div>
             <div style="text-align: center; margin-top: 15px; margin-bottom: 5px;">
                 <span style="color: #aaa; font-size: 0.65rem;"><i class="fas fa-lock" style="margin-right: 4px;"></i>Vaš
                     upit ne predstavlja obvezu kupnje</span>
             </div>
-            <button class="submit-btn" id="btnSubmitInquiry">PREUZMI DETALJNU PONUDU I SPECIFIKACIJU</button>
+            <button class="submit-btn" id="btnSubmitInquiry">POŠALJI MI PDF PONUDU NA EMAIL</button>
         </aside>
     </main>
 
@@ -1883,7 +1947,24 @@
             }).join('');
 
             // ALWAYS show total, no more ???
-            totalDisplay.textContent = format(total) + ' €';
+            const finalFormatted = format(total) + ' €';
+            totalDisplay.textContent = finalFormatted;
+            
+            // Sync Sticky Bar
+            const stickyPrice = document.getElementById('stickyTotalPrice');
+            if (stickyPrice) stickyPrice.textContent = finalFormatted;
+        };
+
+        window.scrollToContact = () => {
+            const form = document.querySelector('.contact-form-v2');
+            if (form) {
+                form.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                // Flash the form to draw attention
+                form.style.background = 'rgba(var(--accent-rgb), 0.15)';
+                setTimeout(() => form.style.background = '', 1000);
+                // Focus on name input
+                setTimeout(() => document.getElementById('custName').focus(), 600);
+            }
         };
 
         window.removeFromManualCart = (index) => {
@@ -2956,6 +3037,15 @@
             banner.style.display = 'none';
         });
     </script>
+
+    <!-- MOBILE STICKY BAR -->
+    <div class="mobile-sticky-bar" id="stickyBar">
+        <div class="sticky-price-box">
+            <span class="sticky-price-label">UKUPNI IZNOS</span>
+            <span class="sticky-price-value" id="stickyTotalPrice">0,00 €</span>
+        </div>
+        <button class="sticky-btn" onclick="scrollToContact()">ZATRAŽI PONUDU</button>
+    </div>
 
 </body>
 
