@@ -509,39 +509,24 @@
                 <a href="index.html" class="branding">
                     <div class="lmf-brand">2LMF <span>PRO</span></div>
                 </a>
-                <a href="index.html" class="branding shark-wrapper">
-                    <img src="assets/sharpshark_blue_large.png" alt="SharpShark Digital" class="shark-brand-img">
+                <a href="index.html" class="branding">
+                    <img src="assets/sharpshark_blue_large.png" class="shark-brand-img" alt="SharpShark Digital"
+                        onerror="this.src='https://via.placeholder.com/150x60/000000/00F2FF?text=SHARPSHARK'">
                 </a>
             </div>
             <div class="tagline"><span class="arch">ARCHITECTURAL</span> <span class="code">CODE</span></div>
         </div>
         <div class="nav-links">
-            <div class="dropdown">
-                <a href="index.html" class="dropbtn" onclick="toggleMobileDropdown(event)">POČETNA <i
-                        class="fas fa-chevron-down" style="font-size: 0.6rem; margin-left: 5px;"></i></a>
-                <div class="dropdown-content" id="homeDropdown">
-                    <a href="architects_blueprint.html">Arhitektura</a>
-                    <a href="blog_hub.html">Znanje</a>
-                    <a href="kalkulator.html">Katalog</a>
-                </div>
-            </div>
-            <a href="architects_blueprint.html" class="desktop-only">ARHITEKTURA</a>
-            <a href="kalkulator.html" class="desktop-only">KATALOG</a>
-            <a href="blog_hub.html" class="desktop-only" style="color: #fff; opacity: 1;">ZNANJE</a>
-            <a href="digitalna_dominacija.html" class="ss-link"><span class="ss-sharp">SHARP</span><span
-                    class="ss-shark">SHARK</span></a>
+            <a href="index.html">POČETNA</a>
+            <a href="architects_blueprint.html">ARHITEKTURA</a>
+            <a href="kalkulator.html">KATALOG</a>
+            <a href="blog_hub.html" style="color: #fff; opacity: 1;">ZNANJE</a>
+            <a href="digitalna_dominacija.html"
+                style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px;">
+                <span class="ss-sharp">SHARP</span><span class="ss-shark">SHARK</span>
+            </a>
             <a href="index.html#kontakt">KONTAKT</a>
         </div>
-
-        <script>
-            function toggleMobileDropdown(e) {
-                if (window.innerWidth <= 1100) {
-                    e.preventDefault();
-                    const dropdown = document.getElementById('homeDropdown');
-                    dropdown.classList.toggle('mobile-show');
-                }
-            }
-        </script>
     </nav>
 
     <div class="container">
