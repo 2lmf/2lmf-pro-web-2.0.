@@ -50,7 +50,7 @@
             color: white;
             font-family: 'Outfit', sans-serif;
             line-height: 1.6;
-            padding-top: 100px;
+            padding-top: 180px;
         }
 
         .container {
@@ -227,20 +227,27 @@
             color: var(--accent-orange);
         }
 
-        .back-link {
+                        .back-link {
             display: inline-flex;
             align-items: center;
             gap: 10px;
-            color: var(--accent-cyan);
+            color: var(--accent-cyan) !important;
             text-decoration: none;
             font-family: 'Orbitron', sans-serif;
-            font-size: 0.8rem;
-            margin-bottom: 40px;
-            transition: gap 0.3s;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+            margin-top: 10px;
+            transition: all 0.3s;
+            border: 1px solid rgba(0, 242, 255, 0.2);
+            padding: 8px 15px;
+            border-radius: 4px;
+            background: rgba(0, 242, 255, 0.05);
         }
 
         .back-link:hover {
+            background: rgba(0, 242, 255, 0.1);
             gap: 15px;
+            border-color: var(--accent-cyan);
         }
 
         /* --- FOOTER --- */
@@ -390,5 +397,8 @@
 </body>
 
 </html>
+
+
+
 
 
