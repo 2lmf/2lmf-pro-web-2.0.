@@ -259,7 +259,44 @@
             letter-spacing: 3px;
             border-top: 1px solid rgba(255, 255, 255, 0.03);
         }
-    </style>
+    
+        /* --- CTA SECTION --- */
+        .cta-box {
+            text-align: center;
+            margin: 60px 0;
+            padding: 45px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .cta-box p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            color: #eee;
+        }
+
+        .cta-btn-consult {
+            display: inline-block;
+            background: var(--accent-orange);
+            color: #000;
+            text-decoration: none;
+            padding: 15px 35px;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: bold;
+            border-radius: 5px;
+            text-transform: uppercase;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            letter-spacing: 1px;
+            font-size: 0.85rem;
+        }
+
+        .cta-btn-consult:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 20px rgba(230, 126, 34, 0.3);
+            background: #fff;
+        }
+
 </head>
 
 <body>
@@ -339,7 +376,12 @@
             <h3>Zaključak</h3>
             <p>Planirate fasadu? Ključno je odabrati sustav koji odgovara Vašim dugoročnim ciljevima i budžetu. 2LMF PRO
                 tim stoji Vam na raspolaganju za stručno savjetovanje i preciznu kalkulaciju materijala.</p>
-        </div>
+        
+            <div class='cta-box'>
+                <p>Zanima vas točna usporedba troškova klasične i ventilirane fasade?</p>
+                <a href='../index.html#kontakt' class='cta-btn-consult'>Zatražite neobvezujuću konzultaciju s nama!</a>
+            </div>
+</div>
     </div>
 
     
@@ -350,6 +392,7 @@
 </body>
 
 </html>
+
 
 
 
