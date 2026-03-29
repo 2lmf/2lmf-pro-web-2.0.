@@ -467,7 +467,8 @@ function processInquiry(params) {
       items = enrichItemsWithCosts(items);
       
       var isHidro = String(subject || "").toUpperCase().indexOf("HIDRO") !== -1;
-      var customerHtml = generateHtml(items, name, true, inquiryId, params.color || "Sustav", isHidro, subject);
+      var resultHtml = generateHtml(items, name, true, inquiryId, params.color || "Sustav", isHidro, subject);
+      var customerHtml = resultHtml.html;
       
       var pdfBlob = null;
       try {
