@@ -52,7 +52,7 @@
                     window.location = url;
                 }
             };
-            gtag('event', 'conversion_event_submit_lead_form_1', {
+            gtag('event', 'conversion_event_request_quote', {
                 'event_callback': callback,
                 'event_timeout': 2000
             });
@@ -1767,7 +1767,7 @@
                                         }
 
                                         // 2. GA4 Events
-                                        gtag('event', 'SUBMIT_LEAD_FORM', {
+                                        gtag('event', 'conversion_event_request_quote', {
                                             'event_category': 'Engagement',
                                             'event_label': moduleName,
                                             'value': 1.0
@@ -1798,8 +1798,7 @@
                         }).then(() => {
                             // GA4 & Ads Conversion Trigger (GitHub Mode)
                             if (typeof gtag === 'function') {
-                                gtag('event', 'conversion_event_submit_lead_form_1', {
-                                    'send_to': 'AW-5327504092/conversion_event_submit_lead_form_1',
+                                gtag('event', 'conversion_event_request_quote', {
                                     'module': moduleName,
                                     'source': 'CalculatorV2_GitHub'
                                 });
