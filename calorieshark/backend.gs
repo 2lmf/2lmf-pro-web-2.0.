@@ -124,9 +124,10 @@ function analyzeWithGemini(params) {
     contentType: "application/json",
     payload: JSON.stringify({
       contents: [{ parts: parts }],
-      generationConfig: { 
+      generationConfig: {
         temperature: 0.7,
-        responseMimeType: "application/json"
+        responseMimeType: "application/json",
+        thinkingConfig: { thinkingBudget: 0 }
       }
     }),
     muteHttpExceptions: true
@@ -139,7 +140,8 @@ function analyzeWithGemini(params) {
     throw new Error("Gemini Error: " + (responseData.error ? responseData.error.message : response.getResponseCode()));
   }
 
-  const aiText = responseData.candidates[0].content.parts[0].text;
+  const responsePart = responseData.candidates[0].content.parts.find(p => !p.thought);
+  const aiText = responsePart ? responsePart.text : responseData.candidates[0].content.parts[0].text;
   let cleanedText = aiText.replace(/```json/g, "").replace(/```/g, "").trim();
   return JSON.parse(cleanedText);
 }
