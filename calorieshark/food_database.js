@@ -1214,3 +1214,117 @@ function searchLocalFoodDB(query) {
         note: `⚡ AI Memorija/Baza (${foundUnitType} ≈ ${foundUnitFactor}g)`
     };
 }
+
+// Vraća niz top pogodaka (za picker UI) — uključuje i reverse matching (npr "kava" → sve varijante kave)
+function searchLocalFoodDBMultiple(query, maxResults = 6) {
+    let normalizedQuery = normalizeString(query);
+
+    let quantity = 1;
+    const numMatch = normalizedQuery.match(/([0-9]+[.,]?[0-9]*)/);
+    if (numMatch) {
+        quantity = parseFloat(numMatch[1].replace(',', '.'));
+        normalizedQuery = normalizedQuery.replace(numMatch[0], '').trim();
+    }
+
+    function levenshtein(a, b) {
+        if (a.length === 0) return b.length;
+        if (b.length === 0) return a.length;
+        let matrix = [];
+        for (let i = 0; i <= b.length; i++) { matrix[i] = [i]; }
+        for (let j = 0; j <= a.length; j++) { matrix[0][j] = j; }
+        for (let i = 1; i <= b.length; i++) {
+            for (let j = 1; j <= a.length; j++) {
+                if (b.charAt(i - 1) === a.charAt(j - 1)) {
+                    matrix[i][j] = matrix[i - 1][j - 1];
+                } else {
+                    matrix[i][j] = Math.min(matrix[i - 1][j - 1] + 1, Math.min(matrix[i][j - 1] + 1, matrix[i - 1][j] + 1));
+                }
+            }
+        }
+        return matrix[b.length][a.length];
+    }
+
+    let fullDatabase = [...localFoodDB];
+    try {
+        const learnedMealsStr = safeLocalStorage.getItem('calorieShark_learnedFoods');
+        if (learnedMealsStr) {
+            const learnedArr = JSON.parse(learnedMealsStr);
+            if (Array.isArray(learnedArr) && learnedArr.length > 0) {
+                fullDatabase = [...learnedArr, ...fullDatabase];
+            }
+        }
+    } catch (e) {}
+
+    let scored = [];
+    fullDatabase.forEach(food => {
+        let score = 0;
+        if (normalizeString(food.name) === normalizedQuery) score += 100;
+
+        food.keywords.forEach(kw => {
+            const normalizedKw = normalizeString(kw);
+            // Forward: query sadrži keyword
+            if (normalizedQuery.includes(normalizedKw)) score += normalizedKw.length * 2;
+            // Reverse: keyword sadrži query (npr "kratka kava" sadrži "kava")
+            if (normalizedKw.includes(normalizedQuery) && normalizedQuery.length >= 3) score += normalizedQuery.length * 2;
+            // Fuzzy
+            const distance = levenshtein(normalizedQuery, normalizedKw);
+            if (distance <= 2 && normalizedKw.length > 4) score += (normalizedKw.length * 2) - distance;
+        });
+
+        if (score >= 6) scored.push({ food, score });
+    });
+
+    scored.sort((a, b) => b.score - a.score);
+    scored = scored.slice(0, maxResults);
+
+    if (scored.length === 0) return [];
+
+    return scored.map(({ food }) => {
+        let foundUnitType = null;
+        let foundUnitFactor = null;
+
+        if (food.standardUnits) {
+            Object.keys(food.standardUnits).forEach(unitKw => {
+                const unitKwNorm = normalizeString(unitKw);
+                if (normalizedQuery.includes(unitKwNorm)) {
+                    foundUnitType = unitKw;
+                    foundUnitFactor = food.standardUnits[unitKw];
+                }
+            });
+        }
+
+        if (!foundUnitFactor && food.standardUnits) {
+            if (food.standardUnits['kom']) { foundUnitType = 'kom'; foundUnitFactor = food.standardUnits['kom']; }
+            else if (food.standardUnits['komad']) { foundUnitType = 'komad'; foundUnitFactor = food.standardUnits['komad']; }
+            else if (food.standardUnits['pivo']) { foundUnitType = 'pivo'; foundUnitFactor = food.standardUnits['pivo']; }
+            else if (food.standardUnits['veliko']) { foundUnitType = 'veliko'; foundUnitFactor = food.standardUnits['veliko']; }
+            else if (food.standardUnits['snita']) { foundUnitType = 'snita'; foundUnitFactor = food.standardUnits['snita']; }
+            else if (food.standardUnits['tanjur']) { foundUnitType = 'tanjur'; foundUnitFactor = food.standardUnits['tanjur']; }
+            else if (food.standardUnits['porcija']) { foundUnitType = 'porcija'; foundUnitFactor = food.standardUnits['porcija']; }
+            else if (food.standardUnits['ml']) { foundUnitType = 'ml'; foundUnitFactor = 1; }
+            else if (food.standardUnits['dl']) { foundUnitType = 'dl'; foundUnitFactor = 100; }
+            else if (food.standardUnits['salica']) { foundUnitType = 'salica'; foundUnitFactor = food.standardUnits['salica']; }
+            else {
+                const firstKey = Object.keys(food.standardUnits)[0];
+                foundUnitType = firstKey;
+                foundUnitFactor = food.standardUnits[firstKey] || 1;
+            }
+        }
+
+        let finalGrams;
+        if (quantity >= 20 && foundUnitType !== 'ml' && foundUnitType !== 'dl') {
+            finalGrams = quantity;
+        } else {
+            finalGrams = quantity * (foundUnitFactor || 100);
+        }
+
+        const finalName = (typeof currentLang !== 'undefined' && currentLang === 'en' && food.name_en) ? food.name_en : food.name;
+
+        return {
+            name: finalName,
+            estimatedWeightG: Math.round(finalGrams),
+            kcalPer100g: food.kcalPer100g,
+            macrosPer100g: food.macrosPer100g
+        };
+    });
+}

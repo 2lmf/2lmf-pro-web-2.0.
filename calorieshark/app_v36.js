@@ -1760,6 +1760,81 @@ btnConfirmCrop.addEventListener('click', async () => {
 
 
 
+// Picker UI za višestruke lokalne pogotke (npr. "kava" → espresso / macchiato / bijela kava)
+function renderLocalPickerUI(hits, originalText) {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    const itemsHtml = hits.map((hit, i) => {
+        const kcal = Math.round(hit.kcalPer100g * hit.estimatedWeightG / 100);
+        return `
+        <button class="picker-choice-btn" data-index="${i}" style="
+            width:100%; text-align:left; background:rgba(255,255,255,0.05);
+            border:1px solid var(--border-color); border-radius:8px;
+            padding:12px 15px; margin-bottom:8px; cursor:pointer;
+            display:flex; justify-content:space-between; align-items:center;
+            color:var(--text-main);
+        ">
+            <span style="font-weight:500; font-size:0.95rem; flex:1; text-align:left;">${hit.name}</span>
+            <span style="color:var(--accent-cyan); font-weight:bold; white-space:nowrap; margin-left:12px;">~${kcal} kcal</span>
+        </button>`;
+    }).join('');
+
+    mealsList.innerHTML = `
+        <div style="padding:5px 0;">
+            <h3 style="color:var(--accent-cyan); margin-bottom:15px; font-size:1rem;">
+                <i class="fas fa-shark"></i> Misliš na...?
+            </h3>
+            ${itemsHtml}
+            <button id="btnPickerCallAI" style="
+                width:100%; margin-top:8px; padding:11px;
+                background:transparent; border:1px dashed rgba(255,255,255,0.25);
+                border-radius:8px; color:var(--text-muted); cursor:pointer; font-size:0.9rem;
+            ">
+                <i class="fas fa-robot"></i> Nešto drugo – pitaj AI
+            </button>
+        </div>`;
+
+    document.querySelectorAll('.picker-choice-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const hit = hits[parseInt(btn.dataset.index)];
+            renderSharkPersona();
+            renderAIResult({ items: [hit] });
+            triggerSharkAnimation();
+        });
+    });
+
+    document.getElementById('btnPickerCallAI').addEventListener('click', async () => {
+        mealsList.innerHTML = `<div class="empty-state" style="color:var(--accent-cyan);"><i class="fas fa-spinner fa-spin"></i><p>${i18n('meal_ai_analyzing', { text: originalText })}</p></div>`;
+        startCooldown();
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                mode: 'cors',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({
+                    action: 'analyzeMeal',
+                    textDescription: originalText + (currentLang === 'en' ? " (Please respond in English)" : ""),
+                    language: currentLang,
+                    userGoal: userProfile.goal || 'lose',
+                    userStatus: generateCurrentStatusText()
+                })
+            });
+            const responseText = await response.text();
+            let result;
+            try { result = JSON.parse(responseText); } catch (e) { throw new Error("Losa struktura odgovora: " + responseText.substring(0, 100)); }
+            if (result.status === 'success') {
+                renderAIResult(result.data);
+            } else {
+                throw new Error(result.message || "Nepoznata greska s API-ja");
+            }
+        } catch (err) {
+            let errorMsg = err.message;
+            if (errorMsg.includes("quota") || errorMsg.includes("limit") || errorMsg.includes("429")) errorMsg = i18n('meal_quota_error');
+            mealsList.innerHTML = `<div class="empty-state" style="color:#FF2A2A;"><i class="fas fa-exclamation-triangle"></i><p>${i18n('meal_ai_error', { errorMsg: errorMsg })}</p></div>`;
+        }
+    });
+}
+
 // Tekstualni i Glasovni "Upload"
 async function handleTextUpload(text) {
     if (!API_URL) {
@@ -1771,28 +1846,30 @@ async function handleTextUpload(text) {
 
     // --- OFFLINE AI PROVJERA ---
     // Ako postoji funkcija iz food_database.js, prvo dajemo njoj šansu!
-    if (typeof searchLocalFoodDB === 'function') {
-        const localHit = searchLocalFoodDB(text);
+    if (typeof searchLocalFoodDBMultiple === 'function') {
+        const localHits = searchLocalFoodDBMultiple(text);
 
-        if (localHit) {
+        if (localHits.length >= 2) {
+            // Više pogodaka — prikaži picker umjesto AI poziva
+            renderLocalPickerUI(localHits, text);
+            return;
+        } else if (localHits.length === 1) {
             window.scrollTo({ top: 0, behavior: 'smooth' });
-
-            const fakeAPIResponse = {
-                items: [
-                    {
-                        name: localHit.name,
-                        estimatedWeightG: localHit.estimatedWeightG,
-                        kcalPer100g: localHit.kcalPer100g,
-                        macrosPer100g: localHit.macrosPer100g
-                    }
-                ]
-            };
-
-            // Trenutno prebacivanje u UI (bez ikakvih napomena i čekanja)
-            renderSharkPersona(); // Dodaj drski komentar za lokalnu pizzu!
+            const fakeAPIResponse = { items: [localHits[0]] };
+            renderSharkPersona();
             renderAIResult(fakeAPIResponse);
             triggerSharkAnimation();
             return; // Prekini, NE ŠALJI na Google API! Tvoj novčanik je spašen.
+        }
+    } else if (typeof searchLocalFoodDB === 'function') {
+        const localHit = searchLocalFoodDB(text);
+        if (localHit) {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            const fakeAPIResponse = { items: [{ name: localHit.name, estimatedWeightG: localHit.estimatedWeightG, kcalPer100g: localHit.kcalPer100g, macrosPer100g: localHit.macrosPer100g }] };
+            renderSharkPersona();
+            renderAIResult(fakeAPIResponse);
+            triggerSharkAnimation();
+            return;
         }
     }
 
