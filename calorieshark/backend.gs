@@ -151,11 +151,12 @@ function saveMealLog(mealData, userInfo, username) {
   let logSheet = ss.getSheetByName(SHEET_NAME_LOGS);
   const timestamp = new Date();
   logSheet.appendRow([
-    "M-"+timestamp.getTime(), 
-    timestamp, 
-    Utilities.formatDate(timestamp, "Europe/Zagreb", "dd.MM.yyyy"), 
-    username || "Gost", 
-    JSON.stringify(userInfo), 
+    "M-"+timestamp.getTime(),
+    timestamp,
+    Utilities.formatDate(timestamp, "Europe/Zagreb", "dd.MM.yyyy"),
+    username || "Gost",
+    userInfo.email || "",
+    JSON.stringify(userInfo),
     JSON.stringify(mealData.items),
     parseFloat(mealData.totals.kcal).toFixed(1), 
     parseFloat(mealData.totals.carbs).toFixed(1),
