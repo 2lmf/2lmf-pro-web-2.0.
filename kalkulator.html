@@ -2981,8 +2981,10 @@
             else if (h === 'termo') initUITermo();
             else if (h === 'hidro') initUIHydro();
             else if (h === 'katalog') {
+                // Sakrij stage odmah — katalog ga ne koristi
+                const stageEl = document.querySelector('.stage-container');
+                if (stageEl) stageEl.style.setProperty('display', 'none', 'important');
                 if (!window._katalogReady) {
-                    // Pričekaj live cijene (max 2s), pa tek onda renderaj
                     const deadline = setTimeout(() => { window._katalogReady = true; initUIKatalog(); }, 2000);
                     const orig = window._onPriceFetchDone;
                     window._onPriceFetchDone = () => { clearTimeout(deadline); window._katalogReady = true; initUIKatalog(); if (orig) orig(); };
