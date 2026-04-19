@@ -1492,8 +1492,10 @@
                         console.log("✅ Live prices active!", livePrices);
                         showLiveIndicator();
 
+                        // Obavijesti katalog da su live cijene spremne
+                        if (window._onPriceFetchDone) { window._onPriceFetchDone(); window._onPriceFetchDone = null; }
                         // If we are already initialized, refresh the active module
-                        if (activeModule) loadModule(activeModule);
+                        else if (activeModule) loadModule(activeModule);
                     }
                 }
             } catch (e) {
@@ -2978,7 +2980,16 @@
             if (h === 'fasade') initUIFasade();
             else if (h === 'termo') initUITermo();
             else if (h === 'hidro') initUIHydro();
-            else if (h === 'katalog') initUIKatalog();
+            else if (h === 'katalog') {
+                if (!window._katalogReady) {
+                    // Pričekaj live cijene (max 2s), pa tek onda renderaj
+                    const deadline = setTimeout(() => { window._katalogReady = true; initUIKatalog(); }, 2000);
+                    const orig = window._onPriceFetchDone;
+                    window._onPriceFetchDone = () => { clearTimeout(deadline); window._katalogReady = true; initUIKatalog(); if (orig) orig(); };
+                } else {
+                    initUIKatalog();
+                }
+            }
             else initUIOgrade();
         }
 
