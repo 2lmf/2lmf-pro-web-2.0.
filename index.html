@@ -1177,6 +1177,10 @@
             if (typeof google !== 'undefined' && google.script && google.script.run) {
                 google.script.run
                     .withSuccessHandler(res => {
+                        gtag('event', 'conversion_event_submit_lead_form_1', {
+                            'event_callback': () => {},
+                            'event_timeout': 2000
+                        });
                         btn.textContent = "POSLANO! ✅";
                         btn.style.background = "#27ae60";
                         document.getElementById('contactForm').reset();
@@ -1201,6 +1205,10 @@
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                     body: new URLSearchParams(payload)
                 }).then(() => {
+                    gtag('event', 'conversion_event_submit_lead_form_1', {
+                        'event_callback': () => {},
+                        'event_timeout': 2000
+                    });
                     btn.textContent = "POSLANO! ✅";
                     btn.style.background = "#27ae60";
                     document.getElementById('contactForm').reset();

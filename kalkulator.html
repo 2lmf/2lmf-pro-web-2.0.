@@ -2057,6 +2057,11 @@
                 try {
                     await APIBridge.sendOffer(data, fullCart, activeModule);
                     
+                    gtag('event', 'conversion_event_request_quote', {
+                        'event_callback': () => {},
+                        'event_timeout': 2000
+                    });
+
                     // UI State: Success
                     btn.innerHTML = '✅ PONUDA POSLANA!';
                     btn.style.background = "#27ae60";

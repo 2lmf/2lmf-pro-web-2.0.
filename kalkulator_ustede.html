@@ -590,6 +590,12 @@
                     body: formData.toString()
                 });
 
+                // Google Ads Conversion Event
+                gtag('event', 'conversion_event_download_pdf', {
+                    'event_callback': () => {},
+                    'event_timeout': 2000
+                });
+
                 alert('Hvala ' + name + '! PDF vodič je poslan na ' + email + '. Kontaktirat ćemo vas uskoro.');
                 btn.innerHTML = '✅ POSLANO';
 
