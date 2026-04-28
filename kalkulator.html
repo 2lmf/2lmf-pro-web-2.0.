@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="canonical" href="https://2lmf-pro.hr/kalkulator.html" />
-    <title>Kalkulator cijene ograde, fasade i hidroizolacije — Ponuda u 60 sekundi | 2LMF PRO</title>
+    <title>Kalkulator ograde, hidroizolacije i termoizolacije — 2LMF PRO</title>
     <meta name="description"
         content="Izračunajte cijenu panel ograde i hidroizolacije (TPO/PVC) u 60 sekundi. Precizni krojni listovi, tvorničke cijene i profesionalna rješenja.">
 
@@ -82,193 +82,20 @@
     </script>
 
     <style>
-        /* --- BRANDING HEADER STYLES (From Index) --- */
-        .brand-header {
-            position: relative;
-            /* Not fixed */
-            width: 100%;
-            padding: 25px 60px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(2, 2, 5, 0.95);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            box-sizing: border-box;
-            z-index: 2001;
-            /* Above calculator nav */
-        }
-
-        .nav-logos {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 5px;
-            margin: 0 auto;
-            /* Center everything */
-        }
-
-        .logos-row {
-            display: flex;
-            align-items: center;
-            gap: 50px;
-        }
-
-        .branding {
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .lmf-brand {
-            font-family: 'Orbitron', sans-serif;
-            font-weight: 900;
-            color: #eee;
-            font-size: 1.25rem;
-            letter-spacing: 3px;
-        }
-
-        .lmf-brand span {
-            color: var(--accent);
-            /* Use local var */
-        }
-
-        .shark-brand-img {
-            height: 110px;
-            width: auto;
-            filter: drop-shadow(0 0 20px rgba(0, 242, 255, 0.4));
-            display: block;
-            margin: -10px 0;
-        }
-
-        .tagline {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 0.6rem;
-            letter-spacing: 5px;
-            font-weight: 900;
-            text-align: center;
-            margin-top: 10px;
-        }
-
-        .tagline .arch {
-            color: var(--accent);
-        }
-
-        .tagline .code {
-            color: #00F2FF;
-        }
-
-        /* --- NAV LINKS & SHARPSHARK BUTTON (Added) --- */
-        .nav-links {
-            display: flex;
-            gap: 30px;
-        }
-
-        .nav-links a {
-            color: var(--accent);
-            text-decoration: none;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 0.8rem;
-            letter-spacing: 2px;
-            transition: all 0.3s;
-            position: relative;
-            padding: 5px 15px;
-            text-transform: uppercase;
-            font-weight: 400;
-        }
-
-        .nav-links a:hover {
-            color: #fff;
-            transform: scale(1.05);
-        }
-
-        /* Strike Effect */
-        .nav-links a::after {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 50%;
-            width: 0;
-            height: 100%;
-            background: var(--accent);
-            transform: translateY(-50%);
-            transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            z-index: -1;
-            opacity: 0.8;
-        }
-
-        .nav-links a:hover::after {
-            width: 100%;
-        }
-
-        /* SharpShark Button Specifics */
-        .ss-sharp {
-            color: #00F2FF;
-            transition: color 0.3s;
-        }
-
-        .ss-shark {
-            color: var(--accent);
-            transition: color 0.3s;
-        }
-
-        .nav-links a:hover .ss-shark {
-            color: #fff;
-        }
-
-        @media (max-width: 1100px) {
-            .brand-header {
-                flex-direction: column;
-                gap: 20px;
-                padding: 20px 30px;
-            }
-
-            .nav-links {
-                flex-wrap: wrap;
-                justify-content: center;
-                gap: 10px;
-            }
-
-            .nav-links a {
-                font-size: 0.7rem;
-                padding: 8px 12px;
-                background: rgba(255, 255, 255, 0.03);
-                border-radius: 6px;
-                border: 1px solid rgba(255, 255, 255, 0.05);
-            }
-        }
-
-        @media (max-width: 600px) {
-            .brand-header {
-                padding: 15px 10px;
-            }
-
-            .logos-row {
-                gap: 20px;
-            }
-
-            .shark-brand-img {
-                height: 80px;
-            }
-
-            .lmf-brand {
-                font-size: 1rem;
-            }
-
-            .tagline {
-                font-size: 0.5rem;
-                letter-spacing: 3px;
-            }
-
-            .nav-links {
-                gap: 6px;
-            }
-
-            .nav-links a {
-                font-size: 0.65rem;
-                padding: 6px 8px;
-            }
-        }
+        /* --- SITE HEADER --- */
+        .site-header { background: rgba(4,4,8,0.97); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border-bottom: 1px solid rgba(255,255,255,0.07); padding: 0 32px; }
+        .site-header-inner { max-width: 1400px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; height: 60px; }
+        .site-logos { display: flex; align-items: center; gap: 18px; }
+        .site-logo-2lmf { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+        .site-logo-2lmf img { height: 26px; width: auto; }
+        .site-logo-2lmf-text { font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 14px; letter-spacing: 2.5px; color: #eee; }
+        .site-logo-2lmf-text em { color: #E67E22; font-style: normal; }
+        .site-logo-sep { width: 1px; height: 28px; background: rgba(255,255,255,0.12); flex-shrink: 0; }
+        .site-logo-shark { display: flex; align-items: center; }
+        .site-logo-shark img { height: 44px; width: auto; display: block; }
+        .site-nav-back { color: rgba(255,255,255,0.55); text-decoration: none; font-size: 13px; font-weight: 500; letter-spacing: 0.3px; display: flex; align-items: center; gap: 7px; transition: color 0.18s; white-space: nowrap; }
+        .site-nav-back:hover { color: #E67E22; }
+        @media(max-width:600px) { .site-header { padding: 0 16px; } .site-logo-shark img { height: 30px; } .site-logo-2lmf-text { font-size: 11px; } }
 
         /* Hide input arrows */
         input::-webkit-outer-spin-button,
@@ -279,16 +106,27 @@
 
         input[type=number] {
             -moz-appearance: textfield;
+            appearance: textfield;
         }
 
         :root {
             --accent: #E67E22;
             --accent-rgb: 230, 126, 34;
-            --accent-glow: rgba(var(--accent-rgb), 0.4);
-            --base-dark: #010103;
-            --glass: rgba(255, 255, 255, 0.03);
-            --glass-border: rgba(255, 255, 255, 0.1);
-            --nav-bg: rgba(5, 5, 10, 0.95);
+            --accent-glow: rgba(230,126,34,0.2);
+            --bg: #f5f5f7;
+            --white: #ffffff;
+            --text: #1d1d1f;
+            --muted: #6e6e73;
+            --border: #d2d2d7;
+            --orange-light: #fef3e8;
+            --radius: 14px;
+            --shadow: 0 2px 16px rgba(0,0,0,0.07);
+            --shadow-lg: 0 8px 40px rgba(0,0,0,0.12);
+            /* Legacy aliases used by calc components */
+            --base-dark: #f5f5f7;
+            --glass: #ffffff;
+            --glass-border: #d2d2d7;
+            --nav-bg: rgba(255,255,255,0.92);
         }
 
         .qty-group {
@@ -350,10 +188,9 @@
         }
 
         body {
-            background: var(--base-dark);
-            color: #fff;
+            background: var(--bg);
+            color: var(--text);
             padding-top: 0;
-            /* REMOVED PADDING */
             font-family: 'Outfit', sans-serif;
             margin: 0;
             overflow-x: hidden;
@@ -362,125 +199,63 @@
         /* --- NAVIGATION --- */
         .v2-navbar {
             position: sticky;
-            /* CHANGED FROM FIXED */
             top: 0;
             left: 0;
             width: 100%;
-            background: var(--nav-bg);
-            border-bottom: 1px solid var(--glass-border);
-            backdrop-filter: blur(15px);
+            background: rgba(255,255,255,0.92);
+            border-bottom: 1px solid var(--border);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
             z-index: 3000;
             display: flex;
             justify-content: center;
-            padding: 0.5rem 0;
+            padding: 0.4rem 0;
         }
 
         .v2-nav-container {
             display: flex;
-            gap: 1rem;
+            gap: 4px;
             padding: 0 1rem;
             overflow-x: auto;
             scrollbar-width: none;
             -webkit-overflow-scrolling: touch;
-            position: relative;
         }
 
-        /* Mobile Scroll Indicator */
-        .v2-navbar::after {
-            content: '→';
-            position: absolute;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 1rem;
-            color: var(--accent);
-            opacity: 0;
-            pointer-events: none;
-            transition: 0.3s;
-            animation: bounceRight 1.5s infinite;
-        }
-
-        @media (max-width: 768px) {
-            .v2-navbar::after {
-                opacity: 0.6;
-            }
-
-            .v2-navbar.scrolled::after {
-                opacity: 0;
-            }
-        }
-
-        @keyframes bounceRight {
-
-            0%,
-            100% {
-                transform: translateY(-50%) translateX(0);
-            }
-
-            50% {
-                transform: translateY(-50%) translateX(5px);
-            }
-        }
-
-        .v2-nav-container::-webkit-scrollbar {
-            display: none;
-        }
+        .v2-nav-container::-webkit-scrollbar { display: none; }
 
         .v2-nav-item {
-            padding: 0.8rem 1.5rem;
-            color: #fff;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--glass-border);
-            font-family: 'Orbitron', sans-serif;
-            font-size: 0.75rem;
-            font-weight: 900;
+            padding: 7px 18px;
+            color: var(--muted);
+            background: none;
+            border: none;
+            font-family: 'Outfit', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
             cursor: pointer;
-            border-radius: 12px;
-            transition: all 0.3s ease;
+            border-radius: 8px;
+            transition: all 0.18s ease;
             white-space: nowrap;
-            text-transform: uppercase;
-            letter-spacing: 1px;
         }
+
+        .v2-nav-item:hover { background: var(--bg); color: var(--text); }
 
         .v2-nav-item.active {
-            color: #000;
             background: var(--accent);
-            border-color: var(--accent);
-            box-shadow: 0 0 15px var(--accent-glow);
-        }
-
-        @media (max-width: 600px) {
-            .v2-nav-item {
-                padding: 0.6rem 1rem;
-                font-size: 0.65rem;
-                border-radius: 8px;
-            }
-
-            .nav-home {
-                margin-right: 8px;
-            }
+            color: #fff;
+            font-weight: 600;
         }
 
         .nav-home {
             text-decoration: none;
-            background: #00F2FF;
-            /* SharpShark Blue */
-            color: #E67E22;
-            /* Orange */
-            border-color: #00F2FF;
-            margin-right: 15px;
-            display: inline-block;
-            font-weight: 900;
-            box-shadow: 0 0 10px rgba(0, 242, 255, 0.2);
+            color: var(--muted);
+            font-weight: 500;
+            margin-right: 8px;
+            border-right: 1px solid var(--border);
+            border-radius: 0;
+            padding-right: 18px;
         }
 
-        .nav-home:hover {
-            background: #00d2df;
-            color: #fff;
-            border-color: #00d2df;
-            box-shadow: 0 0 20px rgba(0, 242, 255, 0.5);
-            transform: scale(1.05);
-        }
+        .nav-home:hover { background: none; color: var(--accent); }
 
         /* --- LAYOUT --- */
         .master-layout {
@@ -499,21 +274,8 @@
             }
         }
 
-        /* --- PREVIEW STAGE --- */
-        .stage-container {
-            background: radial-gradient(circle at 50% 50%, #0a0a25, #000);
-            border: 1px solid var(--glass-border);
-            border-radius: 24px;
-            height: 400px;
-            margin-bottom: 2rem;
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            align-items: flex-end;
-            justify-content: center;
-            padding-bottom: 40px;
-            box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.5);
-        }
+        /* --- PREVIEW STAGE (hidden in new design) --- */
+        .stage-container { display: none !important; }
 
         .stage-watermark {
             position: absolute;
@@ -613,20 +375,21 @@
         }
 
         .step-card {
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            border-radius: 16px;
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 14px;
             padding: 1.5rem;
             transition: 0.3s;
         }
 
         .step-title {
-            font-family: 'Orbitron';
-            font-size: 0.7rem;
-            color: var(--accent);
-            margin-bottom: 1.2rem;
-            letter-spacing: 1px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 11px;
             font-weight: 700;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 1rem;
         }
 
         .area-box {
@@ -636,43 +399,46 @@
         }
 
         .area-input {
-            background: none;
-            border: none;
-            font-family: 'Orbitron';
-            font-size: 2.2rem;
-            font-weight: 900;
-            color: #fff;
-            width: 140px;
+            background: var(--bg);
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text);
+            width: 120px;
+            padding: 6px 12px;
             outline: none;
+            transition: border-color 0.15s;
         }
+        .area-input:focus { border-color: var(--accent); }
 
         .system-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 1rem;
+            gap: 0.75rem;
             margin-bottom: 1.5rem;
         }
 
         @media (max-width: 600px) {
-            .system-grid {
-                grid-template-columns: 1fr 1fr;
-            }
+            .system-grid { grid-template-columns: 1fr 1fr; }
         }
 
         .system-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--glass-border);
+            background: var(--white);
+            border: 2px solid var(--border);
             border-radius: 12px;
-            padding: 1.2rem;
+            padding: 1.1rem;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.18s ease;
             text-align: center;
         }
 
+        .system-card:hover { border-color: var(--accent); }
+
         .system-card.active {
             border-color: var(--accent);
-            background: rgba(var(--accent-rgb), 0.1);
-            box-shadow: 0 0 20px var(--accent-glow);
+            background: var(--orange-light);
         }
 
         .config-grid {
@@ -695,18 +461,21 @@
         }
 
         .system-card h4 {
-            font-family: 'Orbitron';
-            font-size: 0.75rem;
-            margin: 0 0 5px 0;
-            text-transform: none;
+            font-family: 'Outfit', sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text);
+            margin: 0 0 4px 0;
         }
 
         .system-card p {
-            font-size: 0.6rem;
-            color: #aaa;
+            font-size: 11px;
+            color: var(--muted);
             margin: 0;
-            text-transform: none;
         }
+
+        .system-card.active h4 { color: var(--accent); }
+        .system-card.active p  { color: #c0600a; }
 
         .option-group {
             display: flex;
@@ -715,31 +484,32 @@
         }
 
         .choice-pill {
-            padding: 10px 18px;
-            border-radius: 8px;
-            border: 1px solid var(--glass-border);
-            font-size: 0.75rem;
+            padding: 7px 14px;
+            border-radius: 20px;
+            border: 1.5px solid var(--border);
+            font-size: 13px;
+            font-weight: 500;
             cursor: pointer;
-            font-family: 'Orbitron';
-            transition: 0.2s;
+            font-family: 'Outfit', sans-serif;
+            background: var(--white);
+            color: var(--text);
+            transition: all 0.15s;
             white-space: nowrap;
         }
 
-        .choice-pill:hover {
-            background: rgba(255, 255, 255, 0.05);
-        }
+        .choice-pill:hover { border-color: var(--accent); }
 
         .add-btn:hover {
             background: var(--accent) !important;
-            color: #000 !important;
-            font-weight: 900;
+            color: #fff !important;
+            font-weight: 600;
         }
 
         .choice-pill.active {
             background: var(--accent);
-            color: #000;
+            color: #fff;
             border-color: var(--accent);
-            font-weight: 900;
+            font-weight: 600;
         }
 
         @media (max-width: 600px) {
@@ -795,16 +565,15 @@
         /* RECAP SIDEBAR */
         .recap-sidebar {
             position: sticky;
-            top: 100px;
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            padding: 1.8rem;
-            backdrop-filter: blur(15px);
-            max-height: calc(100vh - 120px);
+            top: 60px;
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-lg);
+            max-height: calc(100vh - 80px);
             overflow-y: auto;
             scrollbar-width: thin;
-            transition: all 0.3s ease;
         }
 
         @media (max-width: 1100px) {
@@ -812,30 +581,41 @@
                 position: relative;
                 top: 0;
                 max-height: none;
-                margin-top: 2rem;
+                margin-top: 1.5rem;
                 padding: 1.2rem;
             }
         }
 
         .recap-title {
-            font-family: 'Orbitron';
-            font-size: 0.85rem;
-            color: var(--accent);
-            border-bottom: 1px solid var(--glass-border);
-            padding-bottom: 1rem;
-            margin-bottom: 1.5rem;
+            font-family: 'Outfit', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text);
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.9rem;
+            margin-bottom: 1.2rem;
             display: flex;
             justify-content: space-between;
+            align-items: center;
+        }
+
+        .recap-title #activeModName {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            opacity: 1;
         }
 
         .item-list {
             display: flex;
             flex-direction: column;
-            gap: 1rem;
-            margin-bottom: 2rem;
-            max-height: 350px;
+            gap: 0.6rem;
+            margin-bottom: 1.2rem;
+            max-height: 280px;
             overflow-y: auto;
-            padding-right: 5px;
+            padding-right: 4px;
         }
 
         .line-item {
@@ -843,83 +623,91 @@
             justify-content: space-between;
             align-items: flex-start;
             gap: 10px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+            border-bottom: 1px solid var(--border);
             padding-bottom: 8px;
         }
 
         .line-item .name {
-            font-size: 0.75rem;
-            color: #fff;
+            font-size: 13px;
+            color: var(--text);
             font-weight: 500;
         }
 
         .line-item .details {
-            font-size: 0.65rem;
-            color: #888;
+            font-size: 11px;
+            color: var(--muted);
             margin-top: 2px;
         }
 
         .line-item .price {
-            font-family: 'Orbitron';
-            font-size: 0.75rem;
+            font-size: 13px;
+            font-weight: 600;
             color: var(--accent);
             white-space: nowrap;
         }
 
         .total-panel {
-            background: var(--accent);
-            color: #000;
-            padding: 1.5rem;
-            border-radius: 16px;
+            background: var(--orange-light);
+            border: 1px solid rgba(230,126,34,0.25);
+            color: var(--text);
+            padding: 1rem 1.2rem;
+            border-radius: 12px;
             text-align: center;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            margin-bottom: 1rem;
         }
 
         .price-display {
             display: block;
-            font-family: 'Orbitron';
             font-size: 1.8rem;
-            font-weight: 900;
+            font-weight: 700;
+            color: var(--accent);
         }
 
         .submit-btn {
             width: 100%;
-            background: #fff;
-            color: #000;
+            background: var(--accent);
+            color: #fff;
             border: none;
-            padding: 1.2rem;
+            padding: 1rem;
             border-radius: 12px;
-            margin-top: 1.5rem;
-            font-family: 'Orbitron';
-            font-weight: 900;
-            text-transform: uppercase;
+            margin-top: 0.75rem;
+            font-family: 'Outfit', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
             cursor: pointer;
-            transition: 0.3s;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
 
         .submit-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(255, 255, 255, 0.2);
+            background: #c96a10;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(230,126,34,0.35);
         }
 
+        .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+
         .custom-input.small {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--glass-border);
-            color: #fff;
-            padding: 12px;
-            border-radius: 8px;
-            font-size: 0.8rem;
+            background: var(--bg);
+            border: 1.5px solid var(--border);
+            color: var(--text);
+            padding: 10px 12px;
+            border-radius: 10px;
+            font-size: 14px;
             margin-bottom: 8px;
             width: 100%;
             box-sizing: border-box;
-            font-family: 'Outfit';
+            font-family: 'Outfit', sans-serif;
             outline: none;
-            transition: 0.3s;
+            transition: border-color 0.15s;
         }
 
         .custom-input.small:focus {
             border-color: var(--accent);
-            background: rgba(255, 255, 255, 0.08);
+            background: var(--white);
         }
 
         .module-view {
@@ -950,14 +738,14 @@
             bottom: 0;
             left: 0;
             right: 0;
-            background: rgba(10, 10, 20, 0.95);
+            background: rgba(255,255,255,0.96);
             backdrop-filter: blur(15px);
-            border-top: 1px solid var(--accent);
+            border-top: 1px solid var(--border);
             padding: 12px 20px;
             z-index: 4000;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
             animation: slideUp 0.5s ease;
         }
 
@@ -981,72 +769,124 @@
         }
 
         .sticky-price-label {
-            font-size: 0.6rem;
-            color: #aaa;
-            font-family: 'Orbitron';
-            letter-spacing: 1px;
+            font-size: 11px;
+            color: var(--muted);
+            font-family: 'Outfit', sans-serif;
+            letter-spacing: 0.3px;
         }
 
         .sticky-price-value {
             font-size: 1.2rem;
-            font-weight: 900;
+            font-weight: 700;
             color: var(--accent);
-            font-family: 'Orbitron';
+            font-family: 'Outfit', sans-serif;
         }
 
         .sticky-btn {
             background: var(--accent);
-            color: #000;
+            color: #fff;
             border: none;
-            padding: 10px 18px;
-            border-radius: 8px;
-            font-family: 'Orbitron';
-            font-weight: 900;
-            font-size: 0.75rem;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            font-size: 14px;
             cursor: pointer;
-            text-transform: uppercase;
-            box-shadow: 0 0 15px var(--accent-glow);
         }
+
+        /* ── KATALOG KARTICE (v3) ── */
+        .catalog-toolbar { display: flex; gap: 12px; align-items: center; margin-bottom: 16px; }
+        .search-wrap { flex: 1; min-width: 180px; position: relative; }
+        .search-icon { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 14px; }
+        .search-input { width: 100%; padding: 10px 13px 10px 36px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 14px; font-family: 'Outfit', sans-serif; background: var(--white); outline: none; transition: border-color 0.15s; }
+        .search-input:focus { border-color: var(--accent); }
+        .filter-chips { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+        .fchip { padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 500; background: var(--white); border: 1.5px solid var(--border); cursor: pointer; transition: all 0.15s; font-family: 'Outfit', sans-serif; }
+        .fchip:hover { border-color: var(--accent); }
+        .fchip.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+        .catalog-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; }
+        .cat-card { background: var(--white); border-radius: var(--radius); border: 1px solid var(--border); overflow: hidden; display: flex; flex-direction: column; transition: all 0.2s; }
+        .cat-card:hover { box-shadow: var(--shadow-lg); border-color: #c8c8cc; transform: translateY(-3px); }
+        .cat-img { height: 148px; background: #f0f0f2; display: flex; align-items: center; justify-content: center; flex-shrink: 0; position: relative; overflow: hidden; }
+        .cat-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.35s; }
+        .cat-card:hover .cat-img img { transform: scale(1.05); }
+        .cat-img i { font-size: 38px; }
+        .cat-img.tint-ograde { background: #edf7ee; } .cat-img.tint-ograde i { color: #34a853; }
+        .cat-img.tint-hidro  { background: #e8f0fe; } .cat-img.tint-hidro i  { color: #1a73e8; }
+        .cat-img.tint-termo  { background: #fff5ec; } .cat-img.tint-termo i  { color: var(--accent); }
+        .cat-img.tint-ostalo { background: #f5e8fc; } .cat-img.tint-ostalo i { color: #7b2d8b; }
+        .cat-img.tint-energy { background: #1d1d1f; } .cat-img.tint-energy i { color: var(--accent); }
+        .cat-body { padding: 12px 14px; flex: 1; display: flex; flex-direction: column; gap: 4px; }
+        .cat-sku { font-size: 10px; color: var(--muted); letter-spacing: 0.3px; }
+        .cat-name { font-size: 13px; font-weight: 600; line-height: 1.35; color: var(--text); flex: 1; }
+        .cat-pack { font-size: 11px; color: var(--muted); }
+        .cat-price { font-size: 20px; font-weight: 700; color: var(--accent); margin-top: 4px; }
+        .cat-price small { font-size: 11px; font-weight: 400; color: var(--muted); }
+        .cat-footer { padding: 10px 14px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+        .cat-qty-row { display: flex; align-items: center; gap: 3px; }
+        .cat-qty-btn { width: 28px; height: 28px; border: 1.5px solid var(--border); border-radius: 7px; background: var(--bg); font-size: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; font-family: 'Outfit', sans-serif; }
+        .cat-qty-btn:hover { border-color: var(--accent); color: var(--accent); }
+        .cat-qty-input { width: 38px; height: 28px; border: 1.5px solid var(--border); border-radius: 7px; font-size: 13px; font-family: 'Outfit', sans-serif; font-weight: 600; text-align: center; background: var(--bg); outline: none; }
+        .cat-qty-input:focus { border-color: var(--accent); }
+        .cat-add-btn { display: flex; align-items: center; gap: 4px; background: var(--text); color: #fff; border: none; padding: 7px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: 'Outfit', sans-serif; transition: background 0.18s; white-space: nowrap; }
+        .cat-add-btn:hover { background: var(--accent); }
+        .catalog-empty { grid-column: 1/-1; text-align: center; padding: 60px 0; color: var(--muted); font-size: 15px; }
+
+        /* ── ENERGY MODUL ── */
+        .energy-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; margin-bottom: 32px; }
+        .e-card { background: var(--white); border-radius: var(--radius); border: 1px solid var(--border); overflow: hidden; display: flex; flex-direction: column; transition: all 0.2s; }
+        .e-card:hover { box-shadow: var(--shadow-lg); border-color: #c8c8cc; transform: translateY(-3px); }
+        .e-img { height: 148px; background: #f5f5f7; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; flex-shrink: 0; }
+        .e-img img { width: 100%; height: 100%; object-fit: contain; padding: 10px; transition: transform 0.35s; }
+        .e-card:hover .e-img img { transform: scale(1.05); }
+        .e-badge { position: absolute; top: 8px; right: 8px; background: var(--accent); color: #fff; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 6px; }
+        .e-body { padding: 12px 14px; flex: 1; display: flex; flex-direction: column; gap: 3px; }
+        .e-brand { font-size: 10px; font-weight: 600; color: var(--accent); text-transform: uppercase; letter-spacing: 0.5px; }
+        .e-name { font-size: 13px; font-weight: 600; color: var(--text); flex: 1; }
+        .e-sub { font-size: 11px; color: var(--muted); }
+        .e-price { font-size: 18px; font-weight: 700; color: var(--accent); margin-top: 4px; }
+        .e-footer { padding: 10px 14px; border-top: 1px solid var(--border); }
+        .e-add-btn { width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px; background: var(--text); color: #fff; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; padding: 9px; cursor: pointer; font-family: 'Outfit', sans-serif; transition: background 0.18s; }
+        .e-add-btn:hover { background: var(--accent); }
+        .energy-mod-header { margin-bottom: 20px; }
+        .energy-mod-title { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+        .energy-mod-desc { color: var(--muted); font-size: 14px; }
+        .energy-filter-bar { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+
+        /* ── FOOTER ── */
+        footer { margin-top: 60px; padding: 32px 20px; border-top: 1px solid var(--border); background: var(--white); text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+        .footer-powered { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 2px; }
+        .footer-logo img { height: 46px; width: auto; opacity: 0.8; transition: opacity 0.2s; }
+        .footer-logo img:hover { opacity: 1; }
+        footer p { font-size: 12px; color: var(--muted); }
 </style>
 </head>
 
 <body>
-    <!-- BRANDING HEADER (Scrolls Away) -->
-    <header class="brand-header">
-        <div class="nav-logos">
-            <div class="logos-row">
-                <a href="index.html" class="branding">
-                    <div class="lmf-brand">2LMF <span>PRO</span></div>
+    <header class="site-header">
+        <div class="site-header-inner">
+            <div class="site-logos">
+                <a href="index.html" class="site-logo-2lmf">
+                    <img src="/2lmf_logo.png" alt="2LMF PRO" onerror="this.style.display='none'">
+                    <span class="site-logo-2lmf-text">2LMF <em>PRO</em></span>
                 </a>
-                <a href="digitalna_dominacija.html" class="branding">
-                    <img src="assets/sharpshark_blue_large.png" alt="SharpShark" class="shark-brand-img">
+                <div class="site-logo-sep"></div>
+                <a href="digitalna_dominacija.html" class="site-logo-shark" target="_blank">
+                    <img src="assets/sharpshark_blue_large.png" alt="Sharp Shark Digital">
                 </a>
             </div>
-            <div class="tagline">
-                <span class="arch">ARCHITECTURAL</span> <span class="code">CODE</span>
-            </div>
-        </div>
-
-        <div class="nav-links">
-            <a href="index.html">POČETNA</a>
-            <a href="architects_blueprint.html">ARHITEKTURA</a>
-            <a href="kalkulator.html">KATALOG</a>
-            <a href="blog_hub.html">ZNANJE</a>
-            <a href="digitalna_dominacija.html"
-                style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px;">
-                <span class="ss-sharp">SHARP</span><span class="ss-shark">SHARK</span>
+            <a href="index.html" class="site-nav-back">
+                <i class="fas fa-arrow-left"></i> Početna
             </a>
-            <a href="index.html#kontakt">KONTAKT</a>
         </div>
     </header>
     <nav class="v2-navbar">
         <div class="v2-nav-container">
-            <a href="index.html" class="v2-nav-item nav-home">🏠 Početna</a>
             <div class="v2-nav-item" data-mod="ograde">🏗️ Ograde</div>
             <div class="v2-nav-item" data-mod="hidro">💧 Hidro</div>
-            <div class="v2-nav-item" data-mod="fasade">🧱 Fasade</div>
             <div class="v2-nav-item" data-mod="termo">🌡️ Termo</div>
             <div class="v2-nav-item active" data-mod="katalog">🛒 Katalog</div>
+            <div class="v2-nav-item" data-mod="energy">⚡ Energy</div>
         </div>
     </nav>
 
@@ -1058,54 +898,34 @@
             </div>
             <div id="ograde-view" class="module-view"></div>
             <div id="hidro-view" class="module-view"></div>
-            <div id="fasade-view" class="module-view"></div>
             <div id="termo-view" class="module-view"></div>
+            <div id="energy-view" class="module-view"></div>
             <div id="katalog-view" class="module-view active"><div style="position:sticky;top:35vh;display:flex;flex-direction:column;align-items:center;gap:12px;padding:40px 20px;text-align:center;"><div style="font-size:2.5rem;">🛒</div><div style="font-size:1.1rem;font-weight:600;letter-spacing:1px;">Katalog se učitava<span id="katalog-dots">.</span></div><div style="font-size:0.85rem;opacity:0.5;">Trenutak strpljenja...</div></div></div>
         </div>
 
         <aside class="recap-sidebar">
-            <div class="recap-title"><span>REKAPITULACIJA</span><span id="activeModName"
-                    style="font-size:0.6rem; opacity:0.6;">OGRADE</span></div>
+            <div class="recap-title">
+                <span>Košarica</span>
+                <span id="activeModName">Katalog</span>
+            </div>
             <div class="item-list" id="globalRecapItems">
-                <div class="line-item" style="opacity: 0.3;">Konfigurirajte sustav...</div>
+                <div class="line-item" style="opacity:0.4; font-size:13px;">Košarica je prazna</div>
             </div>
-            <div class="trust-bar"
-                style="display: flex; justify-content: space-around; padding: 10px 0; margin-bottom: 1.5rem; border-top: 1px solid var(--glass-border); border-bottom: 1px solid var(--glass-border); background: rgba(255,255,255,0.02);">
-                <div style="display: flex; flex-direction: column; align-items: center; gap: 5px;">
-                    <i class="fas fa-file-pdf" style="color: var(--accent); font-size: 0.9rem;"></i>
-                    <span style="font-size: 0.55rem; font-family: 'Orbitron'; color: #aaa; letter-spacing: 0.5px;">SLUŽBENI
-                        PDF</span>
-                </div>
-                <div style="display: flex; flex-direction: column; align-items: center; gap: 5px;">
-                    <i class="fas fa-user-shield" style="color: var(--accent); font-size: 0.9rem;"></i>
-                    <span style="font-size: 0.55rem; font-family: 'Orbitron'; color: #aaa; letter-spacing: 0.5px;">SIGURAN
-                        UPIT</span>
-                </div>
-                <div style="display: flex; flex-direction: column; align-items: center; gap: 5px;">
-                    <i class="fas fa-bolt" style="color: var(--accent); font-size: 0.9rem;"></i>
-                    <span style="font-size: 0.55rem; font-family: 'Orbitron'; color: #aaa; letter-spacing: 0.5px;">PRO
-                        DETALJI</span>
-                </div>
-            </div>
-            <div class="contact-form-v2"
-                style="padding-top:0.5rem; margin-top:0rem;">
-                <h4
-                    style="font-family:'Orbitron'; font-size:0.65rem; color:var(--accent); margin-bottom:1rem; letter-spacing:1px;">
-                    KONTAKT PODACI</h4>
-                <input type="text" id="custName" placeholder="Ime i prezime" class="custom-input small">
-                <input type="email" id="custEmail" placeholder="Email adresa *" class="custom-input small" required>
-                <input type="tel" id="custPhone" placeholder="Broj mobitela (opcionalno)" class="custom-input small">
-                <input type="text" id="custAddress" placeholder="Lokacija gradnje" class="custom-input small">
-            </div>
-            <div class="total-panel" style="margin-top: 1.5rem;">
-                <span style="font-size: 0.6rem; opacity: 0.8; letter-spacing:1px;">OKVIRNI IZNOS (INFORMATIVNO)</span>
+            <div class="total-panel">
+                <span style="font-size:11px; color:var(--muted); display:block; margin-bottom:4px;">Okvirni iznos (informativno)</span>
                 <span class="price-display" id="globalTotalPrice">0,00 €</span>
             </div>
-            <div style="text-align: center; margin-top: 15px; margin-bottom: 5px;">
-                <span style="color: #aaa; font-size: 0.65rem;"><i class="fas fa-lock" style="margin-right: 4px;"></i>Vaš
-                    upit ne predstavlja obvezu kupnje</span>
+            <div class="contact-form-v2" style="margin-top:1rem;">
+                <p style="font-size:11px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:10px;">Podaci o kupcu</p>
+                <input type="email" id="custEmail" placeholder="Email *" class="custom-input small" required>
+                <input type="tel" id="custPhone" placeholder="Mobitel *" class="custom-input small">
+                <input type="text" id="custName" placeholder="Ime i prezime" class="custom-input small">
+                <input type="text" id="custAddress" placeholder="Lokacija gradnje" class="custom-input small">
             </div>
-            <button class="submit-btn" id="btnSubmitInquiry">POŠALJI MI PDF PONUDU NA EMAIL</button>
+            <p style="font-size:11px; color:var(--muted); line-height:1.5; margin-top:8px;"><i class="fas fa-info-circle"></i> Ponuda je informativnog karaktera. Konačna cijena potvrđuje se pisanom ponudom.</p>
+            <button class="submit-btn" id="btnSubmitInquiry" disabled>
+                <i class="fas fa-paper-plane"></i> Pošalji ponudu na email
+            </button>
         </aside>
     </main>
 
@@ -1431,25 +1251,25 @@
 
     <template id="tpl-katalog">
         <div class="config-flow">
-            <div class="catalog-header" style="text-align: center; margin-bottom: 2rem;">
-                <h3 style="font-family: 'Orbitron'; font-size: 1.5rem; color: var(--accent); margin-bottom: 0.5rem;">
-                    <span style="color:#fff;">2LMF</span> <span style="color:#E67E22;">PRO</span> PAMETNI KATALOG
-                </h3>
-                <p style="font-size: 0.8rem; opacity: 0.7;">Pregledajte cijenu i dodajte artikle u listu</p>
+            <div class="catalog-toolbar">
+                <div class="search-wrap">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" class="search-input" id="catalogSearch" placeholder="Pretraži (npr. panel, XPS, TPO, membrana...)">
+                </div>
             </div>
-            <div class="search-container" style="max-width: 600px; margin: 0 auto 2rem;">
-                <input type="text" class="custom-input small" id="catalogSearch"
-                    placeholder="Pretraži artikle (npr. ogradni panel, XPS...)" style="font-size: 1rem; padding: 1rem;">
+            <div class="filter-chips" id="categoryTabs"></div>
+            <div class="catalog-grid" id="productGrid"></div>
+        </div>
+    </template>
+
+    <template id="tpl-energy">
+        <div class="config-flow">
+            <div class="energy-mod-header">
+                <div class="energy-mod-title">⚡ Prijenosne elektrane</div>
+                <div class="energy-mod-desc">Pecron i Aferiy LFP baterije — nautika, kampiranje, vikendice</div>
             </div>
-            <div class="category-tabs" id="categoryTabs"
-                style="display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center; margin-bottom: 2rem;">
-                <!-- Categories will be injected -->
-            </div>
-            <div id="loading" class="loader" style="display:none;"></div>
-            <div class="product-grid" id="productGrid"
-                style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem;">
-                <!-- Products will be injected -->
-            </div>
+            <div class="energy-filter-bar" id="energyFilterBar"></div>
+            <div class="energy-grid" id="energyGrid"></div>
         </div>
     </template>
 
@@ -1831,7 +1651,7 @@
         document.addEventListener('DOMContentLoaded', async () => {
             // 1. Immediately determine active module from hash to prevent race condition tracking wrong module
             const hash = window.location.hash.replace('#', '');
-            const validModules = ['ograde', 'hidro', 'fasade', 'termo', 'katalog'];
+            const validModules = ['ograde', 'hidro', 'termo', 'katalog', 'energy'];
             const defaultMod = validModules.includes(hash) ? hash : 'katalog';
             activeModule = defaultMod; // Set global right away
 
@@ -1917,8 +1737,8 @@
                 if (modId === 'ograde') initUIOgrade();
                 if (modId === 'hidro') initUIHydro();
                 if (modId === 'termo') initUITermo();
-                if (modId === 'fasade') initUIFasade();
                 if (modId === 'katalog') initUIKatalog();
+                if (modId === 'energy' && !window._energyInit) { window._energyInit = true; initEnergyModule(); }
             }
         }
 
@@ -1950,11 +1770,14 @@
             const totalDisplay = document.getElementById('globalTotalPrice');
             const format = (n) => new Intl.NumberFormat('hr-HR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n);
 
+            const submitBtn = document.getElementById('btnSubmitInquiry');
             if (itemsToDisplay.length === 0) {
-                container.innerHTML = '<div class="line-item" style="opacity:0.3">' + (activeModule === 'katalog' ? 'Košarica je prazna...' : 'Konfigurirajte sustav...') + '</div>';
+                container.innerHTML = '<div class="line-item" style="opacity:0.4; font-size:13px;">Košarica je prazna</div>';
                 totalDisplay.textContent = '0,00 €';
+                if (submitBtn) submitBtn.disabled = true;
                 return;
             }
+            if (submitBtn) submitBtn.disabled = false;
 
             let total = 0;
             container.innerHTML = itemsToDisplay.map((it, idx) => {
@@ -2735,79 +2558,105 @@
                 return { m: 1, label: 'kom', unit: 'kom' };
             };
 
+            // Category normalization (raw GAS keys → UI names)
+            const catNorm = { fence:'ograde', membranes:'hidro', bitumen:'hidro', xps:'termo', wool:'termo', wool_facade:'termo', osb:'termo', extras:'termo', new_products:'termo', facade_etics:'ostalo', chemicals:'hidro' };
+            products.forEach(p => { if (catNorm[p.category]) p.category = catNorm[p.category]; });
+
+            const catIcons = { ograde:'fa-border-all', hidro:'fa-water', termo:'fa-fire-flame-curved', energy:'fa-bolt', ostalo:'fa-box-open' };
+
+            const getProductImg = (p) => {
+                const n = (p.name || '').toLowerCase();
+                if (n.includes('panel 2d') || (n.includes('2d') && n.includes('panel')))  return 'assets/2d panel.jpg';
+                if (n.includes('panel 3d') || (n.includes('3d') && n.includes('panel')))  return 'assets/3D+panel.jpg';
+                if (n.includes('stup sa plo') || n.includes('stup s plo'))                return 'assets/stup_plocica.jpg';
+                if (n.includes('stup za beton') || n.includes('usadni'))                  return 'assets/usadni stup.jpg';
+                if (n.includes('corotop'))                                                 return 'assets/corotop.jpg';
+                if (n.includes('geotekstil'))                                              return 'assets/geotekstil.jpg';
+                if (n.includes('reflectix'))                                               return 'assets/reflectix.jpg';
+                if (n.includes('insta stik') || n.includes('instastik'))                  return 'assets/INSTASTIK.jpg';
+                if (n.includes('xps') || n.includes('ravatherm'))                         return 'assets/kat-xps.jpg';
+                if (n.includes('osb'))                                                     return 'assets/kat-osb.jpg';
+                if (n.includes('kamena vuna') || n.includes('rokvul') || n.includes('rockwool')) return 'assets/kat-stone-wool.jpg';
+                if (n.includes('ethafoam'))                                                return 'assets/kat-ethafoam.png';
+                if (n.includes('spojnica') || n.includes('pričvrsnica') || n.includes('pricvrsnica') || (n.includes('profil') && n.includes('pvc'))) return null;
+                if (n.includes('pvc') && n.includes('lim'))                               return 'assets/tpo lim.jpg';
+                if (n.includes('tpo') && n.includes('lim'))                               return 'assets/tpo lim.jpg';
+                if (n.includes('flag') || n.includes('tpo') || n.includes('bsl'))        return 'assets/kat-flag-tpo.png';
+                if (n.includes('isoflex') || n.includes('pu 500') || n.includes('pu500')) return 'assets/kat-isoflex.png';
+                if (n.includes('aquamat'))                                                 return 'assets/kat-aquamat.jpg';
+                if (n.includes('bentoshield') || n.includes('bentonit'))                  return 'assets/kat-bentoshield.png';
+                if (n.includes('čepasta') || n.includes('cepasta'))                       return 'assets/čepasta folija.jpg';
+                return null;
+            };
+
+            const fmt = n => new Intl.NumberFormat('hr-HR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n);
+
             const render = (filter = '', cat = 'all') => {
                 const grid = v.querySelector('#productGrid');
-                grid.innerHTML = '';
                 const filtered = products.filter(p => {
-                    const searchStr = (p.name + p.sku).toLowerCase();
-                    const matchesSearch = searchStr.includes(filter.toLowerCase());
-
-                    if (cat === 'all') return matchesSearch;
-
-                    // New Category Logic
-                    if (p.category) {
-                        return matchesSearch && (p.category === cat || (cat === 'hidro' && (p.category === 'hidro' || p.category === 'membranes' || p.category === 'bitumen')));
-                    }
-
-                    // Fallback for items without category (should not happen with new logic but safe to keep)
-                    const pName = p.name.toLowerCase();
-                    if (cat === 'ograde') return matchesSearch && (pName.includes('ograd') || pName.includes('stup') || pName.includes('panel'));
-                    if (cat === 'hidro') return matchesSearch && (pName.includes('tpo') || pName.includes('pvc') || pName.includes('membran') || pName.includes('bitumen'));
-                    if (cat === 'termo') return matchesSearch && (pName.includes('xps') || pName.includes('vuna') || pName.includes('osb') || pName.includes('folija'));
-                    if (cat === 'fasade') return matchesSearch && (pName.includes('žbuka') || pName.includes('ljepilo') || pName.includes('etik') || pName.includes('mrežic'));
-                    return matchesSearch;
+                    const s = (p.name + p.sku).toLowerCase().includes(filter.toLowerCase());
+                    if (cat === 'all') return s;
+                    return s && p.category === cat;
                 });
 
-                filtered.forEach(p => {
+                if (!filtered.length) { grid.innerHTML = '<div class="catalog-empty">Nema rezultata za pretragu</div>'; return; }
+
+                grid.innerHTML = filtered.map(p => {
                     const price = p.price || 0;
                     const uMeta = parseUnit(p.unit, p.name);
-                    const card = document.createElement('div');
-                    card.className = 'system-card';
-                    card.style = 'text-align:left; display:flex; flex-direction:column; gap:6px; padding:1rem; border-color: rgba(255,215,0,0.1);';
-
-                    const packInfo = uMeta.m > 1 ? `<div style="font-size:0.7rem; color:#aaa; font-weight:600;">Pakiranje: ${uMeta.m.toLocaleString('hr-HR', { minimumFractionDigits: 2 })} ${uMeta.unit}</div>` : '';
-
-                    card.innerHTML = `
-                        <div style="font-size:0.6rem; color:#E67E22; font-family:'Orbitron'; opacity:0.8;">SKU: ${p.sku}</div>
-                        <h4 style="margin:0; font-size:0.85rem; line-height:1.2; color:#fff; min-height:2.4em;">${p.name}</h4>
-                        ${packInfo}
-                        <div style="font-family:'Orbitron'; font-size:1rem; font-weight:900; color:#E67E22; margin-top:auto;">
-                            ${price.toFixed(2)} € <small style="font-size:0.65rem; opacity:0.6; font-family:'Outfit'; font-weight:400; color:#fff;">/ ${uMeta.unit}</small>
+                    const imgSrc = getProductImg(p);
+                    const cat = p.category || 'ostalo';
+                    const icon = catIcons[cat] || 'fa-box-open';
+                    const imgArea = imgSrc
+                        ? `<div class="cat-img"><img src="${imgSrc}" alt="${p.name}" loading="lazy" onerror="this.parentElement.innerHTML='<i class=\\'fas ${icon}\\'></i>';this.parentElement.className='cat-img tint-${cat}'"></div>`
+                        : `<div class="cat-img tint-${cat}"><i class="fas ${icon}"></i></div>`;
+                    const packInfo = uMeta.m > 1 ? `<div class="cat-pack">Pakiranje: ${uMeta.m.toLocaleString('hr-HR', {minimumFractionDigits:2})} ${uMeta.unit}</div>` : '';
+                    return `<div class="cat-card">
+                        ${imgArea}
+                        <div class="cat-body">
+                            <div class="cat-sku">${p.sku}</div>
+                            <div class="cat-name">${p.name}</div>
+                            ${packInfo}
+                            <div class="cat-price">${fmt(price)} <small>€ / ${uMeta.unit}</small></div>
                         </div>
-                        <div class="qty-group">
-                            <input type="number" class="qty-input-v3" value="1" step="any">
-                            <span class="qty-unit-label">${uMeta.label}</span>
-                            
-                            <div class="qty-arrows-v3">
-                                <button class="qty-arrow-btn" onclick="adjQty(this, 1)">▲</button>
-                                <button class="qty-arrow-btn" onclick="adjQty(this, -1)">▼</button>
+                        <div class="cat-footer">
+                            <div class="cat-qty-row">
+                                <button class="cat-qty-btn" onclick="catStepQty(this,-1)">−</button>
+                                <input class="cat-qty-input" type="number" value="1" min="1" step="any">
+                                <button class="cat-qty-btn" onclick="catStepQty(this,1)">+</button>
                             </div>
-
-                            <button class="choice-pill add-btn" style="height:32px; padding:0 8px; background:#E67E22; color:#000; border:none; border-radius:4px; font-family:'Orbitron'; font-size:0.65rem; font-weight:900; cursor:pointer; flex:1; margin-left:4px;" onclick="addToManualCart('${p.sku}', \`${p.name}\`, ${price}, '${uMeta.unit}', this, ${uMeta.m}, '${uMeta.label}')">DODAJ</button>
+                            <button class="cat-add-btn" onclick="addToManualCart('${p.sku}', \`${p.name}\`, ${price}, '${uMeta.unit}', this, ${uMeta.m}, '${uMeta.label}')">
+                                <i class="fas fa-plus"></i> Dodaj
+                            </button>
                         </div>
-                    `;
-                    grid.appendChild(card);
-                });
+                    </div>`;
+                }).join('');
+            };
+
+            window.catStepQty = (btn, dir) => {
+                const input = btn.parentElement.querySelector('.cat-qty-input');
+                const v = parseFloat(input.value) || 1;
+                input.value = Math.max(1, Math.round((v + dir) * 100) / 100);
             };
 
             const renderCats = () => {
                 const tabs = v.querySelector('#categoryTabs');
-                const cats = ['all', 'ograde', 'hidro', 'termo', 'fasade'];
-                const labels = { all: 'SVI', ograde: 'OGRADE', hidro: 'HIDRO', termo: 'TERMO', fasade: 'FASADE' };
-                tabs.innerHTML = cats.map(c => `<div class="choice-pill ${c === 'all' ? 'active' : ''}" data-cat="${c}">${labels[c]}</div>`).join('');
-                tabs.querySelectorAll('.choice-pill').forEach(btn => {
+                const cats = ['all', 'ograde', 'hidro', 'termo'];
+                const labels = { all: 'Sve', ograde: '🏗️ Ograde', hidro: '💧 Hidroizolacija', termo: '🌡️ Termoizolacija' };
+                tabs.innerHTML = cats.map(c => `<div class="fchip ${c === 'all' ? 'active' : ''}" data-cat="${c}">${labels[c]}</div>`).join('');
+                tabs.querySelectorAll('.fchip').forEach(btn => {
                     btn.onclick = () => {
-                        tabs.querySelectorAll('.choice-pill').forEach(b => b.classList.remove('active'));
+                        tabs.querySelectorAll('.fchip').forEach(b => b.classList.remove('active'));
                         btn.classList.add('active');
                         render(v.querySelector('#catalogSearch').value, btn.dataset.cat);
                     };
                 });
             };
 
-            v.querySelector('#catalogSearch').oninput = (e) => render(e.target.value, v.querySelector('#categoryTabs .active').dataset.cat);
+            v.querySelector('#catalogSearch').oninput = (e) => render(e.target.value, v.querySelector('#categoryTabs .fchip.active').dataset.cat);
 
             window.addToManualCart = (sku, name, price, unit, btn, multiplier, manualLabel) => {
-                const input = btn.parentElement.querySelector('.qty-input-v3');
+                const input = btn.closest('.cat-footer').querySelector('.cat-qty-input');
                 const qValue = parseFloat(input.value) || 1;
                 const totalQty = qValue * multiplier;
 
@@ -2817,20 +2666,13 @@
                     existing.qty = existing.manualInput * multiplier;
                     existing.total = Math.round(existing.qty * existing.price * 100) / 100;
                 } else {
-                    manualItems.push({
-                        sku, name, price, unit,
-                        qty: totalQty,
-                        manualInput: qValue,
-                        manualUnit: manualLabel,
-                        total: Math.round(totalQty * price * 100) / 100
-                    });
+                    manualItems.push({ sku, name, price, unit, qty: totalQty, manualInput: qValue, manualUnit: manualLabel, total: Math.round(totalQty * price * 100) / 100 });
                 }
                 window.updateGlobalCart(systemItems);
 
-                const oldText = btn.textContent;
-                btn.textContent = "DODANO!";
-                btn.style.background = "#27ae60";
-                setTimeout(() => { btn.textContent = oldText; btn.style.background = ""; }, 800);
+                btn.innerHTML = '<i class="fas fa-check"></i> Dodano!';
+                btn.style.background = '#27ae60';
+                setTimeout(() => { btn.innerHTML = '<i class="fas fa-plus"></i> Dodaj'; btn.style.background = ''; }, 900);
             };
 
             renderCats();
@@ -2968,10 +2810,10 @@
 
             // Show proper view
             document.querySelectorAll('.module-view').forEach(v => v.classList.remove('active'));
-            const viewId = h === 'fasade' ? 'fasade-view' :
-                h === 'termo' ? 'termo-view' :
-                    h === 'hidro' ? 'hidro-view' :
-                        h === 'katalog' ? 'katalog-view' : 'ograde-view';
+            const viewId = h === 'termo' ? 'termo-view' :
+                h === 'hidro' ? 'hidro-view' :
+                    h === 'katalog' ? 'katalog-view' :
+                        h === 'energy' ? 'energy-view' : 'ograde-view';
 
             const v = document.getElementById(viewId);
             if (v) v.classList.add('active');
@@ -2982,8 +2824,7 @@
             document.documentElement.style.setProperty('--accent-rgb', t.rgb);
 
             // Init specific UI
-            if (h === 'fasade') initUIFasade();
-            else if (h === 'termo') initUITermo();
+            if (h === 'termo') initUITermo();
             else if (h === 'hidro') initUIHydro();
             else if (h === 'katalog') {
                 // Sakrij stage odmah — katalog ga ne koristi
@@ -3014,45 +2855,97 @@
                 });
             }
         });
+
+        // ── ENERGY MODULE ─────────────────────────────────────────────────────────
+        const ENERGY_PRODUCTS = [
+            { sku:'E001', brand:'Pecron', name:'Pecron E600LFP (V2)',  sub:'614 Wh / 1200W', wh:614,  img:'assets/pecron-e600.webp' },
+            { sku:'E002', brand:'Pecron', name:'Pecron E1500LFP',      sub:'1536 Wh / 2200W', wh:1536, img:'assets/pecron-e1500.webp', featured:true },
+            { sku:'E003', brand:'Pecron', name:'Pecron E2400LFP',      sub:'2048 Wh / 2400W', wh:2048, img:'assets/pecron-e2400.jpg' },
+            { sku:'E004', brand:'Pecron', name:'Pecron E3600LFP',      sub:'3072 Wh / 3600W', wh:3072, img:'assets/pecron-e3600.jpg' },
+            { sku:'E011', brand:'Aferiy', name:'Aferiy P040 400W',     sub:'256 Wh / 400W',   wh:256,  img:'assets/aferiy-p040.webp' },
+            { sku:'E012', brand:'Aferiy', name:'Aferiy P010 800W',     sub:'512 Wh / 800W',   wh:512,  img:'assets/aferiy-p010.webp' },
+            { sku:'E013', brand:'Aferiy', name:'Aferiy P110D 1200W',   sub:'960 Wh / 1200W',  wh:960,  img:'assets/aferiy-p110d.webp' },
+            { sku:'E014', brand:'Aferiy', name:'Aferiy P210 2400W',    sub:'2048 Wh / 2400W', wh:2048, img:'assets/aferiy-p210.webp', featured:true },
+            { sku:'E015', brand:'Aferiy', name:'Aferiy P280 2800W',    sub:'2048 Wh / 2800W', wh:2048, img:'assets/aferiy-p280.webp' },
+            { sku:'E016', brand:'Aferiy', name:'Aferiy P310 3600W',    sub:'3840 Wh / 3600W', wh:3840, img:'assets/aferiy-p310.webp' },
+        ];
+
+        function initEnergyModule() {
+            const view = document.getElementById('energy-view');
+            view.innerHTML = document.getElementById('tpl-energy').innerHTML;
+
+            const fmt = n => new Intl.NumberFormat('hr-HR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n);
+            let energyFilter = 'all';
+
+            const render = () => {
+                const grid = view.querySelector('#energyGrid');
+                const filtered = ENERGY_PRODUCTS.filter(p => energyFilter === 'all' || p.brand.toLowerCase() === energyFilter);
+                grid.innerHTML = filtered.map(p => {
+                    const livePrice = LIVE_PRICES.prices[p.sku];
+                    const price = livePrice !== undefined ? livePrice : null;
+                    const priceHtml = price !== null
+                        ? `<div class="e-price">${fmt(price)} <small style="font-size:11px;font-weight:400;color:var(--muted);">€ / kom</small></div>`
+                        : `<div class="e-price" style="font-size:14px;color:var(--muted);">Na upit</div>`;
+                    const badge = p.featured ? '<div class="e-badge">Popular</div>' : '';
+                    return `<div class="e-card">
+                        <div class="e-img">
+                            <img src="${p.img}" alt="${p.name}" loading="lazy" onerror="this.style.display='none'">
+                            ${badge}
+                        </div>
+                        <div class="e-body">
+                            <div class="e-brand">${p.brand}</div>
+                            <div class="e-name">${p.name}</div>
+                            <div class="e-sub">${p.sub}</div>
+                            ${priceHtml}
+                        </div>
+                        <div class="e-footer">
+                            <button class="e-add-btn" onclick="addEnergyToCart('${p.sku}')">
+                                <i class="fas fa-plus"></i> Dodaj u košaricu
+                            </button>
+                        </div>
+                    </div>`;
+                }).join('');
+            };
+
+            const filterBar = view.querySelector('#energyFilterBar');
+            const filters = [{k:'all',l:'Sve'},{k:'pecron',l:'Pecron'},{k:'aferiy',l:'Aferiy'}];
+            filterBar.innerHTML = filters.map(f => `<div class="fchip ${f.k==='all'?'active':''}" data-f="${f.k}">${f.l}</div>`).join('');
+            filterBar.querySelectorAll('.fchip').forEach(btn => {
+                btn.onclick = () => {
+                    filterBar.querySelectorAll('.fchip').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    energyFilter = btn.dataset.f;
+                    render();
+                };
+            });
+
+            render();
+        }
+
+        window.addEnergyToCart = (sku) => {
+            const p = ENERGY_PRODUCTS.find(x => x.sku === sku);
+            if (!p) return;
+            const price = LIVE_PRICES.prices[sku] || 0;
+            const existing = manualItems.find(i => i.sku === sku);
+            if (existing) {
+                existing.manualInput = (existing.manualInput || 0) + 1;
+                existing.qty = existing.manualInput;
+                existing.total = Math.round(existing.qty * existing.price * 100) / 100;
+            } else {
+                manualItems.push({ sku, name: p.name, price, unit: 'kom', qty: 1, manualInput: 1, manualUnit: 'kom', total: Math.round(price * 100) / 100 });
+            }
+            window.updateGlobalCart(systemItems);
+        };
     </script>
     <!-- SHARPSHARK FOOTER -->
-    <footer style="
-        margin-top: 4rem;
-        padding: 2rem 1rem 2.5rem;
-        border-top: 1px solid rgba(255,255,255,0.06);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 0.8rem;
-        background: rgba(0,0,0,0.3);
-        text-align: center;
-    ">
-        <p
-            style="font-size: 0.65rem; color: rgba(255,255,255,0.3); margin: 0; letter-spacing: 3px; font-family: 'Orbitron', sans-serif; font-weight: 700;">
-            POWERED BY:</p>
-        <a href="https://www.2lmf-pro.hr/digitalna_dominacija.html" target="_blank" style="
-            display: block;
-            text-decoration: none;
-            opacity: 0.9;
-            transition: opacity 0.3s, filter 0.3s;
-        " onmouseover="this.style.opacity='1'; this.style.filter='drop-shadow(0 0 16px rgba(0,242,255,0.5))'"
-            onmouseout="this.style.opacity='0.9'; this.style.filter='none'">
-            <img src="assets/sharpshark_blue_large.png" alt="SharpShark Digital"
-                style="height: 110px; width: auto; filter: drop-shadow(0 0 12px rgba(0,242,255,0.3));">
-        </a>
-
-        <p style="
-            font-family: 'Outfit', sans-serif;
-            font-size: 0.75rem;
-            color: rgba(255,255,255,0.3);
-            margin-top: 5px;
-            letter-spacing: 1px;
-        ">
-            © 2026
-            <span style="color: #fff; font-weight: 600;">2LMF</span>
-            <span style="color: #E67E22; font-weight: 600;">PRO</span>
-            j.d.o.o. · Sva prava pridržana
-        </p>
+    <footer>
+        <p class="footer-powered">Powered by</p>
+        <div class="footer-logo">
+            <a href="digitalna_dominacija.html" target="_blank">
+                <img src="assets/sharpshark_blue_large.png" alt="Sharp Shark Digital">
+            </a>
+        </div>
+        <p>© 2026 2LMF PRO j.d.o.o. · Sva prava pridržana</p>
     </footer>
 
     <!-- PWA INSTALL PROMPT BANNER -->
