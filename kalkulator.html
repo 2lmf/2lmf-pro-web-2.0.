@@ -887,46 +887,48 @@
         /* ── ENERGY QUICK VIEW MODAL ── */
         .eq-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.52); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 12px; opacity: 0; pointer-events: none; transition: opacity 0.22s; }
         .eq-overlay.open { opacity: 1; pointer-events: all; }
-        .eq-modal { background: var(--white); border-radius: 22px; width: min(820px, 96vw); overflow: hidden; position: relative; display: flex; flex-direction: column; transform: translateY(28px) scale(0.96); transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1); box-shadow: 0 32px 90px rgba(0,0,0,0.28); max-height: min(520px, 92vh); }
+        .eq-modal { background: var(--white); border-radius: 22px; width: min(680px, 96vw); overflow: hidden; position: relative; display: flex; flex-direction: column; transform: translateY(28px) scale(0.96); transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1); box-shadow: 0 32px 90px rgba(0,0,0,0.28); max-height: min(620px, 92vh); }
         .eq-overlay.open .eq-modal { transform: translateY(0) scale(1); }
-        .eq-modal-x { position: absolute; top: 12px; right: 14px; background: rgba(0,0,0,0.07); border: none; border-radius: 50%; width: 30px; height: 30px; font-size: 15px; cursor: pointer; z-index: 3; display: flex; align-items: center; justify-content: center; color: var(--text); transition: background 0.15s; }
-        .eq-modal-x:hover { background: rgba(0,0,0,0.14); }
-        .eq-modal-inner { display: grid; grid-template-columns: 300px 1fr; flex: 1; min-height: 0; overflow: hidden; }
-        .eq-left { background: #f5f5f7; display: flex; flex-direction: column; overflow: hidden; }
-        .eq-slider-wrap { flex: 1; overflow: hidden; position: relative; min-height: 0; }
+        .eq-modal-x { position: absolute; top: 10px; right: 12px; background: rgba(255,255,255,0.85); border: none; border-radius: 50%; width: 28px; height: 28px; font-size: 14px; cursor: pointer; z-index: 3; display: flex; align-items: center; justify-content: center; color: #333; transition: background 0.15s; }
+        .eq-modal-x:hover { background: #fff; }
+        /* Image slider — top, fixed height */
+        .eq-left { background: #f5f5f7; flex-shrink: 0; display: flex; flex-direction: column; height: 250px; }
+        .eq-slider-wrap { flex: 1; overflow: hidden; position: relative; }
         .eq-track { display: flex; height: 100%; transition: transform 0.38s cubic-bezier(0.25,0.46,0.45,0.94); }
-        .eq-slide { min-width: 100%; height: 100%; object-fit: contain; padding: 20px; flex-shrink: 0; }
-        .eq-arrow { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.88); border: none; border-radius: 50%; width: 34px; height: 34px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.14); color: var(--text); font-size: 11px; transition: background 0.15s; z-index: 2; }
+        .eq-slide { min-width: 100%; height: 100%; object-fit: contain; padding: 16px; flex-shrink: 0; }
+        .eq-arrow { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.88); border: none; border-radius: 50%; width: 32px; height: 32px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.14); color: var(--text); font-size: 11px; transition: background 0.15s; z-index: 2; }
         .eq-arrow:hover { background: #fff; }
         .eq-arrow-l { left: 8px; }
         .eq-arrow-r { right: 8px; }
-        .eq-dotnav { display: flex; justify-content: center; gap: 6px; padding: 10px 0; background: #f5f5f7; flex-shrink: 0; }
+        .eq-dotnav { display: flex; justify-content: center; gap: 6px; padding: 8px 0; background: #f5f5f7; flex-shrink: 0; }
         .eq-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(0,0,0,0.18); cursor: pointer; transition: all 0.2s; border: none; }
         .eq-dot.on { background: var(--accent); transform: scale(1.35); }
-        .eq-right { padding: 24px 22px 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+        /* Details — below image, scrollable */
+        .eq-right { padding: 16px 20px 18px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; flex: 1; min-height: 0; }
+        .eq-header-row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
         .eq-r-brand { font-size: 10px; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; }
-        .eq-r-name { font-size: 18px; font-weight: 700; color: var(--text); line-height: 1.2; }
+        .eq-r-name { font-size: 17px; font-weight: 700; color: var(--text); line-height: 1.2; }
         .eq-r-sub { font-size: 12px; color: var(--muted); }
-        .eq-r-price { font-size: 26px; font-weight: 700; color: var(--accent); }
+        .eq-r-price { font-size: 24px; font-weight: 700; color: var(--accent); white-space: nowrap; }
+        /* 2-column details grid */
+        .eq-details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 20px; }
+        .eq-col-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); margin-bottom: 6px; }
         .eq-specs { width: 100%; border-collapse: collapse; }
         .eq-specs tr { border-bottom: 1px solid var(--border); }
         .eq-specs tr:last-child { border-bottom: none; }
-        .eq-specs td { padding: 6px 2px; font-size: 12px; }
-        .eq-specs td:first-child { color: var(--muted); width: 48%; }
+        .eq-specs td { padding: 5px 2px; font-size: 12px; }
+        .eq-specs td:first-child { color: var(--muted); width: 52%; }
         .eq-specs td:last-child { font-weight: 600; color: var(--text); }
-        .eq-uses-h { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); }
         .eq-use-list { list-style: none; display: flex; flex-direction: column; gap: 5px; }
-        .eq-use-row { display: flex; align-items: center; gap: 9px; font-size: 12px; color: var(--text); }
-        .eq-use-row i { color: var(--accent); width: 16px; text-align: center; flex-shrink: 0; }
-        .eq-add { width: 100%; padding: 12px; background: var(--text); color: #fff; border: none; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-family: 'Outfit', sans-serif; transition: background 0.2s; margin-top: auto; }
+        .eq-use-row { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text); }
+        .eq-use-row i { color: var(--accent); width: 15px; text-align: center; flex-shrink: 0; font-size: 12px; }
+        .eq-add { width: 100%; padding: 12px; background: var(--text); color: #fff; border: none; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-family: 'Outfit', sans-serif; transition: background 0.2s; flex-shrink: 0; }
         .eq-add:hover { background: var(--accent); }
-        @media (max-width: 640px) {
-            .eq-modal { max-height: 88vh; }
-            .eq-modal-inner { grid-template-columns: 1fr; grid-template-rows: 200px 1fr; }
-            .eq-right { padding: 16px; gap: 8px; }
+        @media (max-width: 500px) {
+            .eq-left { height: 190px; }
+            .eq-details-grid { grid-template-columns: 1fr; }
+            .eq-right { padding: 14px 16px; }
             .eq-r-name { font-size: 15px; }
-            .eq-r-price { font-size: 22px; }
-            .eq-specs td { font-size: 11px; }
         }
 
         /* ── FOOTER ── */
@@ -3177,27 +3179,34 @@
             el.innerHTML = `
                 <div class="eq-modal" id="eqModal">
                     <button class="eq-modal-x" id="eqX">✕</button>
-                    <div class="eq-modal-inner">
-                        <div class="eq-left">
-                            <div class="eq-slider-wrap" id="eqSliderWrap">
-                                <div class="eq-track" id="eqTrack"></div>
-                                <button class="eq-arrow eq-arrow-l" id="eqPrev"><i class="fas fa-chevron-left"></i></button>
-                                <button class="eq-arrow eq-arrow-r" id="eqNext"><i class="fas fa-chevron-right"></i></button>
-                            </div>
-                            <div class="eq-dotnav" id="eqDots"></div>
+                    <div class="eq-left">
+                        <div class="eq-slider-wrap">
+                            <div class="eq-track" id="eqTrack"></div>
+                            <button class="eq-arrow eq-arrow-l" id="eqPrev"><i class="fas fa-chevron-left"></i></button>
+                            <button class="eq-arrow eq-arrow-r" id="eqNext"><i class="fas fa-chevron-right"></i></button>
                         </div>
-                        <div class="eq-right">
-                            <div class="eq-r-brand" id="eqBrand"></div>
-                            <div class="eq-r-name" id="eqName"></div>
-                            <div class="eq-r-sub" id="eqSub"></div>
-                            <div class="eq-r-price" id="eqPrice"></div>
-                            <table class="eq-specs" id="eqSpecs"></table>
+                        <div class="eq-dotnav" id="eqDots"></div>
+                    </div>
+                    <div class="eq-right">
+                        <div class="eq-header-row">
                             <div>
-                                <div class="eq-uses-h">Primjeri primjene</div>
+                                <div class="eq-r-brand" id="eqBrand"></div>
+                                <div class="eq-r-name" id="eqName"></div>
+                                <div class="eq-r-sub" id="eqSub"></div>
+                            </div>
+                            <div class="eq-r-price" id="eqPrice"></div>
+                        </div>
+                        <div class="eq-details-grid">
+                            <div>
+                                <div class="eq-col-title">Specifikacije</div>
+                                <table class="eq-specs" id="eqSpecs"></table>
+                            </div>
+                            <div>
+                                <div class="eq-col-title">Primjeri primjene</div>
                                 <ul class="eq-use-list" id="eqUses"></ul>
                             </div>
-                            <button class="eq-add" id="eqAddBtn"><i class="fas fa-shopping-bag"></i> Dodaj u košaricu</button>
                         </div>
+                        <button class="eq-add" id="eqAddBtn"><i class="fas fa-shopping-bag"></i> Dodaj u košaricu</button>
                     </div>
                 </div>`;
             document.body.appendChild(el);
