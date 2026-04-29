@@ -858,8 +858,8 @@
         .energy-hero-h { font-size: clamp(28px, 4vw, 52px); font-weight: 700; color: #fff; letter-spacing: -1.5px; line-height: 1.05; margin-bottom: 14px; }
         .energy-hero-h em { font-style: normal; color: var(--accent); }
         .energy-hero-p { font-size: 15px; color: rgba(255,255,255,0.5); max-width: 480px; margin: 0 auto 36px; line-height: 1.6; }
-        .energy-hero-img { max-width: 620px; margin: 0 auto; }
-        .energy-hero-img img { width: 100%; display: block; border-radius: 14px 14px 0 0; }
+        .energy-hero-img { max-width: 800px; margin: 0 auto; }
+        .energy-hero-img img { width: 100%; display: block; border-radius: 12px 12px 0 0; object-fit: cover; max-height: 340px; }
         @media(max-width:600px) { .energy-hero { padding: 32px 20px 0; } }
         /* Energy advisor */
         .advisor-dark { background: #1d1d1f; border-radius: 20px; padding: 32px; color: #fff; margin-top: 12px; }
@@ -1296,7 +1296,7 @@
                 <h2 class="energy-hero-h">Energija bez<br><em>kompromisa</em></h2>
                 <p class="energy-hero-p">Prijenosne elektrane, solarni paneli i LFP baterije za nautiku, vikendice i van life.</p>
                 <div class="energy-hero-img">
-                    <img src="assets/pecron-yacht-action.png" alt="Pecron prijenosna elektrana — nautika i kampiranje" loading="lazy">
+                    <img src="assets/pecron-hero-2.jpg" alt="Pecron E1500LFP prijenosna elektrana s uređajima" loading="lazy">
                 </div>
             </div>
             <div class="energy-filter-bar" id="energyFilterBar"></div>
@@ -1342,8 +1342,18 @@
 
                         // 2. Update catalog prices AND units from live sheet data
                         if (liveCatalog && liveCatalog.length > 0) {
+                            // Save local category map before overwriting (GAS catalog may not include category field)
+                            const localCatMap = {};
+                            (LIVE_PRICES.catalog || []).forEach(p => { if (p.category) localCatMap[p.sku] = p.category; });
                             // Replace entire catalog with live data (has correct units from column J)
                             LIVE_PRICES.catalog = liveCatalog;
+                            // Restore categories for items GAS didn't categorize
+                            const catNormGAS = { fence:'ograde', ograde:'ograde', membranes:'hidro', hidro:'hidro', bitumen:'hidro', chemicals:'hidro', xps:'termo', termo:'termo', wool:'termo', wool_facade:'termo', osb:'termo', extras:'termo', new_products:'termo', facade_etics:'ostalo', fasade:'ostalo', energy:'energy' };
+                            LIVE_PRICES.catalog.forEach(p => {
+                                if (!p.category) p.category = localCatMap[p.sku] || 'ostalo';
+                                const norm = catNormGAS[(p.category||'').toLowerCase()] || catNormGAS[p.category];
+                                if (norm) p.category = norm;
+                            });
                             console.log("📦 Live catalog loaded with units:", liveCatalog.length, "items");
                         } else if (LIVE_PRICES.catalog && LIVE_PRICES.catalog.length > 0) {
                             // Fallback: just update prices
