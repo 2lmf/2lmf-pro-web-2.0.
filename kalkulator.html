@@ -873,7 +873,7 @@
         .adv-device-name { font-size: 11px; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .adv-device-wh { font-size: 10px; color: rgba(255,255,255,0.45); }
         .adv-h-row { display: flex; align-items: center; gap: 4px; margin-top: 3px; }
-        .adv-h-input { width: 36px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 5px; color: #fff; font-size: 11px; font-family: 'Outfit', sans-serif; text-align: center; padding: 1px 2px; -moz-appearance: textfield; }
+        .adv-h-input { width: 36px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 5px; color: #fff; font-size: 11px; font-family: 'Outfit', sans-serif; text-align: center; padding: 1px 2px; -moz-appearance: textfield; appearance: textfield; }
         .adv-h-input::-webkit-outer-spin-button, .adv-h-input::-webkit-inner-spin-button { -webkit-appearance: none; }
         .adv-h-input:focus { outline: none; border-color: var(--accent); }
         .adv-h-unit { font-size: 10px; color: rgba(255,255,255,0.4); }
@@ -3037,9 +3037,9 @@
             '5014': { imgs:['assets/aferiy-p280-exp.jpg'], specs:[['Tip','Expansion baterija'],['Kapacitet','2048 Wh'],['Kompatibilno','Aferiy P280'],['Proširivost','do 4× 2048 Wh']], expansion:true },
             '5015': { imgs:['https://www.aferiy.com/cdn/shop/files/AFERIY_P310-EC_Portable_Power_Station_3600W__3840Wh_APP_1.jpg'], specs:[['Kapacitet','3840 Wh'],['Snaga AC','3600W'],['Baterija','LiFePO₄ — 4.000+ ciklusa'],['Max. solar','1200W'],['Proširivost','do 11.520 Wh']] },
             '5016': { imgs:['https://www.aferiy.com/cdn/shop/files/AFERIY_P310-EC_Battery_extension_3840Wh_1.jpg','assets/aferiy-p310-exp.jpg'], specs:[['Tip','Expansion baterija'],['Kapacitet','3840 Wh'],['Kompatibilno','Aferiy P310'],['Proširivost','do 3× 3840 Wh']], expansion:true },
-            '5017': { imgs:['https://www.aferiy.com/cdn/shop/files/AFERIY_AF-S100A1100WPortableSolarPanel_8.jpg','assets/aferiy-solar100.webp'], specs:[['Snaga','100W'],['Tip','Foldable mono'],['Efikasnost','~23%'],['Konektor','XT60']], solar:true },
-            '5018': { imgs:['https://www.aferiy.com/cdn/shop/files/AFERIY_200W_Solar_Panel_1.jpg','assets/aferiy-solar200.jpg'], specs:[['Snaga','200W'],['Tip','Foldable mono'],['Efikasnost','~23%'],['Konektor','XT60']], solar:true },
-            '5019': { imgs:['https://www.aferiy.com/cdn/shop/files/AFERIY_AF-S400400WPortableSolarPane_1.jpg','assets/aferiy-solar400.jpg'], specs:[['Snaga','400W'],['Tip','Foldable mono'],['Efikasnost','~23%'],['Konektor','XT60 / Anderson']], solar:true },
+            '5017': { imgs:['https://www.aferiy.com/cdn/shop/files/AFERIY_AF-S100A1100WPortableSolarPanel_8.jpg'], specs:[['Snaga','100W'],['Tip','Foldable mono'],['Efikasnost','~23%'],['Konektor','XT60']], solar:true },
+            '5018': { imgs:['https://www.aferiy.com/cdn/shop/files/AFERIY_200W_Solar_Panel_1.jpg'], specs:[['Snaga','200W'],['Tip','Foldable mono'],['Efikasnost','~23%'],['Konektor','XT60']], solar:true },
+            '5019': { imgs:['https://www.aferiy.com/cdn/shop/files/AFERIY_AF-S400400WPortableSolarPane_1.jpg'], specs:[['Snaga','400W'],['Tip','Foldable mono'],['Efikasnost','~23%'],['Konektor','XT60 / Anderson']], solar:true },
         };
 
         function eqUseExamples(p, detail) {
