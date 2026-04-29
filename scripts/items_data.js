@@ -6,15 +6,15 @@
 const prices = {
     // --- TERMOIZOLACIJA (XPS) ---
     xps: {
-        2: { price: 2.7337500000000006, sku: "2001", name: "Ravatherm XPS, 2cm" },
-        3: { price: 3.7968750000000004, sku: "2002", name: "Ravatherm XPS: 3cm" },
-        4: { price: 5.0625, sku: "2003", name: "Ravatherm XPS: 4cm" },
-        5: { price: 6.328125, sku: "2004", name: "Ravatherm XPS: 5cm" },
-        6: { price: 7.593750000000001, sku: "2005", name: "Ravatherm XPS: 6cm" },
-        8: { price: 10.125, sku: "2006", name: "Ravatherm XPS: 8cm" },
-        10: { price: 12.65625, sku: "2007", name: "Ravatherm XPS: 10cm" },
-        12: { price: 15.187500000000002, sku: "2008", name: "Ravatherm XPS: 12cm" },
-        15: { price: 20.503125, sku: "2009", name: "Ravatherm XPS: 15cm" }
+        2: { price: 3.375, sku: "2001", name: "Ravatherm XPS, 2cm" },
+        3: { price: 4.809375, sku: "2002", name: "Ravatherm XPS: 3cm" },
+        4: { price: 6.4125000000000005, sku: "2003", name: "Ravatherm XPS: 4cm" },
+        5: { price: 8.015625, sku: "2004", name: "Ravatherm XPS: 5cm" },
+        6: { price: 9.61875, sku: "2005", name: "Ravatherm XPS: 6cm" },
+        8: { price: 12.825000000000001, sku: "2006", name: "Ravatherm XPS: 8cm" },
+        10: { price: 16.03125, sku: "2007", name: "Ravatherm XPS: 10cm" },
+        12: { price: 19.2375, sku: "2008", name: "Ravatherm XPS: 12cm" },
+        15: { price: 25.3125, sku: "2009", name: "Ravatherm XPS: 15cm" }
     },
 
     // --- KAMENA VUNA ---
