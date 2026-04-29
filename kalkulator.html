@@ -882,8 +882,24 @@
         .adv-wh-label { font-size: 13px; color: rgba(255,255,255,0.45); margin-top: 3px; }
         .adv-recommend { font-size: 15px; font-weight: 600; margin-top: 14px; }
         .adv-recommend-sub { font-size: 12px; color: rgba(255,255,255,0.5); margin-top: 3px; }
-        .adv-bundle-btn { margin-top: 4px; width: 100%; padding: 13px; background: var(--accent); color: #fff; border: none; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; display: none; align-items: center; justify-content: center; gap: 8px; transition: background 0.2s; }
-        .adv-bundle-btn:hover { background: #cf6d17; }
+        .adv-solo-btn { margin-top: 4px; width: 100%; padding: 11px; background: transparent; color: #fff; border: 1.5px solid rgba(255,255,255,0.22); border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: border-color 0.2s; }
+        .adv-solo-btn:hover { border-color: rgba(255,255,255,0.5); }
+        .adv-bundle-card { background: linear-gradient(135deg, rgba(230,126,34,0.13), rgba(230,126,34,0.04)); border: 1.5px solid var(--accent); border-radius: 16px; padding: 18px; margin-top: 12px; }
+        .adv-bundle-tag { font-size: 10px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
+        .adv-bundle-items { display: flex; align-items: center; gap: 6px; margin-bottom: 13px; }
+        .adv-bundle-item { display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.07); border-radius: 10px; padding: 8px 10px; flex: 1; min-width: 0; }
+        .adv-bundle-item img { width: 38px; height: 38px; object-fit: contain; flex-shrink: 0; border-radius: 6px; }
+        .adv-bundle-item-name { font-size: 11px; color: #fff; font-weight: 600; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .adv-bundle-item-sub { font-size: 10px; color: rgba(255,255,255,0.45); }
+        .adv-bundle-plus { font-size: 18px; color: rgba(255,255,255,0.3); flex-shrink: 0; line-height: 1; }
+        .adv-bundle-price-row { display: flex; align-items: baseline; gap: 8px; margin-bottom: 10px; }
+        .adv-bundle-price-total { font-size: 28px; font-weight: 700; color: var(--accent); }
+        .adv-bundle-price-label { font-size: 12px; color: rgba(255,255,255,0.4); }
+        .adv-bundle-perks { display: flex; flex-direction: column; gap: 5px; margin-bottom: 14px; }
+        .adv-bundle-perk { font-size: 11px; color: rgba(255,255,255,0.6); display: flex; align-items: center; gap: 7px; }
+        .adv-bundle-perk i { color: var(--accent); width: 13px; text-align: center; }
+        .adv-bundle-add { width: 100%; padding: 13px; background: var(--accent); color: #fff; border: none; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: background 0.2s; }
+        .adv-bundle-add:hover { background: #cf6d17; }
 
         /* ── ENERGY INFO BTN ── */
         .e-info-btn { position: absolute; bottom: 8px; right: 8px; width: 28px; height: 28px; border-radius: 50%; background: rgba(255,255,255,0.92); border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--accent); font-size: 14px; opacity: 0; transition: opacity 0.18s, transform 0.18s; box-shadow: 0 1px 6px rgba(0,0,0,0.18); }
@@ -1363,9 +1379,27 @@
                     <div class="adv-recommend" id="advRecommend">Odaberi uređaje gore ↑</div>
                     <div class="adv-recommend-sub" id="advRecommendSub"></div>
                 </div>
-                <button class="adv-bundle-btn" id="advBundleBtn">
-                    <i class="fas fa-shopping-bag"></i> Dodaj preporučenu bateriju u košaricu
-                </button>
+                <div id="advActions" style="display:none">
+                    <button class="adv-solo-btn" id="advSoloBtn">
+                        <i class="fas fa-battery-full"></i> Dodaj samo bateriju
+                    </button>
+                    <div class="adv-bundle-card" id="advBundleCard">
+                        <div class="adv-bundle-tag" id="advBundleTag"></div>
+                        <div class="adv-bundle-items" id="advBundleItems"></div>
+                        <div class="adv-bundle-price-row">
+                            <div class="adv-bundle-price-total" id="advBundlePriceTotal"></div>
+                            <div class="adv-bundle-price-label">EUR · paket</div>
+                        </div>
+                        <div class="adv-bundle-perks">
+                            <div class="adv-bundle-perk"><i class="fas fa-truck"></i> Besplatna DDP dostava do vrata</div>
+                            <div class="adv-bundle-perk"><i class="fas fa-circle-check"></i> Kompatibilnost zajamčena</div>
+                            <div class="adv-bundle-perk"><i class="fas fa-sun"></i> <span id="advRechargeInfo"></span></div>
+                        </div>
+                        <button class="adv-bundle-add" id="advBundleAdd">
+                            <i class="fas fa-solar-panel"></i> Dodaj cijeli paket u košaricu
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </template>
@@ -3117,10 +3151,26 @@
 
             // Advisor
             const advisorDevicesEl = view.querySelector('#advisorDevices');
-            const advWhEl          = view.querySelector('#advWh');
-            const advRecommendEl   = view.querySelector('#advRecommend');
-            const advRecommendSub  = view.querySelector('#advRecommendSub');
-            const advBundleBtn     = view.querySelector('#advBundleBtn');
+            const BUNDLE_SOLAR = {
+                '5007':'5017', '5008':'5017',
+                '5009':'5018', '5001':'5018',
+                '5010':'5019', '5011':'5019', '5002':'5019',
+                '5012':'5019', '5013':'5019', '5003':'5019',
+                '5004':'5019', '5005':'5019', '5015':'5019',
+            };
+            const SOLAR_W = { '5017':100, '5018':200, '5019':400 };
+
+            const advWhEl            = view.querySelector('#advWh');
+            const advRecommendEl     = view.querySelector('#advRecommend');
+            const advRecommendSub    = view.querySelector('#advRecommendSub');
+            const advActions         = view.querySelector('#advActions');
+            const advSoloBtn         = view.querySelector('#advSoloBtn');
+            const advBundleCard      = view.querySelector('#advBundleCard');
+            const advBundleTag       = view.querySelector('#advBundleTag');
+            const advBundleItems     = view.querySelector('#advBundleItems');
+            const advBundlePriceTotal= view.querySelector('#advBundlePriceTotal');
+            const advRechargeInfo    = view.querySelector('#advRechargeInfo');
+            const advBundleAdd       = view.querySelector('#advBundleAdd');
 
             const advHours = {};
             ENERGY_DEVICES.forEach(d => { advHours[d.id] = d.hours; });
@@ -3150,6 +3200,8 @@
                 });
             });
 
+            const fmtAdv = n => new Intl.NumberFormat('hr-HR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n);
+
             const updateAdvisor = () => {
                 let totalWh = 0;
                 ENERGY_DEVICES.forEach(d => { if (advActive.has(d.id)) totalWh += d.watts * advHours[d.id]; });
@@ -3158,7 +3210,7 @@
                 if (!totalWh) {
                     advRecommendEl.textContent = 'Odaberi uređaje gore ↑';
                     advRecommendSub.textContent = '';
-                    advBundleBtn.style.display = 'none';
+                    advActions.style.display = 'none';
                     advRecommendedSku = null;
                     return;
                 }
@@ -3167,7 +3219,47 @@
                 advRecommendedSku = tier.sku;
                 advRecommendEl.textContent = `Preporučamo: ${tier.label}`;
                 advRecommendSub.textContent = `Procjena: ~${needed} Wh/dan (s 20% rezervom)`;
-                advBundleBtn.style.display = 'flex';
+                advActions.style.display = 'block';
+
+                // Bundle
+                const solarSku = BUNDLE_SOLAR[advRecommendedSku];
+                const batProd  = ENERGY_PRODUCTS.find(x => x.sku === advRecommendedSku);
+                const solProd  = solarSku ? ENERGY_PRODUCTS.find(x => x.sku === solarSku) : null;
+
+                if (!solProd) { advBundleCard.style.display = 'none'; return; }
+                advBundleCard.style.display = 'block';
+
+                // Context name
+                const hasNautical = ['vhf','pump'].some(id => advActive.has(id));
+                const hasCamping  = ['fridge','fan'].some(id => advActive.has(id));
+                const bundleLabel = hasNautical ? '⚓ Nautički Paket' : hasCamping ? '🏕️ Camper Paket' : '☀️ Solar Starter Paket';
+                advBundleTag.textContent = bundleLabel;
+
+                // Items
+                const makeItem = p => `<div class="adv-bundle-item">
+                    <img src="${p.img}" alt="${p.name}" loading="lazy" onerror="this.style.opacity='0'">
+                    <div><div class="adv-bundle-item-name">${p.name}</div><div class="adv-bundle-item-sub">${p.sub}</div></div>
+                </div>`;
+                advBundleItems.innerHTML = makeItem(batProd) + '<div class="adv-bundle-plus">+</div>' + makeItem(solProd);
+
+                // Price
+                const batPrice = LIVE_PRICES.prices[advRecommendedSku] || 0;
+                const solPrice = LIVE_PRICES.prices[solarSku] || 0;
+                const totalPrice = batPrice + solPrice;
+                advBundlePriceTotal.textContent = totalPrice > 0 ? fmtAdv(totalPrice) : '—';
+
+                // Recharge time
+                const solW = SOLAR_W[solarSku] || 0;
+                const batWh = batProd ? batProd.wh : 0;
+                const rechargeH = solW > 0 && batWh > 0 ? Math.round((batWh / (solW * 0.85)) * 10) / 10 : 0;
+                advRechargeInfo.textContent = rechargeH > 0
+                    ? (rechargeH <= 6 ? `Solar puni bateriju za ~${rechargeH}h (jadranski uvjeti)` : `Solar puni bateriju za ~${Math.ceil(rechargeH/4.5)} sunčana dana`)
+                    : 'Punjenje solarnom energijom';
+
+                advBundleAdd.onclick = () => {
+                    addEnergyToCart(advRecommendedSku);
+                    addEnergyToCart(solarSku);
+                };
             };
 
             advisorDevicesEl.querySelectorAll('.adv-device').forEach(el => {
@@ -3179,7 +3271,7 @@
                 };
             });
 
-            advBundleBtn.onclick = () => {
+            advSoloBtn.onclick = () => {
                 if (!advRecommendedSku) return;
                 addEnergyToCart(advRecommendedSku);
             };
