@@ -75,22 +75,22 @@ const prices = {
 
         // 3D PANELI (5mm)
         panel_3d_5: {
-            83: { price: 18.904615384615386, sku: "1018", name: "Ogradni panel 3D 830x2500 5/5" },
-            103: { price: 22.2, sku: "1009", name: "Ogradni panel 3D 1030x2500 5/5" },
-            123: { price: 26.104615384615386, sku: "1011", name: "Ogradni panel 3D 1230x2500 5/5" },
-            153: { price: 33, sku: "1013", name: "Ogradni panel 3D 1530x2500 5/5" },
-            173: { price: 35.70461538461539, sku: "1015", name: "Ogradni panel 3D 1730x2500 5/5" },
-            203: { price: 42.6, sku: "1017", name: "Ogradni panel 3D 2030x2500 5/5" }
+            83: { price: 20.48, sku: "1018", name: "Ogradni panel 3D 830x2500 5/5" },
+            103: { price: 24.05, sku: "1009", name: "Ogradni panel 3D 1030x2500 5/5" },
+            123: { price: 28.28, sku: "1011", name: "Ogradni panel 3D 1230x2500 5/5" },
+            153: { price: 35.75, sku: "1013", name: "Ogradni panel 3D 1530x2500 5/5" },
+            173: { price: 38.68, sku: "1015", name: "Ogradni panel 3D 1730x2500 5/5" },
+            203: { price: 46.15, sku: "1017", name: "Ogradni panel 3D 2030x2500 5/5" }
         },
 
         // 3D PANELI (4mm)
         panel_3d_4: {
-            83: { price: 12.304615384615383, sku: "1019", name: "Ogradni panel 3D 830x2500 4/4" },
+            83: { price: 13.33, sku: "1019", name: "Ogradni panel 3D 830x2500 4/4" },
             103: { price: 13.799999999999999, sku: "1008", name: "Ogradni panel 3D 1030x2500 4/4" },
-            123: { price: 15.904615384615385, sku: "1010", name: "Ogradni panel 3D 1230x2500 4/4" },
-            153: { price: 20.4, sku: "1012", name: "Ogradni panel 3D 1530x2500 4/4" },
-            173: { price: 22.8, sku: "1014", name: "Ogradni panel 3D 1730x2500 4/4" },
-            203: { price: 26.704615384615384, sku: "1016", name: "Ogradni panel 3D 2030x2500 4/4" }
+            123: { price: 17.23, sku: "1010", name: "Ogradni panel 3D 1230x2500 4/4" },
+            153: { price: 22.1, sku: "1012", name: "Ogradni panel 3D 1530x2500 4/4" },
+            173: { price: 24.7, sku: "1014", name: "Ogradni panel 3D 1730x2500 4/4" },
+            203: { price: 28.930000000000003, sku: "1016", name: "Ogradni panel 3D 2030x2500 4/4" }
         },
 
         // Stupovi (sa plo?icom)
