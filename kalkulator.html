@@ -852,6 +852,33 @@
         .energy-mod-title { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
         .energy-mod-desc { color: var(--muted); font-size: 14px; }
         .energy-filter-bar { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+        /* Energy hero */
+        .energy-hero { background: #1d1d1f; border-radius: 20px; overflow: hidden; padding: 48px 40px 0; text-align: center; margin-bottom: 32px; }
+        .energy-hero-tag { font-size: 12px; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 2.5px; display: block; margin-bottom: 18px; }
+        .energy-hero-h { font-size: clamp(28px, 4vw, 52px); font-weight: 700; color: #fff; letter-spacing: -1.5px; line-height: 1.05; margin-bottom: 14px; }
+        .energy-hero-h em { font-style: normal; color: var(--accent); }
+        .energy-hero-p { font-size: 15px; color: rgba(255,255,255,0.5); max-width: 480px; margin: 0 auto 36px; line-height: 1.6; }
+        .energy-hero-img { max-width: 620px; margin: 0 auto; }
+        .energy-hero-img img { width: 100%; display: block; border-radius: 14px 14px 0 0; }
+        @media(max-width:600px) { .energy-hero { padding: 32px 20px 0; } }
+        /* Energy advisor */
+        .advisor-dark { background: #1d1d1f; border-radius: 20px; padding: 32px; color: #fff; margin-top: 12px; }
+        .advisor-dark-title { font-size: 20px; font-weight: 700; margin-bottom: 5px; }
+        .advisor-dark-sub { font-size: 13px; color: rgba(255,255,255,0.5); margin-bottom: 24px; }
+        .advisor-devices { display: grid; grid-template-columns: repeat(auto-fill, minmax(155px, 1fr)); gap: 9px; margin-bottom: 20px; }
+        .adv-device { background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12); border-radius: 12px; padding: 11px 13px; cursor: pointer; transition: all 0.18s; user-select: none; display: flex; align-items: center; gap: 9px; }
+        .adv-device.active { background: rgba(230,126,34,0.18); border-color: var(--accent); }
+        .adv-device i { font-size: 16px; color: rgba(255,255,255,0.45); flex-shrink: 0; }
+        .adv-device.active i { color: var(--accent); }
+        .adv-device-name { font-size: 11px; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .adv-device-wh { font-size: 10px; color: rgba(255,255,255,0.45); }
+        .adv-result { background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12); border-radius: 14px; padding: 22px; text-align: center; margin-bottom: 18px; }
+        .adv-wh-big { font-size: 48px; font-weight: 700; color: var(--accent); line-height: 1; }
+        .adv-wh-label { font-size: 13px; color: rgba(255,255,255,0.45); margin-top: 3px; }
+        .adv-recommend { font-size: 15px; font-weight: 600; margin-top: 14px; }
+        .adv-recommend-sub { font-size: 12px; color: rgba(255,255,255,0.5); margin-top: 3px; }
+        .adv-bundle-btn { margin-top: 4px; width: 100%; padding: 13px; background: var(--accent); color: #fff; border: none; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; display: none; align-items: center; justify-content: center; gap: 8px; transition: background 0.2s; }
+        .adv-bundle-btn:hover { background: #cf6d17; }
 
         /* ── FOOTER ── */
         footer { margin-top: 60px; padding: 32px 20px; border-top: 1px solid var(--border); background: var(--white); text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; }
@@ -1264,12 +1291,30 @@
 
     <template id="tpl-energy">
         <div class="config-flow">
-            <div class="energy-mod-header">
-                <div class="energy-mod-title">⚡ Prijenosne elektrane</div>
-                <div class="energy-mod-desc">Pecron i Aferiy LFP baterije — nautika, kampiranje, vikendice</div>
+            <div class="energy-hero">
+                <span class="energy-hero-tag">Outdoor &amp; Energy</span>
+                <h2 class="energy-hero-h">Energija bez<br><em>kompromisa</em></h2>
+                <p class="energy-hero-p">Prijenosne elektrane, solarni paneli i LFP baterije za nautiku, vikendice i van life.</p>
+                <div class="energy-hero-img">
+                    <img src="assets/pecron-yacht-action.png" alt="Pecron prijenosna elektrana — nautika i kampiranje" loading="lazy">
+                </div>
             </div>
             <div class="energy-filter-bar" id="energyFilterBar"></div>
             <div class="energy-grid" id="energyGrid"></div>
+            <div class="advisor-dark" id="energyAdvisor">
+                <div class="advisor-dark-title">⚡ Energy Advisor</div>
+                <div class="advisor-dark-sub">Odaberi uređaje koje koristiš — preporučit ćemo odgovarajuću bateriju</div>
+                <div class="advisor-devices" id="advisorDevices"></div>
+                <div class="adv-result">
+                    <div class="adv-wh-big" id="advWh">0</div>
+                    <div class="adv-wh-label">Wh / dan (procjena)</div>
+                    <div class="adv-recommend" id="advRecommend">Odaberi uređaje gore ↑</div>
+                    <div class="adv-recommend-sub" id="advRecommendSub"></div>
+                </div>
+                <button class="adv-bundle-btn" id="advBundleBtn">
+                    <i class="fas fa-shopping-bag"></i> Dodaj preporučenu bateriju u košaricu
+                </button>
+            </div>
         </div>
     </template>
 
@@ -1727,7 +1772,7 @@
             // Sklanjanje vizualizatora za Katalog (robunije)
             const viz = document.querySelector('.stage-container');
             if (viz) {
-                if (modId === 'katalog') viz.style.setProperty('display', 'none', 'important');
+                if (modId === 'katalog' || modId === 'energy') viz.style.setProperty('display', 'none', 'important');
                 else viz.style.setProperty('display', 'flex', 'important');
             }
 
@@ -1738,7 +1783,7 @@
                 if (modId === 'hidro') initUIHydro();
                 if (modId === 'termo') initUITermo();
                 if (modId === 'katalog') initUIKatalog();
-                if (modId === 'energy' && !window._energyInit) { window._energyInit = true; initEnergyModule(); }
+                if (modId === 'energy') initEnergyModule();
             }
         }
 
@@ -2858,25 +2903,39 @@
 
         // ── ENERGY MODULE ─────────────────────────────────────────────────────────
         const ENERGY_PRODUCTS = [
-            { sku:'5001', brand:'Pecron', name:'Pecron E600LFP (V2)',              sub:'614 Wh / 600W',    wh:614,  img:'assets/pecron-e600.webp' },
-            { sku:'5002', brand:'Pecron', name:'Pecron E1500LFP',                  sub:'1440 Wh / 1500W',  wh:1440, img:'assets/pecron-e1500.webp', featured:true },
-            { sku:'5003', brand:'Pecron', name:'Pecron E2400LFP',                  sub:'2048 Wh / 2400W',  wh:2048, img:'assets/pecron-e2400.jpg' },
-            { sku:'5004', brand:'Pecron', name:'Pecron E3600LFP',                  sub:'3072 Wh / 3600W',  wh:3072, img:'assets/pecron-e3600.jpg' },
-            { sku:'5005', brand:'Pecron', name:'Pecron E3000LFP',                  sub:'3096 Wh / 3000W',  wh:3096, img:'assets/pecron-e3000.jpg' },
-            { sku:'5006', brand:'Pecron', name:'Pecron E3000LFP-48V Exp. Battery', sub:'Expansion baterija', wh:0,  img:'assets/pecron-e3000-exp.jpg' },
-            { sku:'5007', brand:'Aferiy', name:'Aferiy Nano 100 100w',             sub:'64 Wh / 100W',     wh:64,   img:'assets/aferiy-nano100.webp' },
-            { sku:'5008', brand:'Aferiy', name:'Aferiy P040 400w',                 sub:'256 Wh / 400W',    wh:256,  img:'assets/aferiy-p040.webp' },
-            { sku:'5009', brand:'Aferiy', name:'Aferiy P010 800w',                 sub:'512 Wh / 800W',    wh:512,  img:'assets/aferiy-p010.webp' },
-            { sku:'5010', brand:'Aferiy', name:'Aferiy P110-E 1200w',              sub:'960 Wh / 1200W',   wh:960,  img:'assets/aferiy-p110e.webp' },
-            { sku:'5011', brand:'Aferiy', name:'Aferiy P110-D 1200w',              sub:'960 Wh / 1200W',   wh:960,  img:'assets/aferiy-p110d.webp' },
-            { sku:'5012', brand:'Aferiy', name:'Aferiy P210 2400w',                sub:'2048 Wh / 2400W',  wh:2048, img:'assets/aferiy-p210.webp', featured:true },
-            { sku:'5013', brand:'Aferiy', name:'Aferiy P280 2800w',                sub:'2048 Wh / 2800W',  wh:2048, img:'assets/aferiy-p280.webp' },
-            { sku:'5014', brand:'Aferiy', name:'Aferiy P280 Exp. Battery',         sub:'Expansion baterija', wh:0, img:'assets/aferiy-p280-exp.webp' },
-            { sku:'5015', brand:'Aferiy', name:'Aferiy P310 3600w',                sub:'3840 Wh / 3600W',  wh:3840, img:'assets/aferiy-p310.webp' },
-            { sku:'5016', brand:'Aferiy', name:'Aferiy P310 Exp. Battery',         sub:'Expansion baterija', wh:0, img:'assets/aferiy-p310-exp.webp' },
-            { sku:'5017', brand:'Aferiy', name:'Aferiy AF-S100A1 100w Solar Panel',sub:'100W solarni panel', wh:0, img:'assets/aferiy-solar100.webp' },
-            { sku:'5018', brand:'Aferiy', name:'Aferiy AF-S200A1 200w Solar Panel',sub:'200W solarni panel', wh:0, img:'assets/aferiy-solar200.webp' },
-            { sku:'5019', brand:'Aferiy', name:'Aferiy AF-S400A1 400w Solar Panel',sub:'400W solarni panel', wh:0, img:'assets/aferiy-solar400.webp' },
+            { sku:'5001', brand:'Pecron', type:'battery',   name:'Pecron E600LFP (V2)',              sub:'614 Wh / 600W',      wh:614,  img:'assets/pecron-e600.webp' },
+            { sku:'5002', brand:'Pecron', type:'battery',   name:'Pecron E1500LFP',                  sub:'1440 Wh / 1500W',    wh:1440, img:'assets/pecron-e1500.webp', featured:true },
+            { sku:'5003', brand:'Pecron', type:'battery',   name:'Pecron E2400LFP',                  sub:'2048 Wh / 2400W',    wh:2048, img:'assets/pecron-e2400.jpg' },
+            { sku:'5004', brand:'Pecron', type:'battery',   name:'Pecron E3600LFP',                  sub:'3072 Wh / 3600W',    wh:3072, img:'assets/pecron-e3600.jpg' },
+            { sku:'5005', brand:'Pecron', type:'battery',   name:'Pecron E3000LFP',                  sub:'3096 Wh / 3000W',    wh:3096, img:'assets/pecron-e3000.jpg' },
+            { sku:'5006', brand:'Pecron', type:'expansion', name:'Pecron E3000LFP-48V Exp. Battery', sub:'Expansion baterija',  wh:0,   img:'assets/pecron-e3000-exp.jpg' },
+            { sku:'5007', brand:'Aferiy', type:'battery',   name:'Aferiy Nano 100 100w',             sub:'64 Wh / 100W',       wh:64,   img:'assets/aferiy-nano100.webp' },
+            { sku:'5008', brand:'Aferiy', type:'battery',   name:'Aferiy P040 400w',                 sub:'256 Wh / 400W',      wh:256,  img:'assets/aferiy-p040.webp' },
+            { sku:'5009', brand:'Aferiy', type:'battery',   name:'Aferiy P010 800w',                 sub:'512 Wh / 800W',      wh:512,  img:'assets/aferiy-p010.webp' },
+            { sku:'5010', brand:'Aferiy', type:'battery',   name:'Aferiy P110-E 1200w',              sub:'960 Wh / 1200W',     wh:960,  img:'assets/aferiy-p110e.webp' },
+            { sku:'5011', brand:'Aferiy', type:'battery',   name:'Aferiy P110-D 1200w',              sub:'960 Wh / 1200W',     wh:960,  img:'assets/aferiy-p110d.webp' },
+            { sku:'5012', brand:'Aferiy', type:'battery',   name:'Aferiy P210 2400w',                sub:'2048 Wh / 2400W',    wh:2048, img:'assets/aferiy-p210.webp', featured:true },
+            { sku:'5013', brand:'Aferiy', type:'battery',   name:'Aferiy P280 2800w',                sub:'2048 Wh / 2800W',    wh:2048, img:'assets/aferiy-p280.webp' },
+            { sku:'5014', brand:'Aferiy', type:'expansion', name:'Aferiy P280 Exp. Battery',         sub:'Expansion baterija',  wh:0,   img:'assets/aferiy-p280-exp.webp' },
+            { sku:'5015', brand:'Aferiy', type:'battery',   name:'Aferiy P310 3600w',                sub:'3840 Wh / 3600W',    wh:3840, img:'assets/aferiy-p310.webp' },
+            { sku:'5016', brand:'Aferiy', type:'expansion', name:'Aferiy P310 Exp. Battery',         sub:'Expansion baterija',  wh:0,   img:'assets/aferiy-p310-exp.webp' },
+            { sku:'5017', brand:'Aferiy', type:'solar',     name:'Aferiy AF-S100A1 100w Solar',      sub:'100W solarni panel',  wh:0,   img:'assets/aferiy-solar100.webp' },
+            { sku:'5018', brand:'Aferiy', type:'solar',     name:'Aferiy AF-S200A1 200w Solar',      sub:'200W solarni panel',  wh:0,   img:'assets/aferiy-solar200.webp' },
+            { sku:'5019', brand:'Aferiy', type:'solar',     name:'Aferiy AF-S400A1 400w Solar',      sub:'400W solarni panel',  wh:0,   img:'assets/aferiy-solar400.webp' },
+        ];
+
+        const ENERGY_DEVICES = [
+            { id:'fridge',   name:'Hladnjak / hladnjača', watts:60,   hours:12,  icon:'fa-snowflake' },
+            { id:'laptop',   name:'Laptop',               watts:45,   hours:4,   icon:'fa-laptop' },
+            { id:'lights',   name:'LED rasvjeta',         watts:20,   hours:6,   icon:'fa-lightbulb' },
+            { id:'phone',    name:'Mobitel / tablet',     watts:15,   hours:3,   icon:'fa-mobile-screen' },
+            { id:'vhf',      name:'VHF radio (nautika)',  watts:6,    hours:4,   icon:'fa-radio' },
+            { id:'pump',     name:'Električna pumpa',     watts:50,   hours:1,   icon:'fa-faucet' },
+            { id:'fan',      name:'Ventilator 12V',       watts:25,   hours:8,   icon:'fa-fan' },
+            { id:'tv',       name:'TV / Monitor',         watts:80,   hours:3,   icon:'fa-tv' },
+            { id:'espresso', name:'Espresso aparat',      watts:1000, hours:0.15,icon:'fa-mug-hot' },
+            { id:'drone',    name:'Drone (punjač)',        watts:65,   hours:1,   icon:'fa-plane-up' },
+            { id:'cpap',     name:'CPAP uređaj',          watts:30,   hours:8,   icon:'fa-lungs' },
         ];
 
         function initEnergyModule() {
@@ -2884,11 +2943,29 @@
             view.innerHTML = document.getElementById('tpl-energy').innerHTML;
 
             const fmt = n => new Intl.NumberFormat('hr-HR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n);
+            const fmtH = h => h < 1 ? `${Math.round(h*60)} min/d` : `${h}h/d`;
             let energyFilter = 'all';
+            const advActive = new Set();
+            let advRecommendedSku = null;
 
-            const render = () => {
+            const ADVISOR_TIERS = [
+                { maxWh:300,      sku:'5008', label:'Aferiy P040 (256Wh)' },
+                { maxWh:550,      sku:'5009', label:'Aferiy P010 (512Wh)' },
+                { maxWh:1000,     sku:'5010', label:'Aferiy P110-E (960Wh)' },
+                { maxWh:1400,     sku:'5001', label:'Pecron E600LFP (614Wh)' },
+                { maxWh:1900,     sku:'5002', label:'Pecron E1500LFP (1440Wh)' },
+                { maxWh:2400,     sku:'5012', label:'Aferiy P210 (2048Wh)' },
+                { maxWh:3200,     sku:'5003', label:'Pecron E2400LFP (2048Wh)' },
+                { maxWh:Infinity, sku:'5015', label:'Aferiy P310 (3840Wh)' },
+            ];
+
+            const renderGrid = () => {
                 const grid = view.querySelector('#energyGrid');
-                const filtered = ENERGY_PRODUCTS.filter(p => energyFilter === 'all' || p.brand.toLowerCase() === energyFilter);
+                const filtered = ENERGY_PRODUCTS.filter(p => {
+                    if (energyFilter === 'all')    return true;
+                    if (energyFilter === 'solar')  return p.type === 'solar';
+                    return p.brand.toLowerCase() === energyFilter;
+                });
                 grid.innerHTML = filtered.map(p => {
                     const livePrice = LIVE_PRICES.prices[p.sku];
                     const price = livePrice !== undefined ? livePrice : null;
@@ -2917,18 +2994,71 @@
             };
 
             const filterBar = view.querySelector('#energyFilterBar');
-            const filters = [{k:'all',l:'Sve'},{k:'pecron',l:'Pecron'},{k:'aferiy',l:'Aferiy'}];
+            const filters = [{k:'all',l:'Sve'},{k:'pecron',l:'Pecron'},{k:'aferiy',l:'Aferiy'},{k:'solar',l:'☀️ Solar'}];
             filterBar.innerHTML = filters.map(f => `<div class="fchip ${f.k==='all'?'active':''}" data-f="${f.k}">${f.l}</div>`).join('');
             filterBar.querySelectorAll('.fchip').forEach(btn => {
                 btn.onclick = () => {
                     filterBar.querySelectorAll('.fchip').forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
                     energyFilter = btn.dataset.f;
-                    render();
+                    renderGrid();
                 };
             });
 
-            render();
+            // Advisor
+            const advisorDevicesEl = view.querySelector('#advisorDevices');
+            const advWhEl          = view.querySelector('#advWh');
+            const advRecommendEl   = view.querySelector('#advRecommend');
+            const advRecommendSub  = view.querySelector('#advRecommendSub');
+            const advBundleBtn     = view.querySelector('#advBundleBtn');
+
+            advisorDevicesEl.innerHTML = ENERGY_DEVICES.map(d => {
+                const wh = Math.round(d.watts * d.hours);
+                return `<div class="adv-device" data-id="${d.id}">
+                    <i class="fas ${d.icon}"></i>
+                    <div>
+                        <div class="adv-device-name">${d.name}</div>
+                        <div class="adv-device-wh">${d.watts}W · ${fmtH(d.hours)} · ~${wh}Wh</div>
+                    </div>
+                </div>`;
+            }).join('');
+
+            const updateAdvisor = () => {
+                let totalWh = 0;
+                ENERGY_DEVICES.forEach(d => { if (advActive.has(d.id)) totalWh += d.watts * d.hours; });
+                totalWh = Math.round(totalWh);
+                advWhEl.textContent = totalWh;
+                if (!totalWh) {
+                    advRecommendEl.textContent = 'Odaberi uređaje gore ↑';
+                    advRecommendSub.textContent = '';
+                    advBundleBtn.style.display = 'none';
+                    advRecommendedSku = null;
+                    return;
+                }
+                const needed = Math.round(totalWh * 1.2);
+                const tier = ADVISOR_TIERS.find(t => needed <= t.maxWh) || ADVISOR_TIERS[ADVISOR_TIERS.length - 1];
+                advRecommendedSku = tier.sku;
+                advRecommendEl.textContent = `Preporučamo: ${tier.label}`;
+                advRecommendSub.textContent = `Procjena: ~${needed} Wh/dan (s 20% rezervom)`;
+                advBundleBtn.style.display = 'flex';
+            };
+
+            advisorDevicesEl.querySelectorAll('.adv-device').forEach(el => {
+                el.onclick = () => {
+                    const id = el.dataset.id;
+                    if (advActive.has(id)) advActive.delete(id); else advActive.add(id);
+                    el.classList.toggle('active', advActive.has(id));
+                    updateAdvisor();
+                };
+            });
+
+            advBundleBtn.onclick = () => {
+                if (!advRecommendedSku) return;
+                addEnergyToCart(advRecommendedSku);
+            };
+
+            renderGrid();
+            updateAdvisor();
         }
 
         window.addEnergyToCart = (sku) => {
