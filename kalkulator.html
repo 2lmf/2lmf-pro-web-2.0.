@@ -893,7 +893,7 @@
         .eq-modal-x:hover { background: #fff; }
         .eq-slider-wrap { flex: 1; overflow: hidden; position: relative; min-height: 0; }
         .eq-track { position: absolute; inset: 0; display: flex; transition: transform 0.38s cubic-bezier(0.25,0.46,0.45,0.94); }
-        .eq-slide { flex: 0 0 100%; object-fit: contain; padding: 20px; background: #f5f5f7; }
+        .eq-slide { flex-shrink: 0; object-fit: contain; padding: 20px; background: #f5f5f7; height: 100%; }
         .eq-arrow { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.88); border: none; border-radius: 50%; width: 34px; height: 34px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.14); color: var(--text); font-size: 11px; transition: background 0.15s; z-index: 2; }
         .eq-arrow:hover { background: #fff; }
         .eq-arrow-l { left: 10px; }
@@ -905,7 +905,7 @@
         .eq-add { width: 100%; padding: 11px; background: var(--text); color: #fff; border: none; border-radius: 9px; font-size: 14px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-family: 'Outfit', sans-serif; transition: background 0.2s; }
         .eq-add:hover { background: var(--accent); }
         /* Spec slide — zadnja u galeriji */
-        .eq-spec-slide { flex: 0 0 100%; background: var(--white); padding: 22px; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; }
+        .eq-spec-slide { flex-shrink: 0; background: var(--white); padding: 22px; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; }
         .eq-sp-brand { font-size: 10px; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; }
         .eq-sp-name { font-size: 18px; font-weight: 700; color: var(--text); line-height: 1.2; }
         .eq-sp-sub { font-size: 12px; color: var(--muted); }
@@ -3242,7 +3242,17 @@
 
             const overlay = document.getElementById('eqOverlay');
             overlay.style.display = 'flex';
-            requestAnimationFrame(() => overlay.classList.add('open'));
+
+            // Measure after layout, set explicit pixel widths, then animate in
+            requestAnimationFrame(() => {
+                const wrap = document.querySelector('#eqOverlay .eq-slider-wrap');
+                const w = wrap ? wrap.offsetWidth : 700;
+                document.querySelectorAll('#eqTrack .eq-slide').forEach(s => {
+                    s.style.width = w + 'px';
+                    s.style.minWidth = w + 'px';
+                });
+                overlay.classList.add('open');
+            });
         };
 
         window.closeEnergyModal = () => {
@@ -3253,11 +3263,14 @@
         };
 
         window.slideEq = (dir, absolute = false) => {
-            const n = document.querySelectorAll('#eqDots .eq-dot').length;
+            const dots = document.querySelectorAll('#eqDots .eq-dot');
+            const n = dots.length;
             if (!n) return;
             _eqSlide = absolute ? dir : ((_eqSlide + dir + n) % n);
-            document.getElementById('eqTrack').style.transform = `translateX(-${_eqSlide * 100}%)`;
-            document.querySelectorAll('#eqDots .eq-dot').forEach((d, i) => d.classList.toggle('on', i === _eqSlide));
+            const firstSlide = document.querySelector('#eqTrack .eq-slide');
+            const w = firstSlide ? firstSlide.offsetWidth : 700;
+            document.getElementById('eqTrack').style.transform = `translateX(-${_eqSlide * w}px)`;
+            dots.forEach((d, i) => d.classList.toggle('on', i === _eqSlide));
         };
 
         window.addEnergyToCart = (sku) => {
