@@ -836,7 +836,7 @@
         .energy-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; margin-bottom: 32px; }
         .e-card { background: var(--white); border-radius: var(--radius); border: 1px solid var(--border); overflow: hidden; display: flex; flex-direction: column; transition: all 0.2s; }
         .e-card:hover { box-shadow: var(--shadow-lg); border-color: #c8c8cc; transform: translateY(-3px); }
-        .e-img { height: 148px; background: #f5f5f7; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; flex-shrink: 0; }
+        .e-img { height: 148px; background: #f5f5f7; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; flex-shrink: 0; cursor: pointer; }
         .e-img img { width: 100%; height: 100%; object-fit: contain; padding: 10px; transition: transform 0.35s; }
         .e-card:hover .e-img img { transform: scale(1.05); }
         .e-badge { position: absolute; top: 8px; right: 8px; background: var(--accent); color: #fff; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 6px; }
@@ -879,6 +879,48 @@
         .adv-recommend-sub { font-size: 12px; color: rgba(255,255,255,0.5); margin-top: 3px; }
         .adv-bundle-btn { margin-top: 4px; width: 100%; padding: 13px; background: var(--accent); color: #fff; border: none; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; display: none; align-items: center; justify-content: center; gap: 8px; transition: background 0.2s; }
         .adv-bundle-btn:hover { background: #cf6d17; }
+
+        /* ── ENERGY INFO BTN ── */
+        .e-info-btn { position: absolute; bottom: 8px; right: 8px; width: 28px; height: 28px; border-radius: 50%; background: rgba(255,255,255,0.92); border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--accent); font-size: 14px; opacity: 0; transition: opacity 0.18s, transform 0.18s; box-shadow: 0 1px 6px rgba(0,0,0,0.18); }
+        .e-card:hover .e-info-btn { opacity: 1; transform: scale(1.08); }
+
+        /* ── ENERGY QUICK VIEW MODAL ── */
+        .eq-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.52); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 16px; opacity: 0; pointer-events: none; transition: opacity 0.22s; }
+        .eq-overlay.open { opacity: 1; pointer-events: all; }
+        .eq-modal { background: var(--white); border-radius: 22px; width: min(900px, 96vw); max-height: 90vh; overflow: hidden; display: flex; flex-direction: column; transform: translateY(28px) scale(0.96); transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1); position: relative; box-shadow: 0 32px 90px rgba(0,0,0,0.28); }
+        .eq-overlay.open .eq-modal { transform: translateY(0) scale(1); }
+        .eq-modal-x { position: absolute; top: 14px; right: 16px; background: rgba(0,0,0,0.07); border: none; border-radius: 50%; width: 32px; height: 32px; font-size: 17px; cursor: pointer; z-index: 3; display: flex; align-items: center; justify-content: center; color: var(--text); transition: background 0.15s; }
+        .eq-modal-x:hover { background: rgba(0,0,0,0.14); }
+        .eq-modal-inner { display: grid; grid-template-columns: 1fr 1fr; overflow: auto; max-height: 90vh; }
+        .eq-left { background: #f5f5f7; display: flex; flex-direction: column; min-height: 320px; }
+        .eq-slider-wrap { flex: 1; overflow: hidden; position: relative; }
+        .eq-track { display: flex; height: 100%; min-height: 300px; transition: transform 0.38s cubic-bezier(0.25,0.46,0.45,0.94); }
+        .eq-slide { min-width: 100%; object-fit: contain; padding: 24px; flex-shrink: 0; }
+        .eq-arrow { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.88); border: none; border-radius: 50%; width: 36px; height: 36px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.14); color: var(--text); font-size: 12px; transition: background 0.15s; z-index: 2; }
+        .eq-arrow:hover { background: #fff; }
+        .eq-arrow-l { left: 10px; }
+        .eq-arrow-r { right: 10px; }
+        .eq-dotnav { display: flex; justify-content: center; gap: 7px; padding: 12px 0; background: #f5f5f7; }
+        .eq-dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(0,0,0,0.18); cursor: pointer; transition: all 0.2s; border: none; }
+        .eq-dot.on { background: var(--accent); transform: scale(1.35); }
+        .eq-right { padding: 28px 26px 24px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
+        .eq-r-brand { font-size: 11px; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; }
+        .eq-r-name { font-size: 21px; font-weight: 700; color: var(--text); line-height: 1.2; }
+        .eq-r-sub { font-size: 13px; color: var(--muted); }
+        .eq-r-price { font-size: 30px; font-weight: 700; color: var(--accent); }
+        .eq-specs { width: 100%; border-collapse: collapse; }
+        .eq-specs tr { border-bottom: 1px solid var(--border); }
+        .eq-specs tr:last-child { border-bottom: none; }
+        .eq-specs td { padding: 7px 2px; font-size: 13px; }
+        .eq-specs td:first-child { color: var(--muted); width: 48%; }
+        .eq-specs td:last-child { font-weight: 600; color: var(--text); }
+        .eq-uses-h { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); }
+        .eq-use-list { list-style: none; display: flex; flex-direction: column; gap: 7px; }
+        .eq-use-row { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--text); }
+        .eq-use-row i { color: var(--accent); width: 18px; text-align: center; flex-shrink: 0; }
+        .eq-add { width: 100%; padding: 14px; background: var(--text); color: #fff; border: none; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-family: 'Outfit', sans-serif; transition: background 0.2s; margin-top: 4px; }
+        .eq-add:hover { background: var(--accent); }
+        @media (max-width: 640px) { .eq-modal-inner { grid-template-columns: 1fr; } .eq-left { min-height: 220px; } .eq-right { padding: 18px; } .eq-r-name { font-size: 17px; } .eq-r-price { font-size: 24px; } }
 
         /* ── FOOTER ── */
         footer { margin-top: 60px; padding: 32px 20px; border-top: 1px solid var(--border); background: var(--white); text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; }
@@ -2934,6 +2976,53 @@
             { sku:'5019', brand:'Aferiy', type:'solar',     name:'Aferiy AF-S400A1 400w Solar',      sub:'400W solarni panel',  wh:0,   img:'assets/aferiy-solar400.jpg' },
         ];
 
+        const ENERGY_DETAIL = {
+            '5001': { imgs:['https://cdn.shopify.com/s/files/1/0509/5263/4556/files/E600LFP_794428db-7d3f-458e-b278-423984d92c60.jpg','https://cdn.shopify.com/s/files/1/0509/5263/4556/files/1600x1600_11_01f76905-a059-4231-a63f-2f1f982caef3.jpg','https://cdn.shopify.com/s/files/1/0509/5263/4556/files/1600x1600_12_e0a85ab7-9fda-47e6-9389-2e636ba213a4.jpg','https://cdn.shopify.com/s/files/1/0509/5263/4556/files/1600x1600_6_e0e8351f-8b9d-401d-b61c-e5a4acade993.jpg'], specs:[['Kapacitet','614 Wh'],['Snaga AC','1200W / 2400W peak'],['Baterija','LiFePO₄ — 3.500+ ciklusa'],['Težina','9,4 kg'],['Dimenzije','298 × 198 × 215 mm'],['Max. solar','350W']] },
+            '5002': { imgs:['https://www.pecron.com/cdn/shop/files/E1500LFP_bef49d4c-ec3c-4b86-af4e-d1475d860c54.jpg','https://www.pecron.com/cdn/shop/files/1600x1600-2_4_f9db4b7b-9a94-43fb-b08b-a11fbba716e5.jpg','https://www.pecron.com/cdn/shop/files/1600x1600-2_5_7264ac75-2759-41be-9623-692b12e0b4e7.jpg','https://www.pecron.com/cdn/shop/files/1600x1600_14_3b8bdbec-e586-421d-b679-a5cc3d6e0b92.jpg'], specs:[['Kapacitet','1536 Wh'],['Snaga AC','2200W / 4400W peak'],['Baterija','LiFePO₄ — 3.500+ ciklusa'],['Težina','18,2 kg'],['Dimenzije','376 × 239 × 305 mm'],['Max. solar','800W'],['Punjenje','1,8 h (AC)'],['Proširivost','do 18.432 Wh']] },
+            '5003': { imgs:['https://www.pecron.com/cdn/shop/files/E2400LFP_7a57f341-be2e-423e-9032-8e2528998403.jpg','https://cdn.shopify.com/s/files/1/0509/5263/4556/files/1500x1500_7_8a933701-9a60-4bdb-b4d6-8feaae6c090e.jpg','https://cdn.shopify.com/s/files/1/0509/5263/4556/files/1464x600_2_3eafb892-f393-4c67-a7c5-78c7bcb84191.jpg'], specs:[['Kapacitet','2048 Wh'],['Snaga AC','2400W / 4000W peak'],['Baterija','LiFePO₄ — 3.500+ ciklusa'],['Težina','20,5 kg'],['Dimenzije','376 × 236 × 330 mm'],['Max. solar','800W'],['Punjenje','1,5 h (AC)']] },
+            '5004': { imgs:['https://www.pecron.com/cdn/shop/files/E3600LFP_57157200-5ed8-4183-8839-3c00c3e91b47.jpg','https://www.pecron.com/cdn/shop/files/1600x1600_1_30eac56f-25ca-480e-bae7-b52af7381fff.jpg','https://www.pecron.com/cdn/shop/files/202411141351553.jpg'], specs:[['Kapacitet','3072 Wh'],['Snaga AC','3600W / 7200W peak'],['Baterija','LiFePO₄ — 3.500+ ciklusa'],['Težina','36 kg'],['Dimenzije','445 × 307 × 351 mm'],['Max. solar','2400W'],['Punjenje','1,3 h (30A)'],['Proširivost','do 18.432 Wh']] },
+            '5005': { imgs:['assets/pecron-e3000.jpg'], specs:[['Kapacitet','3096 Wh'],['Snaga AC','3000W'],['Baterija','LiFePO₄ — 3.500+ ciklusa'],['Max. solar','1200W']] },
+            '5006': { imgs:['assets/pecron-e3000-exp.jpg'], specs:[['Tip','Expansion baterija'],['Kapacitet','3072 Wh'],['Kompatibilno','Pecron E3000LFP'],['Napon','48V']], expansion:true },
+            '5007': { imgs:['assets/aferiy-nano100.jpg'], specs:[['Kapacitet','64 Wh'],['Snaga AC','100W'],['Baterija','LiFePO₄ — 2.000+ ciklusa'],['Težina','~0,9 kg'],['Format','Ultra kompaktni']] },
+            '5008': { imgs:['https://www.aferiy.com/cdn/shop/files/AFERIY_P040_Portable_Power_Station_400W_256Wh_1.jpg'], specs:[['Kapacitet','256 Wh'],['Snaga AC','400W'],['Baterija','LiFePO₄ — 4.000+ ciklusa'],['Težina','~3,2 kg'],['Max. solar','150W']] },
+            '5009': { imgs:['https://www.aferiy.com/cdn/shop/files/AFERIY_P010_800W_power_station_3.jpg'], specs:[['Kapacitet','512 Wh'],['Snaga AC','800W'],['Baterija','LiFePO₄ — 4.000+ ciklusa'],['Težina','6,25 kg'],['Max. solar','200W']] },
+            '5010': { imgs:['assets/aferiy-p110e.jpg'], specs:[['Kapacitet','1008 Wh'],['Snaga AC','1200W'],['Baterija','LiFePO₄ — 4.000+ ciklusa'],['Max. solar','400W']] },
+            '5011': { imgs:['assets/aferiy-p110d.webp'], specs:[['Kapacitet','960 Wh'],['Snaga AC','1200W'],['Baterija','LiFePO₄ — 4.000+ ciklusa'],['Max. solar','400W']] },
+            '5012': { imgs:['https://www.aferiy.com/cdn/shop/files/AFERIY_P210_2400W_2048Wh_with_APP_789f60c0-70da-49bc-9161-16778a8929c2.jpg','https://www.aferiy.com/cdn/shop/files/AFERIY_P210_Portable_Power_Station_2400W_2048Wh_Silver_1.jpg'], specs:[['Kapacitet','2048 Wh'],['Snaga AC','2400W'],['Baterija','LiFePO₄ — 4.000+ ciklusa'],['Težina','22 kg'],['Max. solar','600W']] },
+            '5013': { imgs:['https://www.aferiy.com/cdn/shop/files/AFERIYP280PortablePowerStation2800W2048Wh.jpg','https://www.aferiy.com/cdn/shop/files/AFERIY_P280_Portable_Power_Station_2800W_2048Wh_2.jpg'], specs:[['Kapacitet','2048 Wh'],['Snaga AC','2800W'],['Baterija','LiFePO₄ — 4.000+ ciklusa'],['Punjenje','0–80% za 55 min'],['Proširivost','do 10.240 Wh']] },
+            '5014': { imgs:['assets/aferiy-p280-exp.jpg'], specs:[['Tip','Expansion baterija'],['Kapacitet','2048 Wh'],['Kompatibilno','Aferiy P280'],['Proširivost','do 4× 2048 Wh']], expansion:true },
+            '5015': { imgs:['https://www.aferiy.com/cdn/shop/files/AFERIY_P310-EC_Portable_Power_Station_3600W__3840Wh_APP_1.jpg'], specs:[['Kapacitet','3840 Wh'],['Snaga AC','3600W'],['Baterija','LiFePO₄ — 4.000+ ciklusa'],['Max. solar','1200W'],['Proširivost','do 11.520 Wh']] },
+            '5016': { imgs:['assets/aferiy-p310-exp.jpg'], specs:[['Tip','Expansion baterija'],['Kapacitet','3840 Wh'],['Kompatibilno','Aferiy P310'],['Proširivost','do 3× 3840 Wh']], expansion:true },
+            '5017': { imgs:['assets/aferiy-solar100.webp'], specs:[['Snaga','100W'],['Tip','Foldable mono'],['Efikasnost','~23%'],['Konektor','XT60']], solar:true },
+            '5018': { imgs:['assets/aferiy-solar200.jpg'], specs:[['Snaga','200W'],['Tip','Foldable mono'],['Efikasnost','~23%'],['Konektor','XT60']], solar:true },
+            '5019': { imgs:['assets/aferiy-solar400.jpg'], specs:[['Snaga','400W'],['Tip','Foldable mono'],['Efikasnost','~23%'],['Konektor','XT60 / Anderson']], solar:true },
+        };
+
+        function eqUseExamples(p, detail) {
+            if (detail.expansion) return [
+                ['fa-link', `Kompatibilno s modelom navedenim u specifikacijama`],
+                ['fa-battery-full', `Dodaje ${detail.specs.find(r=>r[0]==='Kapacitet')?.[1] || '—'} kapaciteta sustavu`],
+                ['fa-plug', 'Spaja se bez gašenja postaje (hot-swap)'],
+            ];
+            if (detail.solar) return [
+                ['fa-sun', 'Puni bateriju bez strujnog priključka'],
+                ['fa-bolt', 'Kompatibilno s XT60 i Anderson konektorima'],
+                ['fa-suitcase-rolling', 'Foldable — stane u ruksak'],
+            ];
+            const wh = p.wh;
+            if (!wh) return [];
+            const uses = [
+                ['fa-snowflake', `Hladnjak — ~${Math.round(wh*0.82/60)} h kontinuiranog rada`],
+                ['fa-laptop',    `Laptop — ~${Math.floor(wh*0.85/45)} punjenj${Math.floor(wh*0.85/45)===1?'e':'a'}`],
+                ['fa-mobile-screen', `Mobitel — ~${Math.floor(wh*0.85/15)} punjenj${Math.floor(wh*0.85/15)===1?'e':'a'}`],
+                ['fa-lightbulb', `LED rasvjeta — ~${Math.round(wh*0.85/20)} h`],
+            ];
+            if (wh >= 200) uses.push(['fa-mug-hot', `Espresso aparat — ~${Math.floor(wh*0.85/50)} šalica`]);
+            if (wh >= 500) uses.push(['fa-tv', `TV / Monitor — ~${Math.round(wh*0.85/80)} h`]);
+            if (wh >= 1000) uses.push(['fa-fan', `Ventilator — ~${Math.round(wh*0.85/25)} h`]);
+            return uses;
+        }
+
         const ENERGY_DEVICES = [
             { id:'fridge',   name:'Hladnjak / hladnjača', watts:60,   hours:12,  icon:'fa-snowflake' },
             { id:'laptop',   name:'Laptop',               watts:45,   hours:4,   icon:'fa-laptop' },
@@ -2984,9 +3073,10 @@
                         : `<div class="e-price" style="font-size:14px;color:var(--muted);">Na upit</div>`;
                     const badge = p.featured ? '<div class="e-badge">Popular</div>' : '';
                     return `<div class="e-card">
-                        <div class="e-img">
+                        <div class="e-img" onclick="openEnergyModal('${p.sku}')">
                             <img src="${p.img}" alt="${p.name}" loading="lazy" onerror="this.style.display='none'">
                             ${badge}
+                            <button class="e-info-btn" onclick="openEnergyModal('${p.sku}'); event.stopPropagation()" title="Detalji"><i class="fas fa-circle-info"></i></button>
                         </div>
                         <div class="e-body">
                             <div class="e-brand">${p.brand}</div>
@@ -3069,7 +3159,105 @@
 
             renderGrid();
             updateAdvisor();
+            initEnergyModal();
         }
+
+        function initEnergyModal() {
+            if (document.getElementById('eqOverlay')) return;
+            const el = document.createElement('div');
+            el.id = 'eqOverlay';
+            el.className = 'eq-overlay';
+            el.innerHTML = `
+                <div class="eq-modal" id="eqModal">
+                    <button class="eq-modal-x" id="eqX">✕</button>
+                    <div class="eq-modal-inner">
+                        <div class="eq-left">
+                            <div class="eq-slider-wrap" id="eqSliderWrap">
+                                <div class="eq-track" id="eqTrack"></div>
+                                <button class="eq-arrow eq-arrow-l" id="eqPrev"><i class="fas fa-chevron-left"></i></button>
+                                <button class="eq-arrow eq-arrow-r" id="eqNext"><i class="fas fa-chevron-right"></i></button>
+                            </div>
+                            <div class="eq-dotnav" id="eqDots"></div>
+                        </div>
+                        <div class="eq-right">
+                            <div class="eq-r-brand" id="eqBrand"></div>
+                            <div class="eq-r-name" id="eqName"></div>
+                            <div class="eq-r-sub" id="eqSub"></div>
+                            <div class="eq-r-price" id="eqPrice"></div>
+                            <table class="eq-specs" id="eqSpecs"></table>
+                            <div>
+                                <div class="eq-uses-h">Primjeri primjene</div>
+                                <ul class="eq-use-list" id="eqUses"></ul>
+                            </div>
+                            <button class="eq-add" id="eqAddBtn"><i class="fas fa-shopping-bag"></i> Dodaj u košaricu</button>
+                        </div>
+                    </div>
+                </div>`;
+            document.body.appendChild(el);
+            el.addEventListener('click', e => { if (e.target === el) closeEnergyModal(); });
+            document.getElementById('eqX').onclick = closeEnergyModal;
+            document.getElementById('eqPrev').onclick = () => slideEq(-1);
+            document.getElementById('eqNext').onclick = () => slideEq(1);
+            document.addEventListener('keydown', e => { if (e.key === 'Escape') closeEnergyModal(); });
+        }
+
+        let _eqSlide = 0, _eqImgs = [];
+
+        window.openEnergyModal = (sku) => {
+            const p = ENERGY_PRODUCTS.find(x => x.sku === sku);
+            const detail = ENERGY_DETAIL[sku];
+            if (!p || !detail) return;
+            initEnergyModal();
+
+            _eqSlide = 0;
+            _eqImgs = detail.imgs && detail.imgs.length ? detail.imgs : [p.img];
+
+            const livePrice = LIVE_PRICES.prices[sku];
+            document.getElementById('eqBrand').textContent = p.brand;
+            document.getElementById('eqName').textContent = p.name;
+            document.getElementById('eqSub').textContent = p.sub;
+            document.getElementById('eqPrice').textContent = livePrice !== undefined ? fmt(livePrice) + ' €' : 'Na upit';
+
+            const track = document.getElementById('eqTrack');
+            track.innerHTML = _eqImgs.map(src => `<img class="eq-slide" src="${src}" loading="lazy" onerror="this.style.opacity='0'">`).join('');
+            track.style.transform = 'translateX(0)';
+
+            const dots = document.getElementById('eqDots');
+            dots.innerHTML = _eqImgs.length > 1 ? _eqImgs.map((_,i) => `<button class="eq-dot${i===0?' on':''}" onclick="slideEq(${i}, true)"></button>`).join('') : '';
+
+            const prevBtn = document.getElementById('eqPrev');
+            const nextBtn = document.getElementById('eqNext');
+            prevBtn.style.display = _eqImgs.length > 1 ? 'flex' : 'none';
+            nextBtn.style.display = _eqImgs.length > 1 ? 'flex' : 'none';
+
+            document.getElementById('eqSpecs').innerHTML = (detail.specs || []).map(([k,v]) =>
+                `<tr><td>${k}</td><td>${v}</td></tr>`).join('');
+
+            const uses = eqUseExamples(p, detail);
+            document.getElementById('eqUses').innerHTML = uses.map(([icon, text]) =>
+                `<li class="eq-use-row"><i class="fas ${icon}"></i> ${text}</li>`).join('');
+
+            document.getElementById('eqAddBtn').onclick = () => { addEnergyToCart(sku); closeEnergyModal(); };
+
+            const overlay = document.getElementById('eqOverlay');
+            overlay.style.display = 'flex';
+            requestAnimationFrame(() => overlay.classList.add('open'));
+        };
+
+        window.closeEnergyModal = () => {
+            const overlay = document.getElementById('eqOverlay');
+            if (!overlay) return;
+            overlay.classList.remove('open');
+            setTimeout(() => { overlay.style.display = 'none'; }, 250);
+        };
+
+        window.slideEq = (dir, absolute = false) => {
+            const n = _eqImgs.length;
+            if (n <= 1) return;
+            _eqSlide = absolute ? dir : ((_eqSlide + dir + n) % n);
+            document.getElementById('eqTrack').style.transform = `translateX(-${_eqSlide * 100}%)`;
+            document.querySelectorAll('#eqDots .eq-dot').forEach((d, i) => d.classList.toggle('on', i === _eqSlide));
+        };
 
         window.addEnergyToCart = (sku) => {
             const p = ENERGY_PRODUCTS.find(x => x.sku === sku);
