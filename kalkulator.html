@@ -5,14 +5,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="canonical" href="https://2lmf-pro.hr/kalkulator.html" />
-    <title>Kalkulator ograde, hidroizolacije i termoizolacije — 2LMF PRO</title>
+    <title>Kalkulator materijala i prijenosnih elektrana — 2LMF PRO</title>
     <meta name="description"
-        content="Izračunajte cijenu panel ograde i hidroizolacije (TPO/PVC) u 60 sekundi. Precizni krojni listovi, tvorničke cijene i profesionalna rješenja.">
+        content="Kalkulator za ograde, hidroizolaciju, termoizolaciju i prijenosne elektrane (Pecron, Aferiy LiFePO₄). Tvorničke cijene, precizni krojni listovi i live katalog.">
 
     <!-- Open Graph / Social Media -->
-    <meta property="og:title" content="2LMF PRO | Pametni Kalkulator Sustava">
+    <meta property="og:title" content="2LMF PRO | Kalkulator materijala i prijenosnih elektrana">
     <meta property="og:description"
-        content="Saznajte točnu cijenu materijala za vašu ogradu ili krov odmah. Bez skrivenih troškova.">
+        content="Izračunajte cijenu ograde, izolacije ili prijenosne elektrane u 60 sekundi. Tvorničke cijene, bez skrivenih troškova.">
     <meta property="og:image" content="https://2lmf-pro.hr/assets/sharpshark_blue_large.png">
     <meta property="og:url" content="https://2lmf-pro.hr/kalkulator.html">
     <meta property="og:type" content="website">
@@ -885,42 +885,48 @@
         .e-card:hover .e-info-btn { opacity: 1; transform: scale(1.08); }
 
         /* ── ENERGY QUICK VIEW MODAL ── */
-        .eq-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.52); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 16px; opacity: 0; pointer-events: none; transition: opacity 0.22s; }
+        .eq-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.52); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 12px; opacity: 0; pointer-events: none; transition: opacity 0.22s; }
         .eq-overlay.open { opacity: 1; pointer-events: all; }
-        .eq-modal { background: var(--white); border-radius: 22px; width: min(900px, 96vw); max-height: 90vh; overflow: hidden; display: flex; flex-direction: column; transform: translateY(28px) scale(0.96); transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1); position: relative; box-shadow: 0 32px 90px rgba(0,0,0,0.28); }
+        .eq-modal { background: var(--white); border-radius: 22px; width: min(820px, 96vw); overflow: hidden; display: grid; grid-template-columns: 340px 1fr; transform: translateY(28px) scale(0.96); transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1); position: relative; box-shadow: 0 32px 90px rgba(0,0,0,0.28); max-height: min(560px, 92vh); }
         .eq-overlay.open .eq-modal { transform: translateY(0) scale(1); }
-        .eq-modal-x { position: absolute; top: 14px; right: 16px; background: rgba(0,0,0,0.07); border: none; border-radius: 50%; width: 32px; height: 32px; font-size: 17px; cursor: pointer; z-index: 3; display: flex; align-items: center; justify-content: center; color: var(--text); transition: background 0.15s; }
+        .eq-modal-x { position: absolute; top: 12px; right: 14px; background: rgba(0,0,0,0.07); border: none; border-radius: 50%; width: 30px; height: 30px; font-size: 15px; cursor: pointer; z-index: 3; display: flex; align-items: center; justify-content: center; color: var(--text); transition: background 0.15s; }
         .eq-modal-x:hover { background: rgba(0,0,0,0.14); }
-        .eq-modal-inner { display: grid; grid-template-columns: 1fr 1fr; overflow: auto; max-height: 90vh; }
-        .eq-left { background: #f5f5f7; display: flex; flex-direction: column; min-height: 320px; }
-        .eq-slider-wrap { flex: 1; overflow: hidden; position: relative; }
-        .eq-track { display: flex; height: 100%; min-height: 300px; transition: transform 0.38s cubic-bezier(0.25,0.46,0.45,0.94); }
-        .eq-slide { min-width: 100%; object-fit: contain; padding: 24px; flex-shrink: 0; }
-        .eq-arrow { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.88); border: none; border-radius: 50%; width: 36px; height: 36px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.14); color: var(--text); font-size: 12px; transition: background 0.15s; z-index: 2; }
+        .eq-left { background: #f5f5f7; display: flex; flex-direction: column; height: 100%; }
+        .eq-slider-wrap { flex: 1; overflow: hidden; position: relative; min-height: 0; }
+        .eq-track { display: flex; height: 100%; transition: transform 0.38s cubic-bezier(0.25,0.46,0.45,0.94); }
+        .eq-slide { min-width: 100%; height: 100%; object-fit: contain; padding: 20px; flex-shrink: 0; }
+        .eq-arrow { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.88); border: none; border-radius: 50%; width: 34px; height: 34px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.14); color: var(--text); font-size: 11px; transition: background 0.15s; z-index: 2; }
         .eq-arrow:hover { background: #fff; }
-        .eq-arrow-l { left: 10px; }
-        .eq-arrow-r { right: 10px; }
-        .eq-dotnav { display: flex; justify-content: center; gap: 7px; padding: 12px 0; background: #f5f5f7; }
-        .eq-dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(0,0,0,0.18); cursor: pointer; transition: all 0.2s; border: none; }
+        .eq-arrow-l { left: 8px; }
+        .eq-arrow-r { right: 8px; }
+        .eq-dotnav { display: flex; justify-content: center; gap: 6px; padding: 10px 0; background: #f5f5f7; flex-shrink: 0; }
+        .eq-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(0,0,0,0.18); cursor: pointer; transition: all 0.2s; border: none; }
         .eq-dot.on { background: var(--accent); transform: scale(1.35); }
-        .eq-right { padding: 28px 26px 24px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
-        .eq-r-brand { font-size: 11px; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; }
-        .eq-r-name { font-size: 21px; font-weight: 700; color: var(--text); line-height: 1.2; }
-        .eq-r-sub { font-size: 13px; color: var(--muted); }
-        .eq-r-price { font-size: 30px; font-weight: 700; color: var(--accent); }
+        .eq-right { padding: 24px 22px 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+        .eq-r-brand { font-size: 10px; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; }
+        .eq-r-name { font-size: 18px; font-weight: 700; color: var(--text); line-height: 1.2; }
+        .eq-r-sub { font-size: 12px; color: var(--muted); }
+        .eq-r-price { font-size: 26px; font-weight: 700; color: var(--accent); }
         .eq-specs { width: 100%; border-collapse: collapse; }
         .eq-specs tr { border-bottom: 1px solid var(--border); }
         .eq-specs tr:last-child { border-bottom: none; }
-        .eq-specs td { padding: 7px 2px; font-size: 13px; }
+        .eq-specs td { padding: 6px 2px; font-size: 12px; }
         .eq-specs td:first-child { color: var(--muted); width: 48%; }
         .eq-specs td:last-child { font-weight: 600; color: var(--text); }
-        .eq-uses-h { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); }
-        .eq-use-list { list-style: none; display: flex; flex-direction: column; gap: 7px; }
-        .eq-use-row { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--text); }
-        .eq-use-row i { color: var(--accent); width: 18px; text-align: center; flex-shrink: 0; }
-        .eq-add { width: 100%; padding: 14px; background: var(--text); color: #fff; border: none; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-family: 'Outfit', sans-serif; transition: background 0.2s; margin-top: 4px; }
+        .eq-uses-h { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); }
+        .eq-use-list { list-style: none; display: flex; flex-direction: column; gap: 5px; }
+        .eq-use-row { display: flex; align-items: center; gap: 9px; font-size: 12px; color: var(--text); }
+        .eq-use-row i { color: var(--accent); width: 16px; text-align: center; flex-shrink: 0; }
+        .eq-add { width: 100%; padding: 12px; background: var(--text); color: #fff; border: none; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-family: 'Outfit', sans-serif; transition: background 0.2s; margin-top: auto; }
         .eq-add:hover { background: var(--accent); }
-        @media (max-width: 640px) { .eq-modal-inner { grid-template-columns: 1fr; } .eq-left { min-height: 220px; } .eq-right { padding: 18px; } .eq-r-name { font-size: 17px; } .eq-r-price { font-size: 24px; } }
+        @media (max-width: 640px) {
+            .eq-modal { grid-template-columns: 1fr; grid-template-rows: 200px 1fr; max-height: 88vh; width: 96vw; }
+            .eq-left { height: 200px; }
+            .eq-right { padding: 16px; gap: 8px; }
+            .eq-r-name { font-size: 15px; }
+            .eq-r-price { font-size: 22px; }
+            .eq-specs td { font-size: 11px; padding: 5px 2px; }
+        }
 
         /* ── FOOTER ── */
         footer { margin-top: 60px; padding: 32px 20px; border-top: 1px solid var(--border); background: var(--white); text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; }
@@ -951,11 +957,11 @@
     </header>
     <nav class="v2-navbar">
         <div class="v2-nav-container">
+            <div class="v2-nav-item active" data-mod="katalog">🛒 Katalog</div>
+            <div class="v2-nav-item" data-mod="energy">⚡ Energy</div>
             <div class="v2-nav-item" data-mod="ograde">🏗️ Ograde</div>
             <div class="v2-nav-item" data-mod="hidro">💧 Hidro</div>
             <div class="v2-nav-item" data-mod="termo">🌡️ Termo</div>
-            <div class="v2-nav-item active" data-mod="katalog">🛒 Katalog</div>
-            <div class="v2-nav-item" data-mod="energy">⚡ Energy</div>
         </div>
     </nav>
 
