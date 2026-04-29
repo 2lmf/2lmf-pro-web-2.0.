@@ -872,6 +872,11 @@
         .adv-device.active i { color: var(--accent); }
         .adv-device-name { font-size: 11px; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .adv-device-wh { font-size: 10px; color: rgba(255,255,255,0.45); }
+        .adv-h-row { display: flex; align-items: center; gap: 4px; margin-top: 3px; }
+        .adv-h-input { width: 36px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 5px; color: #fff; font-size: 11px; font-family: 'Outfit', sans-serif; text-align: center; padding: 1px 2px; -moz-appearance: textfield; }
+        .adv-h-input::-webkit-outer-spin-button, .adv-h-input::-webkit-inner-spin-button { -webkit-appearance: none; }
+        .adv-h-input:focus { outline: none; border-color: var(--accent); }
+        .adv-h-unit { font-size: 10px; color: rgba(255,255,255,0.4); }
         .adv-result { background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12); border-radius: 14px; padding: 22px; text-align: center; margin-bottom: 18px; }
         .adv-wh-big { font-size: 48px; font-weight: 700; color: var(--accent); line-height: 1; }
         .adv-wh-label { font-size: 13px; color: rgba(255,255,255,0.45); margin-top: 3px; }
@@ -3117,20 +3122,37 @@
             const advRecommendSub  = view.querySelector('#advRecommendSub');
             const advBundleBtn     = view.querySelector('#advBundleBtn');
 
+            const advHours = {};
+            ENERGY_DEVICES.forEach(d => { advHours[d.id] = d.hours; });
+
             advisorDevicesEl.innerHTML = ENERGY_DEVICES.map(d => {
-                const wh = Math.round(d.watts * d.hours);
                 return `<div class="adv-device" data-id="${d.id}">
                     <i class="fas ${d.icon}"></i>
-                    <div>
+                    <div style="flex:1;min-width:0">
                         <div class="adv-device-name">${d.name}</div>
-                        <div class="adv-device-wh">${d.watts}W · ${fmtH(d.hours)} · ~${wh}Wh</div>
+                        <div class="adv-h-row">
+                            <span class="adv-device-wh">${d.watts}W ·</span>
+                            <input class="adv-h-input" type="number" data-id="${d.id}" value="${d.hours}" min="0.5" max="24" step="0.5">
+                            <span class="adv-h-unit">h/dan</span>
+                        </div>
                     </div>
                 </div>`;
             }).join('');
 
+            advisorDevicesEl.querySelectorAll('.adv-h-input').forEach(input => {
+                input.addEventListener('click', e => e.stopPropagation());
+                input.addEventListener('input', () => {
+                    const val = parseFloat(input.value);
+                    if (!isNaN(val) && val > 0) {
+                        advHours[input.dataset.id] = Math.min(val, 24);
+                        updateAdvisor();
+                    }
+                });
+            });
+
             const updateAdvisor = () => {
                 let totalWh = 0;
-                ENERGY_DEVICES.forEach(d => { if (advActive.has(d.id)) totalWh += d.watts * d.hours; });
+                ENERGY_DEVICES.forEach(d => { if (advActive.has(d.id)) totalWh += d.watts * advHours[d.id]; });
                 totalWh = Math.round(totalWh);
                 advWhEl.textContent = totalWh;
                 if (!totalWh) {
