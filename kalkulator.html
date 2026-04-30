@@ -861,6 +861,11 @@
         .energy-hero-img { max-width: 800px; margin: 0 auto; }
         .energy-hero-img img { width: 100%; display: block; border-radius: 12px 12px 0 0; object-fit: cover; max-height: 340px; }
         @media(max-width:600px) { .energy-hero { padding: 32px 20px 0; } }
+        .energy-lp-banner { display: flex; align-items: center; justify-content: space-between; gap: 16px; background: linear-gradient(135deg, rgba(230,126,34,0.1), rgba(230,126,34,0.04)); border: 1px solid rgba(230,126,34,0.25); border-radius: 14px; padding: 16px 20px; margin-bottom: 16px; text-decoration: none; transition: border-color 0.2s, background 0.2s; }
+        .energy-lp-banner:hover { border-color: rgba(230,126,34,0.55); background: linear-gradient(135deg, rgba(230,126,34,0.15), rgba(230,126,34,0.06)); }
+        .energy-lp-banner-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+        .energy-lp-banner-sub { font-size: 12px; color: var(--muted); line-height: 1.4; }
+        .energy-lp-banner-cta { flex-shrink: 0; font-size: 13px; font-weight: 700; color: var(--accent); display: flex; align-items: center; gap: 6px; white-space: nowrap; }
         /* Energy advisor */
         .advisor-dark { background: #1d1d1f; border-radius: 20px; padding: 32px; color: #fff; margin-top: 12px; }
         .advisor-dark-title { font-size: 20px; font-weight: 700; margin-bottom: 5px; }
@@ -1367,6 +1372,13 @@
                     <img src="assets/pecron-hero-2.jpg" alt="Pecron E1500LFP prijenosna elektrana s uređajima" loading="lazy">
                 </div>
             </div>
+            <a href="energy.html" class="energy-lp-banner">
+                <div>
+                    <div class="energy-lp-banner-title">Novi u svijetu prijenosnih elektrana?</div>
+                    <div class="energy-lp-banner-sub">Vodič za kampere, nautičare i vikendice — usporedba, savjeti i gotovi paketi.</div>
+                </div>
+                <div class="energy-lp-banner-cta">Saznaj više <i class="fas fa-arrow-right"></i></div>
+            </a>
             <div class="energy-filter-bar" id="energyFilterBar"></div>
             <div class="energy-grid" id="energyGrid"></div>
             <div class="advisor-dark" id="energyAdvisor">
