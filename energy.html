@@ -47,12 +47,25 @@
         /* ── HERO ── */
         .hero {
             min-height: 100vh;
-            background-color: #111;
-            background-image: linear-gradient(160deg, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.42) 55%, rgba(230,126,34,0.12) 100%),
-                              url('assets/pecron-hero-2.jpg');
-            background-size: cover; background-position: center;
+            background-color: #0a0a0a;
+            background-image:
+                radial-gradient(ellipse 75% 65% at 72% 38%, rgba(230,126,34,0.22) 0%, transparent 58%),
+                radial-gradient(ellipse 45% 45% at 18% 78%, rgba(230,126,34,0.08) 0%, transparent 50%),
+                radial-gradient(ellipse 30% 30% at 50% 10%, rgba(255,255,255,0.03) 0%, transparent 60%);
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            text-align: center; padding: 140px 24px 100px; position: relative;
+            text-align: center; padding: 140px 24px 100px; position: relative; overflow: hidden;
+        }
+        .hero::before {
+            content: '⚡';
+            position: absolute;
+            font-size: min(55vw, 520px);
+            line-height: 1;
+            right: -4%;
+            top: 50%;
+            transform: translateY(-52%);
+            opacity: 0.028;
+            pointer-events: none;
+            user-select: none;
         }
         .hero-tag { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); background: rgba(230,126,34,0.14); border: 1px solid rgba(230,126,34,0.3); border-radius: 20px; padding: 5px 14px; margin-bottom: 28px; display: inline-block; }
         .hero-h1 { font-family: 'Orbitron', sans-serif; font-size: clamp(38px, 7.5vw, 88px); font-weight: 900; color: #fff; line-height: 1.05; margin-bottom: 22px; }
@@ -112,18 +125,20 @@
         .adv-wrap { margin-top: 48px; background: #1d1d1f; border-radius: 24px; padding: 40px; }
         .adv-inner-title { font-size: 18px; font-weight: 700; color: #fff; margin-bottom: 5px; }
         .adv-inner-sub { font-size: 13px; color: rgba(255,255,255,0.45); margin-bottom: 24px; }
-        .advisor-devices { display: grid; grid-template-columns: repeat(auto-fill, minmax(155px, 1fr)); gap: 9px; margin-bottom: 20px; }
-        .adv-device { background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12); border-radius: 12px; padding: 11px 13px; cursor: pointer; transition: all 0.18s; user-select: none; display: flex; align-items: center; gap: 9px; }
-        .adv-device.active { background: rgba(230,126,34,0.18); border-color: var(--accent); }
-        .adv-device i { font-size: 16px; color: rgba(255,255,255,0.45); flex-shrink: 0; }
-        .adv-device.active i { color: var(--accent); }
-        .adv-device-name { font-size: 11px; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .adv-h-row { display: flex; align-items: center; gap: 4px; margin-top: 3px; }
-        .adv-h-input { width: 36px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 5px; color: #fff; font-size: 11px; font-family: 'Outfit', sans-serif; text-align: center; padding: 1px 2px; -moz-appearance: textfield; appearance: textfield; }
-        .adv-h-input::-webkit-outer-spin-button, .adv-h-input::-webkit-inner-spin-button { -webkit-appearance: none; }
-        .adv-h-input:focus { outline: none; border-color: var(--accent); }
-        .adv-h-unit { font-size: 10px; color: rgba(255,255,255,0.4); }
-        .adv-device-wh { font-size: 10px; color: rgba(255,255,255,0.45); }
+        .advisor-devices { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 10px; margin-bottom: 24px; }
+        .adv-device { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.09); border-radius: 16px; padding: 16px 10px 14px; cursor: pointer; transition: all 0.2s; user-select: none; display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; }
+        .adv-device:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.18); }
+        .adv-device.active { background: rgba(230,126,34,0.15); border-color: var(--accent); }
+        .adv-icon-wrap { width: 48px; height: 48px; border-radius: 14px; background: rgba(255,255,255,0.07); display: flex; align-items: center; justify-content: center; font-size: 20px; color: rgba(255,255,255,0.45); transition: all 0.2s; flex-shrink: 0; }
+        .adv-device.active .adv-icon-wrap { background: rgba(230,126,34,0.22); color: var(--accent); }
+        .adv-device-name { font-size: 11px; font-weight: 600; color: #fff; line-height: 1.3; }
+        .adv-device-watts { font-size: 10px; color: rgba(255,255,255,0.32); margin-top: -4px; }
+        .adv-stepper { display: flex; align-items: center; gap: 5px; margin-top: 2px; }
+        .adv-step-btn { width: 22px; height: 22px; background: rgba(255,255,255,0.08); border: none; border-radius: 7px; color: rgba(255,255,255,0.7); font-size: 15px; font-family: 'Outfit', sans-serif; cursor: pointer; display: flex; align-items: center; justify-content: center; line-height: 1; transition: background 0.15s; flex-shrink: 0; }
+        .adv-step-btn:hover { background: rgba(255,255,255,0.18); }
+        .adv-device.active .adv-step-btn { background: rgba(230,126,34,0.2); }
+        .adv-device.active .adv-step-btn:hover { background: rgba(230,126,34,0.35); }
+        .adv-step-val { font-size: 11px; color: rgba(255,255,255,0.65); font-weight: 700; min-width: 26px; text-align: center; }
         .adv-result { background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12); border-radius: 14px; padding: 22px; text-align: center; margin-bottom: 18px; }
         .adv-wh-big { font-size: 52px; font-weight: 700; color: var(--accent); line-height: 1; }
         .adv-wh-label { font-size: 13px; color: rgba(255,255,255,0.45); margin-top: 3px; }
@@ -665,24 +680,29 @@
     ENERGY_DEVICES.forEach(d => { advHours[d.id] = d.hours; });
     let advRecommendedSku = null;
 
+    const fmtH = h => h < 1 ? `${Math.round(h * 60)}min` : `${h}h`;
+
     advDevicesEl.innerHTML = ENERGY_DEVICES.map(d => `
         <div class="adv-device" data-id="${d.id}">
-            <i class="fas ${d.icon}"></i>
-            <div style="flex:1;min-width:0">
-                <div class="adv-device-name">${d.name}</div>
-                <div class="adv-h-row">
-                    <span class="adv-device-wh">${d.watts}W ·</span>
-                    <input class="adv-h-input" type="number" data-id="${d.id}" value="${d.hours}" min="0.5" max="24" step="0.5">
-                    <span class="adv-h-unit">h/dan</span>
-                </div>
+            <div class="adv-icon-wrap"><i class="fas ${d.icon}"></i></div>
+            <div class="adv-device-name">${d.name}</div>
+            <div class="adv-device-watts">${d.watts}W</div>
+            <div class="adv-stepper">
+                <button class="adv-step-btn" data-id="${d.id}" data-dir="-1">−</button>
+                <span class="adv-step-val" data-id="${d.id}">${fmtH(d.hours)}</span>
+                <button class="adv-step-btn" data-id="${d.id}" data-dir="1">+</button>
             </div>
         </div>`).join('');
 
-    advDevicesEl.querySelectorAll('.adv-h-input').forEach(inp => {
-        inp.addEventListener('click', e => e.stopPropagation());
-        inp.addEventListener('input', () => {
-            const val = parseFloat(inp.value);
-            if (!isNaN(val) && val > 0) { advHours[inp.dataset.id] = Math.min(val, 24); updateAdvisor(); }
+    const STEP = 0.5;
+    advDevicesEl.querySelectorAll('.adv-step-btn').forEach(btn => {
+        btn.addEventListener('click', e => {
+            e.stopPropagation();
+            const id = btn.dataset.id;
+            const dir = parseInt(btn.dataset.dir);
+            advHours[id] = Math.min(24, Math.max(0.5, (advHours[id] || 1) + dir * STEP));
+            advDevicesEl.querySelector(`.adv-step-val[data-id="${id}"]`).textContent = fmtH(advHours[id]);
+            updateAdvisor();
         });
     });
     advDevicesEl.querySelectorAll('.adv-device').forEach(el => {
