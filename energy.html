@@ -49,23 +49,11 @@
             min-height: 100vh;
             background-color: #0a0a0a;
             background-image:
-                radial-gradient(ellipse 75% 65% at 72% 38%, rgba(230,126,34,0.22) 0%, transparent 58%),
-                radial-gradient(ellipse 45% 45% at 18% 78%, rgba(230,126,34,0.08) 0%, transparent 50%),
-                radial-gradient(ellipse 30% 30% at 50% 10%, rgba(255,255,255,0.03) 0%, transparent 60%);
+                linear-gradient(160deg, rgba(0,0,0,0.78) 0%, rgba(0,0,0,0.52) 55%, rgba(230,126,34,0.18) 100%),
+                url('assets/tent-evasion-lifestyle.webp');
+            background-size: cover; background-position: center 30%;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            text-align: center; padding: 140px 24px 100px; position: relative; overflow: hidden;
-        }
-        .hero::before {
-            content: '⚡';
-            position: absolute;
-            font-size: min(55vw, 520px);
-            line-height: 1;
-            right: -4%;
-            top: 50%;
-            transform: translateY(-52%);
-            opacity: 0.028;
-            pointer-events: none;
-            user-select: none;
+            text-align: center; padding: 140px 24px 100px; position: relative;
         }
         .hero-tag { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); background: rgba(230,126,34,0.14); border: 1px solid rgba(230,126,34,0.3); border-radius: 20px; padding: 5px 14px; margin-bottom: 28px; display: inline-block; }
         .hero-h1 { font-family: 'Orbitron', sans-serif; font-size: clamp(38px, 7.5vw, 88px); font-weight: 900; color: #fff; line-height: 1.05; margin-bottom: 22px; }
@@ -90,7 +78,14 @@
         .s-sub { font-size: 16px; color: var(--muted); max-width: 560px; line-height: 1.65; }
 
         /* ── PAIN ── */
-        .pain-sec { background: #111; }
+        .pain-sec {
+            background-color: #0d0d0d;
+            background-image:
+                linear-gradient(to right, rgba(8,8,8,0.93) 0%, rgba(8,8,8,0.78) 60%, rgba(8,8,8,0.92) 100%),
+                url('assets/solar-camping.png');
+            background-size: cover; background-position: center;
+            background-attachment: fixed;
+        }
         .pain-intro { margin-bottom: 64px; }
         .pain-intro-lead { font-family: 'Orbitron', sans-serif; font-size: clamp(13px, 2vw, 16px); font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.25); margin-bottom: 12px; }
         .pain-intro-h { font-size: clamp(32px, 6vw, 64px); font-weight: 700; color: #fff; line-height: 1.1; }
