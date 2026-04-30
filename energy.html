@@ -91,16 +91,22 @@
 
         /* ── PAIN ── */
         .pain-sec { background: #111; }
-        .pain-sec .s-h2 { color: #fff; }
-        .pain-sec .s-sub { color: rgba(255,255,255,0.45); }
-        .pain-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; margin-top: 48px; }
-        .pain-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 18px; padding: 28px; }
-        .pain-icon { font-size: 30px; color: var(--accent); margin-bottom: 16px; }
-        .pain-title { font-size: 17px; font-weight: 700; color: #fff; margin-bottom: 9px; }
-        .pain-text { font-size: 14px; color: rgba(255,255,255,0.48); line-height: 1.65; }
-        .pain-resolution { margin-top: 52px; text-align: center; padding: 28px; background: rgba(230,126,34,0.08); border: 1px solid rgba(230,126,34,0.2); border-radius: 16px; }
-        .pain-resolution p { font-size: 20px; font-weight: 600; color: #fff; line-height: 1.5; }
-        .pain-resolution span { color: var(--accent); }
+        .pain-intro { margin-bottom: 64px; }
+        .pain-intro-lead { font-family: 'Orbitron', sans-serif; font-size: clamp(13px, 2vw, 16px); font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.25); margin-bottom: 12px; }
+        .pain-intro-h { font-size: clamp(32px, 6vw, 64px); font-weight: 700; color: #fff; line-height: 1.1; }
+        .pain-intro-h em { color: var(--accent); font-style: normal; }
+        .pain-timeline { display: flex; flex-direction: column; gap: 0; border-left: 1px solid rgba(255,255,255,0.08); margin-left: 16px; }
+        .pain-moment { display: grid; grid-template-columns: 80px 1fr; gap: 0 32px; padding: 32px 0 32px 40px; position: relative; }
+        .pain-moment::before { content: ''; position: absolute; left: -5px; top: 42px; width: 9px; height: 9px; border-radius: 50%; background: rgba(255,255,255,0.15); }
+        .pain-moment:last-child { border-bottom: none; }
+        .pain-time { font-family: 'Orbitron', sans-serif; font-size: 13px; font-weight: 700; color: var(--accent); opacity: 0.7; padding-top: 4px; letter-spacing: 0.04em; }
+        .pain-body {}
+        .pain-event { font-size: clamp(20px, 3.5vw, 30px); font-weight: 700; color: #fff; line-height: 1.2; margin-bottom: 10px; }
+        .pain-detail { font-size: 14px; color: rgba(255,255,255,0.42); line-height: 1.7; max-width: 480px; }
+        .pain-end { margin-top: 64px; margin-left: 16px; padding-left: 40px; }
+        .pain-end-line { width: 40px; height: 1px; background: var(--accent); margin-bottom: 20px; }
+        .pain-end-text { font-size: clamp(18px, 3vw, 26px); font-weight: 600; color: #fff; line-height: 1.4; }
+        .pain-end-text span { color: var(--accent); }
 
         /* ── SEGMENTS ── */
         .seg-sec { background: var(--bg); }
@@ -267,6 +273,9 @@
             .seg-card { min-height: 200px; }
             .adv-wrap { padding: 24px 16px; }
             .lp-section { padding: 60px 20px; }
+            .pain-moment { grid-template-columns: 60px 1fr; gap: 0 16px; padding: 24px 0 24px 24px; }
+            .pain-time { font-size: 11px; }
+            .pain-end { padding-left: 24px; }
         }
     </style>
 </head>
@@ -303,28 +312,36 @@
 <!-- PAIN POINTS -->
 <section class="lp-section pain-sec">
     <div class="lp-inner">
-        <div class="s-tag">Problem</div>
-        <h2 class="s-h2">Zvuči poznato?</h2>
-        <p class="s-sub">Svaki kamper zna ova tri scenarija.</p>
-        <div class="pain-grid">
-            <div class="pain-card">
-                <div class="pain-icon"><i class="fas fa-snowflake"></i></div>
-                <div class="pain-title">Hladnjak koji se gasi</div>
-                <div class="pain-text">U podne, 35°C, hladnjak se isključio jer se akumulator ispraznio. Hrana pokvarena, odmor uništen.</div>
+        <div class="pain-intro">
+            <div class="pain-intro-lead">Jedna subota u kampu</div>
+            <div class="pain-intro-h">Znaš kako<br>ovo <em>završava.</em></div>
+        </div>
+        <div class="pain-timeline">
+            <div class="pain-moment">
+                <div class="pain-time">13:27</div>
+                <div class="pain-body">
+                    <div class="pain-event">Hladnjak se ugasio.</div>
+                    <div class="pain-detail">Akumulator na nuli. Vani 35°C. Pivo mlako, hrana sumnjiva. Odmor koji je trebao biti savršen odjednom izgleda drugačije.</div>
+                </div>
             </div>
-            <div class="pain-card">
-                <div class="pain-icon"><i class="fas fa-volume-high"></i></div>
-                <div class="pain-title">Generator u 7 ujutro</div>
-                <div class="pain-text">Susjedi na kampiranju ne žele čuti tvoj agregat. Ni ti ne želiš plaćati gorivo i voziti ga svaki put.</div>
+            <div class="pain-moment">
+                <div class="pain-time">17:45</div>
+                <div class="pain-body">
+                    <div class="pain-event">Pališ generator.</div>
+                    <div class="pain-detail">Susjedi se okreću. Djeca iz susjednog šatora se bude. Gorivo košta, buka ne prestaje, a ti se osjećaš kao najomraženija osoba u kampu.</div>
+                </div>
             </div>
-            <div class="pain-card">
-                <div class="pain-icon"><i class="fas fa-mobile-screen"></i></div>
-                <div class="pain-title">Telefon na 3%</div>
-                <div class="pain-text">Navigacija, hitni pozivi, fotografije — sve staje kad nema struje. A najbliža utičnica je 20 km daleko.</div>
+            <div class="pain-moment">
+                <div class="pain-time">23:00</div>
+                <div class="pain-body">
+                    <div class="pain-event">Telefon na 3%.</div>
+                    <div class="pain-detail">Mapa, hitni pozivi, fotografije — sve čeka jednu bateriju. Najbliža utičnica je 20 km daleko, a sutra ujutro moraš naći put nazad.</div>
+                </div>
             </div>
         </div>
-        <div class="pain-resolution">
-            <p>Rješenje je <span>tiho, čisto i stane u prtljažnik.</span><br>Puni se dok si na plaži.</p>
+        <div class="pain-end">
+            <div class="pain-end-line"></div>
+            <div class="pain-end-text">Sljedeći put, donesi<br><span>rješenje koje se puni dok si na plaži.</span></div>
         </div>
     </div>
 </section>
