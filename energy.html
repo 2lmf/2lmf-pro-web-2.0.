@@ -436,11 +436,8 @@
                     <div class="adv-form-title">Tvoji kontakt podaci</div>
                     <div class="adv-form-selection" id="advFormSelection"></div>
                     <input type="email" class="adv-input" id="advEmail" placeholder="E-mail *">
-                    <input type="tel"   class="adv-input" id="advPhone" placeholder="Telefon *">
+                    <input type="tel"   class="adv-input" id="advPhone" placeholder="Telefon">
                     <input type="text"  class="adv-input" id="advName"  placeholder="Ime i prezime">
-                    <button class="adv-submit" id="advSubmit" disabled>
-                        <i class="fas fa-paper-plane"></i> Pošalji upit
-                    </button>
                 </div>
             </div>
         </div>
@@ -803,7 +800,8 @@
             const price = LIVE_PRICES.prices[advRecommendedSku] || 0;
             _advCurrentItems = [{ sku: advRecommendedSku, name: p ? p.name : tier.label, price, unit: 'kom', qty: 1, total: price }];
             _advSubject = 'Upit — ' + (p ? p.name : tier.label);
-            selectAdvForm(p ? p.name : tier.label, price > 0 ? fmtN(price) + ' EUR' : null);
+            showAdvSelection(p ? p.name : tier.label, price > 0 ? fmtN(price) + ' EUR' : null);
+            trySubmitAdv(advSoloBtn);
         };
         advBundleAdd.onclick = () => {
             const batPrice = LIVE_PRICES.prices[advRecommendedSku] || 0;
@@ -813,33 +811,46 @@
                 ...(solProd ? [{ sku: solarSku, name: solProd.name, price: solPrice, unit: 'kom', qty: 1, total: solPrice }] : [])
             ];
             _advSubject = advBundleTag.textContent + ': ' + batProd.name + (solProd ? ' + ' + solProd.name : '');
-            selectAdvForm(_advSubject, totalPrice > 0 ? fmtN(totalPrice) + ' EUR' : null);
+            showAdvSelection(_advSubject, totalPrice > 0 ? fmtN(totalPrice) + ' EUR' : null);
+            trySubmitAdv(advBundleAdd);
         };
     }
 
     let _advCurrentItems = [], _advSubject = '';
 
-    function selectAdvForm(label, priceLabel) {
+    function showAdvSelection(label, priceLabel) {
         const sel = document.getElementById('advFormSelection');
         sel.innerHTML = `Interes: <span>${label}</span>${priceLabel ? ' · <span>' + priceLabel + '</span>' : ''}`;
         sel.style.display = 'block';
-        document.getElementById('advSubmit').disabled = false;
-        document.getElementById('advEmail').focus();
         document.getElementById('advForm').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
 
-    document.getElementById('advEmail').addEventListener('input', function() {
-        document.getElementById('advSubmit').disabled = !this.value.trim() || !_advCurrentItems.length;
-    });
+    function trySubmitAdv(btn) {
+        const emailEl = document.getElementById('advEmail');
+        const email   = emailEl.value.trim();
+        if (!email) {
+            emailEl.style.borderColor = '#e74c3c';
+            emailEl.style.boxShadow   = '0 0 0 3px rgba(231,76,60,0.25)';
+            emailEl.placeholder       = '⚠️ Upiši e-mail da pošalješ upit';
+            emailEl.focus();
+            emailEl.addEventListener('input', () => {
+                emailEl.style.borderColor = '';
+                emailEl.style.boxShadow   = '';
+                emailEl.placeholder       = 'E-mail *';
+            }, { once: true });
+            return;
+        }
+        submitAdvInquiry(btn);
+    }
 
-    document.getElementById('advSubmit').addEventListener('click', async function() {
+    async function submitAdvInquiry(btn) {
         const email = document.getElementById('advEmail').value.trim();
         const phone = document.getElementById('advPhone').value.trim();
         const name  = document.getElementById('advName').value.trim();
-        if (!email) { document.getElementById('advEmail').focus(); return; }
 
-        this.disabled = true;
-        this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Šaljem...';
+        const origHTML = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Šaljem...';
 
         const payload = {
             email, phone, name,
@@ -849,26 +860,27 @@
         };
 
         try {
-            await fetch(`${GOOGLE_SCRIPT_URL}`, {
-                method: 'POST',
-                mode: 'no-cors',
-                cache: 'no-cache',
+            await fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST', mode: 'no-cors', cache: 'no-cache',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: new URLSearchParams(payload)
             });
-            this.innerHTML = '✅ Upit poslan! Kontaktirat ćemo vas uskoro.';
-            this.style.background = '#27ae60';
+            btn.innerHTML = '✅ Upit poslan!';
+            btn.style.background = '#27ae60';
             document.getElementById('advEmail').value = '';
             document.getElementById('advPhone').value = '';
             document.getElementById('advName').value  = '';
+            document.getElementById('advFormSelection').style.display = 'none';
             _advCurrentItems = [];
             if (typeof gtag === 'function') gtag('event', 'conversion_event_submit_lead_form_1', { source: 'EnergyLP' });
+            setTimeout(() => { btn.disabled = false; btn.innerHTML = origHTML; btn.style.background = ''; }, 5000);
         } catch(e) {
-            this.disabled = false;
-            this.innerHTML = '<i class="fas fa-paper-plane"></i> Pokušaj ponovo';
-            this.style.background = '#e74c3c';
+            btn.disabled = false;
+            btn.innerHTML = origHTML;
+            btn.style.background = '#e74c3c';
+            setTimeout(() => { btn.style.background = ''; }, 3000);
         }
-    });
+    }
 
         // --- FIRST-CLICK TRACKER ---
         document.body.addEventListener('click', function() {
