@@ -163,6 +163,16 @@
         .adv-bundle-perk i { color: var(--accent); width: 13px; text-align: center; }
         .adv-bundle-add { width: 100%; padding: 14px; background: var(--accent); color: #fff; border: none; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: background 0.2s; font-family: 'Outfit', sans-serif; }
         .adv-bundle-add:hover { background: var(--accent-d); }
+        .adv-form { margin-top: 16px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12); border-radius: 14px; padding: 20px; }
+        .adv-form-title { font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 0.09em; margin-bottom: 10px; }
+        .adv-form-selection { font-size: 13px; color: #fff; margin-bottom: 12px; background: rgba(230,126,34,0.1); border: 1px solid rgba(230,126,34,0.3); border-radius: 8px; padding: 8px 12px; display: none; }
+        .adv-form-selection span { color: var(--accent); font-weight: 700; }
+        .adv-input { width: 100%; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12); border-radius: 10px; color: #fff; padding: 11px 14px; font-size: 14px; font-family: 'Outfit', sans-serif; outline: none; transition: border-color 0.2s; margin-bottom: 8px; }
+        .adv-input:focus { border-color: var(--accent); }
+        .adv-input::placeholder { color: rgba(255,255,255,0.3); }
+        .adv-submit { width: 100%; padding: 13px; background: var(--accent); color: #fff; border: none; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; font-family: 'Outfit', sans-serif; transition: background 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 4px; }
+        .adv-submit:hover:not(:disabled) { background: var(--accent-d); }
+        .adv-submit:disabled { opacity: 0.6; cursor: not-allowed; }
 
         /* ── TRUST ── */
         .trust-sec { background: var(--bg); }
@@ -418,6 +428,18 @@
                     </div>
                     <button class="adv-bundle-add" id="advBundleAdd">
                         <i class="fas fa-solar-panel"></i> Pošalji upit za cijeli paket
+                    </button>
+                </div>
+
+                <!-- KONTAKT FORMA -->
+                <div class="adv-form" id="advForm">
+                    <div class="adv-form-title">Tvoji kontakt podaci</div>
+                    <div class="adv-form-selection" id="advFormSelection"></div>
+                    <input type="email" class="adv-input" id="advEmail" placeholder="E-mail *">
+                    <input type="tel"   class="adv-input" id="advPhone" placeholder="Telefon *">
+                    <input type="text"  class="adv-input" id="advName"  placeholder="Ime i prezime">
+                    <button class="adv-submit" id="advSubmit" disabled>
+                        <i class="fas fa-paper-plane"></i> Pošalji upit
                     </button>
                 </div>
             </div>
@@ -777,16 +799,76 @@
             : 'Punjenje solarnom energijom';
 
         advSoloBtn.onclick = () => {
-            const p = ENERGY_PRODUCTS.find(x => x.sku === advRecommendedSku);
-            const price = LIVE_PRICES.prices[advRecommendedSku];
-            openUpit(p ? p.name : tier.label, price ? fmtN(price) + ' EUR' : null);
+            const p     = ENERGY_PRODUCTS.find(x => x.sku === advRecommendedSku);
+            const price = LIVE_PRICES.prices[advRecommendedSku] || 0;
+            _advCurrentItems = [{ sku: advRecommendedSku, name: p ? p.name : tier.label, price, unit: 'kom', qty: 1, total: price }];
+            _advSubject = 'Upit — ' + (p ? p.name : tier.label);
+            selectAdvForm(p ? p.name : tier.label, price > 0 ? fmtN(price) + ' EUR' : null);
         };
         advBundleAdd.onclick = () => {
-            const bundleLabel = advBundleTag.textContent + ': ' + batProd.name + ' + ' + solProd.name;
-            const priceLabel = totalPrice > 0 ? fmtN(totalPrice) + ' EUR' : null;
-            openUpit(bundleLabel, priceLabel);
+            const batPrice = LIVE_PRICES.prices[advRecommendedSku] || 0;
+            const solPrice = solarSku ? (LIVE_PRICES.prices[solarSku] || 0) : 0;
+            _advCurrentItems = [
+                { sku: advRecommendedSku, name: batProd.name, price: batPrice, unit: 'kom', qty: 1, total: batPrice },
+                ...(solProd ? [{ sku: solarSku, name: solProd.name, price: solPrice, unit: 'kom', qty: 1, total: solPrice }] : [])
+            ];
+            _advSubject = advBundleTag.textContent + ': ' + batProd.name + (solProd ? ' + ' + solProd.name : '');
+            selectAdvForm(_advSubject, totalPrice > 0 ? fmtN(totalPrice) + ' EUR' : null);
         };
     }
+
+    let _advCurrentItems = [], _advSubject = '';
+
+    function selectAdvForm(label, priceLabel) {
+        const sel = document.getElementById('advFormSelection');
+        sel.innerHTML = `Interes: <span>${label}</span>${priceLabel ? ' · <span>' + priceLabel + '</span>' : ''}`;
+        sel.style.display = 'block';
+        document.getElementById('advSubmit').disabled = false;
+        document.getElementById('advEmail').focus();
+        document.getElementById('advForm').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    document.getElementById('advEmail').addEventListener('input', function() {
+        document.getElementById('advSubmit').disabled = !this.value.trim() || !_advCurrentItems.length;
+    });
+
+    document.getElementById('advSubmit').addEventListener('click', async function() {
+        const email = document.getElementById('advEmail').value.trim();
+        const phone = document.getElementById('advPhone').value.trim();
+        const name  = document.getElementById('advName').value.trim();
+        if (!email) { document.getElementById('advEmail').focus(); return; }
+
+        this.disabled = true;
+        this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Šaljem...';
+
+        const payload = {
+            email, phone, name,
+            _subject: 'Upit V2 [ENERGY] — ' + _advSubject,
+            items_json: JSON.stringify(_advCurrentItems),
+            source: 'EnergyLP'
+        };
+
+        try {
+            await fetch(`${GOOGLE_SCRIPT_URL}`, {
+                method: 'POST',
+                mode: 'no-cors',
+                cache: 'no-cache',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams(payload)
+            });
+            this.innerHTML = '✅ Upit poslan! Kontaktirat ćemo vas uskoro.';
+            this.style.background = '#27ae60';
+            document.getElementById('advEmail').value = '';
+            document.getElementById('advPhone').value = '';
+            document.getElementById('advName').value  = '';
+            _advCurrentItems = [];
+            if (typeof gtag === 'function') gtag('event', 'conversion_event_submit_lead_form_1', { source: 'EnergyLP' });
+        } catch(e) {
+            this.disabled = false;
+            this.innerHTML = '<i class="fas fa-paper-plane"></i> Pokušaj ponovo';
+            this.style.background = '#e74c3c';
+        }
+    });
 
         // --- FIRST-CLICK TRACKER ---
         document.body.addEventListener('click', function() {
