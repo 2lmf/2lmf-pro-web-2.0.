@@ -787,6 +787,14 @@
             openUpit(bundleLabel, priceLabel);
         };
     }
+
+        // --- FIRST-CLICK TRACKER ---
+        document.body.addEventListener('click', function() {
+            if (sessionStorage.getItem('2lmf_tracked_energy')) return;
+            sessionStorage.setItem('2lmf_tracked_energy', 'true');
+            const p = new URLSearchParams({ action: 'log_interaction', module: 'energy', source: 'EnergyLP', timestamp: new Date().toISOString() });
+            fetch(`${GOOGLE_SCRIPT_URL}?${p}`, { method: 'GET', keepalive: true, mode: 'no-cors' }).catch(() => {});
+        }, { once: true });
 </script>
 
 </body>

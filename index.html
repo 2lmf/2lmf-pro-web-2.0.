@@ -1229,6 +1229,17 @@
         });
     </script>
 
+    <script>
+        // --- FIRST-CLICK TRACKER ---
+        const _GAS_URL = 'https://script.google.com/macros/s/AKfycbx4TQ6cFNr8X-fNRHE0Ai571pAioDeny_mSSrTVQm3OHbTKOhfIEDiKDFM2shZ5zDFLrA/exec';
+        document.body.addEventListener('click', function() {
+            if (sessionStorage.getItem('2lmf_tracked_home')) return;
+            sessionStorage.setItem('2lmf_tracked_home', 'true');
+            const p = new URLSearchParams({ action: 'log_interaction', module: 'home', source: 'HomePage', timestamp: new Date().toISOString() });
+            fetch(`${_GAS_URL}?${p}`, { method: 'GET', keepalive: true, mode: 'no-cors' }).catch(() => {});
+        }, { once: true });
+    </script>
+
 </body>
 
 </html>
