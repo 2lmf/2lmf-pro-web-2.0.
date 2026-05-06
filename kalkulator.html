@@ -1795,9 +1795,12 @@
             const dots = ['.', '..', '...'];
             let i = 0;
             const iv = setInterval(() => {
-                const el = document.getElementById('katalog-dots') || document.getElementById('energy-dots');
-                if (!el) { clearInterval(iv); return; }
-                el.textContent = dots[i++ % 3];
+                const d = dots[i++ % 3];
+                const a = document.getElementById('katalog-dots');
+                const b = document.getElementById('energy-dots');
+                if (a) a.textContent = d;
+                if (b) b.textContent = d;
+                if (!a && !b) clearInterval(iv);
             }, 500);
         })();
 
