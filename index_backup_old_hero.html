@@ -111,8 +111,10 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: linear-gradient(to bottom, rgba(2, 2, 5, 0.9) 0%, rgba(2, 2, 5, 0) 100%);
+            background: rgba(2, 2, 5, 0.95);
+            backdrop-filter: blur(30px);
             z-index: 2000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
             box-sizing: border-box;
         }
 
@@ -172,16 +174,11 @@
             letter-spacing: 2px;
             transition: all 0.3s;
             position: relative;
-            padding: 8px 18px;
+            /* For the strike line */
+            padding: 5px 15px;
             text-transform: uppercase;
             font-weight: 400;
-            background: rgba(255, 255, 255, 0.08);
-            border-radius: 6px;
-            backdrop-filter: blur(4px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            display: inline-flex;
-            align-items: center;
-            white-space: nowrap;
+            /* Subtle Weight as requested */
         }
 
         /* --- DROPDOWN --- */
@@ -314,28 +311,24 @@
             align-items: center;
             text-align: center;
             padding: 180px 20px 100px;
-            background: url('assets/hero_mountain.png');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
+            /* Pushed down from nav */
+            background-image:
+                /* Major Grid (250px) */
+                linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+                /* Minor Grid (50px) */
+                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                /* Accent Glows */
+                radial-gradient(circle at 70% 20%, rgba(230, 126, 34, 0.08), transparent 40%),
+                radial-gradient(circle at 20% 80%, rgba(0, 242, 255, 0.05), transparent 40%),
+                /* Vignette to break uniformity */
+                radial-gradient(ellipse at center 30%, transparent 20%, var(--bg-dark) 90%);
+            background-size: 250px 250px, 250px 250px, 50px 50px, 50px 50px, 100% 100%, 100% 100%, 100% 100%;
+            background-position: top center, top center, top center, top center, center, center, center;
             box-sizing: border-box;
             padding-bottom: 20px !important;
-            text-shadow: 0 4px 15px rgba(0,0,0,0.8);
-            position: relative;
-        }
-        
-        .hero::after {
-            content: '';
-            position: absolute;
-            bottom: -1px; left: 0; width: 100%; height: 250px;
-            background: linear-gradient(to bottom, transparent, var(--bg-dark));
-            pointer-events: none;
-            z-index: 0;
-        }
-        
-        .hero > * {
-            position: relative;
-            z-index: 2;
+            /* Reduced from 50px */
         }
 
         .hero h1 {
@@ -988,21 +981,20 @@
     </nav>
 
     <div class="hero">
-        <h1 class="visually-hidden">Arhitektonsko projektiranje, zeleni krovovi, nabava materijala za gradnju — Zagreb</h1>
-        <div class="hero-tagline"><span class="arch">2LMF</span> <span class="code">PRO</span></div>
-        <div class="hero-h1-visual" style="font-size: clamp(2rem, 8vw, 6rem);">ŽIVOT NA VAŠ NAČIN... <b>BEZ GRANICA</b></div>
+        <h1 class="visually-hidden">Arhitektonsko projektiranje, nabava materijala za gradnju — ograde, hidroizolacija, termoizolacija — Zagreb</h1>
+        <div class="hero-tagline"><span class="arch">ARCHITECTURAL</span> <span class="code">CODE</span></div>
+        <div class="hero-h1-visual">BEYOND <b>STRUCTURES</b></div>
         <p>
-            <span class="intro-line">Sklad arhitekture, prirode i tehnologije.</span>
-            <span class="hero-part">Od vrhunskog <span class="brand-lmf">arhitektonskog projektiranja</span> i nabave materijala, 
-                <br>do inovativnih <span class="brand-lmf">Outdoor & Energy</span> rješenja — stvaramo prostore slobode.
+            <span class="intro-line">Projektiramo Vašu sutrašnjicu.</span>
+            <span class="hero-part"><span class="brand-lmf">2LMF <span>PRO</span></span> postavlja temelje fizičke
+                izvrsnosti.
+                <br><span class="brand-ss"><span>SHARP</span><span class="shark">SHARK</span> <span
+                        class="digital">DIGITAL</span></span> gradi virtualnu moć Vašeg branda.
             </span>
-            <br><br><span class="vision-line hero-part">Vaša vizija zaslužuje <span
-                    style="color:var(--accent-orange)">savršenu izvedbu.</span></span>
+            <br><br><span class="vision-line hero-part">Jedan partner za cjelovitu viziju <span
+                    style="color:var(--accent-orange)">Vašeg uspjeha.</span></span>
         </p>
-        <div style="display: flex; gap: 20px; flex-wrap: wrap; justify-content: center;">
-            <a href="kalkulator.html" class="hero-btn">IZRAČUNAJ CIJENU MATERIJALA</a>
-            <a href="energy.html" class="hero-btn" style="background: transparent; border: 2px solid var(--accent-orange); color: white;">ISTRAŽI OUTDOOR & ENERGY</a>
-        </div>
+        <a href="kalkulator.html" class="hero-btn">IZRAČUNAJ CIJENU MATERIJALA U 60 SEKUNDI</a>
     </div>
 
     <!-- Hero removed hashtags/footer from here (they are moved to the bottom) -->
