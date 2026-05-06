@@ -982,8 +982,8 @@
     </header>
     <nav class="v2-navbar">
         <div class="v2-nav-container">
-            <div class="v2-nav-item active" data-mod="katalog">🛒 Katalog</div>
-            <div class="v2-nav-item" data-mod="energy">⚡ Energy</div>
+            <div class="v2-nav-item" data-mod="katalog">🛒 Katalog</div>
+            <div class="v2-nav-item active" data-mod="energy">⚡ Energy</div>
             <div class="v2-nav-item" data-mod="ograde">🏗️ Ograde</div>
             <div class="v2-nav-item" data-mod="hidro">💧 Hidro</div>
             <div class="v2-nav-item" data-mod="termo">🌡️ Termo</div>
@@ -999,14 +999,14 @@
             <div id="ograde-view" class="module-view"></div>
             <div id="hidro-view" class="module-view"></div>
             <div id="termo-view" class="module-view"></div>
-            <div id="energy-view" class="module-view"></div>
-            <div id="katalog-view" class="module-view active"><div style="position:sticky;top:35vh;display:flex;flex-direction:column;align-items:center;gap:12px;padding:40px 20px;text-align:center;"><div style="font-size:2.5rem;">🛒</div><div style="font-size:1.1rem;font-weight:600;letter-spacing:1px;">Katalog se učitava<span id="katalog-dots">.</span></div><div style="font-size:0.85rem;opacity:0.5;">Trenutak strpljenja...</div></div></div>
+            <div id="energy-view" class="module-view active"></div>
+            <div id="katalog-view" class="module-view"><div style="position:sticky;top:35vh;display:flex;flex-direction:column;align-items:center;gap:12px;padding:40px 20px;text-align:center;"><div style="font-size:2.5rem;">🛒</div><div style="font-size:1.1rem;font-weight:600;letter-spacing:1px;">Katalog se učitava<span id="katalog-dots">.</span></div><div style="font-size:0.85rem;opacity:0.5;">Trenutak strpljenja...</div></div></div>
         </div>
 
         <aside class="recap-sidebar">
             <div class="recap-title">
                 <span>Košarica</span>
-                <span id="activeModName">Katalog</span>
+                <span id="activeModName">Energy</span>
             </div>
             <div class="item-list" id="globalRecapItems">
                 <div class="line-item" style="opacity:0.4; font-size:13px;">Košarica je prazna</div>
@@ -1420,7 +1420,7 @@
         // --- 1. CORE DATA & PRICING ---
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx4TQ6cFNr8X-fNRHE0Ai571pAioDeny_mSSrTVQm3OHbTKOhfIEDiKDFM2shZ5zDFLrA/exec";
 
-        let activeModule = 'katalog', systemItems = [], manualItems = [], isAuthorized = false;
+        let activeModule = 'energy', systemItems = [], manualItems = [], isAuthorized = false;
 
         async function initPriceFetch() {
             if (!GOOGLE_SCRIPT_URL) return;
@@ -1805,7 +1805,7 @@
             // 1. Immediately determine active module from hash to prevent race condition tracking wrong module
             const hash = window.location.hash.replace('#', '');
             const validModules = ['ograde', 'hidro', 'termo', 'katalog', 'energy'];
-            const defaultMod = validModules.includes(hash) ? hash : 'katalog';
+            const defaultMod = validModules.includes(hash) ? hash : 'energy';
             activeModule = defaultMod; // Set global right away
 
             initNavigation();
