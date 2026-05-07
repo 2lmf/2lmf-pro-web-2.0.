@@ -1815,9 +1815,10 @@
             setupInquiryLogic();
 
             // --- TRACK FIRST INTERACTION ---
+            let hasInteracted = false;
             const trackInteraction = (e) => {
-                if (!sessionStorage.getItem('2lmf_interacted') || window.location.search.includes('debug=true')) {
-                    sessionStorage.setItem('2lmf_interacted', 'true');
+                if (!hasInteracted || window.location.search.includes('debug=true')) {
+                    hasInteracted = true;
                     console.log("🚀 TRACKING: Sending first interaction...", activeModule);
 
                     const payload = {
@@ -1856,6 +1857,7 @@
 
             // Re-apply listeners to body
             document.body.addEventListener('click', trackInteraction, { once: true });
+            document.body.addEventListener('touchstart', trackInteraction, { once: true });
 
             await initPriceFetch(); // Wait for prices!
 
