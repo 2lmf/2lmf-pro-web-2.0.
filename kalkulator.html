@@ -982,11 +982,11 @@
     </header>
     <nav class="v2-navbar">
         <div class="v2-nav-container">
-            <div class="v2-nav-item" data-mod="katalog">🛒 Katalog</div>
             <div class="v2-nav-item active" data-mod="energy">⚡ Energy / Outdoor</div>
             <div class="v2-nav-item" data-mod="ograde">🏗️ Ograde</div>
-            <div class="v2-nav-item" data-mod="hidro">💧 Hidro</div>
-            <div class="v2-nav-item" data-mod="termo">🌡️ Termo</div>
+            <div class="v2-nav-item" data-mod="hidro">💧 Hidroizolacija</div>
+            <div class="v2-nav-item" data-mod="termo">🌡️ Termoizolacija</div>
+            <div class="v2-nav-item" data-mod="katalog">🛒 Svi proizvodi</div>
         </div>
     </nav>
 
@@ -1879,7 +1879,8 @@
             activeModule = modId; const theme = THEMES[modId] || THEMES.ograde;
             document.documentElement.style.setProperty('--accent', theme.accent);
             document.documentElement.style.setProperty('--accent-rgb', theme.rgb);
-            document.getElementById('activeModName').textContent = modId.toUpperCase();
+            const MOD_NAMES = { energy:'Energy / Outdoor', ograde:'Ograde', hidro:'Hidroizolacija', termo:'Termoizolacija', katalog:'Svi proizvodi' };
+            document.getElementById('activeModName').textContent = MOD_NAMES[modId] || modId.toUpperCase();
             document.querySelectorAll('.module-view').forEach(v => v.classList.remove('active'));
 
             // Sklanjanje vizualizatora za Katalog (robunije)
