@@ -2724,6 +2724,8 @@
             const catIcons = { ograde:'fa-border-all', hidro:'fa-water', termo:'fa-fire-flame-curved', energy:'fa-bolt', ostalo:'fa-box-open' };
 
             const getProductImg = (p) => {
+                const energyMatch = ENERGY_PRODUCTS.find(e => e.sku === p.sku);
+                if (energyMatch?.img) return energyMatch.img;
                 const n = (p.name || '').toLowerCase();
                 if (n.includes('panel 2d') || (n.includes('2d') && n.includes('panel')))  return 'assets/2d panel.jpg';
                 if (n.includes('panel 3d') || (n.includes('3d') && n.includes('panel')))  return 'assets/3D+panel.jpg';
