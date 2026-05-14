@@ -1922,8 +1922,8 @@
         window.updateGlobalCart = (items, isSystemUpdate = false) => {
             if (isSystemUpdate) systemItems = items;
 
-            // Izolacija košarice: U katalogu prikazuj samo ručno dodane stavke
-            const itemsToDisplay = (activeModule === 'katalog') ? manualItems : [...systemItems, ...manualItems];
+            // Izolacija košarice: katalog i energy prikazuju samo ručno dodane stavke (ne systemItems od hidro/termo kalkulacija)
+            const itemsToDisplay = (activeModule === 'katalog' || activeModule === 'energy') ? manualItems : [...systemItems, ...manualItems];
 
             const container = document.getElementById('globalRecapItems');
             const totalDisplay = document.getElementById('globalTotalPrice');
@@ -3147,9 +3147,8 @@
         ];
 
         function initEnergyModule() {
-            systemItems = [];
             manualItems = [];
-            window.updateGlobalCart([], true);
+            window.updateGlobalCart(systemItems, true);
 
             const view = document.getElementById('energy-view');
             view.innerHTML = document.getElementById('tpl-energy').innerHTML;
