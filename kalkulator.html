@@ -3147,6 +3147,10 @@
         ];
 
         function initEnergyModule() {
+            systemItems = [];
+            manualItems = [];
+            window.updateGlobalCart([], true);
+
             const view = document.getElementById('energy-view');
             view.innerHTML = document.getElementById('tpl-energy').innerHTML;
 
