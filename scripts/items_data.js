@@ -152,7 +152,7 @@ const prices = {
         osb_22: { price: 10.83, sku: "3009", name: "OSB plo?e 22mm (2500 x 675mm)" }
     },
     new_products: {
-        reflectix: { price: 3.5875, sku: "3011", name: "SEALED AIR REFLECTIX? (alu izolacija)" },
+        reflectix: { price: 4.1125, sku: "3011", name: "SEALED AIR REFLECTIX? (alu izolacija)" },
         ethafoam: { price: 1.9500000000000002, sku: "3012", name: "Ethafoam 2222 (izolacija od udarnog zvuka u podu)" }
     }
 };
