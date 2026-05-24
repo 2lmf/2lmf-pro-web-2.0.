@@ -3047,6 +3047,10 @@
             { sku:'5024', brand:'OSCAL', type:'battery',   name:'OSCAL PowerMax 6000',     sub:'3600 Wh / 6000W',         wh:3600, img:'assets/oscal-powermax6000.jpg' },
             { sku:'5025', brand:'OSCAL', type:'solar',     name:'OSCAL PM200 Pro Solar',   sub:'200W solarni panel',      wh:0,    img:'assets/oscal-pm200.jpg' },
             { sku:'5026', brand:'OSCAL', type:'solar',     name:'OSCAL PM400 Pro Solar',   sub:'400W solarni panel',      wh:0,    img:'assets/oscal-pm400.jpg' },
+            // Paketi
+            { sku:'5030', brand:'2LMF PRO', type:'bundle', name:'Paket "Solar Starter"',  sub:'OSCAL PowerMax 1800 SE + PM200 Pro Solar · 1024 Wh / 200W', wh:1024, img:'assets/oscal-powermax1800se.jpg', bundleSkus:['5029','5025'] },
+            { sku:'5031', brand:'2LMF PRO', type:'bundle', name:'Paket "Nomad Double"',   sub:'Aferiy P180 Pro + P180-B Expansion · 2048 Wh ukupno',       wh:2048, img:'assets/aferiy-p180pro.webp',        bundleSkus:['5027','5028'] },
+            { sku:'5032', brand:'2LMF PRO', type:'bundle', name:'Paket "Power Base"',     sub:'OSCAL PowerMax 2400 Pro + PM400 Pro Solar · 2016 Wh / 400W', wh:2016, img:'assets/oscal-powermax2400.jpg',     bundleSkus:['5020','5026'] },
             // CampBoxi
             { sku:'6001', brand:'CampBoxi', type:'tent',   name:'CampBoxi Nest 160',       sub:'Tvrdi krovni šator',      wh:0, img:'assets/campboxi-nest160.jpg' },
             { sku:'6002', brand:'CampBoxi', type:'tent',   name:'CampBoxi Nest 130',       sub:'Tvrdi krovni šator',      wh:0, img:'assets/campboxi-nest130.jpg' },
@@ -3093,6 +3097,10 @@
             '5024': { imgs:['assets/oscal-powermax6000.jpg','assets/oscal-powermax6000-2.jpg'], specs:[['Kapacitet','3600 Wh'],['Snaga AC','6000W / 12000W peak'],['Baterija','LiFePO₄ — 3.500+ ciklusa'],['Max. solar','1200W'],['Format','High-power inverter']] },
             '5025': { imgs:['assets/oscal-pm200.jpg','assets/oscal-pm200-2.jpg'], specs:[['Snaga','200W'],['Tip','Foldable mono'],['Konektor','DC7909'],['Zaštita','IP67']], solar:true },
             '5026': { imgs:['assets/oscal-pm400.jpg','assets/oscal-pm400-2.jpg'], specs:[['Snaga','400W'],['Tip','Foldable mono'],['Efikasnost','~23%'],['Konektor','DC7909 / XT60'],['Zaštita','IP67']], solar:true },
+            // Paketi
+            '5030': { imgs:['assets/oscal-powermax1800se.jpg','assets/oscal-pm200.jpg'], specs:[['U paketu','OSCAL PowerMax 1800 SE'],['Kapacitet','1024 Wh / 1800W AC'],['U paketu','OSCAL PM200 Pro Solar'],['Snaga panela','200W foldable'],['Punjenje solarom','~3–4 h'],['Baterija','LiFePO₄ — 3.500+ ciklusa']], bundle:true },
+            '5031': { imgs:['assets/aferiy-p180pro.webp','assets/aferiy-p180b.webp'], specs:[['U paketu','Aferiy Nomad1800 P180 Pro'],['Kapacitet postaje','1024 Wh / 1800W AC'],['U paketu','Aferiy P180-B Expansion Battery'],['Ukupni kapacitet','2048 Wh'],['Spajanje','Hot-swap, bez gašenja'],['Baterija','LiFePO₄ — 4.000+ ciklusa']], bundle:true },
+            '5032': { imgs:['assets/oscal-powermax2400.jpg','assets/oscal-pm400.jpg'], specs:[['U paketu','OSCAL PowerMax 2400 Pro'],['Kapacitet','2016 Wh / 2400W AC'],['U paketu','OSCAL PM400 Pro Solar'],['Snaga panela','400W foldable'],['Punjenje solarom','~3–4 h'],['Proširivost','s BP2400 Pro → 4032 Wh']], bundle:true },
             // CampBoxi
             '6001': { imgs:['assets/campboxi-nest160.jpg','assets/campboxi-nest160-2.jpg'], specs:[['Tip','Tvrdi krovni šator'],['Dimenzije (otvoreno)','160 × 220 cm'],['Materijal','Aluminijski poklopac'],['Postavljanje','< 60 sekundi'],['Nosivost krova','min. 75 kg']], uses:[['fa-car','Montira se na krovni nosač ili rack'],['fa-moon','Spavanje za 2 odrasle osobe'],['fa-cloud-rain','Zaštita od kiše, vjetra i UV'],['fa-clock','Postavljanje za manje od 60 sekundi']] },
             '6002': { imgs:['assets/campboxi-nest130.jpg','assets/campboxi-nest130-2.jpg'], specs:[['Tip','Tvrdi krovni šator'],['Dimenzije (otvoreno)','130 × 210 cm'],['Materijal','Aluminijski poklopac'],['Postavljanje','< 60 sekundi'],['Nosivost krova','min. 75 kg']], uses:[['fa-car','Montira se na krovni nosač ili rack'],['fa-moon','Spavanje za 1–2 osobe'],['fa-cloud-rain','Zaštita od kiše, vjetra i UV'],['fa-clock','Postavljanje za manje od 60 sekundi']] },
@@ -3178,17 +3186,28 @@
                 const grid = view.querySelector('#energyGrid');
                 const filtered = ENERGY_PRODUCTS.filter(p => {
                     if (energyFilter === 'all')    return true;
+                    if (energyFilter === 'bundle') return p.type === 'bundle';
                     if (energyFilter === 'solar')  return p.type === 'solar';
                     return p.brand.toLowerCase() === energyFilter;
                 });
-                grid.innerHTML = filtered.map(p => {
+                const sorted = energyFilter === 'all'
+                    ? [...filtered].sort((a,b) => (a.type==='bundle'?-1:b.type==='bundle'?1:0))
+                    : filtered;
+                grid.innerHTML = sorted.map(p => {
                     const livePrice = LIVE_PRICES.prices[p.sku];
                     const price = livePrice !== undefined ? livePrice : null;
+                    const isBundle = p.type === 'bundle';
                     const priceHtml = price !== null
+                        ? `<div class="e-price">${fmt(price)} <small style="font-size:11px;font-weight:400;color:var(--muted);">€ / paket</small></div>`
+                        : `<div class="e-price" style="font-size:14px;color:var(--muted);">Na upit</div>`;
+                    const regularPriceHtml = price !== null
                         ? `<div class="e-price">${fmt(price)} <small style="font-size:11px;font-weight:400;color:var(--muted);">€ / kom</small></div>`
                         : `<div class="e-price" style="font-size:14px;color:var(--muted);">Na upit</div>`;
-                    const badge = p.featured ? '<div class="e-badge">Popular</div>' : '';
-                    return `<div class="e-card">
+                    const badge = isBundle
+                        ? `<div class="e-badge" style="background:linear-gradient(135deg,#e67e22,#f39c12);">🎁 Paket</div>`
+                        : (p.featured ? '<div class="e-badge">Popular</div>' : '');
+                    const cardStyle = isBundle ? ' style="border:2px solid #e67e22;background:linear-gradient(135deg,rgba(230,126,34,0.04),rgba(243,156,18,0.04))"' : '';
+                    return `<div class="e-card"${cardStyle}>
                         <div class="e-img" onclick="openEnergyModal('${p.sku}')">
                             <img src="${p.img}" alt="${p.name}" loading="lazy" onerror="this.style.display='none'">
                             ${badge}
@@ -3198,11 +3217,11 @@
                             <div class="e-brand">${p.brand}</div>
                             <div class="e-name">${p.name}</div>
                             <div class="e-sub">${p.sub}</div>
-                            ${priceHtml}
+                            ${isBundle ? priceHtml : regularPriceHtml}
                         </div>
                         <div class="e-footer">
-                            <button class="e-add-btn" onclick="addEnergyToCart('${p.sku}')">
-                                <i class="fas fa-plus"></i> Dodaj u košaricu
+                            <button class="e-add-btn" onclick="addEnergyToCart('${p.sku}')" ${isBundle?'style="background:linear-gradient(135deg,#e67e22,#f39c12);border-color:#e67e22;"':''}>
+                                <i class="fas fa-${isBundle?'bag-shopping':'plus'}"></i> ${isBundle?'Dodaj paket':'Dodaj u košaricu'}
                             </button>
                         </div>
                     </div>`;
@@ -3210,7 +3229,7 @@
             };
 
             const filterBar = view.querySelector('#energyFilterBar');
-            const filters = [{k:'all',l:'Sve'},{k:'pecron',l:'Pecron'},{k:'aferiy',l:'Aferiy'},{k:'oscal',l:'OSCAL'},{k:'campboxi',l:'CampBoxi'},{k:'tentbox',l:'TentBox'},{k:'solar',l:'☀️ Solar'}];
+            const filters = [{k:'all',l:'Sve'},{k:'bundle',l:'🎁 Paketi'},{k:'pecron',l:'Pecron'},{k:'aferiy',l:'Aferiy'},{k:'oscal',l:'OSCAL'},{k:'campboxi',l:'CampBoxi'},{k:'tentbox',l:'TentBox'},{k:'solar',l:'☀️ Solar'}];
             filterBar.innerHTML = filters.map(f => `<div class="fchip ${f.k==='all'?'active':''}" data-f="${f.k}">${f.l}</div>`).join('');
             filterBar.querySelectorAll('.fchip').forEach(btn => {
                 btn.onclick = () => {
