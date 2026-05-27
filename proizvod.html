@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title id="page-title">Proizvod — 2LMF PRO</title>
+  <meta id="page-desc" name="description" content="Prijenosna solarna elektrana i oprema za kampiranje — 2LMF PRO">
+  <link rel="canonical" id="page-canonical" href="https://2lmf-pro.hr/proizvod.html">
+  <meta property="og:type" content="product">
+  <meta id="og-title" property="og:title" content="2LMF PRO">
+  <meta id="og-desc" property="og:description" content="">
+  <meta id="og-image" property="og:image" content="https://2lmf-pro.hr/assets/sharpshark_blue_large.png">
+  <link rel="icon" type="image/png" href="/icons/icon-192.png">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-M46VSK431N"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date()); gtag('config', 'G-M46VSK431N');
+  </script>
+  <style>
+    :root {
+      --bg: #020205;
+      --surface: #0d0d1a;
+      --surface2: #12121f;
+      --border: rgba(255,255,255,0.07);
+      --accent-orange: #E67E22;
+      --accent-cyan: #00F2FF;
+      --text: #f0f0f0;
+      --muted: #8888aa;
+      --font-head: 'Orbitron', sans-serif;
+      --font-body: 'Outfit', sans-serif;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 15px; line-height: 1.6; min-height: 100vh; }
+
+    /* NAV */
+    nav { position: sticky; top: 0; z-index: 100; background: rgba(2,2,5,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); padding: 0 20px; height: 56px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    .nav-logo { font-family: var(--font-head); font-size: 15px; font-weight: 700; color: var(--text); text-decoration: none; display: flex; align-items: center; gap: 8px; }
+    .nav-logo span { color: var(--accent-orange); }
+    .nav-back { display: flex; align-items: center; gap: 8px; color: var(--muted); text-decoration: none; font-size: 13px; transition: color .2s; }
+    .nav-back:hover { color: var(--accent-cyan); }
+    .nav-breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); }
+    .nav-breadcrumb a { color: var(--muted); text-decoration: none; }
+    .nav-breadcrumb a:hover { color: var(--text); }
+    .nav-breadcrumb .sep { opacity: .4; }
+
+    /* LAYOUT */
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+    .product-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; padding: 40px 0 60px; }
+    @media(max-width: 768px) { .product-wrap { grid-template-columns: 1fr; gap: 28px; padding: 24px 0 40px; } }
+
+    /* GALLERY */
+    .gallery { display: flex; flex-direction: column; gap: 12px; }
+    .gallery-main { position: relative; aspect-ratio: 1; background: var(--surface); border-radius: 16px; overflow: hidden; border: 1px solid var(--border); }
+    .gallery-main img { width: 100%; height: 100%; object-fit: contain; padding: 16px; transition: opacity .2s; }
+    .gallery-thumbs { display: flex; gap: 8px; flex-wrap: wrap; }
+    .g-thumb { width: 64px; height: 64px; border-radius: 10px; border: 2px solid var(--border); overflow: hidden; cursor: pointer; transition: border-color .2s; background: var(--surface); flex-shrink: 0; }
+    .g-thumb:hover, .g-thumb.active { border-color: var(--accent-orange); }
+    .g-thumb img { width: 100%; height: 100%; object-fit: contain; padding: 6px; }
+
+    /* PRODUCT INFO */
+    .p-brand { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--accent-orange); margin-bottom: 8px; }
+    .p-name { font-family: var(--font-head); font-size: clamp(18px, 3vw, 26px); font-weight: 700; color: var(--text); line-height: 1.3; margin-bottom: 6px; }
+    .p-sub { color: var(--muted); font-size: 14px; margin-bottom: 20px; }
+    .p-price-wrap { margin-bottom: 24px; }
+    .p-price { font-family: var(--font-head); font-size: 32px; font-weight: 900; color: var(--accent-orange); }
+    .p-price small { font-size: 14px; font-weight: 400; color: var(--muted); margin-left: 4px; font-family: var(--font-body); }
+    .p-price-note { font-size: 12px; color: var(--muted); margin-top: 4px; }
+    .p-badges { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+    .badge { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; letter-spacing: .5px; }
+    .badge-cyan { background: rgba(0,242,255,.1); border: 1px solid rgba(0,242,255,.2); color: var(--accent-cyan); }
+    .badge-orange { background: rgba(230,126,34,.1); border: 1px solid rgba(230,126,34,.25); color: var(--accent-orange); }
+    .badge-gray { background: rgba(255,255,255,.05); border: 1px solid var(--border); color: var(--muted); }
+
+    /* CTA */
+    .cta-wrap { display: flex; flex-direction: column; gap: 10px; }
+    .btn-primary { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 14px 24px; background: linear-gradient(135deg,#e67e22,#f39c12); color: #fff; font-family: var(--font-head); font-size: 13px; font-weight: 700; letter-spacing: 1px; border: none; border-radius: 12px; cursor: pointer; text-decoration: none; transition: opacity .2s, transform .15s; }
+    .btn-primary:hover { opacity: .92; transform: translateY(-1px); }
+    .btn-secondary { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 13px 24px; background: transparent; color: var(--text); font-size: 13px; font-weight: 600; border: 1px solid var(--border); border-radius: 12px; cursor: pointer; text-decoration: none; transition: border-color .2s, color .2s; }
+    .btn-secondary:hover { border-color: var(--accent-cyan); color: var(--accent-cyan); }
+    .warranty-line { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); margin-top: 6px; }
+    .warranty-line i { color: var(--accent-cyan); }
+
+    /* SECTIONS */
+    section.block { padding: 32px 0; border-top: 1px solid var(--border); }
+    .section-title { font-family: var(--font-head); font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--accent-cyan); margin-bottom: 20px; }
+
+    /* SPECS */
+    .specs-table { width: 100%; border-collapse: collapse; }
+    .specs-table tr:nth-child(even) td { background: rgba(255,255,255,.025); }
+    .specs-table td { padding: 9px 14px; font-size: 13px; border: none; }
+    .specs-table td:first-child { color: var(--muted); width: 45%; }
+    .specs-table td:last-child { color: var(--text); font-weight: 600; }
+
+    /* USE CASES */
+    .uses-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+    .use-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px; display: flex; align-items: flex-start; gap: 12px; }
+    .use-icon { width: 36px; height: 36px; background: rgba(230,126,34,.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--accent-orange); font-size: 14px; }
+    .use-text { font-size: 13px; color: var(--muted); line-height: 1.4; }
+
+    /* INQUIRY MODAL */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.7); backdrop-filter: blur(6px); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 20px; opacity: 0; pointer-events: none; transition: opacity .25s; }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+    .modal { background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 32px; max-width: 480px; width: 100%; position: relative; }
+    .modal-title { font-family: var(--font-head); font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+    .modal-sub { font-size: 13px; color: var(--muted); margin-bottom: 24px; }
+    .modal-close { position: absolute; top: 16px; right: 16px; background: none; border: none; color: var(--muted); font-size: 18px; cursor: pointer; }
+    .modal-close:hover { color: var(--text); }
+    .form-group { margin-bottom: 14px; }
+    .form-group label { display: block; font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+    .form-group input, .form-group textarea { width: 100%; background: rgba(255,255,255,.05); border: 1px solid var(--border); border-radius: 10px; padding: 11px 14px; color: var(--text); font-family: var(--font-body); font-size: 14px; outline: none; transition: border-color .2s; }
+    .form-group input:focus, .form-group textarea:focus { border-color: var(--accent-orange); }
+    .form-group textarea { resize: vertical; min-height: 80px; }
+    .form-status { font-size: 13px; color: var(--accent-cyan); margin-top: 10px; min-height: 20px; text-align: center; }
+
+    /* 404 */
+    .not-found { text-align: center; padding: 100px 20px; }
+    .not-found h2 { font-family: var(--font-head); font-size: 24px; margin-bottom: 12px; }
+    .not-found p { color: var(--muted); margin-bottom: 24px; }
+
+    /* FOOTER */
+    footer { border-top: 1px solid var(--border); padding: 28px 20px; text-align: center; }
+    .footer-logo { font-family: var(--font-head); font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+    .footer-logo span { color: var(--accent-orange); }
+    .footer-sub { font-size: 12px; color: var(--muted); }
+    .footer-links { display: flex; justify-content: center; gap: 20px; margin-top: 12px; flex-wrap: wrap; }
+    .footer-links a { font-size: 12px; color: var(--muted); text-decoration: none; }
+    .footer-links a:hover { color: var(--text); }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">2LMF <span>PRO</span></a>
+  <div class="nav-breadcrumb">
+    <a href="kalkulator.html">Katalog</a>
+    <span class="sep">›</span>
+    <span id="bread-name">Proizvod</span>
+  </div>
+  <a href="kalkulator.html" class="nav-back"><i class="fas fa-arrow-left"></i> Natrag</a>
+</nav>
+
+<div class="container">
+  <div id="product-root"></div>
+</div>
+
+<!-- Inquiry Modal -->
+<div class="modal-overlay" id="inquiryModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeInquiry()"><i class="fas fa-times"></i></button>
+    <div class="modal-title">Zatraži ponudu</div>
+    <div class="modal-sub" id="modal-product-name">—</div>
+    <div class="form-group">
+      <label>Ime i prezime</label>
+      <input type="text" id="inq-name" placeholder="Vaše ime">
+    </div>
+    <div class="form-group">
+      <label>Email</label>
+      <input type="email" id="inq-email" placeholder="email@primjer.hr">
+    </div>
+    <div class="form-group">
+      <label>Telefon</label>
+      <input type="tel" id="inq-phone" placeholder="+385 ...">
+    </div>
+    <div class="form-group">
+      <label>Napomena (opcionalno)</label>
+      <textarea id="inq-note" placeholder="Pitanje, napomena..."></textarea>
+    </div>
+    <button class="btn-primary" onclick="submitInquiry()" style="width:100%;">
+      <i class="fas fa-paper-plane"></i> POŠALJI UPIT
+    </button>
+    <div class="form-status" id="inq-status"></div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-logo">2LMF <span>PRO</span></div>
+  <div class="footer-sub">j.d.o.o. Zagreb, Hrvatska · <a href="mailto:info@2lmf-pro.hr" style="color:var(--muted)">info@2lmf-pro.hr</a></div>
+  <div class="footer-links">
+    <a href="kalkulator.html">Kalkulator</a>
+    <a href="energy.html">Solarne elektrane</a>
+    <a href="index.html">Početna</a>
+    <a href="blog_hub.html">Blog</a>
+  </div>
+</footer>
+
+<script>
+const GAS_URL = "https://script.google.com/macros/s/AKfycbx4TQ6cFNr8X-fNRHE0Ai571pAioDeny_mSSrTVQm3OHbTKOhfIEDiKDFM2shZ5zDFLrA/exec";
+const BASE_URL = "https://2lmf-pro.hr";
+
+const ENERGY_PRODUCTS = [
+  { sku:'5001', brand:'Pecron', type:'battery',   name:'Pecron E600LFP (V2)',                    sub:'614 Wh / 600W AC',                                                    wh:614,  img:'assets/pecron-e600.webp' },
+  { sku:'5002', brand:'Pecron', type:'battery',   name:'Pecron E1500LFP',                        sub:'1440 Wh / 1500W AC',                                                  wh:1440, img:'assets/pecron-e1500.webp', featured:true },
+  { sku:'5003', brand:'Pecron', type:'battery',   name:'Pecron E2400LFP',                        sub:'2048 Wh / 2400W AC',                                                  wh:2048, img:'assets/pecron-e2400.jpg' },
+  { sku:'5004', brand:'Pecron', type:'battery',   name:'Pecron E3600LFP',                        sub:'3072 Wh / 3600W AC',                                                  wh:3072, img:'assets/pecron-e3600.jpg' },
+  { sku:'5005', brand:'Pecron', type:'battery',   name:'Pecron E3000LFP',                        sub:'3096 Wh / 3000W AC',                                                  wh:3096, img:'assets/pecron-e3000.jpg' },
+  { sku:'5006', brand:'Pecron', type:'expansion', name:'Pecron E3000LFP-48V Exp. Battery',       sub:'Expansion baterija',                                                  wh:0,    img:'assets/pecron-e3000-exp.jpg' },
+  { sku:'5007', brand:'Aferiy', type:'battery',   name:'Aferiy Nano 100',                        sub:'64 Wh / 100W AC',                                                     wh:64,   img:'assets/aferiy-nano100.jpg' },
+  { sku:'5008', brand:'Aferiy', type:'battery',   name:'Aferiy P040',                            sub:'256 Wh / 400W AC',                                                    wh:256,  img:'assets/aferiy-p040.webp' },
+  { sku:'5009', brand:'Aferiy', type:'battery',   name:'Aferiy P010',                            sub:'512 Wh / 800W AC',                                                    wh:512,  img:'assets/aferiy-p010.webp' },
+  { sku:'5012', brand:'Aferiy', type:'battery',   name:'Aferiy P210',                            sub:'2048 Wh / 2400W AC',                                                  wh:2048, img:'assets/aferiy-p210.webp', featured:true },
+  { sku:'5013', brand:'Aferiy', type:'battery',   name:'Aferiy P280',                            sub:'2048 Wh / 2800W AC',                                                  wh:2048, img:'assets/aferiy-p280.webp' },
+  { sku:'5014', brand:'Aferiy', type:'expansion', name:'Aferiy P280 Exp. Battery',               sub:'Expansion baterija',                                                  wh:0,    img:'assets/aferiy-p280-exp.jpg' },
+  { sku:'5015', brand:'Aferiy', type:'battery',   name:'Aferiy P310',                            sub:'3840 Wh / 3600W AC',                                                  wh:3840, img:'assets/aferiy-p310.webp' },
+  { sku:'5016', brand:'Aferiy', type:'expansion', name:'Aferiy P310 Exp. Battery',               sub:'Expansion baterija',                                                  wh:0,    img:'assets/aferiy-p310-exp.jpg' },
+  { sku:'5017', brand:'Aferiy', type:'solar',     name:'Aferiy AF-S100A1 100W Solar',            sub:'100W solarni panel foldable',                                         wh:0,    img:'assets/aferiy-solar100.webp' },
+  { sku:'5018', brand:'Aferiy', type:'solar',     name:'Aferiy AF-S200A1 200W Solar',            sub:'200W solarni panel foldable',                                         wh:0,    img:'assets/aferiy-solar200.jpg' },
+  { sku:'5019', brand:'Aferiy', type:'solar',     name:'Aferiy AF-S400A1 400W Solar',            sub:'400W solarni panel foldable',                                         wh:0,    img:'assets/aferiy-solar400.jpg' },
+  { sku:'5027', brand:'Aferiy', type:'battery',   name:'Aferiy Nomad1800 P180 Pro',              sub:'1024 Wh / 1800W AC',                                                  wh:1024, img:'assets/aferiy-p180pro.webp' },
+  { sku:'5028', brand:'Aferiy', type:'expansion', name:'Aferiy P180-B Expansion Battery',        sub:'Expansion baterija · 1024 Wh',                                        wh:1024, img:'assets/aferiy-p180b.webp' },
+  { sku:'5029', brand:'OSCAL',  type:'battery',   name:'OSCAL PowerMax 1800 SE',                 sub:'1024 Wh / 1800W AC',                                                  wh:1024, img:'assets/oscal-powermax1800se.jpg' },
+  { sku:'5020', brand:'OSCAL',  type:'battery',   name:'OSCAL PowerMax 2400 Pro',                sub:'2016 Wh / 2400W AC',                                                  wh:2016, img:'assets/oscal-powermax2400.jpg' },
+  { sku:'5021', brand:'OSCAL',  type:'expansion', name:'OSCAL BP2400 Pro Extension Battery',     sub:'Expansion baterija · 2016 Wh',                                        wh:2016, img:'assets/oscal-bp2400.jpg' },
+  { sku:'5022', brand:'OSCAL',  type:'battery',   name:'OSCAL PowerMax 3600 SE',                 sub:'3600 Wh / 3600W AC',                                                  wh:3600, img:'assets/oscal-powermax3600se.webp' },
+  { sku:'5023', brand:'OSCAL',  type:'expansion', name:'OSCAL BP3600 Extension Battery',         sub:'Expansion baterija · 3600 Wh',                                        wh:3600, img:'assets/oscal-bp3600.jpg' },
+  { sku:'5024', brand:'OSCAL',  type:'battery',   name:'OSCAL PowerMax 6000',                    sub:'3600 Wh / 6000W AC',                                                  wh:3600, img:'assets/oscal-powermax6000.jpg' },
+  { sku:'5025', brand:'OSCAL',  type:'solar',     name:'OSCAL PM200 Pro Solar',                  sub:'200W solarni panel foldable',                                         wh:0,    img:'assets/oscal-pm200.jpg' },
+  { sku:'5026', brand:'OSCAL',  type:'solar',     name:'OSCAL PM400 Pro Solar',                  sub:'400W solarni panel foldable',                                         wh:0,    img:'assets/oscal-pm400.jpg' },
+  { sku:'5030', brand:'2LMF PRO', type:'bundle',  name:'Paket "Solar Starter"',                  sub:'OSCAL PowerMax 1800 SE + PM200 Pro Solar · 1024 Wh / 200W',           wh:1024, img:'assets/oscal-powermax1800se.jpg', bundleSkus:['5029','5025'] },
+  { sku:'5031', brand:'2LMF PRO', type:'bundle',  name:'Paket "Nomad Double"',                   sub:'Aferiy P180 Pro + P180-B Expansion · 2048 Wh ukupno',                  wh:2048, img:'assets/aferiy-p180pro.webp',       bundleSkus:['5027','5028'] },
+  { sku:'5032', brand:'2LMF PRO', type:'bundle',  name:'Paket "Power Base"',                     sub:'OSCAL PowerMax 2400 Pro + PM400 Pro Solar · 2016 Wh / 400W',           wh:2016, img:'assets/oscal-powermax2400.jpg',    bundleSkus:['5020','5026'] },
+  { sku:'6001', brand:'CampBoxi', type:'tent',    name:'CampBoxi Nest 160',                      sub:'Tvrdi krovni šator · 160 × 220 cm',                                   wh:0,    img:'assets/campboxi-nest160.jpg' },
+  { sku:'6002', brand:'CampBoxi', type:'tent',    name:'CampBoxi Nest 130',                      sub:'Tvrdi krovni šator · 130 × 210 cm',                                   wh:0,    img:'assets/campboxi-nest130.jpg' },
+  { sku:'6003', brand:'CampBoxi', type:'tent',    name:'CampBoxi 270° Awning',                   sub:'Bočna tenda · 270°',                                                  wh:0,    img:'assets/campboxi-awning270.jpg' },
+  { sku:'6004', brand:'CampBoxi', type:'tent',    name:'CampBoxi UNI Awning',                    sub:'Univerzalna bočna tenda',                                             wh:0,    img:'assets/campboxi-awning-uni.jpg' },
+  { sku:'6005', brand:'CampBoxi', type:'camper',  name:'CampBoxi LUX',                           sub:'Samopuhajući madrac',                                                  wh:0,    img:'assets/campboxi-lux.jpg' },
+  { sku:'6007', brand:'CampBoxi', type:'camper',  name:'CampBoxi Unifit',                        sub:'Podesivi okvir kreveta',                                               wh:0,    img:'assets/campboxi-unifit.jpg' },
+  { sku:'6008', brand:'CampBoxi', type:'camper',  name:'CampBoxi Kitchenfit',                    sub:'Kuhinjski modul',                                                     wh:0,    img:'assets/campboxi-kitchenfit.jpg' },
+  { sku:'6009', brand:'TentBox',  type:'tent',    name:'TentBox GO',                             sub:'Meki krovni šator · 130 × 200 cm',                                    wh:0,    img:'assets/tentbox-go.jpg' },
+  { sku:'6010', brand:'TentBox',  type:'tent',    name:'TentBox Lite',                           sub:'Meki krovni šator',                                                   wh:0,    img:'assets/tentbox-go.jpg' },
+  { sku:'6011', brand:'TentBox',  type:'tent',    name:'TentBox Lite XL',                        sub:'Meki krovni šator · XL',                                              wh:0,    img:'assets/tentbox-go.jpg' },
+  { sku:'6012', brand:'TentBox',  type:'tent',    name:'TentBox Classic 2.0',                    sub:'Tvrdi krovni šator',                                                  wh:0,    img:'assets/tentbox-classic.jpg' },
+  { sku:'6013', brand:'TentBox',  type:'tent',    name:'TentBox Cargo 2.0',                      sub:'Tvrdi krovni šator s cargo rackom',                                   wh:0,    img:'assets/tentbox-cargo.jpg' },
+  { sku:'6014', brand:'TentBox',  type:'camper',  name:'TentBox Kitchenbox',                     sub:'Prijenosni kuhinjski set',                                             wh:0,    img:'assets/tentbox-kitchenbox.jpg' },
+];
+
+const ENERGY_DETAIL = {
+  '5001': { imgs:['https://cdn.shopify.com/s/files/1/0509/5263/4556/files/E600LFP_794428db-7d3f-458e-b278-423984d92c60.jpg','https://cdn.shopify.com/s/files/1/0509/5263/4556/files/1600x1600_11_01f76905-a059-4231-a63f-2f1f982caef3.jpg','https://cdn.shopify.com/s/files/1/0509/5263/4556/files/1600x1600_12_e0a85ab7-9fda-47e6-9389-2e636ba213a4.jpg'], specs:[['Kapacitet','614 Wh'],['Snaga AC','1200W / 2400W peak'],['Baterija','LiFePO₄ — 3.500+ ciklusa'],['Težina','9,4 kg'],['Dimenzije','298 × 198 × 215 mm'],['Max. solar','350W']] },
+  '5002': { imgs:['https://www.pecron.com/cdn/shop/files/E1500LFP_bef49d4c-ec3c-4b86-af4e-d1475d860c54.jpg','https://www.pecron.com/cdn/shop/files/1600x1600-2_4_f9db4b7b-9a94-43fb-b08b-a11fbba716e5.jpg','https://www.pecron.com/cdn/shop/files/1600x1600-2_5_7264ac75-2759-41be-9623-692b12e0b4e7.jpg','https://www.pecron.com/cdn/shop/files/1600x1600_14_3b8bdbec-e586-421d-b679-a5cc3d6e0b92.jpg'], specs:[['Kapacitet','1536 Wh'],['Snaga AC','2200W / 4400W peak'],['Baterija','LiFePO₄ — 3.500+ ciklusa'],['Težina','18,2 kg'],['Dimenzije','376 × 239 × 305 mm'],['Max. solar','800W'],['Punjenje','1,8 h (AC)'],['Proširivost','do 18.432 Wh']] },
+  '5003': { imgs:['https://www.pecron.com/cdn/shop/files/E2400LFP_7a57f341-be2e-423e-9032-8e2528998403.jpg','https://cdn.shopify.com/s/files/1/0509/5263/4556/files/1500x1500_7_8a933701-9a60-4bdb-b4d6-8feaae6c090e.jpg'], specs:[['Kapacitet','2048 Wh'],['Snaga AC','2400W / 4000W peak'],['Baterija','LiFePO₄ — 3.500+ ciklusa'],['Težina','20,5 kg'],['Dimenzije','376 × 236 × 330 mm'],['Max. solar','800W'],['Punjenje','1,5 h (AC)']] },
+  '5004': { imgs:['https://www.pecron.com/cdn/shop/files/E3600LFP_57157200-5ed8-4183-8839-3c00c3e91b47.jpg','https://www.pecron.com/cdn/shop/files/1600x1600_1_30eac56f-25ca-480e-bae7-b52af7381fff.jpg'], specs:[['Kapacitet','3072 Wh'],['Snaga AC','3600W / 7200W peak'],['Baterija','LiFePO₄ — 3.500+ ciklusa'],['Težina','36 kg'],['Dimenzije','445 × 307 × 351 mm'],['Max. solar','2400W'],['Punjenje','1,3 h (30A)'],['Proširivost','do 18.432 Wh']] },
+  '5005': { imgs:['assets/pecron-e3000.jpg'], specs:[['Kapacitet','3096 Wh'],['Snaga AC','3000W'],['Baterija','LiFePO₄ — 3.500+ ciklusa'],['Max. solar','1200W']] },
+  '5006': { imgs:['assets/pecron-e3000-exp.jpg'], specs:[['Tip','Expansion baterija'],['Kapacitet','3072 Wh'],['Kompatibilno','Pecron E3000LFP'],['Napon','48V']], expansion:true },
+  '5007': { imgs:['https://www.aferiy.com/cdn/shop/files/AFERIY_PB010_Portable_Power_Station_100W_99.2Wh_Grey.jpg','assets/aferiy-nano100.jpg'], specs:[['Kapacitet','64 Wh'],['Snaga AC','100W'],['Baterija','LiFePO₄ — 2.000+ ciklusa'],['Težina','~0,9 kg'],['Format','Ultra kompaktni']] },
+  '5008': { imgs:['https://www.aferiy.com/cdn/shop/files/AFERIY_P040_Portable_Power_Station_400W_256Wh_1.jpg'], specs:[['Kapacitet','256 Wh'],['Snaga AC','400W'],['Baterija','LiFePO₄ — 4.000+ ciklusa'],['Težina','~3,2 kg'],['Max. solar','150W']] },
+  '5009': { imgs:['https://www.aferiy.com/cdn/shop/files/AFERIY_P010_800W_power_station_3.jpg'], specs:[['Kapacitet','512 Wh'],['Snaga AC','800W'],['Baterija','LiFePO₄ — 4.000+ ciklusa'],['Težina','6,25 kg'],['Max. solar','200W']] },
+  '5012': { imgs:['https://www.aferiy.com/cdn/shop/files/AFERIY_P210_2400W_2048Wh_with_APP_789f60c0-70da-49bc-9161-16778a8929c2.jpg','https://www.aferiy.com/cdn/shop/files/AFERIY_P210_Portable_Power_Station_2400W_2048Wh_Silver_1.jpg'], specs:[['Kapacitet','2048 Wh'],['Snaga AC','2400W'],['Baterija','LiFePO₄ — 4.000+ ciklusa'],['Težina','22 kg'],['Max. solar','600W']] },
+  '5013': { imgs:['https://www.aferiy.com/cdn/shop/files/AFERIYP280PortablePowerStation2800W2048Wh.jpg','https://www.aferiy.com/cdn/shop/files/AFERIY_P280_Portable_Power_Station_2800W_2048Wh_2.jpg'], specs:[['Kapacitet','2048 Wh'],['Snaga AC','2800W'],['Baterija','LiFePO₄ — 4.000+ ciklusa'],['Punjenje','0–80% za 55 min'],['Proširivost','do 10.240 Wh']] },
+  '5014': { imgs:['assets/aferiy-p280-exp.jpg'], specs:[['Tip','Expansion baterija'],['Kapacitet','2048 Wh'],['Kompatibilno','Aferiy P280'],['Proširivost','do 4× 2048 Wh']], expansion:true },
+  '5015': { imgs:['https://www.aferiy.com/cdn/shop/files/AFERIY_P310-EC_Portable_Power_Station_3600W__3840Wh_APP_1.jpg'], specs:[['Kapacitet','3840 Wh'],['Snaga AC','3600W'],['Baterija','LiFePO₄ — 4.000+ ciklusa'],['Max. solar','1200W'],['Proširivost','do 11.520 Wh']] },
+  '5016': { imgs:['https://www.aferiy.com/cdn/shop/files/AFERIY_P310-EC_Battery_extension_3840Wh_1.jpg','assets/aferiy-p310-exp.jpg'], specs:[['Tip','Expansion baterija'],['Kapacitet','3840 Wh'],['Kompatibilno','Aferiy P310'],['Proširivost','do 3× 3840 Wh']], expansion:true },
+  '5017': { imgs:['https://www.aferiy.com/cdn/shop/files/AFERIY_AF-S100A1100WPortableSolarPanel_8.jpg'], specs:[['Snaga','100W'],['Tip','Foldable mono'],['Efikasnost','~23%'],['Konektor','XT60']], solar:true },
+  '5018': { imgs:['https://www.aferiy.com/cdn/shop/files/AFERIY_200W_Solar_Panel_1.jpg'], specs:[['Snaga','200W'],['Tip','Foldable mono'],['Efikasnost','~23%'],['Konektor','XT60']], solar:true },
+  '5019': { imgs:['https://www.aferiy.com/cdn/shop/files/AFERIY_AF-S400400WPortableSolarPane_1.jpg'], specs:[['Snaga','400W'],['Tip','Foldable mono'],['Efikasnost','~23%'],['Konektor','XT60 / Anderson']], solar:true },
+  '5027': { imgs:['assets/aferiy-p180pro.webp','assets/aferiy-p180pro-2.webp'], specs:[['Kapacitet','1024 Wh'],['Snaga AC','1800W'],['Baterija','LiFePO₄ — 4.000+ ciklusa'],['Proširivost','s P180-B → 2048 Wh'],['Max. solar','600W']] },
+  '5028': { imgs:['assets/aferiy-p180b.webp','assets/aferiy-p180b-2.webp'], specs:[['Tip','Expansion baterija'],['Kapacitet','1024 Wh'],['Kompatibilno','Aferiy Nomad1800 P180 Pro'],['Spajanje','Hot-swap, bez gašenja']], expansion:true },
+  '5029': { imgs:['assets/oscal-powermax1800se.jpg','assets/oscal-powermax1800se-2.jpg'], specs:[['Kapacitet','1024 Wh'],['Snaga AC','1800W'],['Baterija','LiFePO₄ — 3.500+ ciklusa'],['Max. solar','400W']] },
+  '5020': { imgs:['assets/oscal-powermax2400.jpg','assets/oscal-powermax2400-2.jpg'], specs:[['Kapacitet','2016 Wh'],['Snaga AC','2400W / 4800W peak'],['Baterija','LiFePO₄ — 3.500+ ciklusa'],['Max. solar','600W'],['Punjenje','~2 h (AC)'],['Proširivost','s BP2400 Pro → 4032 Wh'],['Težina','~22 kg']] },
+  '5021': { imgs:['assets/oscal-bp2400.jpg','assets/oscal-bp2400-2.jpg'], specs:[['Tip','Expansion baterija'],['Kapacitet','2016 Wh'],['Kompatibilno','OSCAL PowerMax 2400 Pro'],['Spajanje','Hot-swap, bez gašenja']], expansion:true },
+  '5022': { imgs:['assets/oscal-powermax3600se.webp','assets/oscal-powermax3600se-2.webp'], specs:[['Kapacitet','3600 Wh'],['Snaga AC','3600W'],['Baterija','LiFePO₄ — 3.500+ ciklusa'],['Max. solar','1200W']] },
+  '5023': { imgs:['assets/oscal-bp3600.jpg','assets/oscal-bp3600-2.jpg'], specs:[['Tip','Expansion baterija'],['Kapacitet','3600 Wh'],['Kompatibilno','OSCAL PowerMax 6000'],['Spajanje','Hot-swap, bez gašenja']], expansion:true },
+  '5024': { imgs:['assets/oscal-powermax6000.jpg','assets/oscal-powermax6000-2.jpg'], specs:[['Kapacitet','3600 Wh'],['Snaga AC','6000W / 12000W peak'],['Baterija','LiFePO₄ — 3.500+ ciklusa'],['Max. solar','1200W'],['Format','High-power inverter']] },
+  '5025': { imgs:['assets/oscal-pm200.jpg','assets/oscal-pm200-2.jpg'], specs:[['Snaga','200W'],['Tip','Foldable mono'],['Konektor','DC7909'],['Zaštita','IP67']], solar:true },
+  '5026': { imgs:['assets/oscal-pm400.jpg','assets/oscal-pm400-2.jpg'], specs:[['Snaga','400W'],['Tip','Foldable mono'],['Efikasnost','~23%'],['Konektor','DC7909 / XT60'],['Zaštita','IP67']], solar:true },
+  '5030': { imgs:['assets/oscal-powermax1800se.jpg','assets/oscal-pm200.jpg'], specs:[['U paketu','OSCAL PowerMax 1800 SE'],['Kapacitet','1024 Wh / 1800W AC'],['U paketu','OSCAL PM200 Pro Solar'],['Snaga panela','200W foldable'],['Punjenje solarom','~3–4 h'],['Baterija','LiFePO₄ — 3.500+ ciklusa']], bundle:true },
+  '5031': { imgs:['assets/aferiy-p180pro.webp','assets/aferiy-p180b.webp'], specs:[['U paketu','Aferiy Nomad1800 P180 Pro'],['Kapacitet postaje','1024 Wh / 1800W AC'],['U paketu','Aferiy P180-B Expansion Battery'],['Ukupni kapacitet','2048 Wh'],['Spajanje','Hot-swap, bez gašenja'],['Baterija','LiFePO₄ — 4.000+ ciklusa']], bundle:true },
+  '5032': { imgs:['assets/oscal-powermax2400.jpg','assets/oscal-pm400.jpg'], specs:[['U paketu','OSCAL PowerMax 2400 Pro'],['Kapacitet','2016 Wh / 2400W AC'],['U paketu','OSCAL PM400 Pro Solar'],['Snaga panela','400W foldable'],['Punjenje solarom','~3–4 h'],['Proširivost','s BP2400 Pro → 4032 Wh']], bundle:true },
+  '6001': { imgs:['assets/campboxi-nest160.jpg','assets/campboxi-nest160-2.jpg'], specs:[['Tip','Tvrdi krovni šator'],['Dimenzije (otvoreno)','160 × 220 cm'],['Materijal','Aluminijski poklopac'],['Postavljanje','< 60 sekundi'],['Nosivost krova','min. 75 kg']] },
+  '6002': { imgs:['assets/campboxi-nest130.jpg','assets/campboxi-nest130-2.jpg'], specs:[['Tip','Tvrdi krovni šator'],['Dimenzije (otvoreno)','130 × 210 cm'],['Materijal','Aluminijski poklopac'],['Postavljanje','< 60 sekundi'],['Nosivost krova','min. 75 kg']] },
+  '6003': { imgs:['assets/campboxi-awning270.jpg','assets/campboxi-awning270-2.jpg'], specs:[['Tip','Bočna tenda'],['Kut','270°'],['Materijal','420D Ripstop Oxford'],['Montaža','Na krovni nosač vozila'],['Zaštita','UV50+']] },
+  '6004': { imgs:['assets/campboxi-awning-uni.jpg','assets/campboxi-awning-uni-2.jpg'], specs:[['Tip','Univerzalna bočna tenda'],['Materijal','420D Ripstop Oxford'],['Montaža','Kompatibilno s većinom vozila'],['Zaštita','UV50+']] },
+  '6005': { imgs:['assets/campboxi-lux.jpg','assets/campboxi-lux-2.jpg'], specs:[['Tip','Samopuhajući madrac'],['Punjenje','Automatsko — bez pumpe'],['Debljina','~10 cm (napuhan)'],['Materijal','Memory foam + TPU']] },
+  '6007': { imgs:['assets/campboxi-unifit.jpg','assets/campboxi-unifit-2.jpg'], specs:[['Tip','Podesivi okvir kreveta'],['Kompatibilnost','Prilagodljivo za razna vozila'],['Materijal','Aluminijska legura'],['Montaža','Bez bušenja ili modificiranja vozila']] },
+  '6008': { imgs:['assets/campboxi-kitchenfit.jpg','assets/campboxi-kitchenfit-2.jpg'], specs:[['Tip','Modularni kuhinjski sustav'],['Sadržaj','Sudoper, radna ploča, police'],['Materijal','Aluminij + HDPE'],['Montaža','Skladno s CampBoxi Unifit platformom']] },
+  '6009': { imgs:['assets/tentbox-go.jpg','assets/tentbox-go-2.jpg'], specs:[['Tip','Meki krovni šator'],['Dimenzije (otvoreno)','130 × 200 cm'],['Materijal','200D poly-cotton ripstop'],['Postavljanje','< 2 minute'],['Nosivost krova','min. 75 kg']] },
+  '6010': { imgs:['assets/tentbox-go.jpg','assets/tentbox-go-2.jpg'], specs:[['Tip','Meki krovni šator'],['Dimenzije (otvoreno)','~140 × 210 cm'],['Materijal','Poly-cotton ripstop'],['Postavljanje','< 2 minute']] },
+  '6011': { imgs:['assets/tentbox-go.jpg','assets/tentbox-go-2.jpg'], specs:[['Tip','Meki krovni šator XL'],['Dimenzije (otvoreno)','~155 × 240 cm'],['Materijal','Poly-cotton ripstop'],['Postavljanje','< 2 minute']] },
+  '6012': { imgs:['assets/tentbox-classic.jpg','assets/tentbox-classic-2.jpg'], specs:[['Tip','Tvrdi krovni šator'],['Dimenzije (otvoreno)','~145 × 240 cm'],['Materijal','Aluminijsko kućište'],['Postavljanje','< 60 sekundi'],['Verzija','2.0']] },
+  '6013': { imgs:['assets/tentbox-cargo.jpg','assets/tentbox-cargo-2.jpg'], specs:[['Tip','Tvrdi krovni šator'],['Dimenzije (otvoreno)','~155 × 240 cm'],['Materijal','Aluminijsko kućište + cargo rack'],['Postavljanje','< 60 sekundi'],['Verzija','2.0']] },
+  '6014': { imgs:['assets/tentbox-kitchenbox.jpg','assets/tentbox-kitchenbox-2.jpg'], specs:[['Tip','Prijenosni kuhinjski set'],['Sadržaj','Štednjak, daska za rezanje, police'],['Materijal','Aluminij + nehrđajući čelik'],['Dimenzije','Kompaktno, stane u prtljažnik']] },
+};
+
+const fmt = n => new Intl.NumberFormat('hr-HR',{minimumFractionDigits:2,maximumFractionDigits:2}).format(n);
+
+function absImg(path) {
+  if (!path) return '';
+  if (path.startsWith('http')) return path;
+  return BASE_URL + '/' + path;
+}
+
+function getUses(p, detail) {
+  if (detail.uses) return detail.uses;
+  if (detail.expansion) return [
+    ['fa-link', `Kompatibilno s modelom navedenim u specifikacijama`],
+    ['fa-battery-full', `Dodaje kapacitet sustavu`],
+    ['fa-plug', 'Spaja se bez gašenja postaje (hot-swap)'],
+  ];
+  if (detail.solar) return [
+    ['fa-sun', 'Puni bateriju bez strujnog priključka'],
+    ['fa-bolt', 'Kompatibilno s XT60 i Anderson konektorima'],
+    ['fa-suitcase-rolling', 'Foldable — stane u ruksak'],
+  ];
+  const wh = p.wh;
+  if (!wh) return [];
+  const uses = [
+    ['fa-snowflake', `Hladnjak — ~${Math.round(wh*0.82/60)} h rada`],
+    ['fa-laptop',    `Laptop — ~${Math.floor(wh*0.85/45)} punjenja`],
+    ['fa-mobile-screen', `Mobitel — ~${Math.floor(wh*0.85/15)} punjenja`],
+    ['fa-lightbulb', `LED rasvjeta — ~${Math.round(wh*0.85/20)} h`],
+  ];
+  if (wh >= 200) uses.push(['fa-mug-hot', `Espresso aparat — ~${Math.floor(wh*0.85/50)} šalica`]);
+  if (wh >= 500) uses.push(['fa-tv', `TV / Monitor — ~${Math.round(wh*0.85/80)} h`]);
+  if (wh >= 1000) uses.push(['fa-fan', `Ventilator — ~${Math.round(wh*0.85/25)} h`]);
+  return uses;
+}
+
+function getCategoryName(type) {
+  const map = { battery:'Prijenosne elektrane', expansion:'Expansion baterije', solar:'Solarni paneli', bundle:'Paketi', tent:'Krovni šatori', camper:'Camper oprema' };
+  return map[type] || 'Oprema';
+}
+
+function renderProduct(p, detail, livePrice) {
+  const imgs = detail.imgs || [p.img];
+  const price = livePrice !== undefined ? livePrice : null;
+  const isBundle = p.type === 'bundle';
+  const uses = getUses(p, detail);
+  const badges = [];
+  if (p.wh > 0) badges.push(`<span class="badge badge-cyan"><i class="fas fa-bolt"></i> ${p.wh} Wh</span>`);
+  if (detail.bundle) badges.push(`<span class="badge badge-orange"><i class="fas fa-gift"></i> Paket</span>`);
+  if (p.featured) badges.push(`<span class="badge badge-gray"><i class="fas fa-star"></i> Popular</span>`);
+
+  const thumbsHtml = imgs.length > 1
+    ? imgs.map((src, i) => `<div class="g-thumb ${i===0?'active':''}" onclick="switchImg(this,'${absImg(src)}')" data-src="${absImg(src)}"><img src="${absImg(src)}" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"></div>`).join('')
+    : '';
+
+  const priceHtml = price !== null
+    ? `<div class="p-price">${fmt(price)} <small>€ / ${isBundle?'paket':'kom'}</small></div><div class="p-price-note">Cijena uključuje PDV · Dostava besplatna</div>`
+    : `<div class="p-price" style="font-size:20px;color:var(--muted);">Na upit</div><div class="p-price-note">Kontaktirajte nas za aktualnu cijenu</div>`;
+
+  const specsHtml = detail.specs.map(([k,v]) => `<tr><td>${k}</td><td>${v}</td></tr>`).join('');
+  const usesHtml = uses.map(([icon, txt]) => `<div class="use-card"><div class="use-icon"><i class="fas ${icon}"></i></div><div class="use-text">${txt}</div></div>`).join('');
+
+  document.getElementById('product-root').innerHTML = `
+    <div class="product-wrap">
+      <div class="gallery">
+        <div class="gallery-main">
+          <img id="main-img" src="${absImg(imgs[0])}" alt="${p.name}" onerror="this.style.display='none'">
+        </div>
+        ${thumbsHtml ? `<div class="gallery-thumbs">${thumbsHtml}</div>` : ''}
+      </div>
+      <div class="p-info">
+        <div class="p-brand">${p.brand} &nbsp;·&nbsp; SKU: ${p.sku}</div>
+        <h1 class="p-name">${p.name}</h1>
+        <div class="p-sub">${p.sub}</div>
+        ${badges.length ? `<div class="p-badges">${badges.join('')}</div>` : ''}
+        <div class="p-price-wrap">${priceHtml}</div>
+        <div class="cta-wrap">
+          <button class="btn-primary" onclick="openInquiry('${p.sku}','${p.name.replace(/'/g,"\\'")}')">
+            <i class="fas fa-paper-plane"></i> ZATRAŽI PONUDU
+          </button>
+          <a href="kalkulator.html" class="btn-secondary">
+            <i class="fas fa-calculator"></i> Vidi u kalkulatoru
+          </a>
+        </div>
+        <div class="warranty-line"><i class="fas fa-shield-halved"></i> Jamstvo: 2 godine</div>
+      </div>
+    </div>
+
+    <section class="block">
+      <div class="section-title">Tehničke specifikacije</div>
+      <table class="specs-table"><tbody>${specsHtml}</tbody></table>
+    </section>
+
+    ${uses.length ? `<section class="block">
+      <div class="section-title">Što možete napajati</div>
+      <div class="uses-grid">${usesHtml}</div>
+    </section>` : ''}
+  `;
+
+  // Update meta
+  const desc = `${p.name} — ${p.sub}. Prijenosna solarna elektrana, LiFePO₄ baterija. 2LMF PRO Zagreb.`;
+  document.getElementById('page-title').textContent = `${p.name} — 2LMF PRO`;
+  document.getElementById('page-desc').content = desc;
+  document.getElementById('og-title').content = p.name;
+  document.getElementById('og-desc').content = desc;
+  document.getElementById('og-image').content = absImg(imgs[0]);
+  document.getElementById('page-canonical').href = `${BASE_URL}/proizvod.html?sku=${p.sku}`;
+  document.getElementById('bread-name').textContent = p.name;
+
+  // Schema.org Product
+  const schema = { "@context":"https://schema.org","@type":"Product","name":p.name,"description":desc,"sku":p.sku,"brand":{"@type":"Brand","name":p.brand},"image":absImg(imgs[0]),"url":`${BASE_URL}/proizvod.html?sku=${p.sku}`,"offers":{"@type":"Offer","priceCurrency":"EUR","price":price||0,"availability":price?"https://schema.org/InStock":"https://schema.org/PreOrder","seller":{"@type":"Organization","name":"2LMF PRO"},"warranty":{"@type":"WarrantyPromise","durationOfWarranty":{"@type":"QuantitativeValue","value":2,"unitCode":"ANN"}}}};
+  const s = document.createElement('script');
+  s.type = 'application/ld+json';
+  s.textContent = JSON.stringify(schema);
+  document.head.appendChild(s);
+}
+
+function switchImg(thumb, src) {
+  document.getElementById('main-img').src = src;
+  document.querySelectorAll('.g-thumb').forEach(t => t.classList.remove('active'));
+  thumb.classList.add('active');
+}
+
+let currentSku = '';
+function openInquiry(sku, name) {
+  currentSku = sku;
+  document.getElementById('modal-product-name').textContent = name;
+  document.getElementById('inq-status').textContent = '';
+  document.getElementById('inquiryModal').classList.add('open');
+}
+function closeInquiry() {
+  document.getElementById('inquiryModal').classList.remove('open');
+}
+document.getElementById('inquiryModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeInquiry(); });
+
+async function submitInquiry() {
+  const name  = document.getElementById('inq-name').value.trim();
+  const email = document.getElementById('inq-email').value.trim();
+  const phone = document.getElementById('inq-phone').value.trim();
+  const note  = document.getElementById('inq-note').value.trim();
+  const st    = document.getElementById('inq-status');
+  if (!email) { st.textContent = 'Unesite email adresu.'; return; }
+  st.textContent = 'Šaljem...';
+  const p = ENERGY_PRODUCTS.find(x => x.sku === currentSku);
+  const params = new URLSearchParams({
+    email, name, phone,
+    _subject: `Upit [ENERGY] SKU:${currentSku}`,
+    items_json: JSON.stringify([{ sku: currentSku, name: p?.name||currentSku, qty:1, unit:'kom', price:0 }]),
+    source: 'ProizvodPage',
+    color: note || `Upit za: ${p?.name||currentSku}`
+  });
+  try {
+    await fetch(`${GAS_URL}?${params.toString()}`, { method:'GET', mode:'no-cors' });
+    st.textContent = '✓ Upit poslan! Javit ćemo se u roku 24h.';
+    setTimeout(closeInquiry, 2800);
+  } catch(e) {
+    st.textContent = 'Greška pri slanju. Kontaktirajte info@2lmf-pro.hr';
+  }
+}
+
+// Init
+async function init() {
+  const sku = new URLSearchParams(location.search).get('sku');
+  const p = ENERGY_PRODUCTS.find(x => x.sku === sku);
+  const detail = ENERGY_DETAIL[sku];
+
+  if (!p || !detail) {
+    document.getElementById('product-root').innerHTML = `
+      <div class="not-found">
+        <h2>Proizvod nije pronađen</h2>
+        <p>SKU "${sku || '?'}" ne postoji u katalogu.</p>
+        <a href="kalkulator.html" class="btn-primary" style="display:inline-flex;gap:10px;">
+          <i class="fas fa-arrow-left"></i> Natrag na katalog
+        </a>
+      </div>`;
+    return;
+  }
+
+  renderProduct(p, detail, undefined);
+
+  try {
+    const res = await fetch(GAS_URL);
+    const data = await res.json();
+    const prices = data.prices || data;
+    if (prices[sku] !== undefined) renderProduct(p, detail, prices[sku]);
+  } catch(e) {}
+}
+
+init();
+</script>
+</body>
+</html>
