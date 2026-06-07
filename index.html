@@ -830,57 +830,59 @@
 
 <!-- ═══════════════════ SCRIPTS ═══════════════════ -->
 <script>
+    const _GAS = 'https://script.google.com/macros/s/AKfycbx4TQ6cFNr8X-fNRHE0Ai571pAioDeny_mSSrTVQm3OHbTKOhfIEDiKDFM2shZ5zDFLrA/exec';
+
+    // First-click tracker — registriraj ODMAH, prije svega ostalog
+    (function() {
+        let _tracked = false;
+        const _trackHome = () => {
+            if (_tracked || sessionStorage.getItem('2lmf_tracked_home')) return;
+            _tracked = true;
+            sessionStorage.setItem('2lmf_tracked_home', 'true');
+            const p = new URLSearchParams({ action: 'log_interaction', module: 'home', source: 'HomePage', timestamp: new Date().toISOString() });
+            fetch(_GAS + '?' + p.toString(), { method: 'GET', keepalive: true, mode: 'no-cors' }).catch(() => {});
+        };
+        document.body.addEventListener('click',      _trackHome, { once: true });
+        document.body.addEventListener('touchstart', _trackHome, { once: true, passive: true });
+    })();
+
     // Nav scroll shadow
     window.addEventListener('scroll', () => {
         document.getElementById('siteNav').classList.toggle('scrolled', window.scrollY > 24);
     }, { passive: true });
 
-    // Contact form — same logic as original
-    const _GAS = 'https://script.google.com/macros/s/AKfycbx4TQ6cFNr8X-fNRHE0Ai571pAioDeny_mSSrTVQm3OHbTKOhfIEDiKDFM2shZ5zDFLrA/exec';
-
-    document.getElementById('contactForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        const btn = document.getElementById('contactSubmitBtn');
-        const orig = btn.textContent;
-        const payload = {
-            type: 'contact',
-            name:    document.getElementById('contactName').value,
-            email:   document.getElementById('contactEmail').value,
-            phone:   document.getElementById('contactPhone').value,
-            message: document.getElementById('contactMessage').value
-        };
-        btn.disabled = true;
-        btn.textContent = 'Šaljem...';
-        btn.style.background = '#555';
-
-        fetch(_GAS, {
-            method: 'POST',
-            mode: 'no-cors',
-            cache: 'no-cache',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: new URLSearchParams(payload)
-        }).then(() => {
-            gtag('event', 'conversion_event_submit_lead_form_1', { event_callback: () => {}, event_timeout: 2000 });
-            btn.textContent = 'Poslano! ✅';
-            btn.style.background = '#27ae60';
-            document.getElementById('contactForm').reset();
-            setTimeout(() => { btn.disabled = false; btn.textContent = orig; btn.style.background = ''; }, 3000);
-        }).catch(() => {
-            btn.disabled = false;
-            btn.textContent = orig;
-            btn.style.background = '';
+    // Contact form
+    const _form = document.getElementById('contactForm');
+    if (_form) {
+        _form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('contactSubmitBtn');
+            const orig = btn.textContent;
+            const payload = {
+                type: 'contact',
+                name:    document.getElementById('contactName').value,
+                email:   document.getElementById('contactEmail').value,
+                phone:   document.getElementById('contactPhone').value,
+                message: document.getElementById('contactMessage').value
+            };
+            btn.disabled = true;
+            btn.textContent = 'Šaljem...';
+            btn.style.background = '#555';
+            fetch(_GAS, {
+                method: 'POST', mode: 'no-cors', cache: 'no-cache',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams(payload)
+            }).then(() => {
+                gtag('event', 'conversion_event_submit_lead_form_1', { event_callback: () => {}, event_timeout: 2000 });
+                btn.textContent = 'Poslano! ✅';
+                btn.style.background = '#27ae60';
+                _form.reset();
+                setTimeout(() => { btn.disabled = false; btn.textContent = orig; btn.style.background = ''; }, 3000);
+            }).catch(() => {
+                btn.disabled = false; btn.textContent = orig; btn.style.background = '';
+            });
         });
-    });
-
-    // First-click tracker (click + touchstart za mobile)
-    const _trackHome = () => {
-        if (sessionStorage.getItem('2lmf_tracked_home')) return;
-        sessionStorage.setItem('2lmf_tracked_home', 'true');
-        const p = new URLSearchParams({ action: 'log_interaction', module: 'home', source: 'HomePage', timestamp: new Date().toISOString() });
-        fetch(`${_GAS}?${p}`, { method: 'GET', keepalive: true, mode: 'no-cors' }).catch(() => {});
-    };
-    document.body.addEventListener('click',      _trackHome, { once: true });
-    document.body.addEventListener('touchstart', _trackHome, { once: true, passive: true });
+    }
 </script>
 
 <!-- Schema.org -->
