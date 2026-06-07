@@ -57,6 +57,12 @@
     <priority>0.5</priority>
   </url>
   
+  <url>
+    <loc>https://2lmf-pro.hr/investitori.html</loc>
+    <lastmod>2026-06-07</lastmod>
+    <priority>0.8</priority>
+  </url>
+
   <!-- Blog Posts -->
   <url>
     <loc>https://2lmf-pro.hr/blog/cijena-panel-ograde-2026.html</loc>
