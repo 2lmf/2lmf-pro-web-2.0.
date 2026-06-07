@@ -872,13 +872,15 @@
         });
     });
 
-    // First-click tracker
-    document.body.addEventListener('click', function() {
+    // First-click tracker (click + touchstart za mobile)
+    const _trackHome = () => {
         if (sessionStorage.getItem('2lmf_tracked_home')) return;
         sessionStorage.setItem('2lmf_tracked_home', 'true');
-        const p = new URLSearchParams({ action: 'log_interaction', module: 'home', source: 'HomePage_Claude', timestamp: new Date().toISOString() });
+        const p = new URLSearchParams({ action: 'log_interaction', module: 'home', source: 'HomePage', timestamp: new Date().toISOString() });
         fetch(`${_GAS}?${p}`, { method: 'GET', keepalive: true, mode: 'no-cors' }).catch(() => {});
-    }, { once: true });
+    };
+    document.body.addEventListener('click',      _trackHome, { once: true });
+    document.body.addEventListener('touchstart', _trackHome, { once: true, passive: true });
 </script>
 
 <!-- Schema.org -->
