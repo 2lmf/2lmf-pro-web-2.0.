@@ -1,0 +1,1324 @@
+<!DOCTYPE html>
+<html lang="hr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="canonical" href="https://2lmf-pro.hr/" />
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-M46VSK431N"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=AW-5327504092"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-M46VSK431N');
+        gtag('config', 'AW-5327504092');
+
+        // Helper function for conversions
+        function gtagSendEvent(url) {
+            var callback = function () {
+                if (typeof url === 'string') {
+                    window.location = url;
+                }
+            };
+            gtag('event', 'conversion_event_submit_lead_form_1', {
+                'event_callback': callback,
+                'event_timeout': 2000
+            });
+            return false;
+        }
+    </script>
+    <title>2LMF PRO | Arhitektura, nabava materijala & digitalna rješenja</title>
+    <!-- Favicon / App Icon -->
+    <link rel="icon" type="image/png" href="/icons/icon-192.png">
+    <link rel="apple-touch-icon" href="/icons/icon-192.png">
+    <meta name="description"
+        content="Projektiramo vašu sutrašnjicu uz maksimalnu uštedu. Izračunajte cijenu i osigurajte nabavu materijala po odličnim cijenama u 60 sekundi.">
+
+    <!-- Open Graph / Social Media -->
+    <meta property="og:title" content="2LMF PRO | Arhitektura, nabava materijala & digitalna rješenja">
+    <meta property="og:description"
+        content="Projektiramo vašu sutrašnjicu uz maksimalnu uštedu. Izračunajte cijenu i osigurajte nabavu materijala po odličnim cijenama u 60 sekundi.">
+    <meta property="og:image" content="https://2lmf-pro.hr/assets/og_image.png">
+    <meta property="og:url" content="https://2lmf-pro.hr/">
+    <meta property="og:type" content="website">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Outfit:wght@300;400;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --accent-orange: #E67E22;
+            --accent-cyan: #00F2FF;
+            --bg-dark: #020205;
+            --card-bg: rgba(15, 15, 20, 0.7);
+        }
+
+        /* --- SEO: Visually hidden but readable by screen readers & Google --- */
+        .visually-hidden {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        /* --- Visual hero heading (visual clone of old h1 styling) --- */
+        .hero-h1-visual {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(3rem, 12vw, 8rem);
+            color: white;
+            margin: 10px 0 0;
+            letter-spacing: -3px;
+            line-height: 0.85;
+            font-weight: 300;
+        }
+
+        .hero-h1-visual b {
+            display: block;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            color: var(--accent-orange);
+            font-size: 0.35em;
+            letter-spacing: 20px;
+            margin-top: 40px;
+            text-transform: uppercase;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: var(--bg-dark);
+            color: #8a8a8a;
+            font-family: 'Outfit', sans-serif;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        /* --- NAVIGATION --- */
+
+        /* --- NAVIGATION --- */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 20px 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(to bottom, rgba(2, 2, 5, 0.9) 0%, rgba(2, 2, 5, 0) 100%);
+            z-index: 2000;
+            box-sizing: border-box;
+        }
+
+        .nav-logos {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .logos-row {
+            display: flex;
+            align-items: center;
+            gap: 50px;
+        }
+
+        .branding {
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .lmf-brand {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            color: #eee;
+            font-size: 1.25rem;
+            letter-spacing: 3px;
+        }
+
+        .lmf-brand span {
+            color: var(--accent-orange);
+        }
+
+        .shark-brand-img {
+            height: 110px;
+            /* Massive scaling as requested */
+            width: auto;
+            filter: drop_shadow(0 0 20px rgba(0, 242, 255, 0.4));
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            display: block;
+            margin: -10px 0;
+            /* Compensation for height to keep header slim */
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            color: var(--accent-orange);
+            text-decoration: none;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            transition: all 0.3s;
+            position: relative;
+            padding: 8px 18px;
+            text-transform: uppercase;
+            font-weight: 400;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 6px;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: inline-flex;
+            align-items: center;
+            white-space: nowrap;
+        }
+
+        /* --- DROPDOWN --- */
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background-color: rgba(2, 2, 5, 0.98);
+            min-width: 200px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            z-index: 3000;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            backdrop-filter: blur(20px);
+        }
+
+        .dropdown-content a {
+            color: #ccc !important;
+            padding: 15px 20px !important;
+            text-decoration: none;
+            display: block;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.75rem !important;
+            letter-spacing: 2px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s;
+        }
+
+        .dropdown-content a::after {
+            display: none;
+            /* No strike for dropdown items */
+        }
+
+        .dropdown-content a:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-content a:hover {
+            background: rgba(230, 126, 34, 0.1);
+            color: var(--accent-orange) !important;
+            padding-left: 25px !important;
+        }
+
+        /* Show on hover for desktop, will use JS/Click for mobile later if needed */
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        /* --- STRIKE HIGHLIGHT EFFECT --- */
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            width: 0;
+            height: 100%;
+            background: var(--accent-orange);
+            transform: translateY(-50%);
+            transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: -1;
+            opacity: 0.8;
+        }
+
+        .desktop-only {
+            display: inline-block;
+        }
+
+        .nav-links a:hover {
+            color: #fff;
+            /* White text on hover as requested */
+            transform: scale(1.05);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .tagline {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.6rem;
+            letter-spacing: 5px;
+            font-weight: 900;
+            text-align: center;
+        }
+
+        .tagline .arch,
+        .hero-tagline .arch {
+            color: var(--accent-orange);
+        }
+
+        .tagline .code,
+        .hero-tagline .code {
+            color: var(--accent-cyan);
+        }
+
+        /* --- SHARPSHARK BUTTON COLORS --- */
+        .ss-sharp {
+            color: var(--accent-cyan);
+            /* Ensuring SHARP is Cyan (Blue-ish) */
+            transition: color 0.3s;
+        }
+
+        .ss-shark {
+            color: var(--accent-orange);
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover .ss-shark {
+            color: #fff;
+            /* Shark becomes white on hover */
+        }
+
+        .branding:hover .shark-brand-img {
+            transform: scale(1.05);
+        }
+
+        /* --- HERO --- */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 180px 20px 100px;
+            background: url('assets/hero_mountain.png');
+            background-size: cover;
+            background-position: center;
+            box-sizing: border-box;
+            padding-bottom: 20px !important;
+            text-shadow: 0 4px 15px rgba(0,0,0,0.8);
+            position: relative;
+        }
+        
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: -1px; left: 0; width: 100%; height: 250px;
+            background: linear-gradient(to bottom, transparent, var(--bg-dark));
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .hero > * {
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(3rem, 12vw, 8rem);
+            /* Slightly smaller than before */
+            color: white;
+            margin: 10px 0 0;
+            /* Added top margin */
+            letter-spacing: -3px;
+            line-height: 0.85;
+            font-weight: 300;
+        }
+
+        .hero-tagline {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(0.8rem, 2vw, 1.2rem);
+            letter-spacing: 12px;
+            font-weight: 900;
+            margin-bottom: 0;
+            text-transform: uppercase;
+        }
+
+        .hero h1 b {
+            display: block;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            color: var(--accent-orange);
+            font-size: 0.35em;
+            /* Smaller as requested */
+            letter-spacing: 20px;
+            margin-top: 40px;
+            /* Bigger gap as requested */
+            text-transform: uppercase;
+        }
+
+        .hero-btn {
+            display: inline-block;
+            margin-top: 50px;
+            padding: 20px 50px;
+            background: var(--accent-orange);
+            color: #000;
+            text-decoration: none;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            font-size: 1rem;
+            letter-spacing: 3px;
+            border-radius: 4px;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 10px 30px rgba(230, 126, 34, 0.3);
+            text-transform: uppercase;
+        }
+
+        .hero-btn:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 20px 40px rgba(230, 126, 34, 0.5);
+            background: #fff;
+            color: var(--accent-orange);
+        }
+
+        .hero p {
+            max-width: 1200px;
+            font-size: 1.6rem;
+            margin-top: 80px;
+            line-height: 1.6;
+            font-weight: 300;
+            color: #ccc;
+            letter-spacing: 0.5px;
+        }
+
+        .hero .intro-line {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem;
+            /* Scaled down */
+            color: white;
+            font-weight: 700;
+            display: block;
+            margin-bottom: 20px;
+        }
+
+        .hero .vision-line {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem;
+            /* Scaled down */
+            color: white;
+            font-weight: 700;
+        }
+
+        /* Precise In-text Branding */
+        .brand-lmf {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            color: white;
+        }
+
+        .brand-lmf span {
+            color: var(--accent-orange);
+        }
+
+        .brand-ss {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            color: var(--accent-cyan);
+        }
+
+        .brand-ss .shark {
+            color: var(--accent-orange);
+        }
+
+        .brand-ss .digital {
+            color: var(--accent-cyan);
+        }
+
+        .hero p .accent-o {
+            color: var(--accent-orange);
+            font-weight: 600;
+        }
+
+        .hero p .accent-c {
+            color: var(--accent-cyan);
+            font-weight: 600;
+        }
+
+        /* New Spacing for 3-part Hero description */
+        .hero-part {
+            display: block;
+            margin-top: 10px;
+            /* Reduced further to half-row spacing */
+        }
+
+        .hero-part:first-child {
+            margin-top: 0;
+        }
+
+        /* --- STORY SECTIONS --- */
+        .story-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px 30px;
+            /* Reduced from 100px to close gap to footer */
+        }
+
+        .story-section {
+            display: grid;
+            grid-template-columns: 1.1fr 1.6fr;
+            align-items: center;
+            gap: 80px;
+            margin-top: 80px;
+            /* Reduced to close gap with hero */
+            transition: all 1s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            transform-style: preserve-3d;
+            /* Perspective will be handled inside visual-stack for section scale */
+        }
+
+        .story-section:nth-child(even) {
+            direction: rtl;
+        }
+
+        .story-section:nth-child(even) .content {
+            direction: ltr;
+        }
+
+        /* VISUAL STACK */
+        .visual-stack {
+            position: relative;
+            width: 100%;
+            height: 500px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transform-style: preserve-3d;
+            perspective: 1000px;
+            /* Restored perspective for scale */
+            z-index: 1;
+            /* Keep visual stack below content */
+        }
+
+        .layer-bg {
+            position: absolute;
+            width: 125%;
+            /* Restored to original size */
+            height: 125%;
+            background: #08080c;
+            border-radius: 50px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            transition: all 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+            filter: grayscale(1) blur(20px) brightness(0.1);
+            transform: translateZ(-200px);
+            z-index: 1;
+        }
+
+        .layer-fg {
+            position: absolute;
+            width: 65%;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(40px);
+            border-radius: 35px;
+            z-index: 20;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 60px 120px rgba(0, 0, 0, 0.8);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            filter: grayscale(1) opacity(0.2);
+            transform: translateZ(200px);
+        }
+
+        /* ACTIVE STATES */
+        .story-section:hover .layer-bg,
+        .story-section.active .layer-bg {
+            filter: grayscale(0) blur(0) brightness(0.8);
+            /* Even clearer for 2LMF visibility */
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateZ(-80px);
+        }
+
+        .story-section:hover .layer-fg,
+        .story-section.active .layer-fg {
+            filter: grayscale(0) opacity(1);
+            transform: translateZ(150px) scale(1.05);
+            /* Reduced 3D depth */
+            border-color: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 100px 200px rgba(0, 0, 0, 1);
+        }
+
+        .story-section:hover .content,
+        .story-section.active .content {
+            color: #fefefe;
+        }
+
+        /* CONTENT */
+        .content {
+            position: relative;
+            z-index: 1000;
+            /* Agresivno podizanje teksta iznad svih vizuala */
+        }
+
+        .label {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            font-size: 0.9rem;
+            letter-spacing: 7px;
+            margin-bottom: 30px;
+            display: block;
+            text-transform: uppercase;
+        }
+
+        h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3.5rem;
+            margin: 0 0 25px 0;
+            color: white;
+            line-height: 0.95;
+            letter-spacing: -2px;
+            font-weight: 900;
+        }
+
+        p {
+            font-size: 1.15rem;
+            line-height: 1.65;
+            margin-bottom: 45px;
+            font-weight: 300;
+            color: #999;
+        }
+
+        .story-section.active .content {
+            transform: translateZ(300px);
+            /* Keep text far in front */
+            opacity: 1;
+            z-index: 500;
+            /* Increased to ensure it's above all visuals */
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 15px 40px;
+            background: #000;
+            /* Black background default */
+            color: var(--accent-orange);
+            /* Orange text default */
+            text-decoration: none;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            border: 2px solid var(--accent-orange);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            opacity: 0;
+            transform: translateY(40px);
+        }
+
+        /* Build Theme Hover (Sections 1 & 3) */
+        .theme-build .btn:hover {
+            background: var(--accent-orange);
+            color: white;
+            border-color: var(--accent-orange);
+        }
+
+        /* Code Theme Hover (Sections 2 & 4) */
+        .theme-code .btn:hover {
+            background: var(--accent-cyan);
+            color: var(--accent-orange);
+            border-color: var(--accent-cyan);
+        }
+
+        .btn.btn-outline {
+            background: transparent;
+            border-color: rgba(255, 255, 255, 0.3);
+            color: white;
+            opacity: 0;
+            transform: translateY(40px);
+        }
+
+        .btn.btn-outline:hover {
+            background: var(--accent-orange);
+            border-color: var(--accent-orange);
+            color: white;
+        }
+
+        .story-section:hover .btn,
+        .story-section.active .btn {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* --- THEMES --- */
+        .theme-build .label {
+            color: var(--accent-orange);
+        }
+
+        .theme-build .layer-bg {
+            background-image: linear-gradient(to bottom, transparent 40%, #020205 90%), url('https://images.unsplash.com/photo-1487958449943-2429e8be8625?auto=format&fit=crop&w=1000&q=60&fm=webp');
+            background-size: cover;
+            background-position: center top;
+        }
+
+        .theme-code .label {
+            color: var(--accent-cyan);
+        }
+
+        .theme-code .btn:hover {
+            background: var(--accent-cyan);
+            box-shadow: 0 25px 50px rgba(0, 242, 255, 0.4);
+        }
+
+        .theme-code .layer-bg {
+            background-image: linear-gradient(to bottom, transparent, #020205 80%), url('https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=1000&q=60&fm=webp');
+            /* Circuit/Motherboard Detail */
+            background-size: cover;
+            background-position: center;
+        }
+
+        /* ICONS */
+        .layer-fg i {
+            font-size: 140px;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 0 30px rgba(0, 0, 0, 0.5));
+        }
+
+        /* SHARK VISUAL IN SECTION */
+        .section-shark-img {
+            width: 80%;
+            height: auto;
+            filter: drop_shadow(0 0 20px rgba(0, 242, 255, 0.3));
+        }
+
+        /* FOOTER */
+        footer {
+            padding: 20px 20px 5px;
+            /* Maximum compression */
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            background: linear-gradient(to top, #080812, transparent);
+        }
+
+        .footer-logo {
+            margin-bottom: 50px;
+        }
+
+        /* CONTACT FORM */
+        .contact-section {
+            padding: 80px 20px;
+            /* Reduced from 150px */
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .contact-form {
+            background: linear-gradient(145deg, rgba(230, 126, 34, 0.08), rgba(0, 0, 0, 0.6));
+            /* More intense orange tint */
+            padding: 60px;
+            border-radius: 40px;
+            border: 2px solid rgba(230, 126, 34, 0.6);
+            /* Even stronger orange border */
+            backdrop-filter: blur(20px);
+            display: grid;
+            gap: 25px;
+            box-shadow: 0 0 150px rgba(230, 126, 34, 0.15);
+            /* More pronounced orange glow */
+        }
+
+        .contact-form input,
+        .contact-form textarea {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 15px;
+            color: white;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.1rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .contact-form input:focus,
+        .contact-form textarea:focus {
+            border-color: var(--accent-orange);
+        }
+
+        .contact-form button {
+            background: white;
+            color: black;
+            border: none;
+            padding: 22px;
+            border-radius: 15px;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.4s;
+        }
+
+        .contact-form button:hover {
+            background: var(--accent-orange);
+            color: white;
+            transform: scale(1.02);
+        }
+
+        /* --- FOOTER (Unified) --- */
+        .seo-footer {
+            background: #000;
+            padding: 40px 0;
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .seo-footer .hashtags {
+            font-size: 0.65rem;
+            font-style: italic;
+            opacity: 0.3;
+            line-height: 1.8;
+            color: #aaa;
+            letter-spacing: 1px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 40px;
+        }
+
+        .copyright-bar {
+            background: #000;
+            color: #fff;
+            text-align: center;
+            padding: 30px 0;
+            font-weight: 900;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.75rem;
+            letter-spacing: 3px;
+            border-top: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        /* --- INVESTOR CTA BANNER --- */
+        .investor-cta {
+            background: linear-gradient(135deg, rgba(8,5,2,1) 0%, rgba(18,8,2,1) 100%);
+            border-top: 1px solid rgba(230,126,34,0.25);
+            border-bottom: 1px solid rgba(230,126,34,0.15);
+            padding: 80px 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .investor-cta::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at 50% 120%, rgba(230,126,34,0.10) 0%, transparent 65%);
+            pointer-events: none;
+        }
+        .investor-cta .eyebrow {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.65rem;
+            letter-spacing: 6px;
+            color: var(--accent-orange);
+            text-transform: uppercase;
+            margin-bottom: 24px;
+            display: block;
+            opacity: 0.9;
+        }
+        .investor-cta h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(1.8rem, 5vw, 3.5rem);
+            color: white;
+            font-weight: 900;
+            line-height: 1.05;
+            margin-bottom: 20px;
+            letter-spacing: -1px;
+        }
+        .investor-cta h2 span { color: var(--accent-orange); }
+        .investor-cta p {
+            color: rgba(255,255,255,0.5);
+            font-family: 'Outfit', sans-serif;
+            font-size: 1rem;
+            max-width: 540px;
+            margin: 0 auto 36px;
+            line-height: 1.7;
+            font-weight: 300;
+        }
+        .investor-cta .inv-btn {
+            display: inline-block;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.7rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            padding: 16px 40px;
+            border: 1.5px solid var(--accent-cyan);
+            color: var(--accent-cyan);
+            text-decoration: none;
+            position: relative;
+            transition: all 0.3s;
+        }
+        .investor-cta .inv-btn:hover {
+            background: var(--accent-cyan);
+            color: #020205;
+        }
+
+        /* --- IMPRESSUM --- */
+        .impressum-section {
+            text-align: center;
+            padding: 60px 20px;
+            background: #050508;
+            /* Slightly different dark shade to separate it visually */
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .impressum-section h4 {
+            font-family: 'Orbitron', sans-serif;
+            color: white;
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+            letter-spacing: 2px;
+            font-weight: 700;
+        }
+
+        .impressum-section h4 span {
+            color: var(--accent-orange);
+        }
+
+        .impressum-section p {
+            margin: 0 0 10px;
+            color: #888;
+            font-size: 0.9rem;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .copyright-bar span {
+            color: var(--accent-orange);
+        }
+
+        @media (max-width: 1100px) {
+            .story-section {
+                grid-template-columns: 1fr;
+                text-align: center;
+                gap: 80px;
+            }
+
+            .story-section:nth-child(even) {
+                direction: ltr;
+            }
+
+            h2 {
+                font-size: 3.8rem;
+            }
+
+            .visual-stack {
+                height: 500px;
+            }
+
+            .nav-links {
+                display: none;
+                /* Hide standard links on mobile */
+            }
+
+            /* Custom mobile dropdown trigger if needed */
+            .mobile-nav-toggle {
+                display: block;
+                color: var(--accent-orange);
+                font-size: 1.5rem;
+                cursor: pointer;
+            }
+
+            /* The user wants 'Početna' to be the dropdown */
+            .nav-links.mobile-active {
+                display: flex;
+                flex-direction: column;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background: rgba(2, 2, 5, 0.95);
+                padding: 20px;
+                gap: 15px;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            }
+
+            /* Dropdown on mobile should stay open or toggle */
+            @media (max-width: 1100px) {
+                .desktop-only {
+                    display: none;
+                }
+            }
+        }
+    </style>
+    <!-- Schema.org -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "LocalBusiness",
+      "name": "2LMF PRO",
+      "image": "https://2lmf-pro.hr/assets/sharpshark_blue_large.png",
+      "url": "https://2lmf-pro.hr",
+      "email": "info@2lmf-pro.hr",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Orešje 7",
+        "addressLocality": "Zagreb",
+        "postalCode": "10090",
+        "addressCountry": "HR"
+      },
+      "description": "2LMF PRO nudi prodaju materijala po odličnim cijenama (katalog ograda, montaža 2D/3D panela, TPO hidroizolacija) te usluge digitalizacije poslovanja, automatizacije procesa i izrade custom web shopova.",
+      "telephone": "+385953115007",
+      "openingHoursSpecification": {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday"],
+        "opens": "08:00",
+        "closes": "17:00"
+      }
+    }
+    </script>
+</head>
+
+<body>
+
+    <nav>
+        <div class="nav-logos">
+            <div class="logos-row">
+                <a href="index.html" class="branding">
+                    <div class="lmf-brand">2LMF <span>PRO</span></div>
+                </a>
+                <a href="index.html" class="branding">
+                    <img src="assets/sharpshark_blue_large.png" class="shark-brand-img" alt="SharpShark Digital — izrada web shopova i digitalna rješenja"
+                        onerror="this.src='https://via.placeholder.com/150x60/000000/00F2FF?text=SHARPSHARK'">
+                </a>
+            </div>
+            <div class="tagline">
+                <span class="arch">ARCHITECTURAL</span> <span class="code">CODE</span>
+            </div>
+        </div>
+
+        <div class="nav-links" id="mainNav">
+            <div class="dropdown">
+                <a href="index.html" class="dropbtn" onclick="toggleMobileDropdown(event)">POČETNA <i
+                        class="fas fa-chevron-down" style="font-size: 0.6rem; margin-left: 5px;"></i></a>
+                <div class="dropdown-content" id="homeDropdown">
+                    <a href="architects_blueprint.html">Arhitektura</a>
+                    <a href="blog_hub.html">Znanje</a>
+                    <a href="kalkulator.html">Katalog</a>
+                    <a href="energy.html" style="color: var(--accent-orange) !important; font-weight: 700;">Outdoor & Energy</a>
+
+                </div>
+            </div>
+            <a href="architects_blueprint.html" class="desktop-only">ARHITEKTURA</a>
+            <a href="kalkulator.html" class="desktop-only">KATALOG</a>
+            <a href="blog_hub.html" class="desktop-only">ZNANJE</a>
+            <a href="digitalna_dominacija.html"
+                style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px;">
+                <span class="ss-sharp">SHARP</span><span class="ss-shark">SHARK</span>
+            </a>
+            <a href="index.html#kontakt">KONTAKT</a>
+            <div class="lang-switch" style="margin-left: 20px; font-family: 'Orbitron', sans-serif; font-size: 0.8rem; display: flex; align-items: center; gap: 10px;">
+                <span style="color: white; font-weight: 900;">HR</span>
+                <span style="color: rgba(255,255,255,0.2);">|</span>
+                <a href="en/index.html" style="color: rgba(255,255,255,0.5); text-decoration: none; transition: 0.3s;" onmouseover="this.style.color='var(--accent-orange)'" onmouseout="this.style.color='rgba(255,255,255,0.5)'">EN</a>
+            </div>
+        </div>
+
+        <!-- Script for Dropdown -->
+        <script>
+            function toggleMobileDropdown(e) {
+                if (window.innerWidth <= 1100) {
+                    e.preventDefault();
+                    const dropdown = document.getElementById('homeDropdown');
+                    dropdown.classList.toggle('mobile-show');
+                }
+            }
+        </script>
+    </nav>
+
+    <div class="hero">
+        <h1 class="visually-hidden">Arhitektonsko projektiranje, zeleni krovovi, nabava materijala za gradnju — Zagreb</h1>
+        <div class="hero-tagline"><span class="arch">2LMF</span> <span class="code">PRO</span></div>
+        <div class="hero-h1-visual" style="font-size: clamp(2rem, 8vw, 6rem);">ŽIVOT NA VAŠ NAČIN... <b>BEZ GRANICA</b></div>
+        <p>
+            <span class="intro-line">Sklad arhitekture, prirode i tehnologije.</span>
+            <span class="hero-part">Od vrhunskog <span class="brand-lmf">arhitektonskog projektiranja</span> i nabave materijala, 
+                <br>do inovativnih <span class="brand-lmf">Outdoor & Energy</span> rješenja — stvaramo prostore slobode.
+            </span>
+            <br><br><span class="vision-line hero-part">Vaša vizija zaslužuje <span
+                    style="color:var(--accent-orange)">savršenu izvedbu.</span></span>
+        </p>
+        <div style="display: flex; gap: 20px; flex-wrap: wrap; justify-content: center;">
+            <a href="kalkulator.html" class="hero-btn">IZRAČUNAJ CIJENU MATERIJALA</a>
+            <a href="energy.html" class="hero-btn" style="background: transparent; border: 2px solid var(--accent-orange); color: white;">ISTRAŽI OUTDOOR & ENERGY</a>
+        </div>
+    </div>
+
+    <!-- Hero removed hashtags/footer from here (they are moved to the bottom) -->
+
+    <div class="story-container">
+
+        <!-- SEKCIJA 1: Arhitektura & Projektiranje (2LMF) -->
+        <div class="story-section theme-build">
+            <div class="content">
+                <span class="label">01 / ARHITEKTURA</span>
+                <h2>Temelj Vaše<br>investicije.</h2>
+                <p>U <span class="brand-lmf">2LMF <span>PRO</span></span> timu, projektiranje nije samo crtež na papiru.
+                    To je duboka optimizacija materijala i energetskih slojeva. Izrađujemo izvedbene projekte koji Vam
+                    štede tisuće eura kroz precizne krojne liste i direktan put do tvorničkih cijena.</p>
+                <a href="architects_blueprint.html" class="btn">PROJEKTIRAJ PAMETNO</a>
+            </div>
+            <div class="visual-stack">
+                <div class="layer-bg"></div>
+                <div class="layer-fg">
+                    <i class="fas fa-drafting-compass" style="color:var(--accent-orange)"></i>
+                    <div
+                        style="color:white; font-weight:900; letter-spacing:5px; margin-top:20px; font-family:'Orbitron'; font-size:0.7rem;">
+                        BLUEPRINT CORE</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SEKCIJA 2: Digitalna Rješenja (SHARPSHARK) -->
+        <div class="story-section theme-code">
+            <div class="content">
+                <span class="label">02 / DIGITALIZACIJA</span>
+                <h2>Prodaja bez<br>posrednika.</h2>
+                <p>Specijalizirani smo za razvoj visokoučinkovitih **Web Shopova** i **Booking aplikacija** koje rade za
+                    Vas 24/7. Uz <span class="brand-ss"><span>SHARP</span><span class="shark">SHARK</span> <span
+                            class="digital">DIGITAL</span></span> sustav "Narudžba -> Ponuda -> Račun", eliminirate
+                    visoke provizije platformi i preuzimate potpunu kontrolu nad svojom zaradom.</p>
+                <a href="digitalna_dominacija.html" class="btn">OTKRIJ DIGITALNU MOĆ</a>
+            </div>
+            <div class="visual-stack">
+                <div class="layer-bg"
+                    style="background-image: linear-gradient(to bottom, transparent, #020205 80%), url('https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=1000&q=60&fm=webp'); background-position: center;">
+                </div>
+                <div class="layer-fg">
+                    <img src="assets/sharpshark_blue_large.png" alt="SharpShark" class="section-shark-img">
+                </div>
+            </div>
+        </div>
+
+        <!-- SEKCIJA 3: Nabava & Cijene (2LMF) -->
+        <div class="story-section theme-build">
+            <div class="content">
+                <span class="label">03 / NABAVA</span>
+                <h2>Materijali po<br>prvoj cijeni.</h2>
+                <p>Zaboravite na maloprodajne marže. Kao zastupnici vodećih europskih proizvođača, projektnim kupcima
+                    omogućujemo direktan pristup materijalima za izolaciju i vrhunskim **2D/3D panel ogradama**.
+                    Sigurnost i kvaliteta bez suvišnih ruku u Vašem džepu.</p>
+                <div style="display: flex; gap: 20px;">
+                    <a href="kalkulator.html#katalog" class="btn">SMART KATALOG</a>
+                    <a href="#kontakt" class="btn btn-outline">Pošalji Upit</a>
+                </div>
+            </div>
+            <div class="visual-stack">
+                <div class="layer-bg"
+                    style="background-image: linear-gradient(to bottom, transparent, #020205 70%), url('https://images.unsplash.com/photo-1589939705384-5185137a7f0f?auto=format&fit=crop&w=1000&q=60&fm=webp'); background-size: cover; background-position: center;">
+                </div>
+                <div class="layer-fg">
+                    <i class="fas fa-boxes" style="color:var(--accent-orange)"></i>
+                    <div
+                        style="color:white; font-weight:900; letter-spacing:5px; margin-top:20px; font-family:'Orbitron'; font-size:0.7rem;">
+                        DIRECT SUPPLY</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SEKCIJA 4: Automatizacija (SHARPSHARK) -->
+        <div class="story-section theme-code">
+            <div class="content">
+                <span class="label">04 / AUTOMATIZACIJA</span>
+                <h2>Posao na<br>autopilotu.</h2>
+                <p>Vaš backend treba biti čvrst kao beton. Automatiziramo Vaše procese, od upita do fiskalizacije 0€,
+                    osiguravajući da se fokusirate na rast, a ne na administraciju. Uz <span
+                        class="brand-ss"><span>SHARP</span><span class="shark">SHARK</span></span>, tehnologija postaje
+                    Vaš najvjerniji radnik.</p>
+                <a href="digitalizacija_znanja.html" class="btn">RJEŠENJA BEZ NAKNADA</a>
+            </div>
+            <div class="visual-stack">
+                <div class="layer-bg"
+                    style="background-image: linear-gradient(to bottom, transparent, #020205 80%), url('https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1000&q=60&fm=webp'); background-position: center;">
+                </div>
+                <div class="layer-fg">
+                    <i class="fas fa-microchip" style="color:var(--accent-cyan)"></i>
+                    <div
+                        style="color:var(--accent-cyan); font-weight:900; letter-spacing:5px; margin-top:20px; font-family:'Orbitron'; font-size:0.7rem;">
+                        SMART CORE</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- INVESTOR CTA BANNER -->
+        <div class="investor-cta">
+            <span class="eyebrow">Za privatne investitore i developere</span>
+            <h2>GRADITE ZA <span>PROFIT?</span></h2>
+            <p>Projektiranje + materijali po tvorničkim cijenama na jednom mjestu. Smanjite troškove gradnje do 20% i povećajte prinos investicije.</p>
+            <a href="investitori.html" class="inv-btn">SAZNAJTE VIŠE &rarr;</a>
+        </div>
+
+        <!-- KONTAKT SEKCIJA -->
+        <div class="contact-section" id="kontakt" style="position: relative; z-index: 1000; margin-top: 50px;">
+            <span class="label"
+                style="display:block; margin-bottom: 30px; color: var(--accent-orange); font-weight: 900; font-size: 1.1rem;">POŠALJITE
+                UPIT</span>
+            <h2 style="margin-bottom: 30px;">Započnimo Vašu<br>priču danas.</h2>
+            <form class="contact-form" id="contactForm">
+                <input type="text" id="contactName" placeholder="Vaše Ime i Prezime">
+                <input type="email" id="contactEmail" placeholder="E-mail Adresa *" required>
+                <input type="tel" id="contactPhone" placeholder="Broj Mobitela *" required>
+
+                <textarea id="contactMessage" rows="5" placeholder="Vaša Poruka / Opis Projekta" required></textarea>
+                <button type="submit" id="contactSubmitBtn">POŠALJI PORUKU</button>
+            </form>
+        </div>
+        <div style="height:20px;"></div> <!-- Minimal spacer before hashtags -->
+
+    </div>
+
+    <!-- Impressum Section -->
+    <div class="impressum-section">
+        <h4>2LMF <span>PRO</span> j.d.o.o.</h4>
+        <p>Orešje 7 ◼ 10090 Zagreb ◼ Hrvatska</p>
+        <p>Mob: +385 95 311 5007</p>
+        <p>Email: info@2lmf-pro.hr</p>
+        <p>OIB: 29766043828 ◼ MB: 081477933</p>
+        <p>IBAN: HR3123400091111213241</p>
+    </div>
+
+    <!-- Footer -->
+
+    <div class="copyright-bar">
+        &copy; 2026. 2LMF <span>PRO</span> j.d.o.o. ZAGREB, HRVATSKA
+    </div>
+
+    <script>
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                } else {
+                    entry.target.classList.remove('active');
+                }
+            });
+        }, { threshold: 0.35 });
+
+        document.querySelectorAll('.story-section').forEach(section => {
+            observer.observe(section);
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            const x = (window.innerWidth / 2 - e.pageX) / 40;
+            const y = (window.innerHeight / 2 - e.pageY) / 40;
+
+            document.querySelectorAll('.story-section.active .content').forEach(content => {
+                content.style.transform = `translateZ(300px) translate(${x * 0.8}px, ${y * 0.8}px)`;
+            });
+            document.querySelectorAll('.story-section.active .layer-fg').forEach(fg => {
+                fg.style.transform = `translateZ(150px) scale(1.05) translate(${x}px, ${y}px)`;
+            });
+            document.querySelectorAll('.story-section.active .layer-bg').forEach(bg => {
+                bg.style.transform = `translateZ(-80px) translate(${-x / 2}px, ${-y / 2}px)`;
+            });
+        });
+
+        // --- CONTACT FORM LOGIC ---
+        document.getElementById('contactForm')?.addEventListener('submit', function (e) {
+            e.preventDefault();
+            const btn = document.getElementById('contactSubmitBtn');
+            const originalText = btn.textContent;
+
+            const payload = {
+                type: 'contact',
+                name: document.getElementById('contactName').value,
+                email: document.getElementById('contactEmail').value,
+                phone: document.getElementById('contactPhone').value,
+                message: document.getElementById('contactMessage').value
+            };
+
+            btn.disabled = true;
+            btn.textContent = "ŠALJEM...";
+            btn.style.background = "#555";
+
+            if (typeof google !== 'undefined' && google.script && google.script.run) {
+                google.script.run
+                    .withSuccessHandler(res => {
+                        gtag('event', 'conversion_event_submit_lead_form_1', {
+                            'event_callback': () => {},
+                            'event_timeout': 2000
+                        });
+                        btn.textContent = "POSLANO! ✅";
+                        btn.style.background = "#27ae60";
+                        document.getElementById('contactForm').reset();
+                        setTimeout(() => {
+                            btn.disabled = false;
+                            btn.textContent = originalText;
+                            btn.style.background = "";
+                        }, 3000);
+                    })
+                    .withFailureHandler(err => {
+                        alert("Greška pri slanju: " + err);
+                        btn.disabled = false;
+                        btn.textContent = originalText;
+                        btn.style.background = "";
+                    })
+                    .doPostManual(payload);
+            } else {
+                fetch('https://script.google.com/macros/s/AKfycbx4TQ6cFNr8X-fNRHE0Ai571pAioDeny_mSSrTVQm3OHbTKOhfIEDiKDFM2shZ5zDFLrA/exec', {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    cache: 'no-cache',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams(payload)
+                }).then(() => {
+                    gtag('event', 'conversion_event_submit_lead_form_1', {
+                        'event_callback': () => {},
+                        'event_timeout': 2000
+                    });
+                    btn.textContent = "POSLANO! ✅";
+                    btn.style.background = "#27ae60";
+                    document.getElementById('contactForm').reset();
+                    setTimeout(() => {
+                        btn.disabled = false;
+                        btn.textContent = originalText;
+                        btn.style.background = "";
+                    }, 3000);
+                }).catch(err => {
+                    console.error("Fetch error:", err);
+                    alert("Greška pri slanju na GitHubu. Provjerite konzolu.");
+                    btn.disabled = false;
+                    btn.textContent = originalText;
+                });
+            }
+        });
+    </script>
+
+    <script>
+        // --- FIRST-CLICK TRACKER ---
+        const _GAS_URL = 'https://script.google.com/macros/s/AKfycbx4TQ6cFNr8X-fNRHE0Ai571pAioDeny_mSSrTVQm3OHbTKOhfIEDiKDFM2shZ5zDFLrA/exec';
+        document.body.addEventListener('click', function() {
+            if (sessionStorage.getItem('2lmf_tracked_home')) return;
+            sessionStorage.setItem('2lmf_tracked_home', 'true');
+            const p = new URLSearchParams({ action: 'log_interaction', module: 'home', source: 'HomePage', timestamp: new Date().toISOString() });
+            fetch(`${_GAS_URL}?${p}`, { method: 'GET', keepalive: true, mode: 'no-cors' }).catch(() => {});
+        }, { once: true });
+    </script>
+
+</body>
+
+</html>
