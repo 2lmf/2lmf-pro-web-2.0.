@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privatni investitori i developeri — 2LMF PRO</title>
+    <meta name="description" content="Gradite za profit? Projektiranje + materijali po tvorničkim cijenama na jednom mjestu. Smanjite troškove gradnje do 20%.">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --accent-orange: #E67E22;
+            --accent-cyan: #00F2FF;
+            --bg-dark: #020205;
+            --card-bg: rgba(15, 15, 20, 0.7);
+            --grid-color: rgba(255, 255, 255, 0.08);
+            --line-color: rgba(255, 255, 255, 0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: var(--bg-dark);
+            color: rgba(255, 255, 255, 0.85);
+            font-family: 'Outfit', sans-serif;
+            font-weight: 300;
+            overflow-x: hidden;
+        }
+
+        /* --- NAV --- */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 2000;
+            padding: 20px 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(2, 2, 5, 0.95);
+            backdrop-filter: blur(30px);
+            border-bottom: 1px solid var(--line-color);
+        }
+        .nav-logos { display: flex; flex-direction: column; align-items: center; gap: 5px; }
+        .logos-row { display: flex; align-items: center; gap: 50px; }
+        .branding { text-decoration: none; }
+        .lmf-brand {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            color: #eee;
+            letter-spacing: 3px;
+        }
+        .lmf-brand span { color: var(--accent-orange); }
+        .shark-brand-img { height: 110px; width: auto; display: block; margin: -10px 0; transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+        .branding:hover .shark-brand-img { transform: scale(1.05); }
+        .tagline { font-family: 'Orbitron', sans-serif; font-size: 0.55rem; letter-spacing: 4px; }
+        .tagline .arch { color: rgba(255,255,255,0.4); }
+        .tagline .code { color: var(--accent-cyan); }
+        .nav-links { display: flex; align-items: center; gap: 35px; }
+        .nav-links a {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            color: rgba(255,255,255,0.6);
+            text-decoration: none;
+            text-transform: uppercase;
+            transition: color 0.3s;
+        }
+        .nav-links a:hover { color: white; }
+        .ss-sharp { color: var(--accent-cyan); }
+        .ss-shark { color: var(--accent-orange); }
+        .lang-switch { display: flex; align-items: center; gap: 8px; font-family: 'Orbitron', sans-serif; font-size: 0.75rem; }
+
+        /* --- CONTAINER --- */
+        .container { max-width: 1400px; margin: 0 auto; padding: 0 60px; }
+
+        /* --- HERO --- */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 200px 60px 100px;
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+        }
+        .label {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--accent-orange);
+            font-size: 0.8rem;
+            letter-spacing: 4px;
+            margin-bottom: 20px;
+            display: block;
+        }
+        .visually-hidden {
+            position: absolute; width: 1px; height: 1px;
+            padding: 0; margin: -1px; overflow: hidden;
+            clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+        }
+        .hero-h1-visual {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(3rem, 10vw, 7rem);
+            color: white;
+            letter-spacing: -2px;
+            line-height: 0.9;
+            font-weight: 300;
+            margin-bottom: 50px;
+        }
+        .hero-h1-visual b {
+            display: block;
+            font-weight: 900;
+            color: var(--accent-orange);
+            font-size: 0.35em;
+            letter-spacing: 15px;
+            margin-top: 35px;
+            text-transform: uppercase;
+        }
+        .hero-desc {
+            font-size: 1.15rem;
+            line-height: 1.8;
+            color: rgba(255,255,255,0.6);
+            max-width: 600px;
+            margin-bottom: 50px;
+        }
+        .hero-ctas { display: flex; gap: 20px; flex-wrap: wrap; }
+        .btn-primary {
+            display: inline-block;
+            background: var(--accent-orange);
+            color: #000;
+            padding: 16px 40px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 900;
+            letter-spacing: 2px;
+            text-decoration: none;
+            text-transform: uppercase;
+            transition: all 0.3s;
+            clip-path: polygon(0 0, 100% 0, 100% 75%, 96% 100%, 0 100%);
+        }
+        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(230,126,34,0.4); }
+        .btn-secondary {
+            display: inline-block;
+            border: 1px solid var(--line-color);
+            color: rgba(255,255,255,0.7);
+            padding: 16px 40px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            text-decoration: none;
+            text-transform: uppercase;
+            transition: all 0.3s;
+        }
+        .btn-secondary:hover { border-color: var(--accent-cyan); color: var(--accent-cyan); }
+
+        /* --- SECTION BASE --- */
+        section { padding: 120px 0; }
+        section h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(1.8rem, 4vw, 3rem);
+            font-weight: 300;
+            line-height: 1.2;
+            margin-bottom: 20px;
+        }
+        section h2 strong { font-weight: 900; color: var(--accent-orange); }
+        section p { font-size: 1rem; line-height: 1.9; color: rgba(255,255,255,0.6); }
+
+        /* --- PROBLEM / SOLUTION --- */
+        .compare-section { border-top: 1px solid var(--line-color); }
+        .compare-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2px;
+            margin-top: 60px;
+        }
+        .compare-col {
+            padding: 50px 40px;
+            background: var(--card-bg);
+        }
+        .compare-col.bad { border-left: 3px solid rgba(255,80,80,0.4); }
+        .compare-col.good { border-left: 3px solid var(--accent-orange); }
+        .compare-col h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.85rem;
+            letter-spacing: 3px;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+        }
+        .compare-col.bad h3 { color: rgba(255,80,80,0.7); }
+        .compare-col.good h3 { color: var(--accent-orange); }
+        .compare-list { list-style: none; display: flex; flex-direction: column; gap: 16px; }
+        .compare-list li {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: rgba(255,255,255,0.6);
+            padding-left: 24px;
+            position: relative;
+        }
+        .compare-list li::before {
+            position: absolute;
+            left: 0;
+            font-weight: 900;
+        }
+        .compare-col.bad .compare-list li::before { content: "✕"; color: rgba(255,80,80,0.6); }
+        .compare-col.good .compare-list li::before { content: "→"; color: var(--accent-orange); }
+
+        /* --- SERVICES GRID --- */
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+            margin-top: 70px;
+        }
+        .service-item {
+            border-left: 1px solid var(--line-color);
+            padding: 10px 0 10px 30px;
+            transition: all 0.4s;
+        }
+        .service-item:hover { border-left-color: var(--accent-orange); transform: translateX(10px); }
+        .service-item .service-num {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--accent-orange);
+            font-size: 0.75rem;
+            letter-spacing: 3px;
+            margin-bottom: 15px;
+            display: block;
+        }
+        .service-item h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 12px;
+        }
+        .service-item p { font-size: 0.9rem; line-height: 1.7; }
+
+        /* --- NUMBERS / ROI --- */
+        .roi-section { background: rgba(230, 126, 34, 0.03); border-top: 1px solid rgba(230,126,34,0.15); border-bottom: 1px solid rgba(230,126,34,0.15); }
+        .numbers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2px;
+            margin: 60px 0;
+        }
+        .number-item { text-align: center; padding: 50px 30px; background: var(--card-bg); }
+        .number-item .num {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 900;
+            color: var(--accent-orange);
+            display: block;
+            line-height: 1;
+            margin-bottom: 15px;
+        }
+        .number-item .num-label {
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.5);
+            line-height: 1.5;
+        }
+        .roi-note {
+            background: rgba(230, 126, 34, 0.05);
+            border-left: 4px solid var(--accent-orange);
+            padding: 30px 40px;
+            font-style: italic;
+            font-size: 0.95rem;
+            line-height: 1.8;
+            color: rgba(255,255,255,0.6);
+            margin-top: 20px;
+        }
+        .roi-note a { color: var(--accent-orange); text-decoration: none; }
+        .roi-note a:hover { text-decoration: underline; }
+
+        /* --- PROMO SECTION --- */
+        .promo-section {
+            background: rgba(230, 126, 34, 0.05);
+            border: 1px solid rgba(230, 126, 34, 0.2);
+            padding: 80px 60px;
+            clip-path: polygon(0 0, 100% 0, 100% 90%, 97% 100%, 0 100%);
+            margin-top: 100px;
+        }
+        .savings-badge {
+            display: inline-block;
+            background: var(--accent-orange);
+            color: white;
+            padding: 5px 15px;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            font-size: 0.7rem;
+            letter-spacing: 2px;
+            margin-bottom: 25px;
+        }
+        .promo-section h2 { margin-bottom: 25px; }
+        .promo-section p { margin-bottom: 16px; max-width: 800px; }
+
+        /* --- KONTAKT FORMA --- */
+        .contact-section { border-top: 1px solid var(--line-color); }
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            margin-top: 60px;
+            align-items: start;
+        }
+        .contact-info h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 300;
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+        .contact-info h3 strong { font-weight: 900; color: var(--accent-orange); }
+        .contact-info p { margin-bottom: 30px; }
+        .contact-detail {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+            font-size: 0.95rem;
+            color: rgba(255,255,255,0.6);
+        }
+        .contact-detail i { color: var(--accent-orange); width: 16px; }
+        .contact-form { display: flex; flex-direction: column; gap: 16px; }
+        .contact-form input,
+        .contact-form textarea {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid var(--line-color);
+            color: white;
+            padding: 16px 20px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        .contact-form input:focus,
+        .contact-form textarea:focus { border-color: var(--accent-orange); }
+        .contact-form textarea { resize: vertical; min-height: 140px; }
+        .contact-form input::placeholder,
+        .contact-form textarea::placeholder { color: rgba(255,255,255,0.25); }
+        .btn-submit {
+            background: var(--accent-orange);
+            color: #000;
+            border: none;
+            padding: 16px 40px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 900;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s;
+            align-self: flex-start;
+        }
+        .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(230,126,34,0.4); }
+
+        /* --- FOOTER --- */
+        .copyright-bar {
+            background: #000;
+            color: #fff;
+            text-align: center;
+            padding: 30px 0;
+            font-weight: 900;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.75rem;
+            letter-spacing: 3px;
+            border-top: 1px solid rgba(255,255,255,0.03);
+        }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 768px) {
+            nav { padding: 15px 20px; }
+            .nav-links { display: none; }
+            .hero { padding: 120px 20px 80px; }
+            .container { padding: 0 20px; }
+            section { padding: 80px 0; }
+            .compare-grid { grid-template-columns: 1fr; }
+            .contact-grid { grid-template-columns: 1fr; gap: 40px; }
+            .promo-section { padding: 50px 30px; }
+            .numbers-grid { grid-template-columns: 1fr 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+    <div class="nav-logos">
+        <div class="logos-row">
+            <a href="index.html" class="branding">
+                <div class="lmf-brand">2LMF <span>PRO</span></div>
+            </a>
+            <a href="index.html" class="branding">
+                <img src="assets/sharpshark_blue_large.png" class="shark-brand-img" alt="SharpShark Digital" onerror="this.src='https://via.placeholder.com/150x60/000000/00F2FF?text=SHARPSHARK'">
+            </a>
+        </div>
+        <div class="tagline">
+            <span class="arch">ARCHITECTURAL</span> <span class="code">CODE</span>
+        </div>
+    </div>
+    <div class="nav-links">
+        <a href="index.html">POČETNA</a>
+        <a href="architects_blueprint.html">ARHITEKTURA</a>
+        <a href="kalkulator.html">KATALOG</a>
+        <a href="blog_hub.html">ZNANJE</a>
+        <a href="digitalna_dominacija.html"><span class="ss-sharp">SHARP</span><span class="ss-shark">SHARK</span></a>
+        <a href="index.html#kontakt">KONTAKT</a>
+        <div class="lang-switch">
+            <span style="color:white;font-weight:900;">HR</span>
+            <span style="color:rgba(255,255,255,0.2);">|</span>
+            <a href="#" style="color:rgba(255,255,255,0.4);">EN</a>
+        </div>
+    </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+    <h1 class="visually-hidden">Privatni investitori i developeri — projektiranje i materijali na jednom mjestu — 2LMF PRO</h1>
+    <span class="label">PRIVATNI INVESTITORI · DEVELOPERI · GRADNJA ZA NAJAM</span>
+    <div class="hero-h1-visual">
+        GRADITE<br>PAMETNO,<br><b>ZARADITE VIŠE</b>
+    </div>
+    <p class="hero-desc">
+        Arhitektonsko projektiranje i materijali po tvorničkim cijenama — na jednom mjestu.
+        Manje posrednika, manji troškovi, brža izgradnja.
+    </p>
+    <div class="hero-ctas">
+        <a href="kalkulator.html" class="btn-primary">Izračunaj troškove gradnje</a>
+        <a href="architects_blueprint.html" class="btn-secondary">Saznaj više o projektiranju</a>
+    </div>
+</section>
+
+<!-- COMPARE -->
+<div class="container">
+    <section class="compare-section">
+        <span class="label">ZAŠTO 2LMF PRO</span>
+        <h2>Uobičajeni put <strong>košta više.</strong></h2>
+        <p>Svaki posrednik uzima svoju maržu. Mi eliminiramo nepotrebne korake.</p>
+        <div class="compare-grid">
+            <div class="compare-col bad">
+                <h3>Uobičajeni proces</h3>
+                <ul class="compare-list">
+                    <li>Arhitekt projektira bez uvida u nabavne cijene</li>
+                    <li>Građevinar uzima maržu na materijal</li>
+                    <li>Dobavljač dodaje svoju zaradu</li>
+                    <li>Koordinacija između 3+ strana gubi vrijeme</li>
+                    <li>Svaka promjena materijala = novi projekt</li>
+                </ul>
+            </div>
+            <div class="compare-col good">
+                <h3>2LMF PRO pristup</h3>
+                <ul class="compare-list">
+                    <li>Projektiramo s direktnim pristupom cjenicima</li>
+                    <li>Materijal naručujete direktno po prvoj cijeni</li>
+                    <li>Kalkulator odmah pokazuje stvarne troškove</li>
+                    <li>Jedna točka kontakta za projekt i nabavu</li>
+                    <li>Optimizacija materijala već u fazi projekta</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- SERVICES -->
+    <section>
+        <span class="label">ŠTO NUDIMO</span>
+        <h2>Sve što trebate za <strong>uspješnu investiciju</strong></h2>
+        <div class="services-grid">
+            <div class="service-item">
+                <span class="service-num">01 / PROJEKTIRANJE</span>
+                <h3>Izvedbeni projekt</h3>
+                <p>Kompletna projektna dokumentacija za građevinsku dozvolu — energetski optimizirana za minimalne troškove održavanja.</p>
+            </div>
+            <div class="service-item">
+                <span class="service-num">02 / NABAVA</span>
+                <h3>Materijali po prvoj cijeni</h3>
+                <p>Termoizolacija, hidroizolacija, fasadni sustavi, panel ograde — direktno od distributera, bez posredničke marže.</p>
+            </div>
+            <div class="service-item">
+                <span class="service-num">03 / KALKULATOR</span>
+                <h3>Brza procjena troškova</h3>
+                <p>Online kalkulator za trenutnu procjenu troškova materijala. Unesite dimenzije, dobijte okvirni iznos odmah.</p>
+            </div>
+            <div class="service-item">
+                <span class="service-num">04 / SAVJETOVANJE</span>
+                <h3>ROI analiza</h3>
+                <p>Pomažemo procijeniti isplativost investicije — koji materijali dugoročno smanjuju troškove najma i održavanja.</p>
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- ROI NUMBERS -->
+<section class="roi-section">
+    <div class="container">
+        <span class="label">INVESTICIJA U BROJKAMA</span>
+        <h2>Gradnja za najam na <strong>jadranskoj obali</strong></h2>
+        <p>Kombinirani pristup projektiranja i nabave materijala direktno utječe na profitabilnost vaše investicije.</p>
+        <div class="numbers-grid">
+            <div class="number-item">
+                <span class="num">10–20%</span>
+                <span class="num-label">Moguća ušteda na ukupnim troškovima gradnje kroz integrirani pristup</span>
+            </div>
+            <div class="number-item">
+                <span class="num">6–10%</span>
+                <span class="num-label">Godišnji prinos na investiciju pri kratkoročnom najmu na obali</span>
+            </div>
+            <div class="number-item">
+                <span class="num">40%</span>
+                <span class="num-label">Manji troškovi klime godišnje uz pravilnu termoizolaciju fasade</span>
+            </div>
+            <div class="number-item">
+                <span class="num">1</span>
+                <span class="num-label">Kontakt za projekt, materijal i savjet — bez trčanja između posrednika</span>
+            </div>
+        </div>
+        <div class="roi-note">
+            <strong>Više o isplativosti gradnje za najam:</strong> Pročitajte naš detaljni vodič
+            <a href="blog/gradnja-i-najam-profit-2026.html">Gradnja stana za najam — koliko se zaista isplati u 2026.</a>
+            s konkretnim izračunima za jadransku obalu.
+        </div>
+    </div>
+</section>
+
+<!-- PROMO -->
+<div class="container">
+    <section style="padding-bottom: 0;">
+        <div class="promo-section">
+            <span class="savings-badge">KOMBINIRANA UŠTEDA</span>
+            <h2>Projekt koji zna <strong>cijenu materijala</strong></h2>
+            <p>
+                Većina arhitekata projektira bez direktnog pristupa nabavnim cijenama. Rezultat: projekt koji izgleda dobro na papiru,
+                ali premašuje budžet čim kreće nabava materijala.
+            </p>
+            <p>
+                Kod nas je drugačije. Projektiramo s otvorenim cjenikom — svaki detalj fasade, svaki metar izolacije,
+                svaka ograda već ima poznatu nabavnu cijenu u trenutku projektiranja.
+            </p>
+            <p>
+                To znači da vaš projekt od prvog dana ima realan budžet — i da ga možemo optimizirati
+                <strong style="color:var(--accent-orange);">prije</strong> nego što se novac potroši.
+            </p>
+            <br>
+            <a href="kalkulator.html" class="btn-primary">Otvori kalkulator</a>
+        </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section class="contact-section" id="kontakt">
+        <span class="label">ZATRAŽITE KONZULTACIJU</span>
+        <div class="contact-grid">
+            <div class="contact-info">
+                <h3>Razgovarajmo o<br><strong>vašoj investiciji</strong></h3>
+                <p>Opišite projekt — recite nam što gradite, gdje i s kojim budžetom. Javit ćemo se u roku 24 sata s okvirnom procjenom i prijedlogom.</p>
+                <div class="contact-detail"><i class="fas fa-envelope"></i> info@2lmf-pro.hr</div>
+                <div class="contact-detail"><i class="fas fa-phone"></i> +385 95 311 5007</div>
+                <div class="contact-detail"><i class="fas fa-map-marker-alt"></i> Orešje 7, 10090 Zagreb</div>
+            </div>
+            <form class="contact-form" id="investorForm">
+                <input type="text" name="name" placeholder="Ime i prezime">
+                <input type="email" name="email" placeholder="E-mail adresa *" required>
+                <input type="tel" name="phone" placeholder="Mobitel *" required>
+                <input type="text" name="lokacija" placeholder="Lokacija gradnje (grad, regija)">
+                <textarea name="message" placeholder="Opišite projekt — što gradite, površina, rok..." required></textarea>
+                <button type="submit" class="btn-submit" id="submitBtn">Pošalji upit</button>
+            </form>
+        </div>
+    </section>
+</div>
+
+<!-- FOOTER -->
+<div class="copyright-bar">
+    &copy; 2026. 2LMF <span style="color:var(--accent-orange)">PRO</span> j.d.o.o. ZAGREB, HRVATSKA
+</div>
+
+<script>
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx4TQ6cFNr8X-fNRHE0Ai571pAioDeny_mSSrTVQm3OHbTKOhfIEDiKDFM2shZ5zDFLrA/exec';
+
+    document.getElementById('investorForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const btn = document.getElementById('submitBtn');
+        btn.textContent = 'ŠALJEM...';
+        btn.disabled = true;
+
+        const data = {
+            type: 'contact',
+            name: this.name.value,
+            email: this.email.value,
+            phone: this.phone.value,
+            message: `[INVESTITORI] Lokacija: ${this.lokacija.value}\n\n${this.message.value}`,
+        };
+
+        try {
+            await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) });
+        } catch(err) {}
+
+        btn.textContent = 'POSLANO ✅';
+        btn.style.background = '#27ae60';
+        this.reset();
+    });
+</script>
+</body>
+</html>
