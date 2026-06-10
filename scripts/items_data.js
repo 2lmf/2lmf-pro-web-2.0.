@@ -95,39 +95,39 @@ const prices = {
 
         // Stupovi (sa plo?icom)
         posts: {
-            85: { price: 11.375, sku: "1020", name: "Stup sa plo?icom 0,85 m" },
-            105: { price: 12.675, sku: "1021", name: "Stup sa plo?icom 1,05 m" },
-            125: { price: 14.3, sku: "1022", name: "Stup sa plo?icom 1,25 m" },
-            145: { price: 16.900000000000002, sku: "1023", name: "Stup sa plo?icom 1,45 m" },
-            155: { price: 16.900000000000002, sku: "1024", name: "Stup sa plo?icom 1,55 m" },
-            165: { price: 19.825, sku: "1025", name: "Stup sa plo?icom 1,65 m" },
-            175: { price: 19.825, sku: "1026", name: "Stup sa plo?icom 1,75 m" },
-            185: { price: 22.75, sku: "1027", name: "Stup sa plo?icom 1,85 m" },
-            205: { price: 22.75, sku: "1028", name: "Stup sa plo?icom 2,05 m" }
+            85: { price: 11.8125, sku: "1020", name: "Stup sa plo?icom 0,85 m" },
+            105: { price: 13.162500000000001, sku: "1021", name: "Stup sa plo?icom 1,05 m" },
+            125: { price: 14.850000000000001, sku: "1022", name: "Stup sa plo?icom 1,25 m" },
+            145: { price: 17.55, sku: "1023", name: "Stup sa plo?icom 1,45 m" },
+            155: { price: 17.55, sku: "1024", name: "Stup sa plo?icom 1,55 m" },
+            165: { price: 20.587500000000002, sku: "1025", name: "Stup sa plo?icom 1,65 m" },
+            175: { price: 20.587500000000002, sku: "1026", name: "Stup sa plo?icom 1,75 m" },
+            185: { price: 23.625, sku: "1027", name: "Stup sa plo?icom 1,85 m" },
+            205: { price: 23.625, sku: "1028", name: "Stup sa plo?icom 2,05 m" }
         },
 
         // Stupovi (za beton)
         posts_concrete: {
-            150: { price: 13, sku: "1029", name: "Stup za beton 1,5 m" },
-            175: { price: 14.625, sku: "1030", name: "Stup za beton 1,75 m" },
-            200: { price: 16.25, sku: "1031", name: "Stup za beton 2,00 m" },
-            230: { price: 18.2, sku: "1032", name: "Stup za beton 2,30 m" },
-            250: { price: 21.45, sku: "1033", name: "Stup za beton 2,50 m" }
+            150: { price: 13.5, sku: "1029", name: "Stup za beton 1,5 m" },
+            175: { price: 15.187500000000002, sku: "1030", name: "Stup za beton 1,75 m" },
+            200: { price: 16.875, sku: "1031", name: "Stup za beton 2,00 m" },
+            230: { price: 18.900000000000002, sku: "1032", name: "Stup za beton 2,30 m" },
+            250: { price: 22.275000000000002, sku: "1033", name: "Stup za beton 2,50 m" }
         },
 
         // Vrata
         gate_prices: {
-            '1000x1000': { plate: { p: 266.5, s: '1034' }, concrete: { p: 266.5, s: '1034' } },
-            '1000x1200': { plate: { p: 315.25, s: '1035' }, concrete: { p: 315.25, s: '1035' } },
-            '1000x1500': { plate: { p: 390, s: '1036' }, concrete: { p: 390, s: '1036' } },
-            '1000x1700': { plate: { p: 448.5, s: '1037' }, concrete: { p: 448.5, s: '1037' } },
-            '1000x2000': { plate: { p: 513.5, s: '1038' }, concrete: { p: 513.5, s: '1038' } }
+            '1000x1000': { plate: { p: 276.75, s: '1034' }, concrete: { p: 276.75, s: '1034' } },
+            '1000x1200': { plate: { p: 327.375, s: '1035' }, concrete: { p: 327.375, s: '1035' } },
+            '1000x1500': { plate: { p: 405, s: '1036' }, concrete: { p: 405, s: '1036' } },
+            '1000x1700': { plate: { p: 465.75000000000006, s: '1037' }, concrete: { p: 465.75000000000006, s: '1037' } },
+            '1000x2000': { plate: { p: 533.25, s: '1038' }, concrete: { p: 533.25, s: '1038' } }
         },
 
-        set_spojnica: { price: 0.5850000000000001, sku: "1039", name: "PVC Spojnica (s vijkom)" },
-        anker_vijci: { price: 0.6299999999999999, sku: "1040", name: "SIDRENI VIJAK ZN M10" },
-        zastita_ok: { price: 44.85, sku: "1041", name: "ZA?TITA OD POGLEDA, REBRASTA, 26 m?" },
-        pricvrsnica_traka: { price: 0.7475000000000002, sku: "1042", name: "PVC PRI?VRSNICA ZA TRAKU" },
+        set_spojnica: { price: 0.43875000000000003, sku: "1039", name: "PVC Spojnica (s vijkom)" },
+        anker_vijci: { price: 0.585, sku: "1040", name: "SIDRENI VIJAK ZN M10" },
+        zastita_ok: { price: 34.5, sku: "1041", name: "ZA?TITA OD POGLEDA, REBRASTA, 26 m?" },
+        pricvrsnica_traka: { price: 0.5750000000000001, sku: "1042", name: "PVC PRI?VRSNICA ZA TRAKU" },
         montaza_plate: { price: 25, sku: "1043", name: "monta?a na parapet/m'" },
         montaza_concrete: { price: 35, sku: "1044", name: "monta?a u beton/m'" }
     },
