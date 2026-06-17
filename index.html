@@ -870,11 +870,16 @@
 <script>
     // --- FIRST-CLICK TRACKER ---
     const _GAS_URL = 'https://script.google.com/macros/s/AKfycbx4TQ6cFNr8X-fNRHE0Ai571pAioDeny_mSSrTVQm3OHbTKOhfIEDiKDFM2shZ5zDFLrA/exec';
+    console.log('[TRACKER] Registering click listener on body');
     document.body.addEventListener('click', function() {
+        console.log('[TRACKER] Click fired. Already tracked:', sessionStorage.getItem('2lmf_tracked_home'));
         if (sessionStorage.getItem('2lmf_tracked_home')) return;
         sessionStorage.setItem('2lmf_tracked_home', 'true');
         const p = new URLSearchParams({ action: 'log_interaction', module: 'home', source: 'HomePage', timestamp: new Date().toISOString() });
-        fetch(`${_GAS_URL}?${p}`, { method: 'GET', keepalive: true, mode: 'no-cors' }).catch(() => {});
+        console.log('[TRACKER] Sending fetch:', _GAS_URL + '?' + p.toString());
+        fetch(_GAS_URL + '?' + p.toString(), { method: 'GET', keepalive: true, mode: 'no-cors' })
+            .then(() => console.log('[TRACKER] Fetch sent (no-cors, ok)'))
+            .catch(e => console.error('[TRACKER] Fetch error:', e));
     }, { once: true });
 </script>
 

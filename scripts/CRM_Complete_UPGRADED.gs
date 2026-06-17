@@ -420,7 +420,8 @@ function processInquiry(params) {
                        <p><b>Izvor:</b> ${params.source || "Kalkulator Uštede"}</p>`;
                        
       MailApp.sendEmail({
-        to: "info@2lmf-pro.hr", 
+        to: "info@2lmf-pro.hr",
+        replyTo: email,
         subject: "📈 ZAHTJEV ZA VODIČ: " + name + " (" + inquiryId + ")",
         htmlBody: adminHtml
       });
@@ -442,7 +443,8 @@ function processInquiry(params) {
                        <p><b>Poruka:</b><br>${message.replace(/\n/g, '<br>')}</p>`;
                        
       MailApp.sendEmail({
-        to: "info@2lmf-pro.hr", 
+        to: "info@2lmf-pro.hr",
+        replyTo: email,
         subject: "📩 NOVI KONTAKT UPIT: " + name + " (" + inquiryId + ")",
         htmlBody: adminHtml
       });
@@ -501,6 +503,23 @@ function processInquiry(params) {
       if (pdfBlob) adminMailOptions.attachments = [pdfBlob];
       
       MailApp.sendEmail(adminMailOptions);
+      
+      // Send second reply-to email without internal profit calculations
+      var replyMailOptions = {
+        to: "info@2lmf-pro.hr",
+        replyTo: email,
+        subject: "💬 [ODGOVORI] Novi upit: " + name + " (" + inquiryId + ")",
+        htmlBody: "<div style='font-family: Arial, sans-serif;'>" +
+                   "<h3>Podaci za odgovor kupcu:</h3>" +
+                   "<p><b>Ime i prezime:</b> " + name + "</p>" +
+                   "<p><b>Telefon:</b> " + phone + "</p>" +
+                   "<p><b>E-mail:</b> " + email + "</p>" +
+                   "<hr style='border:0; border-top:1px solid #ccc; margin:20px 0;'>" +
+                   "</div>" + customerHtml
+      };
+      if (pdfBlob) replyMailOptions.attachments = [pdfBlob];
+      
+      MailApp.sendEmail(replyMailOptions);
       
       var total = items.reduce((sum, i) => sum + ((parseFloat(i.qty) || 0) * (parseFloat(i.price_sell) || 0)), 0);
       logToCRM(inquiryId, name, email, phone, subject, total, params.color || "", "NOVO", JSON.stringify(items));
