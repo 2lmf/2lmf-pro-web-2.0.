@@ -501,15 +501,7 @@ function processInquiry(params) {
       if (pdfBlob) adminMailOptions.attachments = [pdfBlob];
       
       MailApp.sendEmail(adminMailOptions);
-
-      // Drugi mail — čisti upit bez marži, replyTo na kupca (za direktni odgovor iz Zoho)
-      MailApp.sendEmail({
-        to: "info@2lmf-pro.hr",
-        replyTo: email,
-        subject: "↩️ ODGOVORI: " + name + " | " + subject,
-        htmlBody: generateCleanInquiryHtml(items, name, email, phone, subject, params.location)
-      });
-
+      
       var total = items.reduce((sum, i) => sum + ((parseFloat(i.qty) || 0) * (parseFloat(i.price_sell) || 0)), 0);
       logToCRM(inquiryId, name, email, phone, subject, total, params.color || "", "NOVO", JSON.stringify(items));
     }
@@ -1378,49 +1370,6 @@ function generateAdminHtml(items, name, email, phone, subject, customerHtml, loc
   });
 
   html += "</table></div>";
-  return html;
-}
-
-function generateCleanInquiryHtml(items, name, email, phone, subject, location) {
-  var totalSell = 0;
-  items.forEach(function(it) { totalSell += (parseFloat(it.qty) || 0) * (parseFloat(it.price_sell) || 0); });
-
-  var html = "<div style='font-family: Arial, sans-serif; color: #333; max-width: 650px;'>" +
-             "<h2 style='color: #E67E22;'>📧 Upit kupca — pritisnite Reply za odgovor</h2>" +
-             "<p><b>Ime:</b> " + name + "</p>" +
-             "<p><b>Email:</b> <a href='mailto:" + email + "'>" + email + "</a></p>" +
-             "<p><b>Telefon:</b> " + (phone || "-") + "</p>" +
-             (location ? "<p><b>Lokacija:</b> " + location + "</p>" : "") +
-             "<hr style='border:0;border-top:1px solid #eee;margin:20px 0;'>" +
-             "<h3>Odabrani proizvodi</h3>" +
-             "<table style='width:100%;border-collapse:collapse;font-size:13px;'>" +
-             "<tr style='background:#E67E22;color:#fff;'>" +
-             "<th style='padding:10px;text-align:left;'>Proizvod</th>" +
-             "<th style='padding:10px;text-align:center;'>Kol.</th>" +
-             "<th style='padding:10px;text-align:right;'>Cijena/kom</th>" +
-             "<th style='padding:10px;text-align:right;'>Ukupno</th>" +
-             "</tr>";
-
-  items.forEach(function(it) {
-    var qty = parseFloat(it.qty) || 0;
-    var sell = parseFloat(it.price_sell) || 0;
-    var line = qty * sell;
-    html += "<tr>" +
-            "<td style='padding:9px;border:1px solid #ddd;'>" + it.name + "</td>" +
-            "<td style='padding:9px;border:1px solid #ddd;text-align:center;'>" + qty + " " + (it.unit || "") + "</td>" +
-            "<td style='padding:9px;border:1px solid #ddd;text-align:right;'>" + sell.toLocaleString('hr-HR', {minimumFractionDigits:2, maximumFractionDigits:2}) + " €</td>" +
-            "<td style='padding:9px;border:1px solid #ddd;text-align:right;'>" + line.toLocaleString('hr-HR', {minimumFractionDigits:2, maximumFractionDigits:2}) + " €</td>" +
-            "</tr>";
-  });
-
-  html += "<tr style='font-weight:bold;background:#f5f5f5;'>" +
-          "<td colspan='3' style='padding:10px;text-align:right;'>UKUPNO (s PDV):</td>" +
-          "<td style='padding:10px;text-align:right;color:#E67E22;font-size:15px;'>" +
-          totalSell.toLocaleString('hr-HR', {minimumFractionDigits:2, maximumFractionDigits:2}) + " €</td>" +
-          "</tr></table>" +
-          "<p style='margin-top:20px;font-size:12px;color:#888;'>Odgovorite direktno na ovaj mail — poruka ide kupcu na " + email + "</p>" +
-          "</div>";
-
   return html;
 }
 
