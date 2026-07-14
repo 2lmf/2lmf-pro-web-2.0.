@@ -1416,6 +1416,127 @@
         </div>
     </template>
 
+    <template id="tpl-tende">
+        <div class="config-flow">
+            <h3 style="font-family: 'Orbitron'; font-size: 0.8rem; margin-bottom: 1rem; color: var(--accent);">
+                ODABERITE TIP TENDE</h3>
+            <div class="system-grid" id="tendeTypeOptions" style="grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin-bottom: 1.5rem;">
+                <div class="system-card active" data-type="open">
+                    <h4>OTVORENA TENDA</h4>
+                    <p>Areia 6030</p>
+                </div>
+                <div class="system-card" data-type="semi">
+                    <h4>POLUOTVORENA TENDA</h4>
+                    <p>Viva 7040</p>
+                </div>
+                <div class="system-card" data-type="cleo5530">
+                    <h4>KASETNA CLEO 5530</h4>
+                    <p>Uski model (ovalna)</p>
+                </div>
+                <div class="system-card" data-type="cleo7030">
+                    <h4>KASETNA CLEO 7030</h4>
+                    <p>Srednji model (ovalna)</p>
+                </div>
+                <div class="system-card" data-type="cleo7040">
+                    <h4>KASETNA CLEO 7040</h4>
+                    <p>Veliki model (ovalna)</p>
+                </div>
+                <div class="system-card" data-type="pan">
+                    <h4>KASETNA PAN 7040</h4>
+                    <p>Zidna, puna kaseta</p>
+                </div>
+                <div class="system-card" data-type="c2">
+                    <h4>KASETNA C2</h4>
+                    <p>Standardna (pravokutna)</p>
+                </div>
+            </div>
+
+            <div class="config-grid">
+                <div class="step-card" style="grid-column: span 2;">
+                    <div class="step-title">📏 DIMENZIJE (ŠIRINA × IZBAČAJ)</div>
+                    <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem;">
+                        <div style="flex: 1; min-width: 150px;">
+                            <label style="font-size: 0.75rem; font-weight: 600; color: var(--muted); display: block; margin-bottom: 4px;">ŠIRINA (m)</label>
+                            <select id="tendeWidth" class="custom-input small" style="width: 100%; background: var(--bg-secondary); border-radius: 8px; border: 1.5px solid var(--border); padding: 8px; font-family: inherit;">
+                                <option value="2.0">2.0 m</option>
+                                <option value="2.5">2.5 m</option>
+                                <option value="3.0">3.0 m</option>
+                                <option value="3.5">3.5 m</option>
+                                <option value="4.0" selected>4.0 m</option>
+                                <option value="4.5">4.5 m</option>
+                                <option value="5.0">5.0 m</option>
+                                <option value="5.5">5.5 m</option>
+                                <option value="6.0">6.0 m</option>
+                            </select>
+                        </div>
+                        <div style="flex: 1; min-width: 150px;">
+                            <label style="font-size: 0.75rem; font-weight: 600; color: var(--muted); display: block; margin-bottom: 4px;">IZBAČAJ (m)</label>
+                            <select id="tendeProjection" class="custom-input small" style="width: 100%; background: var(--bg-secondary); border-radius: 8px; border: 1.5px solid var(--border); padding: 8px; font-family: inherit;">
+                                <option value="1.5">1.5 m</option>
+                                <option value="2.0">2.0 m</option>
+                                <option value="2.5" selected>2.5 m</option>
+                                <option value="3.0">3.0 m</option>
+                                <option value="3.5">3.5 m</option>
+                                <option value="4.0">4.0 m</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step-card">
+                    <div class="step-title">🎨 BOJA KONSTRUKCIJE (RAL)</div>
+                    <div class="option-group" id="tendeColorOptions">
+                        <div class="choice-pill active" data-color="7016">Antracit (7016)</div>
+                        <div class="choice-pill" data-color="9006">Srebrna (9006)</div>
+                        <div class="choice-pill" data-color="9016">Bijela (9016)</div>
+                    </div>
+                </div>
+
+                <div class="step-card">
+                    <div class="step-title">🏗️ TIP MONTAŽE</div>
+                    <div class="option-group" id="tendeMountOptions">
+                        <div class="choice-pill active" data-mount="wall">Zidna</div>
+                        <div class="choice-pill" data-mount="ceiling">Stropna</div>
+                        <div class="choice-pill" data-mount="rafter">Na rogove</div>
+                    </div>
+                </div>
+
+                <div class="step-card" style="grid-column: span 2;">
+                    <div class="step-title">🕹️ ONYX MOTORIZACIJA & SENZORI</div>
+                    <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
+                        <label class="status-indicator-wrapper" style="display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 500; cursor: pointer;">
+                            <input type="checkbox" id="tendeOnyxMotor" style="width: 18px; height: 18px; accent-color: var(--accent);">
+                            <span>ONYX motorni pogon (Hella)</span>
+                        </label>
+                        <label class="status-indicator-wrapper" style="display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 500; cursor: pointer; opacity: 0.5;" id="wrapperOnyxRemote">
+                            <input type="checkbox" id="tendeOnyxRemote" disabled style="width: 18px; height: 18px; accent-color: var(--accent);">
+                            <span>Dodatni daljinski upravljač</span>
+                        </label>
+                        <label class="status-indicator-wrapper" style="display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 500; cursor: pointer; opacity: 0.5;" id="wrapperOnyxWind">
+                            <input type="checkbox" id="tendeOnyxWind" disabled style="width: 18px; height: 18px; accent-color: var(--accent);">
+                            <span>Senzor vjetra (automatsko zatvaranje)</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="step-card" style="grid-column: span 2; display: none;" id="tendeOpcijeCard">
+                    <div class="step-title">✨ DODATNE OPCIJE</div>
+                    <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
+                        <label id="wrapperVarioplus" style="display:none;align-items:center;gap:10px;font-size:13px;font-weight:500;cursor:pointer;">
+                            <input type="checkbox" id="tendeVarioplus" style="width:18px;height:18px;accent-color:var(--accent);">
+                            <span>Varioplus rolo <span style="color:#9ca3af;font-size:11px;">(vertikalna zaštita od sunca i pogleda, integrirana u profil)</span></span>
+                        </label>
+                        <label id="wrapperLed" style="display:none;align-items:center;gap:10px;font-size:13px;font-weight:500;cursor:pointer;">
+                            <input type="checkbox" id="tendeLed" style="width:18px;height:18px;accent-color:var(--accent);">
+                            <span>LED rasvjeta <span style="color:#9ca3af;font-size:11px;">(integrirana u zglobne krakove, 650 lm/m)</span></span>
+                        </label>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </template>
+
     <script>
         // --- 1. CORE DATA & PRICING ---
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx4TQ6cFNr8X-fNRHE0Ai571pAioDeny_mSSrTVQm3OHbTKOhfIEDiKDFM2shZ5zDFLrA/exec";
@@ -1510,13 +1631,43 @@
             }
         };
 
+        window.tendeState = {
+            config: {
+                type: 'open',
+                width: 4.0,
+                projection: 2.5,
+                color: '7016',
+                mount: 'wall',
+                onyxMotor: false,
+                onyxRemote: false,
+                onyxWind: false,
+                varioplus: false,
+                ledLight: false
+            },
+            skuMap: {
+                open: '8001',
+                semi: '8002',
+                cleo5530: '8003',
+                cleo7030: '8004',
+                cleo7040: '8005',
+                pan: '8006',
+                c2: '8007',
+                onyx_motor: '8011',
+                onyx_remote: '8012',
+                onyx_wind: '8013',
+                varioplus: '8015',
+                led_light: '8016'
+            }
+        };
+
 
         const THEMES = {
             ograde: { accent: '#E67E22', rgb: '230, 126, 34' },
             hidro: { accent: '#007bff', rgb: '0, 123, 255' },
             termo: { accent: '#e74c3c', rgb: '231, 76, 60' },
             fasade: { accent: '#27ae60', rgb: '39, 174, 96' },
-            katalog: { accent: '#E67E22', rgb: '230, 126, 34' }
+            katalog: { accent: '#E67E22', rgb: '230, 126, 34' },
+            tende: { accent: '#d35400', rgb: '211, 84, 0' }
         };
 
         // Initialize LIVE_PRICES with fallback for local development
@@ -1680,6 +1831,18 @@
                 new_products: {
                     reflectix: { price: 0, sku: "3011", name: "SEALED AIR REFLECTIX® (alu izolacija)" },
                     ethafoam: { price: 0, sku: "3012", name: "Ethafoam 2222 (izolacija od udarnog zvuka u podu)" }
+                },
+                hella: {
+                    open: { price: 450.00, sku: "8001", name: "HELLA Otvorena tenda AREIA 6030" },
+                    semi: { price: 650.00, sku: "8002", name: "HELLA Poluotvorena tenda VIVA 7040" },
+                    cleo5530: { price: 750.00, sku: "8003", name: "HELLA Kasetna tenda CLEO 5530" },
+                    cleo7030: { price: 850.00, sku: "8004", name: "HELLA Kasetna tenda CLEO 7030" },
+                    cleo7040: { price: 950.00, sku: "8005", name: "HELLA Kasetna tenda CLEO 7040" },
+                    pan: { price: 1100.00, sku: "8006", name: "HELLA Kasetna tenda PAN 7040" },
+                    c2: { price: 1000.00, sku: "8007", name: "HELLA Kasetna tenda C2" },
+                    onyx_motor: { price: 200.00, sku: "8011", name: "HELLA ONYX motorni pogon" },
+                    onyx_remote: { price: 50.00, sku: "8012", name: "HELLA ONYX daljinski upravljač" },
+                    onyx_wind: { price: 80.00, sku: "8013", name: "HELLA ONYX senzor vjetra" }
                 }
             };
 
@@ -1704,6 +1867,7 @@
                         else if (key === 'membranes' || key === 'bitumen' || key === 'chemicals') nextCat = 'hidro';
                         else if (key === 'xps' || key === 'wool_facade' || key === 'new_products') nextCat = 'termo';
                         else if (key === 'facade_etics') nextCat = 'fasade';
+                        else if (key === 'hella') nextCat = 'tende';
 
                         processObj(val, nextCat);
                     }
@@ -1807,7 +1971,28 @@
         document.addEventListener('DOMContentLoaded', async () => {
             // 1. Immediately determine active module from hash to prevent race condition tracking wrong module
             const hash = window.location.hash.replace('#', '');
+            const isTestTende = window.location.search.includes('test=tende') || hash === 'tende';
+            if (isTestTende) {
+                const navCont = document.querySelector('.v2-nav-container');
+                if (navCont && !navCont.querySelector('[data-mod="tende"]')) {
+                    const btn = document.createElement('div');
+                    btn.className = 'v2-nav-item';
+                    btn.dataset.mod = 'tende';
+                    btn.textContent = '🎪 Hella Tende (Test)';
+                    navCont.appendChild(btn);
+                }
+                const configArea = document.querySelector('.config-area');
+                if (configArea && !document.getElementById('tende-view')) {
+                    const view = document.createElement('div');
+                    view.id = 'tende-view';
+                    view.className = 'module-view';
+                    configArea.appendChild(view);
+                }
+            }
+
             const validModules = ['ograde', 'hidro', 'termo', 'katalog', 'energy'];
+            if (isTestTende) validModules.push('tende');
+
             const defaultMod = validModules.includes(hash) ? hash : 'energy';
             activeModule = defaultMod; // Set global right away
 
@@ -1879,7 +2064,7 @@
             activeModule = modId; const theme = THEMES[modId] || THEMES.ograde;
             document.documentElement.style.setProperty('--accent', theme.accent);
             document.documentElement.style.setProperty('--accent-rgb', theme.rgb);
-            const MOD_NAMES = { energy:'Energy / Outdoor', ograde:'Ograde', hidro:'Hidroizolacija', termo:'Termoizolacija', katalog:'Svi proizvodi' };
+            const MOD_NAMES = { energy:'Energy / Outdoor', ograde:'Ograde', hidro:'Hidroizolacija', termo:'Termoizolacija', katalog:'Svi proizvodi', tende:'Hella Tende (Test)' };
             document.getElementById('activeModName').textContent = MOD_NAMES[modId] || modId.toUpperCase();
             document.querySelectorAll('.module-view').forEach(v => v.classList.remove('active'));
 
@@ -1898,6 +2083,7 @@
                 if (modId === 'termo') initUITermo();
                 if (modId === 'katalog') initUIKatalog();
                 if (modId === 'energy') initEnergyModule();
+                if (modId === 'tende') initUITende();
             }
         }
 
@@ -2958,6 +3144,314 @@
             layers.forEach((l, i) => { const d = document.createElement('div'); d.className = `layer-box ${l.class}`; d.textContent = l.name; stage.appendChild(d); setTimeout(() => d.classList.add('active'), i * 80); });
         }
 
+        function initUITende() {
+            const v = document.getElementById('tende-view');
+            if (!v) return;
+            const s = window.tendeState.config;
+
+            // Setup listeners for cards (type selection)
+            v.querySelectorAll('.system-card').forEach(card => {
+                card.onclick = () => {
+                    v.querySelectorAll('.system-card').forEach(c => c.classList.remove('active'));
+                    card.classList.add('active');
+                    s.type = card.dataset.type;
+                    if (window._tende_syncOpcije) window._tende_syncOpcije();
+                    updateTendeAll();
+                };
+            });
+
+            // Set default active card
+            v.querySelectorAll('.system-card').forEach(card => {
+                card.classList.toggle('active', card.dataset.type === s.type);
+            });
+
+            // Set select values
+            const selWidth = v.querySelector('#tendeWidth');
+            const selProj = v.querySelector('#tendeProjection');
+            if (selWidth) {
+                selWidth.value = s.width.toFixed(1);
+                selWidth.onchange = (e) => {
+                    s.width = parseFloat(e.target.value);
+                    updateTendeAll();
+                };
+            }
+            if (selProj) {
+                selProj.value = s.projection.toFixed(1);
+                selProj.onchange = (e) => {
+                    s.projection = parseFloat(e.target.value);
+                    updateTendeAll();
+                };
+            }
+
+            // Setup color options
+            v.querySelectorAll('#tendeColorOptions .choice-pill').forEach(pill => {
+                pill.classList.toggle('active', pill.dataset.color === s.color);
+                pill.onclick = () => {
+                    v.querySelectorAll('#tendeColorOptions .choice-pill').forEach(p => p.classList.remove('active'));
+                    pill.classList.add('active');
+                    s.color = pill.dataset.color;
+                    updateTendeAll();
+                };
+            });
+
+            // Setup mount options
+            v.querySelectorAll('#tendeMountOptions .choice-pill').forEach(pill => {
+                pill.classList.toggle('active', pill.dataset.mount === s.mount);
+                pill.onclick = () => {
+                    v.querySelectorAll('#tendeMountOptions .choice-pill').forEach(p => p.classList.remove('active'));
+                    pill.classList.add('active');
+                    s.mount = pill.dataset.mount;
+                    updateTendeAll();
+                };
+            });
+
+            // Setup ONYX checkboxes
+            const chkMotor = v.querySelector('#tendeOnyxMotor');
+            const chkRemote = v.querySelector('#tendeOnyxRemote');
+            const chkWind = v.querySelector('#tendeOnyxWind');
+            const wrapRemote = v.querySelector('#wrapperOnyxRemote');
+            const wrapWind = v.querySelector('#wrapperOnyxWind');
+
+            const syncOnyxUI = () => {
+                const motorActive = s.onyxMotor;
+                if (chkRemote) {
+                    chkRemote.disabled = !motorActive;
+                    if (!motorActive) { chkRemote.checked = false; s.onyxRemote = false; }
+                    if (wrapRemote) wrapRemote.style.opacity = motorActive ? '1' : '0.5';
+                }
+                if (chkWind) {
+                    chkWind.disabled = !motorActive;
+                    if (!motorActive) { chkWind.checked = false; s.onyxWind = false; }
+                    if (wrapWind) wrapWind.style.opacity = motorActive ? '1' : '0.5';
+                }
+            };
+
+            if (chkMotor) {
+                chkMotor.checked = s.onyxMotor;
+                chkMotor.onchange = (e) => {
+                    s.onyxMotor = e.target.checked;
+                    syncOnyxUI();
+                    updateTendeAll();
+                };
+            }
+            if (chkRemote) {
+                chkRemote.checked = s.onyxRemote;
+                chkRemote.onchange = (e) => {
+                    s.onyxRemote = e.target.checked;
+                    updateTendeAll();
+                };
+            }
+            if (chkWind) {
+                chkWind.checked = s.onyxWind;
+                chkWind.onchange = (e) => {
+                    s.onyxWind = e.target.checked;
+                    updateTendeAll();
+                };
+            }
+            
+            // Sync initial state
+            syncOnyxUI();
+
+            // Varioplus + LED opcije
+            const OPCIJE_SUPPORT = {
+                open:     { varioplus: false, led: false },
+                semi:     { varioplus: true,  led: true  },
+                cleo5530: { varioplus: false, led: false },
+                cleo7030: { varioplus: false, led: false },
+                cleo7040: { varioplus: true,  led: true  },
+                pan:      { varioplus: false, led: true  },
+                c2:       { varioplus: true,  led: false },
+            };
+            const opcijeCard = v.querySelector('#tendeOpcijeCard');
+            const wrapVP = v.querySelector('#wrapperVarioplus');
+            const wrapLed = v.querySelector('#wrapperLed');
+            const chkVP = v.querySelector('#tendeVarioplus');
+            const chkLed = v.querySelector('#tendeLed');
+
+            const syncOpcijeUI = () => {
+                const sup = OPCIJE_SUPPORT[s.type] || { varioplus: false, led: false };
+                const anyVisible = sup.varioplus || sup.led;
+                if (opcijeCard) opcijeCard.style.display = anyVisible ? '' : 'none';
+                if (wrapVP)  { wrapVP.style.display  = sup.varioplus ? 'flex' : 'none'; }
+                if (wrapLed) { wrapLed.style.display = sup.led       ? 'flex' : 'none'; }
+                // reset if type no longer supports option
+                if (!sup.varioplus && s.varioplus) { s.varioplus = false; if (chkVP) chkVP.checked = false; }
+                if (!sup.led && s.ledLight)         { s.ledLight = false;  if (chkLed) chkLed.checked = false; }
+            };
+
+            if (chkVP)  { chkVP.checked  = s.varioplus; chkVP.onchange  = (e) => { s.varioplus = e.target.checked; updateTendeAll(); }; }
+            if (chkLed) { chkLed.checked = s.ledLight;  chkLed.onchange = (e) => { s.ledLight  = e.target.checked; updateTendeAll(); }; }
+
+            window._tende_syncOpcije = syncOpcijeUI;
+            syncOpcijeUI();
+
+            // Trigger initial render/calc
+            updateTendeAll();
+        }
+
+        function updateTendeAll() {
+            const s = window.tendeState.config;
+            const skuMap = window.tendeState.skuMap;
+            const getP = (sku) => LIVE_PRICES.prices[sku] || 0;
+            const items = [];
+
+            // Base calculated price formula (placeholders)
+            let basePrice = 0;
+            let baseSku = skuMap[s.type] || '8001';
+            let baseName = '';
+            
+            if (s.type === 'open') {
+                basePrice = 300 + s.width * 100 + s.projection * 80;
+                baseName = `HELLA Otvorena tenda AREIA 6030 (${s.width}m × ${s.projection}m)`;
+            } else if (s.type === 'semi') {
+                basePrice = 400 + s.width * 120 + s.projection * 100;
+                baseName = `HELLA Poluotvorena tenda VIVA 7040 (${s.width}m × ${s.projection}m)`;
+            } else if (s.type === 'cleo5530') {
+                basePrice = 450 + s.width * 130 + s.projection * 110;
+                baseName = `HELLA Kasetna tenda CLEO 5530 (${s.width}m × ${s.projection}m)`;
+            } else if (s.type === 'cleo7030') {
+                basePrice = 500 + s.width * 140 + s.projection * 115;
+                baseName = `HELLA Kasetna tenda CLEO 7030 (${s.width}m × ${s.projection}m)`;
+            } else if (s.type === 'cleo7040') {
+                basePrice = 580 + s.width * 150 + s.projection * 120;
+                baseName = `HELLA Kasetna tenda CLEO 7040 (${s.width}m × ${s.projection}m)`;
+            } else if (s.type === 'pan') {
+                basePrice = 650 + s.width * 160 + s.projection * 130;
+                baseName = `HELLA Kasetna tenda PAN 7040 (${s.width}m × ${s.projection}m)`;
+            } else if (s.type === 'c2') {
+                basePrice = 600 + s.width * 150 + s.projection * 120;
+                baseName = `HELLA Kasetna tenda C2 (${s.width}m × ${s.projection}m)`;
+            }
+
+            const colorNames = { '7016': 'Antracit RAL 7016', '9006': 'Srebrna RAL 9006', '9016': 'Bijela RAL 9016' };
+            const mountNames = { 'wall': 'zidna', 'ceiling': 'stropna', 'rafter': 'na rogove' };
+            
+            // Base product
+            items.push({
+                name: `${baseName} - RAL ${s.color} (montaža: ${mountNames[s.mount]})`,
+                qty: 1,
+                unit: 'set',
+                price: basePrice,
+                sku: baseSku
+            });
+
+            // ONYX extras
+            if (s.onyxMotor) {
+                items.push({
+                    name: window.getPremiumName(skuMap.onyx_motor, "HELLA ONYX motorni pogon (integriran)"),
+                    qty: 1,
+                    unit: 'kom',
+                    price: getP(skuMap.onyx_motor),
+                    sku: skuMap.onyx_motor
+                });
+            }
+            if (s.onyxRemote) {
+                items.push({
+                    name: window.getPremiumName(skuMap.onyx_remote, "HELLA ONYX daljinski upravljač"),
+                    qty: 1,
+                    unit: 'kom',
+                    price: getP(skuMap.onyx_remote),
+                    sku: skuMap.onyx_remote
+                });
+            }
+            if (s.onyxWind) {
+                items.push({
+                    name: window.getPremiumName(skuMap.onyx_wind, "HELLA ONYX senzor vjetra"),
+                    qty: 1,
+                    unit: 'kom',
+                    price: getP(skuMap.onyx_wind),
+                    sku: skuMap.onyx_wind
+                });
+            }
+
+            // Varioplus rolo
+            if (s.varioplus) {
+                items.push({
+                    name: 'HELLA Varioplus rolo (integriran u izbačajni profil)',
+                    qty: 1,
+                    unit: 'set',
+                    price: 320.00,
+                    sku: skuMap.varioplus
+                });
+            }
+            // LED rasvjeta
+            if (s.ledLight) {
+                items.push({
+                    name: 'HELLA LED rasvjeta (integrirana u zglobne krakove, 650 lm/m)',
+                    qty: 1,
+                    unit: 'set',
+                    price: 260.00,
+                    sku: skuMap.led_light
+                });
+            }
+
+            // Rafter bracket surcharge
+            if (s.mount === 'rafter') {
+                const bracketSku = '8014';
+                const bracketQty = Math.ceil(s.width / 1.5) + 1;
+                items.push({
+                    name: `HELLA Konzole za montažu na krovne grede (rogove)`,
+                    qty: bracketQty,
+                    unit: 'kom',
+                    price: 45.00,
+                    sku: bracketSku
+                });
+            }
+
+            window.updateGlobalCart(items.map(it => ({ ...it, total: Math.round(it.qty * it.price * 100) / 100 })), true);
+
+            // Render catalog image preview
+            const stage = document.getElementById('dynamicStage');
+            if (stage) {
+                stage.innerHTML = '';
+
+                const imageMap = {
+                    open:     { src: 'assets/hella/areia6030.jpeg', pos: 'left 28%'   },
+                    semi:     { src: 'assets/hella/viva7040.jpeg',  pos: 'right 18%'  },
+                    cleo5530: { src: 'assets/hella/cleo5530.jpeg',  pos: 'center 32%' },
+                    cleo7030: { src: 'assets/hella/cleo7030.jpeg',  pos: 'center 28%' },
+                    cleo7040: { src: 'assets/hella/cleo7040.jpeg',  pos: 'center 22%' },
+                    pan:      { src: 'assets/hella/pan7040.jpeg',   pos: 'left top'   },
+                    c2:       { src: 'assets/hella/c2.jpeg',        pos: 'right 18%'  },
+                };
+                const friendlyNames = { open:'AREIA 6030', semi:'VIVA 7040', cleo5530:'CLEO 5530', cleo7030:'CLEO 7030', cleo7040:'CLEO 7040', pan:'PAN 7040', c2:'C2 CASSETTE' };
+                const img = imageMap[s.type];
+                const extras = [];
+                if (s.onyxMotor)  extras.push('<span style="color:#f39c12">⚡ ONYX MOTOR</span>');
+                if (s.onyxRemote) extras.push('<span style="color:#f39c12">📡 DALJINSKI</span>');
+                if (s.onyxWind)   extras.push('<span style="color:#74b9ff">💨 SENZOR VJETRA</span>');
+                if (s.varioplus)  extras.push('<span style="color:#a29bfe">↕ VARIOPLUS ROLO</span>');
+                if (s.ledLight)   extras.push('<span style="color:#ffeaa7">💡 LED RASVJETA</span>');
+
+                stage.innerHTML = `
+                    <div style="position:relative;width:100%;height:260px;overflow:hidden;background:#111;">
+                        <img src="${img.src}"
+                             style="width:100%;height:100%;object-fit:cover;object-position:${img.pos};display:block;transition:opacity 0.3s;"
+                             alt="${friendlyNames[s.type]}" />
+                        <div style="position:absolute;bottom:0;left:0;right:0;
+                                    background:linear-gradient(transparent,rgba(0,0,0,0.82));
+                                    padding:28px 18px 12px;">
+                            <div style="font-family:Orbitron,sans-serif;font-size:13px;font-weight:bold;
+                                        color:var(--accent);letter-spacing:1.5px;margin-bottom:5px;">
+                                HELLA ${friendlyNames[s.type]}
+                            </div>
+                            <div style="font-family:Orbitron,sans-serif;font-size:10px;color:#f1f2f6;
+                                        display:flex;gap:16px;flex-wrap:wrap;align-items:center;">
+                                <span>IZBAČAJ: ${s.projection.toFixed(1)} m</span>
+                                <span>ŠIRINA: ${s.width.toFixed(1)} m</span>
+                                <span style="color:#9ca3af;text-transform:capitalize;">${s.mount === 'wall' ? 'Zidna montaža' : s.mount === 'ceiling' ? 'Stropna montaža' : 'Na rogove'}</span>
+                                ${extras.join('')}
+                            </div>
+                        </div>
+                        <div style="position:absolute;top:10px;right:12px;
+                                    font-family:Orbitron,sans-serif;font-size:8px;
+                                    color:rgba(255,255,255,0.45);letter-spacing:1px;">
+                            © HELLA 2026
+                        </div>
+                    </div>`;
+            }
+        }
+
         // --- CENTRAL INITIALIZATION ---
         function checkHash() {
             const h = window.location.hash.replace('#', '') || 'energy';
@@ -2974,7 +3468,8 @@
             const viewId = h === 'termo' ? 'termo-view' :
                 h === 'hidro' ? 'hidro-view' :
                     h === 'katalog' ? 'katalog-view' :
-                        h === 'energy' ? 'energy-view' : 'ograde-view';
+                        h === 'energy' ? 'energy-view' :
+                            h === 'tende' ? 'tende-view' : 'ograde-view';
 
             const v = document.getElementById(viewId);
             if (v) v.classList.add('active');
@@ -2987,6 +3482,7 @@
             // Init specific UI
             if (h === 'termo') initUITermo();
             else if (h === 'hidro') initUIHydro();
+            else if (h === 'tende') initUITende();
             else if (h === 'katalog') {
                 // Sakrij stage odmah — katalog ga ne koristi
                 const stageEl = document.querySelector('.stage-container');

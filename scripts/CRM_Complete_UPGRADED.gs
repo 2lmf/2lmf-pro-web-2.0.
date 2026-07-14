@@ -159,6 +159,9 @@ function setupGeneratorLayout(sheet) {
   sheet.getRange("D3").setValue("Status:");
   sheet.getRange("E3").setFormula('=VLOOKUP(B3; Upiti!B:H; 7; FALSE)'); // Auto-status check
   
+  sheet.getRange("D4").setValue("Prikaži PDV 25% (Info):").setFontWeight("bold");
+  sheet.getRange("E4").insertCheckboxes().setValue(false);
+  
   // Customer Info Block
   sheet.getRange("A5").setValue("Podaci o Kupcu (Učitano)");
   sheet.getRange("A6").setValue("Ime:");
@@ -337,7 +340,7 @@ function doPost(e) {
       var inquiry = getInquiryById(ss, postData.id);
       if (!inquiry) result = { status: "error", message: "Upit nije pronađen" };
       else {
-        var success = (action === 'sendOffer') ? sendInquiryOffer(ss, inquiry) : sendInquiryInvoice(ss, inquiry);
+        var success = (action === 'sendOffer') ? sendInquiryOffer(ss, inquiry, postData.pdvInfo) : sendInquiryInvoice(ss, inquiry, postData.pdvInfo);
         result = { status: success ? "success" : "error" };
       }
     } else {
@@ -865,7 +868,20 @@ function importInquiry() {
   sheetGen.getRange("B9").setValue(rowData[7]); // Color (Column H)
   
   // Parse JSON Items
-  var items = JSON.parse(rowData[9]); // Adjusted index (Column J)
+  var rawData = JSON.parse(rowData[9]); // Adjusted index (Column J)
+  var items = [];
+  var isPdvInfo = false;
+  if (Array.isArray(rawData)) {
+    items = rawData;
+  } else if (rawData && rawData.stavke) {
+    items = rawData.stavke;
+    isPdvInfo = rawData.pdvInfo === true;
+  } else if (rawData) {
+    items = rawData.items || rawData.products || [];
+    isPdvInfo = rawData.pdvInfo === true;
+  }
+  
+  sheetGen.getRange("E4").setValue(isPdvInfo);
   
   // Clear old items
   sheetGen.getRange("A13:F50").clearContent();
@@ -903,6 +919,7 @@ function sendCustomOffer(isMobile) {
   var color = sheetGen.getRange("B9").getValue();
   var address = sheetGen.getRange("B10").getValue();
   var oib = sheetGen.getRange("B11").getValue();
+  var isPdvInfo = sheetGen.getRange("E4").getValue() === true;
   
   if(!email) { setStatus("Greška: Nema emaila!"); return false; }
   
@@ -930,7 +947,7 @@ function sendCustomOffer(isMobile) {
   // For now, let's assume if the color field contains "HIDRO" it's a hidro offer.
   // A more robust solution might involve a dedicated field or parsing the items.
   var isHidro = String(color || "").toUpperCase().indexOf("HIDRO") !== -1;
-  var result = generateHtml(items, name, false, inquiryId, color, isHidro, "Službena Ponuda - 2LMF PRO", address, oib);
+  var result = generateHtml(items, name, false, inquiryId, color, isHidro, "Službena Ponuda - 2LMF PRO", address, oib, isPdvInfo);
   var htmlBody = result.html;
   var qrBlob = result.qrBlob;
   var qrDataUri = result.qrDataUri;
@@ -1106,7 +1123,7 @@ function setStatus(msg) {
 }
 
 // --- UPGRADED HELPER: HTML GENERATOR (Shared) ---
-function generateHtml(items, name, isAutoReply, inquiryId, color, isHidro, subject, address, oib) {
+function generateHtml(items, name, isAutoReply, inquiryId, color, isHidro, subject, address, oib, isPdvInfo) {
     name = String(name || "Kupac"); // Sanitize to string to prevent substring error
     var rawTotal = 0;
     items.forEach(i => {
@@ -1125,7 +1142,7 @@ function generateHtml(items, name, isAutoReply, inquiryId, color, isHidro, subje
   // --- BASE64 QR FOR PDF RELIABILITY ---
   var qrDataUri = "";
   var qrBlob = null;
-  if (!isAutoReply) {
+  if (!isAutoReply && !isPdvInfo) {
     try {
       var qrUrl = "https://quickchart.io/qr?size=250&text=" + encodeURIComponent(qrContent);
       qrBlob = UrlFetchApp.fetch(qrUrl).getBlob();
@@ -1145,6 +1162,7 @@ function generateHtml(items, name, isAutoReply, inquiryId, color, isHidro, subje
   var lightGray = "#f8f9fa";
 
   var title = isAutoReply ? "INFORMATIVNA PONUDA" : "PONUDA ZA PLAĆANJE";
+  if (isPdvInfo) title = "INFORMATIVNA PONUDA";
   var isInvoice = subjectUpper.indexOf("RAČUN") !== -1;
   if (isInvoice) title = "RAČUN";
 
@@ -1155,6 +1173,8 @@ function generateHtml(items, name, isAutoReply, inquiryId, color, isHidro, subje
   var kupacHtml = "<b>" + name + "</b>";
   if (address) kupacHtml += "<br>" + address;
   if (oib) kupacHtml += "<br>OIB: " + oib;
+
+  var showBankDetails = !isPdvInfo;
 
   var html = "<!DOCTYPE html><html><head>" +
              "<link href='https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Montserrat:wght@800&family=Inter:wght@400;600;700&display=swap' rel='stylesheet'>" +
@@ -1213,12 +1233,16 @@ function generateHtml(items, name, isAutoReply, inquiryId, color, isHidro, subje
              "<tr>" +
              "<td style='vertical-align: top; width: 60%;'>" +
              "<div style='font-size: 11px; color: #888; margin-bottom: 5px; text-transform: uppercase; font-weight: bold;'>Kupac:</div>" +
-             "<div style='font-size: 14px; color: #000; line-height: 1.4;'>" + kupacHtml + "</div>" +
-              "<div style='font-size: 11px; margin-top: 10px;'>" +
-              "Plaćanje na IBAN: <b>HR3123400091111213241</b><br>" +
-              "Poziv na broj: <b>" + inquiryId + "</b>" +
-              "</div>" +
-             "</td>" +
+             "<div style='font-size: 14px; color: #000; line-height: 1.4;'>" + kupacHtml + "</div>";
+             
+  if (showBankDetails) {
+    html +=  "<div style='font-size: 11px; margin-top: 10px;'>" +
+             "Plaćanje na IBAN: <b>HR3123400091111213241</b><br>" +
+             "Poziv na broj: <b>" + inquiryId + "</b>" +
+             "</div>";
+  }
+  
+  html +=    "</td>" +
              "<td style='text-align: right; vertical-align: top; font-size: 12px; color: #333; line-height: 1.6;'>" +
              "Datum i vrijeme izdavanja:<br><b>" + Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "dd.MM.yyyy., HH:mm") + "</b><br>" +
              "Mjesto izdavanja: <b>Zagreb</b>" +
@@ -1241,30 +1265,42 @@ function generateHtml(items, name, isAutoReply, inquiryId, color, isHidro, subje
         html += "<tr><td class='td'>" + item.name + "</td><td class='td' style='text-align:center; white-space:nowrap;'>" + unitPrice.toLocaleString('hr-HR', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " €</td><td class='td' style='text-align:center; white-space:nowrap;'>" + qtyFormatted + " " + (item.unit || "kom") + "</td><td class='td td-num'>" + lineTotal.toLocaleString('hr-HR', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " €</td></tr>";
     });
 
-    html += "</tbody></table>" +
-            "<div class='total-block'><div style='font-size:11px; font-weight:bold; margin-bottom:5px; color:" + darkColor + ";'>SVEUKUPNI IZNOS (MPC)</div>" +
-            "<div class='total-value'>" + rawTotal.toLocaleString('hr-HR', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " €</div></div>" +
-            "<div style='font-size:11px; text-align:right; margin-top:5px; color:#555;'>Porezni obveznik nije u sustavu PDV-a, temeljem članka 90. Zakona o porezu na dodanu vrijednost.</div>";
-            
-    if (!isInvoice) {
-        html += "<div class='note'><b>Uvjeti kupnje:</b><br><ul style='margin-top:5px; padding-left:20px; margin-bottom:10px;'><li>Plaćanje: avans - uplatom na žiro račun</li><li>Minimalni iznos kupovine: 200,00 eur</li><li>Sve cijene su sa PDV-om*</li></ul></div>";
+    if (isPdvInfo) {
+        var pdvVal = rawTotal * 0.25;
+        var grandTotal = rawTotal + pdvVal;
+        html += "<tr><td colspan='3' style='text-align:right; border:none; padding:8px 12px; font-weight:bold;'></td><td class='td td-num' style='border:none; border-bottom:1px solid #ddd; padding:8px 12px; font-weight:bold;'>" + rawTotal.toLocaleString('hr-HR', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " €</td></tr>" +
+                "<tr><td colspan='3' style='text-align:right; border:none; padding:8px 12px; font-weight:bold;'>PDV 25%:</td><td class='td td-num' style='border:none; border-bottom:1px solid #ddd; padding:8px 12px; font-weight:bold;'>" + pdvVal.toLocaleString('hr-HR', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " €</td></tr>" +
+                "<tr><td colspan='3' style='text-align:right; border:none; padding:8px 12px; font-weight:bold; font-size:16px;'>UKUPNO:</td><td class='td td-num' style='border:none; border-bottom:2px double #000; padding:8px 12px; font-size:16px; font-weight:bold;'>" + grandTotal.toLocaleString('hr-HR', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " €</td></tr>" +
+                "</tbody></table>";
+    } else {
+        html += "</tbody></table>" +
+                "<div class='total-block'><div style='font-size:11px; font-weight:bold; margin-bottom:5px; color:" + darkColor + ";'>SVEUKUPNI IZNOS (MPC)</div>" +
+                "<div class='total-value'>" + rawTotal.toLocaleString('hr-HR', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " €</div></div>";
+        if (!isInvoice) {
+            html += "<div style='font-size:11px; text-align:right; margin-top:5px; color:#555;'>Porezni obveznik nije u sustavu PDV-a, temeljem članka 90. Zakona o porezu na dodanu vrijednost.</div>" +
+                    "<div class='note'><b>Uvjeti kupnje:</b><br><ul style='margin-top:5px; padding-left:20px; margin-bottom:10px;'><li>Plaćanje: avans - uplatom na žiro račun</li><li>Minimalni iznos kupovine: 200,00 eur</li><li>Sve cijene su sa PDV-om*</li></ul></div>";
+        }
     }
 
     // QR Code logic: Using Base64 URI for PDF stability (Show only for Offers)
-    if (qrDataUri && !isInvoice) {
+    if (qrDataUri && !isInvoice && !isPdvInfo) {
         html += "<div class='qr-box' style='margin-top: 40px; border: 1px dashed #ccc; padding: 25px; border-radius: 12px; background: #fff;'>" +
                 "<img src='" + qrDataUri + "' style='width:180px; height: 180px; display: block; margin: 0 auto;'>" +
                 "<div style='margin-top: 15px; font-size: 11px; color: #333; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;'>SKENIRAJ I PLATI (HUB3 STANDARD)</div>" +
                 "<div style='font-size: 9px; color: #888; margin-top: 5px;'>2LMF PRO - Sigurno plaćanje putem mobilnog bankarstva</div></div>";
     }
 
-    html += "</div></div><div class='footer'>" +
-            "Operater / Dokument izdao: Karlo Fantoni, OIB: 80717062661 | Način plaćanja: transakcijski račun<br>" +
-            "Članovi uprave: Karlo Fantoni, OIB: 80717062661 | Temeljni kapital: 1,00 eur, uplaćen u cijelosti<br>" +
-            "Sud: Upisano u Sudski registar Trgovačkog suda u Zagrebu pod brojem 081477933<br><br>" +
-            "Privredna banka Zagreb d.d. | Radnička cesta 50, 10000 Zagreb, Hrvatska<br>" +
-            "Broj bankovnog računa: IBAN: <b>HR3123400091111213241</b>" +
-            "</div></div></body></html>";
+    var footerHtml = "Operater / Dokument izdao: Karlo Fantoni, OIB: 80717062661 | Način plaćanja: transakcijski račun<br>" +
+                     "Članovi uprave: Karlo Fantoni, OIB: 80717062661 | Temeljni kapital: 1,00 eur, uplaćen u cijelosti<br>" +
+                     "Sud: Upisano u Sudski registar Trgovačkog suda u Zagrebu pod brojem 081477933<br><br>";
+    if (showBankDetails) {
+        footerHtml += "Privredna banka Zagreb d.d. | Radnička cesta 50, 10000 Zagreb, Hrvatska<br>" +
+                      "Broj bankovnog računa: IBAN: <b>HR3123400091111213241</b>";
+    } else {
+        footerHtml += "2LMF PRO j.d.o.o. | Orešje 7, 10090 Zagreb, Hrvatska | Telefon: +385 95 311 5007 | Email: info@2lmf-pro.hr";
+    }
+
+    html += "</div></div><div class='footer'>" + footerHtml + "</div></div></body></html>";
     return {
       html: html,
       qrBlob: qrBlob,
@@ -2357,17 +2393,19 @@ function handleCreateManualInquiry(ss, postData) {
     var q = parseFloat(String(it.kolicina || it.qty || 1).replace(',', '.'));
     total += (p * q);
   });
-  sheet.appendRow([dateStr, id, postData.name, postData.email, "", postData.subject, total, "", "NOVO", JSON.stringify({ stavke: items })]);
+  var isPdvInfo = postData.pdvInfo === true || postData.pdvInfo === 'true';
+  var rawDataObj = { stavke: items, pdvInfo: isPdvInfo };
+  sheet.appendRow([dateStr, id, postData.name, postData.email, "", postData.subject, total, "", "NOVO", JSON.stringify(rawDataObj)]);
   
   if (postData.email && postData.email.indexOf("@") !== -1) {
-    var inquiry = { id: id, name: postData.name, email: postData.email, subject: postData.subject, amount: total, jsonData: JSON.stringify({ stavke: items }) };
-    sendInquiryOffer(ss, inquiry); // PWA helper uses this
+    var inquiry = { id: id, name: postData.name, email: postData.email, subject: postData.subject, amount: total, jsonData: JSON.stringify(rawDataObj) };
+    sendInquiryOffer(ss, inquiry, isPdvInfo); // PWA helper uses this
   }
   return { status: "success", id: id };
 }
 
-function sendInquiryOffer(ss, inquiry) { return sendMailCore(ss, inquiry, "PONUDA"); }
-function sendInquiryInvoice(ss, inquiry) { return sendMailCore(ss, inquiry, "RACUN"); }
+function sendInquiryOffer(ss, inquiry, forcePdvInfo) { return sendMailCore(ss, inquiry, "PONUDA", forcePdvInfo); }
+function sendInquiryInvoice(ss, inquiry, forcePdvInfo) { return sendMailCore(ss, inquiry, "RACUN", forcePdvInfo); }
 
 function saveLocation(ss, data) {
   try {
@@ -2504,14 +2542,21 @@ function parseDate(val) {
   return null;
 }
 
-function sendMailCore(ss, inquiry, type) {
+function sendMailCore(ss, inquiry, type, forcePdvInfo) {
   try {
     var items = [];
+    var isPdvInfo = false;
     try {
       var raw = JSON.parse(inquiry.jsonData || "{}");
       items = raw.stavke || raw.items || raw.products || [];
       if (Array.isArray(raw) && raw.length > 0) items = raw;
+      else if (raw.pdvInfo !== undefined) isPdvInfo = raw.pdvInfo === true;
     } catch(e) {}
+    
+    if (forcePdvInfo !== undefined) {
+      isPdvInfo = (forcePdvInfo === true || forcePdvInfo === 'true');
+      updateInquiryPdvInfo(ss, inquiry.id, isPdvInfo);
+    }
     
     // --- ADAPTER: Map PWA field names to CRM field names for generateHtml ---
     var normalizedItems = items.map(function(item) {
@@ -2530,7 +2575,7 @@ function sendMailCore(ss, inquiry, type) {
     if (type === "RACUN") subject = "RAČUN " + subject; // So generateHtml detects it as invoice
 
     // Use the SAME professional generateHtml as Sheet
-    var result = generateHtml(normalizedItems, inquiry.name, isAutoReply, inquiry.id, null, isHidro, subject, null, null);
+    var result = generateHtml(normalizedItems, inquiry.name, isAutoReply, inquiry.id, null, isHidro, subject, null, null, isPdvInfo);
     
     var pdfBlob = HtmlService.createHtmlOutput(result.html).setTitle(type + "_" + inquiry.id).getAs('application/pdf');
     pdfBlob.setName(type + "_" + inquiry.id + ".pdf");
@@ -2599,6 +2644,22 @@ function updateInquiryStatus(ss, id, status) {
   var data = sheet.getDataRange().getValues();
   for (var i = 1; i < data.length; i++) {
     if (String(data[i][1]) === String(id)) { sheet.getRange(i + 1, 9).setValue(status); break; }
+  }
+}
+
+function updateInquiryPdvInfo(ss, id, isPdvInfo) {
+  var sheet = ss.getSheetByName("Upiti");
+  var data = sheet.getDataRange().getValues();
+  for (var i = 1; i < data.length; i++) {
+    if (String(data[i][1]) === String(id)) {
+      var rawJson = {};
+      try {
+        rawJson = JSON.parse(data[i][9] || "{}");
+      } catch(e) {}
+      rawJson.pdvInfo = isPdvInfo;
+      sheet.getRange(i + 1, 10).setValue(JSON.stringify(rawJson));
+      break;
+    }
   }
 }
 

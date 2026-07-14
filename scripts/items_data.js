@@ -154,6 +154,18 @@ const prices = {
     new_products: {
         reflectix: { price: 4.1125, sku: "3011", name: "SEALED AIR REFLECTIX? (alu izolacija)" },
         ethafoam: { price: 1.9500000000000002, sku: "3012", name: "Ethafoam 2222 (izolacija od udarnog zvuka u podu)" }
+    },
+    hella: {
+        open: { price: 450.00, sku: "8001", name: "HELLA Otvorena tenda AREIA 6030" },
+        semi: { price: 650.00, sku: "8002", name: "HELLA Poluotvorena tenda VIVA 7040" },
+        cleo5530: { price: 750.00, sku: "8003", name: "HELLA Kasetna tenda CLEO 5530" },
+        cleo7030: { price: 850.00, sku: "8004", name: "HELLA Kasetna tenda CLEO 7030" },
+        cleo7040: { price: 950.00, sku: "8005", name: "HELLA Kasetna tenda CLEO 7040" },
+        pan: { price: 1100.00, sku: "8006", name: "HELLA Kasetna tenda PAN 7040" },
+        c2: { price: 1000.00, sku: "8007", name: "HELLA Kasetna tenda C2" },
+        onyx_motor: { price: 200.00, sku: "8011", name: "HELLA ONYX motorni pogon" },
+        onyx_remote: { price: 50.00, sku: "8012", name: "HELLA ONYX daljinski upravljač" },
+        onyx_wind: { price: 80.00, sku: "8013", name: "HELLA ONYX senzor vjetra" }
     }
 };
 
