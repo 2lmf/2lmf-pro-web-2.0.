@@ -1171,7 +1171,7 @@ function generateHtml(items, name, isAutoReply, inquiryId, color, isHidro, subje
                  "<div style='font-family: \"Orbitron\", sans-serif; font-size: 32px; font-weight: 900; color: #000; letter-spacing: 3px;'>" +
                  "<span style='color: #E67E22;'>2LMF</span> PRO" +
                  "</div>" +
-                 "<div style='font-size: 10px; color: #666; margin-top: 5px; text-transform: uppercase; letter-spacing: 1px;'>HIDRO & TERMO IZOLACIJA • FASADE • OGRADE</div>" +
+                 "<div style='font-size: 10px; color: #666; margin-top: 5px; text-transform: uppercase; letter-spacing: 1px;'>ARHITEKTURA • NABAVA MATERIJALA • DIGITALNA RJEŠENJA</div>" +
                  "</td>" +
                  "<td style='text-align: right; vertical-align: top; font-size: 11px; color: #333; line-height: 1.5; border: none;'>" +
                   "<b>2LMF PRO j.d.o.o.</b><br>" +
@@ -1327,7 +1327,7 @@ function generateHtml(items, name, isAutoReply, inquiryId, color, isHidro, subje
              "<div style='font-family: \"Orbitron\", sans-serif; font-size: 32px; font-weight: 900; color: #000; letter-spacing: 3px;'>" +
              "<span style='color: " + primaryColor + ";'>2LMF</span> PRO" +
              "</div>" +
-             "<div style='font-size: 10px; color: #666; margin-top: 5px; text-transform: uppercase; letter-spacing: 1px;'>HIDRO & TERMO IZOLACIJA • FASADE • OGRADE</div>" +
+             "<div style='font-size: 10px; color: #666; margin-top: 5px; text-transform: uppercase; letter-spacing: 1px;'>ARHITEKTURA • NABAVA MATERIJALA • DIGITALNA RJEŠENJA</div>" +
              "</td>" +
              "<td style='text-align: right; vertical-align: top; font-size: 11px; color: #333; line-height: 1.5;'>" +
               "<b>2LMF PRO j.d.o.o.</b><br>" +
