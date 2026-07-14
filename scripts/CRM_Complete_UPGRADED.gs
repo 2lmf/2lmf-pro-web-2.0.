@@ -1115,14 +1115,12 @@ function sendCustomInvoice(isMobile) {
   if (!isMobile) Browser.msgBox("Račun poslan na: " + email);
   return true;
 }
-
 function setStatus(msg) {
    // Helper to show errors without blocking mobile
    try { SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Generator Ponuda").getRange("H9").setValue(msg); } catch(e){}
    console.log(msg);
 }
 
-// --- UPGRADED HELPER: HTML GENERATOR (Shared) ---
 function generateHtml(items, name, isAutoReply, inquiryId, color, isHidro, subject, address, oib, isPdvInfo) {
     name = String(name || "Kupac"); // Sanitize to string to prevent substring error
     var rawTotal = 0;
@@ -1132,6 +1130,118 @@ function generateHtml(items, name, isAutoReply, inquiryId, color, isHidro, subje
          if(i.line_total) rawTotal += i.line_total;
          else rawTotal += (q * p);
     });
+
+  var dateFormatted = Utilities.formatDate(new Date(), Session.getScriptTimeZone() || "GMT+1", "dd.MM.yyyy., HH:mm");
+
+  if (isPdvInfo) {
+      // --- CLEAN SPREADSHEET STYLE FOR PARTNER INFO OFFER ---
+      var pdvVal = rawTotal * 0.25;
+      var grandTotal = rawTotal + pdvVal;
+      
+      var kupacHtml = "<b>" + name + "</b>";
+      if (address) kupacHtml += "<br>" + address;
+      if (oib) kupacHtml += "<br>OIB: " + oib;
+
+      var tableRowsHtml = "";
+      items.forEach(function(item) {
+          var lineTotal = 0; if (item.line_total) lineTotal = item.line_total; else lineTotal = (parseFloat(item.qty) || 0) * (parseFloat(item.price_sell) || 0);
+          var unitPrice = parseFloat(item.price_sell) || 0;
+          var qtyFormatted = (parseFloat(item.qty) || 0).toLocaleString('hr-HR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+          tableRowsHtml += "<tr style='border-bottom: 1px solid #ddd;'>" +
+                           "<td style='padding: 10px; text-align: left; border: 1px solid #ddd;'>" + item.name + "</td>" +
+                           "<td style='padding: 10px; text-align: right; border: 1px solid #ddd; white-space:nowrap;'>" + unitPrice.toLocaleString('hr-HR', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " €</td>" +
+                           "<td style='padding: 10px; text-align: center; border: 1px solid #ddd; white-space:nowrap;'>" + qtyFormatted + " " + (item.unit || "kom") + "</td>" +
+                           "<td style='padding: 10px; text-align: right; border: 1px solid #ddd; white-space:nowrap; font-weight: 600;'>" + lineTotal.toLocaleString('hr-HR', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " €</td>" +
+                           "</tr>";
+      });
+
+      var html = "<!DOCTYPE html><html><head>" +
+                 "<link href='https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Inter:wght@400;600;700&display=swap' rel='stylesheet'>" +
+                 "<style>" +
+                 "body { margin:0; padding:40px; background-color: #fff; font-family: 'Inter', 'Segoe UI', Roboto, sans-serif; color: #000; }" +
+                 ".container { max-width: 650px; margin: 0 auto; }" +
+                 "table { width: 100%; border-collapse: collapse; margin-top: 10px; border: 1px solid #ddd; }" +
+                 "th { padding: 10px; text-align: left; font-weight: bold; border: 1px solid #ddd; background-color: #fafafa; font-size: 13px; }" +
+                 "td { padding: 10px; border: 1px solid #ddd; font-size: 13px; }" +
+                 "</style></head><body><div class='container'>" +
+                 // --- HEADER ---
+                 "<table width='100%' cellpadding='0' cellspacing='0' border='0' style='margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 20px; border: none;'>" +
+                 "<tr style='border: none;'>" +
+                 "<td style='vertical-align: top; border: none;'>" +
+                 "<div style='font-family: \"Orbitron\", sans-serif; font-size: 32px; font-weight: 900; color: #000; letter-spacing: 3px;'>" +
+                 "<span style='color: #E67E22;'>2LMF</span> PRO" +
+                 "</div>" +
+                 "<div style='font-size: 10px; color: #666; margin-top: 5px; text-transform: uppercase; letter-spacing: 1px;'>HIDRO & TERMO IZOLACIJA • FASADE • OGRADE</div>" +
+                 "</td>" +
+                 "<td style='text-align: right; vertical-align: top; font-size: 11px; color: #333; line-height: 1.5; border: none;'>" +
+                  "<b>2LMF PRO j.d.o.o.</b><br>" +
+                  "Orešje 7, 10090 Zagreb, Hrvatska<br>" +
+                  "OIB: 29766043828 ◼ MB: 081477933<br>" +
+                  "Telefon: +385 95 311 5007<br>" +
+                  "Email: info@2lmf-pro.hr" +
+                 "</td>" +
+                 "</tr>" +
+                 "</table>" +
+                 // --- CUSTOMER BLOCK ---
+                 "<table width='100%' cellpadding='0' cellspacing='0' border='0' style='margin-bottom: 30px; border: none;'>" +
+                 "<tr style='border: none;'>" +
+                 "<td style='vertical-align: top; width: 60%; border: none;'>" +
+                 "<div style='font-size: 11px; color: #888; margin-bottom: 5px; text-transform: uppercase; font-weight: bold;'>Kupac:</div>" +
+                 "<div style='font-size: 14px; color: #000; line-height: 1.4;'>" + kupacHtml + "</div>" +
+                 "</td>" +
+                 "<td style='text-align: right; vertical-align: top; font-size: 11px; color: #333; line-height: 1.6; border: none;'>" +
+                 "Datum i vrijeme izdavanja:<br><b>" + dateFormatted + "</b><br>" +
+                 "Mjesto izdavanja: <b>Zagreb</b>" +
+                 "</td>" +
+                 "</tr>" +
+                 "</table>" +
+                 // --- TITLE ---
+                 "<div style='text-align: center; margin-bottom: 30px; border-bottom: 2px solid #eee; padding-bottom: 10px;'>" +
+                 "<h1 style='font-size: 24px; font-weight: 800; color: #000; margin: 0; text-transform: uppercase;'>INFORMATIVNA PONUDA br. " + inquiryId + "</h1>" +
+                 "</div>" +
+                 // --- TABLE ---
+                 "<table>" +
+                 "<thead>" +
+                 "<tr>" +
+                 "<th style='text-align: left;'>PROIZVOD:</th>" +
+                 "<th style='text-align: right; width: 120px;'>CIJENA</th>" +
+                 "<th style='text-align: center; width: 100px;'>KOLIČINA</th>" +
+                 "<th style='text-align: right; width: 120px;'>UKUPNO</th>" +
+                 "</tr>" +
+                 "</thead>" +
+                 "<tbody>" +
+                 tableRowsHtml +
+                 "<tr>" +
+                 "<td colspan='3' style='text-align: right; font-weight: bold; border: none; padding: 10px 10px 5px;'></td>" +
+                 "<td style='text-align: right; font-weight: bold; border: 1px solid #ddd; padding: 10px 10px 5px; white-space:nowrap;'>" + rawTotal.toLocaleString('hr-HR', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " €</td>" +
+                 "</tr>" +
+                 "<tr>" +
+                 "<td colspan='3' style='text-align: right; font-weight: bold; border: none; padding: 5px 10px;'>PDV 25%:</td>" +
+                 "<td style='text-align: right; font-weight: bold; border: 1px solid #ddd; padding: 5px 10px; white-space:nowrap;'>" + pdvVal.toLocaleString('hr-HR', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " €</td>" +
+                 "</tr>" +
+                 "<tr>" +
+                 "<td colspan='3' style='text-align: right; font-weight: bold; border: none; padding: 5px 10px 15px;'>UKUPNO:</td>" +
+                 "<td style='text-align: right; font-weight: bold; border: 1px solid #ddd; border-bottom: 2px double #000; padding: 5px 10px 15px; font-size: 15px; white-space:nowrap;'>" + grandTotal.toLocaleString('hr-HR', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " €</td>" +
+                 "</tr>" +
+                 "</tbody>" +
+                 "</table>" +
+                 // --- FOOTER ---
+                 "<div style='margin-top: 60px; font-size: 11px; line-height: 1.6; border-top: 1px solid #eee; padding-top: 15px; color: #000;'>" +
+                 "<b>Karlo Fantoni</b><br>" +
+                 "2LMF PRO j.d.o.o.<br>" +
+                 "095 311 5007<br>" +
+                 "info@2lmf-pro.hr<br>" +
+                 "Orešje 7, 10090 Zagreb, Hrvatska<br>" +
+                 "OIB: 29766043828 ◼ MB: 081477933" +
+                 "</div>" +
+                 "</div></body></html>";
+
+      return {
+        html: html,
+        qrBlob: null,
+        qrDataUri: ""
+      };
+  }
 
   // --- HUB3 QR FORMAT (HRVHUB30) ---
   var amountCents = (Math.round(rawTotal * 100)).toString();
