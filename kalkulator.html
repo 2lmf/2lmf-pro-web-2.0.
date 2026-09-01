@@ -477,6 +477,13 @@
         .system-card.active h4 { color: var(--accent); }
         .system-card.active p  { color: #c0600a; }
 
+        .system-card .card-model { font-family: 'Outfit', sans-serif; font-size: 17px; font-weight: 700; color: var(--text); margin: 0 0 4px 0; letter-spacing: 0.01em; line-height: 1.2; }
+        .system-card .card-type  { font-size: 10.5px; color: var(--muted); font-weight: 500; margin: 0; text-transform: uppercase; letter-spacing: 0.06em; }
+        .system-card .card-sub   { font-size: 10px; color: var(--muted); margin-top: 3px; opacity: 0.7; }
+        .system-card.active .card-model { color: var(--accent); }
+        .system-card.active .card-type  { color: #c0600a; }
+        .system-card.active .card-sub   { color: #c0600a; opacity: 0.8; }
+
         .option-group {
             display: flex;
             flex-wrap: wrap;
@@ -987,6 +994,7 @@
             <div class="v2-nav-item" data-mod="hidro">💧 Hidroizolacija</div>
             <div class="v2-nav-item" data-mod="termo">🌡️ Termoizolacija</div>
             <div class="v2-nav-item" data-mod="katalog">🛒 Svi proizvodi</div>
+            <div class="v2-nav-item" data-mod="tende"><svg width="54" height="11" viewBox="0 0 144 30" style="vertical-align:middle;margin-right:5px"><polygon fill="#111" points="23.934 0.398 21.147 11.566 11.031 11.566 13.814 0.403 6.871 0.403 0 29.171 6.789 29.171 9.576 17.686 19.645 17.686 16.896 29.171 23.954 29.171 30.828 0.398"/><polygon fill="#111" points="73.703 0.398 66.794 29.171 86.214 29.171 87.345 23.317 75.054 23.317 80.671 0.398"/><polygon fill="#111" points="99.393 0.398 92.483 29.171 111.903 29.171 113.035 23.317 100.745 23.317 106.360 0.398"/><path fill="#111" d="M131.700 0.398 L116.118 29.147 L122.661 29.147 L125.674 23.669 L136.426 23.669 L137.279 29.171 L143.863 29.171 L138.580 0.398 Z M134.018 8.644 L135.641 18.773 L128.407 18.773 Z"/><polygon fill="#F8AE15" points="43.516 0.398 36.993 6.564 61.297 6.564 67.821 0.398"/><polygon fill="#E52A48" points="40.435 11.702 33.911 17.868 58.214 17.868 64.738 11.702"/><polygon fill="#226AB2" points="37.351 21.978 30.828 28.143 55.132 28.143 61.656 21.978"/></svg>Tende</div>
         </div>
     </nav>
 
@@ -999,6 +1007,7 @@
             <div id="ograde-view" class="module-view"></div>
             <div id="hidro-view" class="module-view"></div>
             <div id="termo-view" class="module-view"></div>
+            <div id="tende-view" class="module-view"></div>
             <div id="energy-view" class="module-view active"><div style="position:sticky;top:35vh;display:flex;flex-direction:column;align-items:center;gap:12px;padding:40px 20px;text-align:center;"><div style="font-size:1.1rem;font-weight:600;letter-spacing:1px;">Katalog se učitava<span id="energy-dots">.</span></div><div style="font-size:0.85rem;opacity:0.5;">Trenutak strpljenja...</div></div></div>
             <div id="katalog-view" class="module-view"><div style="position:sticky;top:35vh;display:flex;flex-direction:column;align-items:center;gap:12px;padding:40px 20px;text-align:center;"><div style="font-size:2.5rem;">🛒</div><div style="font-size:1.1rem;font-weight:600;letter-spacing:1px;">Katalog se učitava<span id="katalog-dots">.</span></div><div style="font-size:0.85rem;opacity:0.5;">Trenutak strpljenja...</div></div></div>
         </div>
@@ -1420,34 +1429,43 @@
         <div class="config-flow">
             <h3 style="font-family: 'Orbitron'; font-size: 0.8rem; margin-bottom: 1rem; color: var(--accent);">
                 ODABERITE TIP TENDE</h3>
-            <div class="system-grid" id="tendeTypeOptions" style="grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin-bottom: 1.5rem;">
+            <div class="system-grid" id="tendeTypeOptions" style="margin-bottom: 1.5rem;">
                 <div class="system-card active" data-type="open">
-                    <h4>OTVORENA TENDA</h4>
-                    <p>Areia 6030</p>
+                    <div class="card-model">AREIA 6030</div>
+                    <div class="card-type">Otvorena tenda</div>
+                </div>
+                <div class="system-card" data-type="areia7040">
+                    <div class="card-model">AREIA 7040</div>
+                    <div class="card-type">Otvorena tenda</div>
                 </div>
                 <div class="system-card" data-type="semi">
-                    <h4>POLUOTVORENA TENDA</h4>
-                    <p>Viva 7040</p>
+                    <div class="card-model">VIVA 7040</div>
+                    <div class="card-type">Poluotvorena tenda</div>
                 </div>
                 <div class="system-card" data-type="cleo5530">
-                    <h4>KASETNA CLEO 5530</h4>
-                    <p>Uski model (ovalna)</p>
+                    <div class="card-model">CLEO 5530</div>
+                    <div class="card-type">Kasetna tenda</div>
+                    <div class="card-sub">Mala ovalna</div>
                 </div>
                 <div class="system-card" data-type="cleo7030">
-                    <h4>KASETNA CLEO 7030</h4>
-                    <p>Srednji model (ovalna)</p>
+                    <div class="card-model">CLEO 7030</div>
+                    <div class="card-type">Kasetna tenda</div>
+                    <div class="card-sub">Srednja ovalna</div>
                 </div>
                 <div class="system-card" data-type="cleo7040">
-                    <h4>KASETNA CLEO 7040</h4>
-                    <p>Veliki model (ovalna)</p>
+                    <div class="card-model">CLEO 7040</div>
+                    <div class="card-type">Kasetna tenda</div>
+                    <div class="card-sub">Velika ovalna</div>
                 </div>
                 <div class="system-card" data-type="pan">
-                    <h4>KASETNA PAN 7040</h4>
-                    <p>Zidna, puna kaseta</p>
+                    <div class="card-model">PAN (7040)</div>
+                    <div class="card-type">Kasetna tenda</div>
+                    <div class="card-sub">Pravokutna</div>
                 </div>
                 <div class="system-card" data-type="c2">
-                    <h4>KASETNA C2</h4>
-                    <p>Standardna (pravokutna)</p>
+                    <div class="card-model">C2 (7040)</div>
+                    <div class="card-type">Kasetna tenda</div>
+                    <div class="card-sub">Pravokutna</div>
                 </div>
             </div>
 
@@ -1467,6 +1485,8 @@
                                 <option value="5.0">5.0 m</option>
                                 <option value="5.5">5.5 m</option>
                                 <option value="6.0">6.0 m</option>
+                                <option value="6.5">6.5 m</option>
+                                <option value="7.0">7.0 m</option>
                             </select>
                         </div>
                         <div style="flex: 1; min-width: 150px;">
@@ -1502,21 +1522,26 @@
                 </div>
 
                 <div class="step-card" style="grid-column: span 2;">
-                    <div class="step-title">🕹️ ONYX MOTORIZACIJA & SENZORI</div>
-                    <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
-                        <label class="status-indicator-wrapper" style="display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 500; cursor: pointer;">
-                            <input type="checkbox" id="tendeOnyxMotor" style="width: 18px; height: 18px; accent-color: var(--accent);">
-                            <span>ONYX motorni pogon (Hella)</span>
+                    <div class="step-title">🕹️ TIP POGONA</div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;" id="tendeDriveOptions">
+                        <label style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:500;cursor:pointer;">
+                            <input type="radio" name="tendeDrive" value="vitlo" style="accent-color:var(--accent);" checked>
+                            <span>Vitlo (ručni pogon)</span>
                         </label>
-                        <label class="status-indicator-wrapper" style="display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 500; cursor: pointer; opacity: 0.5;" id="wrapperOnyxRemote">
-                            <input type="checkbox" id="tendeOnyxRemote" disabled style="width: 18px; height: 18px; accent-color: var(--accent);">
-                            <span>Dodatni daljinski upravljač</span>
+                        <label style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:500;cursor:pointer;">
+                            <input type="radio" name="tendeDrive" value="fx0" style="accent-color:var(--accent);">
+                            <span>ONYX radio motor</span>
                         </label>
-                        <label class="status-indicator-wrapper" style="display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 500; cursor: pointer; opacity: 0.5;" id="wrapperOnyxWind">
-                            <input type="checkbox" id="tendeOnyxWind" disabled style="width: 18px; height: 18px; accent-color: var(--accent);">
-                            <span>Senzor vjetra (automatsko zatvaranje)</span>
+                        <label style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:500;cursor:pointer;">
+                            <input type="radio" name="tendeDrive" value="fx1" style="accent-color:var(--accent);">
+                            <span>ONYX radio motor + ONYX click daljinski <span style="color:#9ca3af;font-size:11px;">· LED opcija</span></span>
+                        </label>
+                        <label style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:500;cursor:pointer;">
+                            <input type="radio" name="tendeDrive" value="fx5" style="accent-color:var(--accent);">
+                            <span>ONYX radio motor + ONYX click daljinski + ONYX tag senzor vjetra <span style="color:#9ca3af;font-size:11px;">· LED opcija</span></span>
                         </label>
                     </div>
+
                 </div>
 
                 <div class="step-card" style="grid-column: span 2; display: none;" id="tendeOpcijeCard">
@@ -1524,11 +1549,15 @@
                     <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
                         <label id="wrapperVarioplus" style="display:none;align-items:center;gap:10px;font-size:13px;font-weight:500;cursor:pointer;">
                             <input type="checkbox" id="tendeVarioplus" style="width:18px;height:18px;accent-color:var(--accent);">
-                            <span>Varioplus rolo <span style="color:#9ca3af;font-size:11px;">(vertikalna zaštita od sunca i pogleda, integrirana u profil)</span></span>
+                            <span>Varioplus rolo <span style="color:#9ca3af;font-size:11px;">(vertikalna zaštita · samo izbačaj ≤ 3.5 m)</span></span>
+                        </label>
+                        <label id="wrapperVarioplusMotor" style="display:none;align-items:center;gap:10px;font-size:13px;font-weight:500;cursor:pointer;padding-left:28px;">
+                            <input type="checkbox" id="tendeVarioplusMotor" style="width:16px;height:16px;accent-color:var(--accent);">
+                            <span>Motorni pogon Varioplusom <span style="color:#9ca3af;font-size:11px;">ONYX</span></span>
                         </label>
                         <label id="wrapperLed" style="display:none;align-items:center;gap:10px;font-size:13px;font-weight:500;cursor:pointer;">
                             <input type="checkbox" id="tendeLed" style="width:18px;height:18px;accent-color:var(--accent);">
-                            <span>LED rasvjeta <span style="color:#9ca3af;font-size:11px;">(integrirana u zglobne krakove, 650 lm/m)</span></span>
+                            <span>LED rasvjeta <span style="color:#9ca3af;font-size:11px;">(integrirana u zglobne krakove · samo FX1 / FX5)</span></span>
                         </label>
                     </div>
                 </div>
@@ -1638,11 +1667,11 @@
                 projection: 2.5,
                 color: '7016',
                 mount: 'wall',
-                onyxMotor: false,
-                onyxRemote: false,
-                onyxWind: false,
+                drive: 'vitlo',
                 varioplus: false,
-                ledLight: false
+                varioplusMotor: false,
+                ledLight: false,
+                rabat: 0.20
             },
             skuMap: {
                 open: '8001',
@@ -1652,7 +1681,7 @@
                 cleo7040: '8005',
                 pan: '8006',
                 c2: '8007',
-                onyx_motor: '8011',
+                areia7040: '8008',
                 onyx_remote: '8012',
                 onyx_wind: '8013',
                 varioplus: '8015',
@@ -1853,13 +1882,17 @@
                     const val = obj[key];
                     if (val && val.sku && val.price !== undefined) {
                         LIVE_PRICES.prices[val.sku] = val.price;
-                        LIVE_PRICES.catalog.push({
-                            sku: val.sku,
-                            name: val.name,
-                            price: val.price,
-                            unit: 'kom', // Default unit
-                            category: category // Assign category from parent key
-                        });
+                        // Tende cijene su formula-based (vidi updateTendeAll) — ne u "Svi proizvodi",
+                        // jer bi ove stare flat cijene bile netočne naspram konfiguratora.
+                        if (category !== 'tende') {
+                            LIVE_PRICES.catalog.push({
+                                sku: val.sku,
+                                name: val.name,
+                                price: val.price,
+                                unit: 'kom', // Default unit
+                                category: category // Assign category from parent key
+                            });
+                        }
                     } else if (typeof val === 'object') {
                         // Map parent keys to broader categories
                         let nextCat = category;
@@ -1971,27 +2004,8 @@
         document.addEventListener('DOMContentLoaded', async () => {
             // 1. Immediately determine active module from hash to prevent race condition tracking wrong module
             const hash = window.location.hash.replace('#', '');
-            const isTestTende = window.location.search.includes('test=tende') || hash === 'tende';
-            if (isTestTende) {
-                const navCont = document.querySelector('.v2-nav-container');
-                if (navCont && !navCont.querySelector('[data-mod="tende"]')) {
-                    const btn = document.createElement('div');
-                    btn.className = 'v2-nav-item';
-                    btn.dataset.mod = 'tende';
-                    btn.textContent = '🎪 Hella Tende (Test)';
-                    navCont.appendChild(btn);
-                }
-                const configArea = document.querySelector('.config-area');
-                if (configArea && !document.getElementById('tende-view')) {
-                    const view = document.createElement('div');
-                    view.id = 'tende-view';
-                    view.className = 'module-view';
-                    configArea.appendChild(view);
-                }
-            }
 
-            const validModules = ['ograde', 'hidro', 'termo', 'katalog', 'energy'];
-            if (isTestTende) validModules.push('tende');
+            const validModules = ['ograde', 'hidro', 'termo', 'katalog', 'energy', 'tende'];
 
             const defaultMod = validModules.includes(hash) ? hash : 'energy';
             activeModule = defaultMod; // Set global right away
@@ -2064,7 +2078,7 @@
             activeModule = modId; const theme = THEMES[modId] || THEMES.ograde;
             document.documentElement.style.setProperty('--accent', theme.accent);
             document.documentElement.style.setProperty('--accent-rgb', theme.rgb);
-            const MOD_NAMES = { energy:'Energy / Outdoor', ograde:'Ograde', hidro:'Hidroizolacija', termo:'Termoizolacija', katalog:'Svi proizvodi', tende:'Hella Tende (Test)' };
+            const MOD_NAMES = { energy:'Energy / Outdoor', ograde:'Ograde', hidro:'Hidroizolacija', termo:'Termoizolacija', katalog:'Svi proizvodi', tende:'Hella Tende' };
             document.getElementById('activeModName').textContent = MOD_NAMES[modId] || modId.toUpperCase();
             document.querySelectorAll('.module-view').forEach(v => v.classList.remove('active'));
 
@@ -3155,6 +3169,7 @@
                     v.querySelectorAll('.system-card').forEach(c => c.classList.remove('active'));
                     card.classList.add('active');
                     s.type = card.dataset.type;
+                    if (typeof syncDimensionOptions === 'function') syncDimensionOptions();
                     if (window._tende_syncOpcije) window._tende_syncOpcije();
                     updateTendeAll();
                 };
@@ -3165,13 +3180,74 @@
                 card.classList.toggle('active', card.dataset.type === s.type);
             });
 
+            // Dimenzionalna ograničenja po modelu (iz Hella cjenika 2026)
+            const MODEL_LIMITS = {
+                open:      { minW: 2.5, maxW: 6.0, maxP: 3.0 },
+                areia7040: { minW: 2.5, maxW: 7.0, maxP: 4.0 },
+                semi:      { minW: 2.0, maxW: 7.0, maxP: 4.0 },
+                pan:       { minW: 2.5, maxW: 7.0, maxP: 4.0 },
+                cleo5530:  { minW: 2.0, maxW: 5.5, maxP: 3.0 },
+                cleo7030:  { minW: 2.5, maxW: 7.0, maxP: 3.0 },
+                cleo7040:  { minW: 2.5, maxW: 7.0, maxP: 4.0 },
+                c2:        { minW: 2.0, maxW: 7.0, maxP: 4.0 },
+            };
+
+            // Max izbačaj po širini i modelu (iz Hella tabela težina 2026)
+            // Prazne ćelije u tablici = nedostupna kombinacija
+            const PROJ_LIMITS = {
+                open:      { 2.5:2.0, 3.0:2.5, 3.5:3.0, 4.0:3.0, 4.5:3.0, 5.0:3.0, 5.5:3.0, 6.0:3.0 },
+                areia7040: { 2.5:2.0, 3.0:2.0, 3.5:2.5, 4.0:3.0, 4.5:3.5, 5.0:4.0, 5.5:4.0, 6.0:4.0, 6.5:3.5, 7.0:4.0 },
+                semi:      { 2.0:2.5, 2.5:3.5, 3.0:4.0, 3.5:4.0, 4.0:4.0, 4.5:4.0, 5.0:4.0, 5.5:4.0, 6.0:4.0, 6.5:4.0, 7.0:4.0 },
+                pan:       { 2.5:1.5, 3.0:2.0, 3.5:2.5, 4.0:3.0, 4.5:3.5, 5.0:4.0, 5.5:4.0, 6.0:4.0, 6.5:3.5, 7.0:4.0 },
+                cleo5530:  { 2.0:1.5, 2.5:2.0, 3.0:2.5, 3.5:3.0, 4.0:3.0, 4.5:3.0, 5.0:3.0, 5.5:3.0 },
+                cleo7030:  { 2.5:1.5, 3.0:2.0, 3.5:2.5, 4.0:3.0, 4.5:3.0, 5.0:3.0, 5.5:3.0, 6.0:3.0, 6.5:3.0, 7.0:3.0 },
+                cleo7040:  { 2.5:1.5, 3.0:2.0, 3.5:2.5, 4.0:3.0, 4.5:3.5, 5.0:4.0, 5.5:4.0, 6.0:4.0, 6.5:3.5, 7.0:4.0 },
+                c2:        { 2.0:1.5, 2.5:2.0, 3.0:2.5, 3.5:3.0, 4.0:3.5, 4.5:4.0, 5.0:4.0, 5.5:4.0, 6.0:4.0, 6.5:3.5, 7.0:4.0 },
+            };
+
             // Set select values
             const selWidth = v.querySelector('#tendeWidth');
             const selProj = v.querySelector('#tendeProjection');
+
+            const syncDimensionOptions = () => {
+                const lim = MODEL_LIMITS[s.type] || { minW: 2.0, maxW: 7.0, maxP: 4.0 };
+                const minW = lim.minW || 2.0;
+                if (selWidth) {
+                    selWidth.querySelectorAll('option').forEach(opt => {
+                        const val = parseFloat(opt.value);
+                        const invalid = val < minW || val > lim.maxW;
+                        opt.disabled = invalid;
+                        opt.style.display = invalid ? 'none' : '';
+                    });
+                    if (s.width < minW) {
+                        s.width = minW;
+                        selWidth.value = minW.toFixed(1);
+                    } else if (s.width > lim.maxW) {
+                        s.width = lim.maxW;
+                        selWidth.value = lim.maxW.toFixed(1);
+                    }
+                }
+                const projMap = PROJ_LIMITS[s.type] || {};
+                const maxProjForWidth = projMap[s.width] ?? lim.maxP;
+                if (selProj) {
+                    selProj.querySelectorAll('option').forEach(opt => {
+                        const val = parseFloat(opt.value);
+                        opt.disabled = val > maxProjForWidth;
+                        opt.style.display = val > maxProjForWidth ? 'none' : '';
+                    });
+                    if (s.projection > maxProjForWidth) {
+                        s.projection = maxProjForWidth;
+                        selProj.value = maxProjForWidth.toFixed(1);
+                        if (window._tende_syncOpcije) window._tende_syncOpcije();
+                    }
+                }
+            };
+
             if (selWidth) {
                 selWidth.value = s.width.toFixed(1);
                 selWidth.onchange = (e) => {
                     s.width = parseFloat(e.target.value);
+                    syncDimensionOptions();
                     updateTendeAll();
                 };
             }
@@ -3179,9 +3255,13 @@
                 selProj.value = s.projection.toFixed(1);
                 selProj.onchange = (e) => {
                     s.projection = parseFloat(e.target.value);
+                    if (window._tende_syncOpcije) window._tende_syncOpcije();
                     updateTendeAll();
                 };
             }
+
+            // Primijeni limits odmah za inicijalni model
+            syncDimensionOptions();
 
             // Setup color options
             v.querySelectorAll('#tendeColorOptions .choice-pill').forEach(pill => {
@@ -3205,62 +3285,33 @@
                 };
             });
 
-            // Setup ONYX checkboxes
-            const chkMotor = v.querySelector('#tendeOnyxMotor');
-            const chkRemote = v.querySelector('#tendeOnyxRemote');
-            const chkWind = v.querySelector('#tendeOnyxWind');
-            const wrapRemote = v.querySelector('#wrapperOnyxRemote');
-            const wrapWind = v.querySelector('#wrapperOnyxWind');
-
-            const syncOnyxUI = () => {
-                const motorActive = s.onyxMotor;
-                if (chkRemote) {
-                    chkRemote.disabled = !motorActive;
-                    if (!motorActive) { chkRemote.checked = false; s.onyxRemote = false; }
-                    if (wrapRemote) wrapRemote.style.opacity = motorActive ? '1' : '0.5';
-                }
-                if (chkWind) {
-                    chkWind.disabled = !motorActive;
-                    if (!motorActive) { chkWind.checked = false; s.onyxWind = false; }
-                    if (wrapWind) wrapWind.style.opacity = motorActive ? '1' : '0.5';
-                }
+            // Setup drive radio buttons
+            const syncDriveUI = () => {
+                if (window._tende_syncOpcije) window._tende_syncOpcije();
             };
 
-            if (chkMotor) {
-                chkMotor.checked = s.onyxMotor;
-                chkMotor.onchange = (e) => {
-                    s.onyxMotor = e.target.checked;
-                    syncOnyxUI();
+            v.querySelectorAll('input[name="tendeDrive"]').forEach(radio => {
+                radio.checked = (radio.value === (s.drive || 'vitlo'));
+                radio.onchange = (e) => {
+                    s.drive = e.target.value;
+                    syncDriveUI();
                     updateTendeAll();
                 };
-            }
-            if (chkRemote) {
-                chkRemote.checked = s.onyxRemote;
-                chkRemote.onchange = (e) => {
-                    s.onyxRemote = e.target.checked;
-                    updateTendeAll();
-                };
-            }
-            if (chkWind) {
-                chkWind.checked = s.onyxWind;
-                chkWind.onchange = (e) => {
-                    s.onyxWind = e.target.checked;
-                    updateTendeAll();
-                };
-            }
-            
-            // Sync initial state
-            syncOnyxUI();
+            });
+
+            // Sync initial drive state
+            syncDriveUI();
 
             // Varioplus + LED opcije
             const OPCIJE_SUPPORT = {
-                open:     { varioplus: false, led: false },
-                semi:     { varioplus: true,  led: true  },
-                cleo5530: { varioplus: false, led: false },
-                cleo7030: { varioplus: false, led: false },
-                cleo7040: { varioplus: true,  led: true  },
-                pan:      { varioplus: false, led: true  },
-                c2:       { varioplus: true,  led: false },
+                open:      { varioplus: false, led: true  },
+                areia7040: { varioplus: false, led: true  },
+                semi:      { varioplus: true,  led: true  },
+                cleo5530:  { varioplus: false, led: false },
+                cleo7030:  { varioplus: false, led: false },
+                cleo7040:  { varioplus: true,  led: true  },
+                pan:       { varioplus: false, led: true  },
+                c2:        { varioplus: true,  led: false },
             };
             const opcijeCard = v.querySelector('#tendeOpcijeCard');
             const wrapVP = v.querySelector('#wrapperVarioplus');
@@ -3268,18 +3319,40 @@
             const chkVP = v.querySelector('#tendeVarioplus');
             const chkLed = v.querySelector('#tendeLed');
 
+            const wrapVPMotor = v.querySelector('#wrapperVarioplusMotor');
+            const chkVPMotor = v.querySelector('#tendeVarioplusMotor');
+
             const syncOpcijeUI = () => {
                 const sup = OPCIJE_SUPPORT[s.type] || { varioplus: false, led: false };
-                const anyVisible = sup.varioplus || sup.led;
+                const drive = s.drive || 'vitlo';
+                const ledDriveOk = (drive === 'fx1' || drive === 'fx5');
+                const showLed = sup.led && ledDriveOk;
+                // Varioplus: model mora podržavati + izbačaj mora biti ≤ 3.5m
+                const showVP = sup.varioplus && (s.projection <= 3.5);
+                const showVPMotor = showVP && s.varioplus;
+                const anyVisible = showVP || showLed;
                 if (opcijeCard) opcijeCard.style.display = anyVisible ? '' : 'none';
-                if (wrapVP)  { wrapVP.style.display  = sup.varioplus ? 'flex' : 'none'; }
-                if (wrapLed) { wrapLed.style.display = sup.led       ? 'flex' : 'none'; }
-                // reset if type no longer supports option
-                if (!sup.varioplus && s.varioplus) { s.varioplus = false; if (chkVP) chkVP.checked = false; }
-                if (!sup.led && s.ledLight)         { s.ledLight = false;  if (chkLed) chkLed.checked = false; }
+                if (wrapVP)      { wrapVP.style.display      = showVP      ? 'flex' : 'none'; }
+                if (wrapVPMotor) { wrapVPMotor.style.display = showVPMotor ? 'flex' : 'none'; }
+                if (wrapLed)     { wrapLed.style.display     = showLed     ? 'flex' : 'none'; }
+                if (!showVP && s.varioplus)   { s.varioplus = false;       if (chkVP) chkVP.checked = false; }
+                if (!showVPMotor && s.varioplusMotor) { s.varioplusMotor = false; if (chkVPMotor) chkVPMotor.checked = false; }
+                if (!showLed && s.ledLight)   { s.ledLight = false;        if (chkLed) chkLed.checked = false; }
             };
 
-            if (chkVP)  { chkVP.checked  = s.varioplus; chkVP.onchange  = (e) => { s.varioplus = e.target.checked; updateTendeAll(); }; }
+            if (chkVP) {
+                chkVP.checked = s.varioplus;
+                chkVP.onchange = (e) => {
+                    s.varioplus = e.target.checked;
+                    if (!s.varioplus) { s.varioplusMotor = false; if (chkVPMotor) chkVPMotor.checked = false; }
+                    syncOpcijeUI();
+                    updateTendeAll();
+                };
+            }
+            if (chkVPMotor) {
+                chkVPMotor.checked = s.varioplusMotor;
+                chkVPMotor.onchange = (e) => { s.varioplusMotor = e.target.checked; updateTendeAll(); };
+            }
             if (chkLed) { chkLed.checked = s.ledLight;  chkLed.onchange = (e) => { s.ledLight  = e.target.checked; updateTendeAll(); }; }
 
             window._tende_syncOpcije = syncOpcijeUI;
@@ -3295,97 +3368,122 @@
             const getP = (sku) => LIVE_PRICES.prices[sku] || 0;
             const items = [];
 
-            // Base calculated price formula (placeholders)
-            let basePrice = 0;
-            let baseSku = skuMap[s.type] || '8001';
-            let baseName = '';
-            
-            if (s.type === 'open') {
-                basePrice = 300 + s.width * 100 + s.projection * 80;
-                baseName = `HELLA Otvorena tenda AREIA 6030 (${s.width}m × ${s.projection}m)`;
-            } else if (s.type === 'semi') {
-                basePrice = 400 + s.width * 120 + s.projection * 100;
-                baseName = `HELLA Poluotvorena tenda VIVA 7040 (${s.width}m × ${s.projection}m)`;
-            } else if (s.type === 'cleo5530') {
-                basePrice = 450 + s.width * 130 + s.projection * 110;
-                baseName = `HELLA Kasetna tenda CLEO 5530 (${s.width}m × ${s.projection}m)`;
-            } else if (s.type === 'cleo7030') {
-                basePrice = 500 + s.width * 140 + s.projection * 115;
-                baseName = `HELLA Kasetna tenda CLEO 7030 (${s.width}m × ${s.projection}m)`;
-            } else if (s.type === 'cleo7040') {
-                basePrice = 580 + s.width * 150 + s.projection * 120;
-                baseName = `HELLA Kasetna tenda CLEO 7040 (${s.width}m × ${s.projection}m)`;
-            } else if (s.type === 'pan') {
-                basePrice = 650 + s.width * 160 + s.projection * 130;
-                baseName = `HELLA Kasetna tenda PAN 7040 (${s.width}m × ${s.projection}m)`;
-            } else if (s.type === 'c2') {
-                basePrice = 600 + s.width * 150 + s.projection * 120;
-                baseName = `HELLA Kasetna tenda C2 (${s.width}m × ${s.projection}m)`;
+            // --- TENDE PRICING FORMULA ---
+            // KONAČNA = (osnovna + drive_nadoplata + led_nadoplata) × (1 − rabat) + montažni_materijal_neto
+            // Verificirano iz Hella cjenika za sve rabat stupce (20% i 45%) na cent točno.
+            //
+            // Modeli s 3 nekolin. ref. točke → eksaktni linearni model (a + b*W + c*P)
+            // Modeli s 4 ref. točke → IDW interpolacija između referentnih točaka
+
+            const DRIVE_NADOPLATA = { vitlo: -207.90, fx0: 36.40, fx1: 108.40, fx5: 201.70 };
+
+            // osnovna = puna_cijena_vitlo − montažni_neto + 207.90
+            const TENDE_MODELS = {
+                // LINEAR: točni koeficijenti, 3 referentne točke (nekolin.)
+                // AREIA 6030: ref (3×2→1370), (4.5×3→1810), (6×3→2100); b iz Δ(4.5→6 W, isti P)
+                open:     { t:'L', a:490.00, b:193.33, c:150.00, fullName:'HELLA AREIA 6030' },
+                // CLEO 5530: ref (3×2→2136),(4.5×3→2773),(5.5×3→3048); b iz Δ(4.5→5.5 W, isti P)
+                cleo5530: { t:'L', a:862.00, b:275.00, c:224.50, fullName:'HELLA CLEO 5530'  },
+                // CLEO 7030: ref (3×2→2224),(4.5×3→2894),(7×3→3667); b iz Δ(4.5→7 W, isti P)
+                cleo7030: { t:'L', a:884.00, b:309.20, c:206.20, fullName:'HELLA CLEO 7030'  },
+
+                // IDW: 4 referentne točke, interpolacija po udaljenosti u W-P prostoru
+                // osnovna vrijednosti: puna_vitlo − montaža + 207.90
+                areia7040:{ t:'I', refs:[[3,2,1739],[4.5,3,2266],[6,4,2948],[7,4,4359]], fullName:'HELLA AREIA 7040' },
+                semi:     { t:'I', refs:[[3,2,2202],[4.5,3,2845],[6,4,3733],[7,4,4602]], fullName:'HELLA VIVA 7040'  },
+                cleo7040: { t:'I', refs:[[3,2,2603],[4.5,3,3283],[6,4,4743],[7,4,5518]], fullName:'HELLA CLEO 7040'  },
+                pan:      { t:'I', refs:[[3,2,2827],[4.5,3,3389],[6,4,4212],[7,4,5032]], fullName:'HELLA PAN 7040'   },
+                c2:       { t:'I', refs:[[3,2,2686],[4.5,3,3546],[6,4,4606],[7,4,5614]], fullName:'HELLA C2'         },
+            };
+
+            function idwOsnovna(W, P, refs) {
+                let sw = 0, swo = 0;
+                for (const [rW, rP, rO] of refs) {
+                    const d2 = (W-rW)**2 + (P-rP)**2;
+                    if (d2 < 0.001) return rO;
+                    const w = 1 / d2;
+                    sw += w; swo += w * rO;
+                }
+                return swo / sw;
             }
 
+            function getMontazaNeto(proj) {
+                if (proj <= 2.0) return 200;
+                if (proj <= 3.0) return 400;
+                return 700;
+            }
+
+            function getVarioplusListPrice(width) {
+                if (width <= 4.0) return 650;
+                if (width <= 5.5) return 850;
+                return 1000;
+            }
+
+            // LED matrica: cijena ovisi o izbačaju i širini (dodaje se PRIJE rabata)
+            function getLedNadoplata(width, proj) {
+                const col = width > 6.0 ? 1 : 0; // 0 = ≤6m, 1 = ≤7m
+                const rows = [
+                    { maxP: 1.5, v: [1054, 1399] },
+                    { maxP: 2.0, v: [1112, 1486] },
+                    { maxP: 2.5, v: [1185, 1596] },
+                    { maxP: 3.0, v: [1250, 1696] },
+                    { maxP: 3.5, v: [1316, 1797] },
+                    { maxP: 4.0, v: [1382, 1897] },
+                ];
+                const row = rows.find(r => proj <= r.maxP) || rows[rows.length - 1];
+                return row.v[col];
+            }
+
+            const model = TENDE_MODELS[s.type] || TENDE_MODELS.open;
+            const drive = s.drive || 'vitlo';
+
+            const osnovna = model.t === 'L'
+                ? model.a + model.b * s.width + model.c * s.projection
+                : idwOsnovna(s.width, s.projection, model.refs);
+            const driveNadoplata = DRIVE_NADOPLATA[drive];
+            const ledNadoplata = s.ledLight ? getLedNadoplata(s.width, s.projection) : 0;
+            const montazaNeto = getMontazaNeto(s.projection);
+
+            // Nabavna = Hella cijena s 45% rabatom; prodajna = (nabavna + 15% marže) + 25% PDV
+            const NABAVNI_RABAT = 0.45;
+            const MARZA = 0.15;
+            const PDV = 0.25;
+            const nabavna = (osnovna + driveNadoplata + ledNadoplata) * (1 - NABAVNI_RABAT) + montazaNeto;
+            const konacnaCijena = Math.round(nabavna * (1 + MARZA) * (1 + PDV) * 100) / 100;
+
+            const driveLabels = { vitlo: 'Vitlo (ručni)', fx0: 'ONYX radio motor', fx1: 'ONYX radio motor + ONYX click', fx5: 'ONYX radio motor + ONYX click + ONYX tag' };
             const colorNames = { '7016': 'Antracit RAL 7016', '9006': 'Srebrna RAL 9006', '9016': 'Bijela RAL 9016' };
             const mountNames = { 'wall': 'zidna', 'ceiling': 'stropna', 'rafter': 'na rogove' };
-            
-            // Base product
+
+            const baseSku = skuMap[s.type] || '8001';
+            const baseName = `${model.fullName} ${s.width}×${s.projection}m · ${driveLabels[drive]} · RAL ${s.color} (${mountNames[s.mount]})`;
+
+            // Glavna linija (tenda + pogon + LED + montaža — sve u jednoj cijeni)
             items.push({
-                name: `${baseName} - RAL ${s.color} (montaža: ${mountNames[s.mount]})`,
+                name: baseName,
                 qty: 1,
                 unit: 'set',
-                price: basePrice,
+                price: konacnaCijena,
                 sku: baseSku
             });
 
-            // ONYX extras
-            if (s.onyxMotor) {
+            // Varioplus rolo (dostupno samo uz izbačaj ≤3.5m, ista nabavna+marža logika)
+            if (s.varioplus && s.projection <= 3.5) {
+                const vpMotorNadoplata = s.varioplusMotor ? 170 : 0;
+                const vpListPrice = getVarioplusListPrice(s.width) + vpMotorNadoplata;
+                const vpNabavna = vpListPrice * (1 - NABAVNI_RABAT);
+                const vpProdajna = Math.round(vpNabavna * (1 + MARZA) * (1 + PDV) * 100) / 100;
+                const vpLabel = s.varioplusMotor ? 'motorni' : 'ručni';
                 items.push({
-                    name: window.getPremiumName(skuMap.onyx_motor, "HELLA ONYX motorni pogon (integriran)"),
-                    qty: 1,
-                    unit: 'kom',
-                    price: getP(skuMap.onyx_motor),
-                    sku: skuMap.onyx_motor
-                });
-            }
-            if (s.onyxRemote) {
-                items.push({
-                    name: window.getPremiumName(skuMap.onyx_remote, "HELLA ONYX daljinski upravljač"),
-                    qty: 1,
-                    unit: 'kom',
-                    price: getP(skuMap.onyx_remote),
-                    sku: skuMap.onyx_remote
-                });
-            }
-            if (s.onyxWind) {
-                items.push({
-                    name: window.getPremiumName(skuMap.onyx_wind, "HELLA ONYX senzor vjetra"),
-                    qty: 1,
-                    unit: 'kom',
-                    price: getP(skuMap.onyx_wind),
-                    sku: skuMap.onyx_wind
-                });
-            }
-
-            // Varioplus rolo
-            if (s.varioplus) {
-                items.push({
-                    name: 'HELLA Varioplus rolo (integriran u izbačajni profil)',
+                    name: `HELLA Varioplus rolo ${s.width}m – ${vpLabel} (integriran u izbačajni profil)`,
                     qty: 1,
                     unit: 'set',
-                    price: 320.00,
+                    price: vpProdajna,
                     sku: skuMap.varioplus
                 });
             }
-            // LED rasvjeta
-            if (s.ledLight) {
-                items.push({
-                    name: 'HELLA LED rasvjeta (integrirana u zglobne krakove, 650 lm/m)',
-                    qty: 1,
-                    unit: 'set',
-                    price: 260.00,
-                    sku: skuMap.led_light
-                });
-            }
 
-            // Rafter bracket surcharge
+            // Konzole za montažu na krovne rogove
             if (s.mount === 'rafter') {
                 const bracketSku = '8014';
                 const bracketQty = Math.ceil(s.width / 1.5) + 1;
@@ -3406,22 +3504,23 @@
                 stage.innerHTML = '';
 
                 const imageMap = {
-                    open:     { src: 'assets/hella/areia6030.jpeg', pos: 'left 28%'   },
-                    semi:     { src: 'assets/hella/viva7040.jpeg',  pos: 'right 18%'  },
-                    cleo5530: { src: 'assets/hella/cleo5530.jpeg',  pos: 'center 32%' },
-                    cleo7030: { src: 'assets/hella/cleo7030.jpeg',  pos: 'center 28%' },
-                    cleo7040: { src: 'assets/hella/cleo7040.jpeg',  pos: 'center 22%' },
-                    pan:      { src: 'assets/hella/pan7040.jpeg',   pos: 'left top'   },
-                    c2:       { src: 'assets/hella/c2.jpeg',        pos: 'right 18%'  },
+                    open:      { src: 'assets/hella/areia6030.jpeg', pos: 'left 28%'   },
+                    areia7040: { src: 'assets/hella/areia6030.jpeg', pos: 'right 18%'  },
+                    semi:      { src: 'assets/hella/viva7040.jpeg',  pos: 'right 18%'  },
+                    cleo5530:  { src: 'assets/hella/cleo5530.jpeg',  pos: 'center 32%' },
+                    cleo7030:  { src: 'assets/hella/cleo7030.jpeg',  pos: 'center 28%' },
+                    cleo7040:  { src: 'assets/hella/cleo7040.jpeg',  pos: 'center 22%' },
+                    pan:       { src: 'assets/hella/pan7040.jpeg',   pos: 'left top'   },
+                    c2:        { src: 'assets/hella/c2.jpeg',        pos: 'right 18%'  },
                 };
-                const friendlyNames = { open:'AREIA 6030', semi:'VIVA 7040', cleo5530:'CLEO 5530', cleo7030:'CLEO 7030', cleo7040:'CLEO 7040', pan:'PAN 7040', c2:'C2 CASSETTE' };
-                const img = imageMap[s.type];
+                const friendlyNames = { open:'AREIA 6030', areia7040:'AREIA 7040', semi:'VIVA 7040', cleo5530:'CLEO 5530', cleo7030:'CLEO 7030', cleo7040:'CLEO 7040', pan:'PAN 7040', c2:'C2 CASSETTE' };
+                const driveChip = { vitlo:'⚙️ VITLO', fx0:'⚡ ONYX FX0', fx1:'⚡ ONYX FX1', fx5:'⚡ ONYX FX5' };
+                const img = imageMap[s.type] || imageMap.open;
                 const extras = [];
-                if (s.onyxMotor)  extras.push('<span style="color:#f39c12">⚡ ONYX MOTOR</span>');
-                if (s.onyxRemote) extras.push('<span style="color:#f39c12">📡 DALJINSKI</span>');
-                if (s.onyxWind)   extras.push('<span style="color:#74b9ff">💨 SENZOR VJETRA</span>');
-                if (s.varioplus)  extras.push('<span style="color:#a29bfe">↕ VARIOPLUS ROLO</span>');
-                if (s.ledLight)   extras.push('<span style="color:#ffeaa7">💡 LED RASVJETA</span>');
+                extras.push(`<span style="color:#f39c12">${driveChip[s.drive||'vitlo']}</span>`);
+
+                if (s.varioplus)  extras.push('<span style="color:#a29bfe">↕ VARIOPLUS</span>');
+                if (s.ledLight)   extras.push('<span style="color:#ffeaa7">💡 LED</span>');
 
                 stage.innerHTML = `
                     <div style="position:relative;width:100%;height:260px;overflow:hidden;background:#111;">
@@ -3443,10 +3542,18 @@
                                 ${extras.join('')}
                             </div>
                         </div>
-                        <div style="position:absolute;top:10px;right:12px;
-                                    font-family:Orbitron,sans-serif;font-size:8px;
-                                    color:rgba(255,255,255,0.45);letter-spacing:1px;">
-                            © HELLA 2026
+                        <div style="position:absolute;top:10px;right:12px;display:flex;align-items:center;gap:6px;">
+                            <div style="background:rgba(0,0,0,0.55);backdrop-filter:blur(4px);border-radius:6px;padding:5px 10px;display:flex;align-items:center;gap:7px;border:1px solid rgba(255,255,255,0.15);">
+                                <svg width="108" height="22" viewBox="0 0 144 30" style="flex-shrink:0;">
+                                    <polygon fill="#fff" points="23.934 0.398 21.147 11.566 11.031 11.566 13.814 0.403 6.871 0.403 0 29.171 6.789 29.171 9.576 17.686 19.645 17.686 16.896 29.171 23.954 29.171 30.828 0.398"/>
+                                    <polygon fill="#fff" points="73.703 0.398 66.794 29.171 86.214 29.171 87.345 23.317 75.054 23.317 80.671 0.398"/>
+                                    <polygon fill="#fff" points="99.393 0.398 92.483 29.171 111.903 29.171 113.035 23.317 100.745 23.317 106.360 0.398"/>
+                                    <path fill="#fff" d="M131.700 0.398 L116.118 29.147 L122.661 29.147 L125.674 23.669 L136.426 23.669 L137.279 29.171 L143.863 29.171 L138.580 0.398 Z M134.018 8.644 L135.641 18.773 L128.407 18.773 Z"/>
+                                    <polygon fill="#F8AE15" points="43.516 0.398 36.993 6.564 61.297 6.564 67.821 0.398"/>
+                                    <polygon fill="#E52A48" points="40.435 11.702 33.911 17.868 58.214 17.868 64.738 11.702"/>
+                                    <polygon fill="#226AB2" points="37.351 21.978 30.828 28.143 55.132 28.143 61.656 21.978"/>
+                                </svg>
+                            </div>
                         </div>
                     </div>`;
             }
