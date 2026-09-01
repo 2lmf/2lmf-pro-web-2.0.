@@ -140,7 +140,30 @@ function setupCRM() {
       sheetLoko.setFrozenRows(1);
   }
 
-  
+  // Setup "PDV - EU Računi" if not exists
+  var sheetPdv = ss.getSheetByName("PDV - EU Računi");
+  if (!sheetPdv) {
+      sheetPdv = ss.insertSheet("PDV - EU Računi");
+      sheetPdv.appendRow(["Datum", "Razdoblje", "Dobavljač", "Zemlja", "PDV ID dobavljača", "Broj računa", "Vrsta (Dobra/Usluga)", "Iznos (€)", "Dokument", "Status"]);
+      sheetPdv.getRange("A1:J1").setFontWeight("bold").setBackground("#f4cccc");
+      sheetPdv.setFrozenRows(1);
+  }
+  // Kolona B (Razdoblje, format MM.YYYY) MORA biti tekst - inače Sheets auto-pretvara "07.2026" u broj 7.2026 i briše vodeću nulu
+  sheetPdv.getRange("B2:B1000").setNumberFormat("@");
+
+  // Set Folder IDs za PDV/PDV-S AI skeniranje
+  SCRIPT_PROP.setProperty("FOLDER_PDV_IN_ID", "1_RPyquyOzqDmT7p7-4EI6mo8tNKuIJgz");
+  SCRIPT_PROP.setProperty("FOLDER_PDV_OUT_ID", "1-BNOS-E-D3qHYNN_MlCSi9feAxO6ZHNU");
+
+  // Set Default PDV/PDV-S podaci za Zaglavlje ako ne postoje
+  if (!SCRIPT_PROP.getProperty("COMPANY_MJESTO")) SCRIPT_PROP.setProperty("COMPANY_MJESTO", "Zagreb");
+  if (!SCRIPT_PROP.getProperty("COMPANY_ULICA")) SCRIPT_PROP.setProperty("COMPANY_ULICA", "Orešje");
+  if (!SCRIPT_PROP.getProperty("COMPANY_BROJ")) SCRIPT_PROP.setProperty("COMPANY_BROJ", "7");
+  if (!SCRIPT_PROP.getProperty("COMPANY_ISPOSTAVA")) SCRIPT_PROP.setProperty("COMPANY_ISPOSTAVA", "3509");
+  if (!SCRIPT_PROP.getProperty("OBRACUN_IME")) SCRIPT_PROP.setProperty("OBRACUN_IME", "Karlo");
+  if (!SCRIPT_PROP.getProperty("OBRACUN_PREZIME")) SCRIPT_PROP.setProperty("OBRACUN_PREZIME", "Fantoni");
+  if (!SCRIPT_PROP.getProperty("OBRACUN_EMAIL")) SCRIPT_PROP.setProperty("OBRACUN_EMAIL", "2lmf.info@gmail.com");
+
   console.log("✅ SUSTAV USPJEŠNO POVEZAN SA STAROM TABLICOM!");
   console.log("ID Tablice: " + EXISTING_ID);
   console.log("LINK NA TABLICU: " + ss.getUrl());
@@ -629,6 +652,12 @@ function onOpen() {
       .addSeparator()
       .addItem('🤖 Pokreni AI skeniranje (SVI DOKUMENTI)', 'processNewInvoices')
       .addSeparator()
+      .addItem('🤖 Pokreni AI skeniranje (PDV/EU računi)', 'processPdvInvoices')
+      .addItem('✅ Potvrdi označeni redak (PDV)', 'confirmPdvRow')
+      .addItem('📄 Generiraj PDV-S XML (mjesec)', 'generatePdvSXml')
+      .addItem('📄 Generiraj PDV XML (mjesec)', 'generatePdvXml')
+      .addItem('✅ Označi mjesec kao poslano Poreznoj', 'markPdvPeriodAsSent')
+      .addSeparator()
       .addItem('⚙️ Postavke Tvrtke', 'showCompanySettingsDialog')
       .addToUi();
 }
@@ -697,7 +726,14 @@ function showCompanySettingsDialog() {
   var name = SCRIPT_PROP.getProperty("COMPANY_NAME") || "";
   var oib = SCRIPT_PROP.getProperty("COMPANY_OIB") || "";
   var address = SCRIPT_PROP.getProperty("COMPANY_ADDRESS") || "";
-  
+  var mjesto = SCRIPT_PROP.getProperty("COMPANY_MJESTO") || "";
+  var ulica = SCRIPT_PROP.getProperty("COMPANY_ULICA") || "";
+  var broj = SCRIPT_PROP.getProperty("COMPANY_BROJ") || "";
+  var ispostava = SCRIPT_PROP.getProperty("COMPANY_ISPOSTAVA") || "";
+  var obracunIme = SCRIPT_PROP.getProperty("OBRACUN_IME") || "";
+  var obracunPrezime = SCRIPT_PROP.getProperty("OBRACUN_PREZIME") || "";
+  var obracunEmail = SCRIPT_PROP.getProperty("OBRACUN_EMAIL") || "";
+
   var html = `
     <div style="font-family: sans-serif; padding: 20px;">
       <h3>Postavke Tvrtke</h3>
@@ -708,6 +744,24 @@ function showCompanySettingsDialog() {
       <input type="text" id="oib" value="${oib}" style="width:100%; margin-bottom:10px;"><br>
       <label>Adresa:</label><br>
       <input type="text" id="address" value="${address}" style="width:100%; margin-bottom:20px;"><br>
+
+      <h3>Postavke za PDV / PDV-S obrazac</h3>
+      <p>Ovi podaci se koriste u zaglavlju XML-a za ePoreznu.</p>
+      <label>Mjesto:</label><br>
+      <input type="text" id="mjesto" value="${mjesto}" style="width:100%; margin-bottom:10px;"><br>
+      <label>Ulica:</label><br>
+      <input type="text" id="ulica" value="${ulica}" style="width:100%; margin-bottom:10px;"><br>
+      <label>Kućni broj:</label><br>
+      <input type="text" id="broj" value="${broj}" style="width:100%; margin-bottom:10px;"><br>
+      <label>Ispostava (šifra):</label><br>
+      <input type="text" id="ispostava" value="${ispostava}" style="width:100%; margin-bottom:10px;"><br>
+      <label>Obračun sastavio - Ime:</label><br>
+      <input type="text" id="obracunIme" value="${obracunIme}" style="width:100%; margin-bottom:10px;"><br>
+      <label>Obračun sastavio - Prezime:</label><br>
+      <input type="text" id="obracunPrezime" value="${obracunPrezime}" style="width:100%; margin-bottom:10px;"><br>
+      <label>Obračun sastavio - Email:</label><br>
+      <input type="text" id="obracunEmail" value="${obracunEmail}" style="width:100%; margin-bottom:20px;"><br>
+
       <button onclick="save()" style="background:#E67E22; color:white; border:none; padding:10px 20px; border-radius:5px; cursor:pointer;">Spremi</button>
     </div>
     <script>
@@ -715,14 +769,21 @@ function showCompanySettingsDialog() {
         var data = {
           name: document.getElementById('name').value,
           oib: document.getElementById('oib').value,
-          address: document.getElementById('address').value
+          address: document.getElementById('address').value,
+          mjesto: document.getElementById('mjesto').value,
+          ulica: document.getElementById('ulica').value,
+          broj: document.getElementById('broj').value,
+          ispostava: document.getElementById('ispostava').value,
+          obracunIme: document.getElementById('obracunIme').value,
+          obracunPrezime: document.getElementById('obracunPrezime').value,
+          obracunEmail: document.getElementById('obracunEmail').value
         };
         google.script.run.withSuccessHandler(() => google.script.host.close()).saveCompanySettings(data);
       }
     </script>
   `;
-  
-  var output = HtmlService.createHtmlOutput(html).setWidth(400).setHeight(350);
+
+  var output = HtmlService.createHtmlOutput(html).setWidth(420).setHeight(680);
   ui.showModalDialog(output, "Postavke Tvrtke");
 }
 
@@ -730,6 +791,13 @@ function saveCompanySettings(data) {
   SCRIPT_PROP.setProperty("COMPANY_NAME", data.name);
   SCRIPT_PROP.setProperty("COMPANY_OIB", data.oib);
   SCRIPT_PROP.setProperty("COMPANY_ADDRESS", data.address);
+  SCRIPT_PROP.setProperty("COMPANY_MJESTO", data.mjesto);
+  SCRIPT_PROP.setProperty("COMPANY_ULICA", data.ulica);
+  SCRIPT_PROP.setProperty("COMPANY_BROJ", data.broj);
+  SCRIPT_PROP.setProperty("COMPANY_ISPOSTAVA", data.ispostava);
+  SCRIPT_PROP.setProperty("OBRACUN_IME", data.obracunIme);
+  SCRIPT_PROP.setProperty("OBRACUN_PREZIME", data.obracunPrezime);
+  SCRIPT_PROP.setProperty("OBRACUN_EMAIL", data.obracunEmail);
   SpreadsheetApp.getActiveSpreadsheet().toast("Postavke spremljene!", "Sistem");
 }
 
@@ -1890,6 +1958,493 @@ function processNewInvoices() {
         SpreadsheetApp.getUi().alert("ℹ️ Nema novih računa u mapi za knjiženje.");
       }
   }
+}
+
+// --- 4b. AI SKENIRANJE PDV/PDV-S (EU RAČUNI - STJECANJE DOBARA I USLUGA) ---
+
+function processPdvInvoices() {
+  var folderInId = SCRIPT_PROP.getProperty("FOLDER_PDV_IN_ID");
+  var folderOutId = SCRIPT_PROP.getProperty("FOLDER_PDV_OUT_ID");
+
+  var folderIn, folderOut;
+  try {
+    folderIn = DriveApp.getFolderById(folderInId);
+    folderOut = DriveApp.getFolderById(folderOutId);
+  } catch(e) {
+    if(SpreadsheetApp.getUi) SpreadsheetApp.getUi().alert("Greška: Nije pronađen Google Drive folder za PDV. Provjerite Script Properties (FOLDER_PDV_IN_ID/FOLDER_PDV_OUT_ID).");
+    return;
+  }
+
+  var sheetId = SCRIPT_PROP.getProperty("SHEET_ID");
+  var ss = SpreadsheetApp.openById(sheetId);
+  var sheetPdv = ss.getSheetByName("PDV - EU Računi");
+  if (!sheetPdv) {
+    if(SpreadsheetApp.getUi) SpreadsheetApp.getUi().alert("Greška: Tab 'PDV - EU Računi' ne postoji. Pokrenite setupCRM().");
+    return;
+  }
+
+  // We process a max number of files to prevent timeout
+  var files = folderIn.getFiles();
+  var count = 0;
+
+  while (files.hasNext() && count < 10) {
+    var file = files.next();
+
+    // 1. OCR Extract Text via Google Drive API (isti postupak kao processNewInvoices)
+    var text = null;
+    try {
+        var token = ScriptApp.getOAuthToken();
+        var copyUrl = "https://www.googleapis.com/drive/v3/files/" + file.getId() + "/copy";
+        var options = {
+          method: "POST",
+          headers: {"Authorization": "Bearer " + token},
+          contentType: "application/json",
+          payload: JSON.stringify({ mimeType: "application/vnd.google-apps.document" }),
+          muteHttpExceptions: true
+        };
+        var copyRes = UrlFetchApp.fetch(copyUrl, options);
+        if (copyRes.getResponseCode() == 200) {
+          var docId = JSON.parse(copyRes.getContentText()).id;
+          var doc = DocumentApp.openById(docId);
+          text = doc.getBody().getText();
+          DriveApp.getFileById(docId).setTrashed(true);
+        }
+    } catch(ocrErr) {
+       console.log("OCR Error: " + ocrErr);
+    }
+
+    if (!text || text.trim().length < 5) {
+      console.log("Preskačem " + file.getName() + " jer nema prepoznatog teksta.");
+      file.moveTo(folderOut);
+      continue;
+    }
+
+    // 2. OpenAI Parse - izvlači podatke bitne za PDV/PDV-S klasifikaciju
+    var data = null;
+    try {
+        var apiKey = PropertiesService.getScriptProperties().getProperty("OPENAI_API_KEY");
+        if (!apiKey) {
+           if(SpreadsheetApp.getUi) SpreadsheetApp.getUi().alert("Greška: Nije postavljen OPENAI_API_KEY u Script Properties.");
+           return;
+        }
+        var url = "https://api.openai.com/v1/chat/completions";
+        var prompt = "Pročitaj tekst ovog računa od inozemnog dobavljača (EU stjecanje dobara ili primljena usluga, obrnuto oporezivanje / reverse charge) i izvuci podatke u JSON formatu:\n" +
+                     "- dobavljac: naziv tvrtke koja je izdala račun\n" +
+                     "- zemlja: kôd države dobavljača, ISO 2 slova (npr. DK, IE, DE) - potraži VAT/porezni broj na računu, prva dva slova su kôd zemlje\n" +
+                     "- pdvId: porezni/VAT broj dobavljača BEZ prefiksa zemlje (samo brojevi/slova iza kôda države)\n" +
+                     "- brojRacuna: broj računa/fakture\n" +
+                     "- datum: datum izdavanja računa (DD.MM.YYYY)\n" +
+                     "- vrsta: 'Dobra' ako je riječ o fizičkoj robi/proizvodu, 'Usluga' ako je riječ o usluzi, softveru, pretplati ili licenci\n" +
+                     "- iznos: ukupan iznos računa u eurima (float, bez simbola valute)\n" +
+                     "- imaEuVatId: true ako račun sadrži porezni/VAT identifikacijski broj dobavljača iz neke EU države, false ako ga nema\n\n" +
+                     "Tekst dokumenta:\n" + text;
+
+        var payload = {
+          model: "gpt-4o-mini",
+          response_format: { "type": "json_object" },
+          messages: [
+            { role: "system", content: "Ti si stručni porezni savjetnik za PDV. Vraćaš isključivo čisti JSON sukladno uputama. Nemoj vraćati nikakav drugi tekst, samo JSON." },
+            { role: "user", content: prompt }
+          ],
+          temperature: 0.1
+        };
+
+        var res = UrlFetchApp.fetch(url, {
+          method: "POST",
+          headers: {
+            "Authorization": "Bearer " + apiKey,
+            "Content-Type": "application/json"
+          },
+          payload: JSON.stringify(payload),
+          muteHttpExceptions: true
+        });
+
+        if (res.getResponseCode() == 200) {
+           var json = JSON.parse(res.getContentText());
+           data = JSON.parse(json.choices[0].message.content);
+        } else {
+           console.log("OpenAI Error: " + res.getContentText());
+        }
+    } catch(aiErr) {
+        console.log("AI Parsing Error: " + aiErr);
+    }
+
+    if (!data) {
+      console.log("OpenAI nije uspio parsirati " + file.getName());
+      continue; // ostaje u IN folderu da se provjeri ručno
+    }
+
+    // 3. Upiši red u "PDV - EU Računi" sa statusom "Za provjeru" (čeka ljudsku potvrdu)
+    var fileUrl = file.getUrl();
+    var datum = data.datum || Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "dd.MM.yyyy");
+    var razdoblje = pdvPeriodFromDatum(datum);
+    var dokumentLink = '=HYPERLINK("' + fileUrl + '"; "🔎 Otvori račun")';
+    var status = "Za provjeru";
+    if (data.imaEuVatId === false) {
+      status = "Za provjeru ⚠️ (nema EU VAT ID - treća zemlja, provjeri ručno)";
+    }
+
+    var targetRow = sheetPdv.getLastRow() + 1;
+    // Format se postavlja NA CILJANU ĆELIJU odmah prije upisa - ne oslanjamo se na format postavljen
+    // ranije (npr. u setupCRM), jer se pokazalo da to ne sprječava pouzdano Sheets auto-pretvorbu
+    // "07.2026" u broj 7.2026 (gubi vodeću nulu).
+    sheetPdv.getRange(targetRow, 2).setNumberFormat("@");
+    sheetPdv.getRange(targetRow, 1, 1, 10).setValues([[
+      datum,
+      razdoblje,
+      data.dobavljac || "Nepoznati dobavljač",
+      (data.zemlja || "").toUpperCase(),
+      data.pdvId || "",
+      data.brojRacuna || "",
+      data.vrsta || "Dobra",
+      parseFloat(data.iznos) || 0,
+      dokumentLink,
+      status
+    ]]);
+
+    // 4. Premjesti datoteku u OUT folder (bez obzira na status - red čeka potvrdu u tabu, ne u folderu)
+    file.moveTo(folderOut);
+    count++;
+  }
+
+  if(SpreadsheetApp.getUi) {
+      if (count > 0) {
+        SpreadsheetApp.getUi().alert("✅ Dodano " + count + " novih EU računa u 'PDV - EU Računi'. Provjeri podatke prije potvrde!");
+      } else {
+        SpreadsheetApp.getUi().alert("ℹ️ Nema novih računa u PDV mapi za skeniranje.");
+      }
+  }
+}
+
+function pdvPeriodFromDatum(datumStr) {
+  // Očekuje format DD.MM.YYYY (ili D.M.YYYY), vraća uvijek zero-padded MM.YYYY (za grupiranje po razdoblju)
+  var parts = String(datumStr).split(".");
+  if (parts.length >= 3 && parts[1].trim().length > 0 && parts[2].trim().length > 0) {
+    var mm = parseInt(parts[1].trim(), 10);
+    var yyyy = parts[2].trim();
+    if (!isNaN(mm) && yyyy.length === 4) {
+      return pad(mm, 2) + "." + yyyy;
+    }
+  }
+  return Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "MM.yyyy");
+}
+
+// --- 4c. RUČNA POTVRDA PDV REDAKA ---
+
+function confirmPdvRow() {
+  var ui = SpreadsheetApp.getUi();
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+
+  if (sheet.getName() !== "PDV - EU Računi") {
+    ui.alert("Greška: Ovu radnju možete pokrenuti samo dok ste u tabu 'PDV - EU Računi'.");
+    return;
+  }
+
+  var row = sheet.getActiveCell().getRow();
+  if (row < 2) {
+    ui.alert("Molimo označite redak računa koji potvrđujete.");
+    return;
+  }
+
+  var rowData = sheet.getRange(row, 1, 1, 10).getValues()[0];
+  var dobavljac = rowData[2];
+  var zemlja = rowData[3];
+  var pdvId = rowData[4];
+  var vrsta = rowData[6];
+  var iznos = parseFloat(rowData[7]) || 0;
+  var status = String(rowData[9]);
+
+  if (status.indexOf("Potvrđeno") === 0 || status.indexOf("Poslano") === 0) {
+    ui.alert("Ovaj redak je već: " + status);
+    return;
+  }
+
+  var poruka = "Dobavljač: " + dobavljac + "\nZemlja: " + zemlja + "\nPDV ID: " + pdvId +
+               "\nVrsta: " + vrsta + "\nIznos: " + iznos.toFixed(2) + " €\n\n" +
+               "Jesu li ovi podaci točni? Nakon potvrde redak ulazi u generator PDV/PDV-S obrasca.";
+  var response = ui.alert("Potvrdi EU račun", poruka, ui.ButtonSet.YES_NO);
+
+  if (response == ui.Button.YES) {
+    sheet.getRange(row, 10).setValue("Potvrđeno");
+    sheet.getRange(row, 1, 1, 10).setBackground("#d9ead3");
+    ui.alert("✅ Redak potvrđen i spreman za generiranje obrasca.");
+  }
+}
+
+// --- 4d. GENERATOR PDV / PDV-S XML OBRAZACA ---
+
+function promptPdvPeriod() {
+  var ui = SpreadsheetApp.getUi();
+  var result = ui.prompt("Odaberi razdoblje", "Unesite mjesec za koji generirate obrazac (format MM.YYYY, npr. 07.2026):", ui.ButtonSet.OK_CANCEL);
+  if (result.getSelectedButton() != ui.Button.OK) return null;
+  var period = result.getResponseText().trim();
+  if (!/^\d{2}\.\d{4}$/.test(period)) {
+    ui.alert("Greška: Format mora biti MM.YYYY (npr. 07.2026).");
+    return null;
+  }
+  return period;
+}
+
+function getConfirmedPdvRows(period) {
+  var sheetId = SCRIPT_PROP.getProperty("SHEET_ID");
+  var ss = SpreadsheetApp.openById(sheetId);
+  var sheet = ss.getSheetByName("PDV - EU Računi");
+  var data = sheet.getDataRange().getValues();
+  var rows = [];
+  for (var i = 1; i < data.length; i++) {
+    var razdoblje = String(data[i][1]);
+    var status = String(data[i][9]);
+    if (razdoblje === period && status === "Potvrđeno") {
+      rows.push({
+        rowIndex: i + 1,
+        zemlja: String(data[i][3]).toUpperCase(),
+        pdvId: String(data[i][4]),
+        vrsta: String(data[i][6]),
+        iznos: parseFloat(data[i][7]) || 0
+      });
+    }
+  }
+  return rows;
+}
+
+function markPdvRowsSent(rows) {
+  var sheetId = SCRIPT_PROP.getProperty("SHEET_ID");
+  var ss = SpreadsheetApp.openById(sheetId);
+  var sheet = ss.getSheetByName("PDV - EU Računi");
+  rows.forEach(function(r) {
+    sheet.getRange(r.rowIndex, 10).setValue("Poslano");
+  });
+}
+
+function markPdvPeriodAsSent() {
+  var ui = SpreadsheetApp.getUi();
+  var period = promptPdvPeriod();
+  if (!period) return;
+
+  var rows = getConfirmedPdvRows(period);
+  if (rows.length === 0) {
+    ui.alert("Nema potvrđenih redaka za razdoblje " + period + " (možda su već označeni kao poslani).");
+    return;
+  }
+
+  var response = ui.alert(
+    "Označi kao poslano",
+    "Označavam " + rows.length + " potvrđenih redaka za " + period + " kao 'Poslano'.\n\n" +
+    "Koristi ovo TEK NAKON što su OBA obrasca (PDV i PDV-S) stvarno predana na ePoreznoj.",
+    ui.ButtonSet.YES_NO
+  );
+
+  if (response == ui.Button.YES) {
+    markPdvRowsSent(rows);
+    ui.alert("✅ Označeno kao poslano: " + rows.length + " redaka za " + period + ".");
+  }
+}
+
+function pdvPeriodToDates(period) {
+  var parts = period.split(".");
+  var mm = parts[0];
+  var yyyy = parts[1];
+  var datumOd = yyyy + "-" + mm + "-01";
+  var lastDay = new Date(parseInt(yyyy, 10), parseInt(mm, 10), 0).getDate();
+  var datumDo = yyyy + "-" + mm + "-" + pad(lastDay, 2);
+  return { datumOd: datumOd, datumDo: datumDo };
+}
+
+function round2(num) {
+  return Math.round((num + Number.EPSILON) * 100) / 100;
+}
+
+function escapeXml(str) {
+  return String(str == null ? "" : str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&apos;");
+}
+
+function buildPdvMetapodaciZaglavlje(naslov, uskladjenost, datumOd, datumDo, includeEmail) {
+  var compName = (SCRIPT_PROP.getProperty("COMPANY_NAME") || "").toUpperCase();
+  var compOib = SCRIPT_PROP.getProperty("COMPANY_OIB") || "";
+  var mjesto = SCRIPT_PROP.getProperty("COMPANY_MJESTO") || "";
+  var ulica = SCRIPT_PROP.getProperty("COMPANY_ULICA") || "";
+  var broj = SCRIPT_PROP.getProperty("COMPANY_BROJ") || "";
+  var ispostava = SCRIPT_PROP.getProperty("COMPANY_ISPOSTAVA") || "";
+  var imeUpper = (SCRIPT_PROP.getProperty("OBRACUN_IME") || "").toUpperCase();
+  var prezimeUpper = (SCRIPT_PROP.getProperty("OBRACUN_PREZIME") || "").toUpperCase();
+  var obracunEmail = SCRIPT_PROP.getProperty("OBRACUN_EMAIL") || "";
+  var uuid = Utilities.getUuid();
+  var timestamp = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "yyyy-MM-dd'T'HH:mm:ss");
+
+  var xml = "<Metapodaci xmlns=\"http://e-porezna.porezna-uprava.hr/sheme/Metapodaci/v2-0\">";
+  xml += "<Naslov dc=\"http://purl.org/dc/elements/1.1/title\">" + escapeXml(naslov) + "</Naslov>";
+  xml += "<Autor dc=\"http://purl.org/dc/elements/1.1/creator\">" + escapeXml(imeUpper + " " + prezimeUpper) + "</Autor>";
+  xml += "<Datum dc=\"http://purl.org/dc/elements/1.1/date\">" + timestamp + "</Datum>";
+  xml += "<Format dc=\"http://purl.org/dc/elements/1.1/format\">text/xml</Format>";
+  xml += "<Jezik dc=\"http://purl.org/dc/elements/1.1/language\">hr-HR</Jezik>";
+  xml += "<Identifikator dc=\"http://purl.org/dc/elements/1.1/identifier\">" + uuid + "</Identifikator>";
+  xml += "<Uskladjenost dc=\"http://purl.org/dc/terms/conformsTo\">" + escapeXml(uskladjenost) + "</Uskladjenost>";
+  xml += "<Tip dc=\"http://purl.org/dc/elements/1.1/type\">Elektronički obrazac</Tip>";
+  xml += "<Adresant>Ministarstvo Financija, Porezna uprava, Zagreb</Adresant>";
+  xml += "</Metapodaci>";
+
+  xml += "<Zaglavlje>";
+  xml += "<Razdoblje><DatumOd>" + datumOd + "</DatumOd><DatumDo>" + datumDo + "</DatumDo></Razdoblje>";
+  xml += "<Obveznik><Naziv>" + escapeXml(compName) + "</Naziv><OIB>" + escapeXml(compOib) + "</OIB><Adresa><Mjesto>" + escapeXml(mjesto) + "</Mjesto><Ulica>" + escapeXml(ulica) + "</Ulica><Broj>" + escapeXml(broj) + "</Broj></Adresa></Obveznik>";
+  xml += "<ObracunSastavio><Ime>" + escapeXml(imeUpper) + "</Ime><Prezime>" + escapeXml(prezimeUpper) + "</Prezime>";
+  if (includeEmail) xml += "<Email>" + escapeXml(obracunEmail) + "</Email>";
+  xml += "</ObracunSastavio>";
+  xml += "<Ispostava>" + escapeXml(ispostava) + "</Ispostava>";
+  xml += "</Zaglavlje>";
+
+  return xml;
+}
+
+function savePdvXmlToDrive(xmlString, filename) {
+  var blob = Utilities.newBlob(xmlString, "application/xml", filename);
+  var parentName = "2LMF Računovodstvo";
+  var rootFolders = DriveApp.getFoldersByName(parentName);
+  var targetParent = rootFolders.hasNext() ? rootFolders.next() : DriveApp.getRootFolder();
+
+  var folders = targetParent.getFoldersByName("PDV Izvještaji");
+  var folder = folders.hasNext() ? folders.next() : targetParent.createFolder("PDV Izvještaji");
+
+  var file = folder.createFile(blob);
+  return file.getUrl();
+}
+
+function showPdvXmlDownloadDialog(title, filename, fileUrl) {
+  var html = "<div style='font-family:sans-serif; padding:20px;'>" +
+             "<p>✅ Datoteka je generirana: <b>" + filename + "</b></p>" +
+             "<p><a href='" + fileUrl + "' target='_blank'>📥 Otvori / preuzmi XML s Drivea</a></p>" +
+             "<p style='color:#888; font-size:12px;'>Preuzmi datoteku i učitaj je na ePoreznu (Obrasci → Učitaj XML).</p>" +
+             "</div>";
+  var output = HtmlService.createHtmlOutput(html).setWidth(420).setHeight(200);
+  SpreadsheetApp.getUi().showModalDialog(output, title);
+}
+
+function generatePdvSXml() {
+  var ui = SpreadsheetApp.getUi();
+  var period = promptPdvPeriod();
+  if (!period) return;
+
+  var rows = getConfirmedPdvRows(period);
+  if (rows.length === 0) {
+    ui.alert("Nema potvrđenih redaka za razdoblje " + period + ".");
+    return;
+  }
+
+  // Grupiraj po dobavljaču (Zemlja+PDVID) - ePorezna ne dopušta duplikat istog PDV ID-a u istom mjesecu
+  var grouped = {};
+  var order = [];
+  rows.forEach(function(r) {
+    var key = r.zemlja + "|" + r.pdvId;
+    if (!grouped[key]) {
+      grouped[key] = { zemlja: r.zemlja, pdvId: r.pdvId, i1: 0, i2: 0 };
+      order.push(key);
+    }
+    if (r.vrsta === "Usluga") grouped[key].i2 += r.iznos;
+    else grouped[key].i1 += r.iznos;
+  });
+
+  var isporukeXml = "";
+  var totalI1 = 0, totalI2 = 0;
+  order.forEach(function(key, idx) {
+    var g = grouped[key];
+    g.i1 = round2(g.i1);
+    g.i2 = round2(g.i2);
+    totalI1 += g.i1;
+    totalI2 += g.i2;
+    isporukeXml += "<Isporuka><RedBr>" + (idx + 1) + "</RedBr><KodDrzave>" + escapeXml(g.zemlja) + "</KodDrzave><PDVID>" + escapeXml(g.pdvId) + "</PDVID><I1>" + g.i1.toFixed(2) + "</I1><I2>" + g.i2.toFixed(2) + "</I2></Isporuka>";
+  });
+  totalI1 = round2(totalI1);
+  totalI2 = round2(totalI2);
+
+  var dates = pdvPeriodToDates(period);
+
+  var xml = "<?xml version='1.0' encoding='UTF-8'?>";
+  xml += "<ObrazacPDVS xmlns=\"http://e-porezna.porezna-uprava.hr/sheme/zahtjevi/ObrazacPDVS/v1-0\" xmlns:ns5=\"http://e-porezna.porezna-uprava.hr/sheme/VanjskaOmotnica/v1-0\" xmlns:ns4=\"http://uri.etsi.org/01903/v1.3.2#\" xmlns:ns3=\"http://www.w3.org/2000/09/xmldsig#\" xmlns:ns2=\"http://e-porezna.porezna-uprava.hr/sheme/zahtjevi/ObrazacPDVS/v1-0\" verzijaSheme=\"1.0\">";
+  xml += buildPdvMetapodaciZaglavlje("Obrazac PDV-S", "ObrazacPDVS-v1-0", dates.datumOd, dates.datumDo, true);
+  xml += "<Tijelo><Isporuke>" + isporukeXml + "</Isporuke><IsporukeUkupno><I1>" + totalI1.toFixed(2) + "</I1><I2>" + totalI2.toFixed(2) + "</I2></IsporukeUkupno></Tijelo>";
+  xml += "</ObrazacPDVS>";
+
+  var compOib = SCRIPT_PROP.getProperty("COMPANY_OIB") || "OIB";
+  var filename = "PDV-S_" + compOib + "_" + dates.datumOd.replace(/-/g, "") + "-" + dates.datumDo.replace(/-/g, "") + ".xml";
+  var fileUrl = savePdvXmlToDrive(xml, filename);
+
+  // Napomena: status NAMJERNO ostaje "Potvrđeno" (ne "Poslano") - PDV i PDV-S se predaju zajedno
+  // za isti mjesec, pa generiranje samo jednog obrasca ne smije "zaključati" redak prije drugog.
+  // Redak se označava "Poslano" tek ručno, preko "✅ Označi mjesec kao poslano" nakon što su OBA
+  // obrasca stvarno predana na ePoreznoj.
+  showPdvXmlDownloadDialog("PDV-S obrazac spreman", filename, fileUrl);
+}
+
+function generatePdvXml() {
+  var ui = SpreadsheetApp.getUi();
+  var period = promptPdvPeriod();
+  if (!period) return;
+
+  var rows = getConfirmedPdvRows(period);
+  if (rows.length === 0) {
+    ui.alert("Nema potvrđenih redaka za razdoblje " + period + ".");
+    return;
+  }
+
+  var dobraVrijednost = 0, uslugeVrijednost = 0;
+  rows.forEach(function(r) {
+    if (r.vrsta === "Usluga") uslugeVrijednost += r.iznos;
+    else dobraVrijednost += r.iznos;
+  });
+  dobraVrijednost = round2(dobraVrijednost);
+  uslugeVrijednost = round2(uslugeVrijednost);
+  var dobraPorez = round2(dobraVrijednost * 0.25);
+  var uslugePorez = round2(uslugeVrijednost * 0.25);
+  var ukupnoVrijednost = round2(dobraVrijednost + uslugeVrijednost);
+  var ukupnoPorez = round2(dobraPorez + uslugePorez);
+
+  var dates = pdvPeriodToDates(period);
+
+  var xml = "<?xml version='1.0' encoding='UTF-8'?>";
+  xml += "<ObrazacPDV xmlns=\"http://e-porezna.porezna-uprava.hr/sheme/zahtjevi/ObrazacPDV/v11-0\" xmlns:ns5=\"http://e-porezna.porezna-uprava.hr/sheme/VanjskaOmotnica/v1-0\" xmlns:ns4=\"http://uri.etsi.org/01903/v1.3.2#\" xmlns:ns3=\"http://www.w3.org/2000/09/xmldsig#\" xmlns:ns2=\"http://e-porezna.porezna-uprava.hr/sheme/zahtjevi/ObrazacPDV/v11-0\" verzijaSheme=\"11.0\">";
+  xml += buildPdvMetapodaciZaglavlje("Obrazac PDV", "ObrazacPDV-v11-0", dates.datumOd, dates.datumDo, false);
+
+  xml += "<Tijelo>";
+  xml += "<Podatak000>" + ukupnoVrijednost.toFixed(2) + "</Podatak000>";
+  for (var i = 100; i <= 111; i++) xml += "<Podatak" + i + ">0.00</Podatak" + i + ">";
+  xml += pdvStavka(200, ukupnoVrijednost, ukupnoPorez);
+  for (var i = 201; i <= 206; i++) xml += pdvStavka(i, 0, 0);
+  xml += pdvStavka(207, dobraVrijednost, dobraPorez);
+  for (var i = 208; i <= 209; i++) xml += pdvStavka(i, 0, 0);
+  xml += pdvStavka(210, uslugeVrijednost, uslugePorez);
+  for (var i = 211; i <= 215; i++) xml += pdvStavka(i, 0, 0);
+  for (var i = 300; i <= 314; i++) xml += pdvStavka(i, 0, 0);
+  xml += "<Podatak315>0.00</Podatak315>";
+  xml += "<Podatak400>" + ukupnoPorez.toFixed(2) + "</Podatak400>";
+  xml += "<Podatak500>0.00</Podatak500>";
+  [610, 611, 612, 613, 614, 615, 620, 630, 640, 650].forEach(function(n) {
+    xml += "<Podatak" + n + ">0.00</Podatak" + n + ">";
+  });
+  xml += "<Podatak660>false</Podatak660>";
+  [701, 702, 703, 704].forEach(function(n) {
+    xml += "<Podatak" + n + "><NabavnaVrijednost>0.00</NabavnaVrijednost><ProdajnaVrijednost>0.00</ProdajnaVrijednost></Podatak" + n + ">";
+  });
+  xml += "<Povrat>0.00</Povrat>";
+  xml += "<PodaciZaUstup/>";
+  xml += "<Predujam>0.00</Predujam>";
+  xml += "<UstupPovrata>0.00</UstupPovrata>";
+  xml += "</Tijelo>";
+  xml += "</ObrazacPDV>";
+
+  var compOib = SCRIPT_PROP.getProperty("COMPANY_OIB") || "OIB";
+  var filename = "PDV_" + compOib + "_" + dates.datumOd.replace(/-/g, "") + "-" + dates.datumDo.replace(/-/g, "") + ".xml";
+  var fileUrl = savePdvXmlToDrive(xml, filename);
+
+  // Vidi napomenu u generatePdvSXml() - status se ne mijenja ovdje automatski.
+  showPdvXmlDownloadDialog("PDV obrazac spreman", filename, fileUrl);
+}
+
+function pdvStavka(n, vrijednost, porez) {
+  return "<Podatak" + n + "><Vrijednost>" + vrijednost.toFixed(2) + "</Vrijednost><Porez>" + porez.toFixed(2) + "</Porez></Podatak" + n + ">";
 }
 
 // --- 5. AUTOMATSKO PLAĆANJE URA (IZVOD) ---
