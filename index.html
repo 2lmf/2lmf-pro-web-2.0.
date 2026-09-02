@@ -928,8 +928,18 @@
     }
     .help-panel.open { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
 
+    .help-panel-close {
+        position: absolute; top: 12px; right: 12px; z-index: 1;
+        width: 26px; height: 26px; border-radius: 50%; border: none;
+        background: rgba(255,255,255,0.12); color: #fff; cursor: pointer;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 0.75rem; transition: background 0.15s;
+    }
+    .help-panel-close:hover { background: rgba(255,255,255,0.25); }
+
     .help-panel-head {
-        background: var(--charcoal); color: #fff; padding: 18px 20px;
+        position: relative;
+        background: var(--charcoal); color: #fff; padding: 18px 34px 18px 20px;
     }
     .help-panel-head .greet { font-weight: 700; font-size: 1rem; margin-bottom: 4px; }
     .help-panel-head .sub { font-size: 0.82rem; color: rgba(255,255,255,0.6); }
@@ -963,6 +973,9 @@
 </button>
 
 <div class="help-panel" id="helpPanel">
+    <button class="help-panel-close" id="helpPanelClose" aria-label="Zatvori">
+        <i class="fas fa-xmark"></i>
+    </button>
     <div class="help-panel-head">
         <div class="greet">👋 Dobar dan!</div>
         <div class="sub">Kako Vam možemo pomoći? Izaberite što Vas zanima:</div>
@@ -974,7 +987,7 @@
         </a>
         <a class="help-option" href="kalkulator.html#hidro">
             <span class="ic">💧</span>
-            <span class="lbl">Hidro- ili termoizolacija<small>Materijali i kalkulator cijena</small></span>
+            <span class="lbl">Hidro ili termoizolacija<small>Materijali i kalkulator cijena</small></span>
         </a>
         <a class="help-option" href="kalkulator.html#ograde">
             <span class="ic">🏗️</span>
@@ -988,6 +1001,10 @@
             <span class="ic">🔋</span>
             <span class="lbl">Prijenosne elektrane<small>Energetska neovisnost</small></span>
         </a>
+        <a class="help-option" href="digitalizacija_znanja.html">
+            <span class="ic">⚙️</span>
+            <span class="lbl">Automatizacija za Vaš posao<small>Digitalizacija, CRM, uštede vremena</small></span>
+        </a>
     </div>
     <div class="help-panel-foot">
         <a href="index.html#kontakt">Ili nas kontaktirajte izravno →</a>
@@ -998,6 +1015,7 @@
     (function () {
         const fab = document.getElementById('helpFab');
         const panel = document.getElementById('helpPanel');
+        const closeBtn = document.getElementById('helpPanelClose');
 
         function setOpen(isOpen) {
             panel.classList.toggle('open', isOpen);
@@ -1008,6 +1026,10 @@
         fab.addEventListener('click', function () {
             setOpen(!panel.classList.contains('open'));
         });
+        closeBtn.addEventListener('click', function (e) {
+            e.stopPropagation();
+            setOpen(false);
+        });
         document.addEventListener('click', function (e) {
             if (!panel.contains(e.target) && !fab.contains(e.target)) setOpen(false);
         });
@@ -1017,7 +1039,7 @@
             setTimeout(function () {
                 if (!panel.classList.contains('open')) setOpen(true);
                 sessionStorage.setItem('2lmf_help_autoopened', 'true');
-            }, 8000);
+            }, 5000);
         }
     })();
 </script>
