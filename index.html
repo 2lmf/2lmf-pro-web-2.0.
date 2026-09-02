@@ -897,5 +897,130 @@
 }
 </script>
 
+<!-- --- HELP BUBBLE (bez AI-a — vodi izravno u pravi modul) --- -->
+<style>
+    .help-fab {
+        position: fixed; bottom: 24px; right: 24px; z-index: 5000;
+        width: 60px; height: 60px; border-radius: 50%;
+        background: var(--orange); color: #fff; border: none; cursor: pointer;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.4rem; box-shadow: 0 8px 28px rgba(217,107,34,0.4);
+        transition: transform 0.25s ease;
+        animation: helpFabPulse 2.6s ease-in-out infinite;
+    }
+    .help-fab:hover { transform: scale(1.08); }
+    .help-fab i.fa-xmark { display: none; }
+    .help-fab.open i.fa-comment-dots { display: none; }
+    .help-fab.open i.fa-xmark { display: block; }
+    @keyframes helpFabPulse {
+        0%, 100% { box-shadow: 0 8px 28px rgba(217,107,34,0.4); }
+        50% { box-shadow: 0 8px 28px rgba(217,107,34,0.7), 0 0 0 8px rgba(217,107,34,0.08); }
+    }
+
+    .help-panel {
+        position: fixed; bottom: 96px; right: 24px; z-index: 5000;
+        width: 320px; max-width: calc(100vw - 48px);
+        background: var(--white); border: 1px solid var(--border-2);
+        border-radius: 18px; box-shadow: 0 20px 60px rgba(28,25,21,0.22);
+        overflow: hidden;
+        opacity: 0; transform: translateY(16px) scale(0.97); pointer-events: none;
+        transition: all 0.25s cubic-bezier(0.16,1,0.3,1);
+    }
+    .help-panel.open { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+
+    .help-panel-head {
+        background: var(--charcoal); color: #fff; padding: 18px 20px;
+    }
+    .help-panel-head .greet { font-weight: 700; font-size: 1rem; margin-bottom: 4px; }
+    .help-panel-head .sub { font-size: 0.82rem; color: rgba(255,255,255,0.6); }
+
+    .help-options { padding: 10px; display: flex; flex-direction: column; gap: 6px; }
+    .help-option {
+        display: flex; align-items: center; gap: 12px;
+        padding: 12px 12px; border-radius: 10px; text-decoration: none;
+        color: var(--charcoal); font-size: 0.88rem; font-weight: 500;
+        border: 1px solid transparent; transition: all 0.15s;
+    }
+    .help-option:hover { background: var(--cream-2); border-color: var(--border-2); }
+    .help-option .ic { font-size: 1.1rem; width: 24px; text-align: center; flex-shrink: 0; }
+    .help-option .lbl small { display: block; font-weight: 400; color: var(--charcoal-40); font-size: 0.72rem; margin-top: 1px; }
+
+    .help-panel-foot {
+        padding: 12px 20px 16px; text-align: center; border-top: 1px solid var(--border);
+    }
+    .help-panel-foot a { color: var(--orange); font-size: 0.8rem; font-weight: 600; text-decoration: none; }
+    .help-panel-foot a:hover { text-decoration: underline; }
+
+    @media (max-width: 480px) {
+        .help-fab { bottom: 16px; right: 16px; }
+        .help-panel { bottom: 88px; right: 16px; }
+    }
+</style>
+
+<button class="help-fab" id="helpFab" aria-label="Kako Vam možemo pomoći?">
+    <i class="fas fa-comment-dots"></i>
+    <i class="fas fa-xmark"></i>
+</button>
+
+<div class="help-panel" id="helpPanel">
+    <div class="help-panel-head">
+        <div class="greet">👋 Dobar dan!</div>
+        <div class="sub">Kako Vam možemo pomoći? Izaberite što Vas zanima:</div>
+    </div>
+    <div class="help-options">
+        <a class="help-option" href="architects_blueprint.html">
+            <span class="ic">🏛️</span>
+            <span class="lbl">Arhitektonske usluge<small>Projektiranje, zeleni krovovi</small></span>
+        </a>
+        <a class="help-option" href="kalkulator.html#hidro">
+            <span class="ic">💧</span>
+            <span class="lbl">Hidro- ili termoizolacija<small>Materijali i kalkulator cijena</small></span>
+        </a>
+        <a class="help-option" href="kalkulator.html#ograde">
+            <span class="ic">🏗️</span>
+            <span class="lbl">Panel ograde<small>Konfigurator po mjeri</small></span>
+        </a>
+        <a class="help-option" href="blog/hella-tende-zastita-od-sunca.html">
+            <span class="ic">☀️</span>
+            <span class="lbl">Tende<small>Zaštita od sunca za terasu</small></span>
+        </a>
+        <a class="help-option" href="energy.html">
+            <span class="ic">🔋</span>
+            <span class="lbl">Prijenosne elektrane<small>Energetska neovisnost</small></span>
+        </a>
+    </div>
+    <div class="help-panel-foot">
+        <a href="index.html#kontakt">Ili nas kontaktirajte izravno →</a>
+    </div>
+</div>
+
+<script>
+    (function () {
+        const fab = document.getElementById('helpFab');
+        const panel = document.getElementById('helpPanel');
+
+        function setOpen(isOpen) {
+            panel.classList.toggle('open', isOpen);
+            fab.classList.toggle('open', isOpen);
+            fab.setAttribute('aria-expanded', isOpen);
+        }
+
+        fab.addEventListener('click', function () {
+            setOpen(!panel.classList.contains('open'));
+        });
+        document.addEventListener('click', function (e) {
+            if (!panel.contains(e.target) && !fab.contains(e.target)) setOpen(false);
+        });
+
+        // Samo-otvaranje jednom po posjeti (sesiji), nakon 8 sekundi
+        if (!sessionStorage.getItem('2lmf_help_autoopened')) {
+            setTimeout(function () {
+                if (!panel.classList.contains('open')) setOpen(true);
+                sessionStorage.setItem('2lmf_help_autoopened', 'true');
+            }, 8000);
+        }
+    })();
+</script>
+
 </body>
 </html>
