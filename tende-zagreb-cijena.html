@@ -1090,7 +1090,18 @@
         }
     </script>
 
-    <!-- --- FIRST-CLICK TRACKER --- -->
+    <!-- --- PAGE-VIEW TRACKER (bilježi dolazak na stranicu, ne čeka klik jer klik unutar iframe konfiguratora ne stiže do ove stranice) --- -->
+    <script>
+        const _GAS_URL_LANDING = 'https://script.google.com/macros/s/AKfycbx4TQ6cFNr8X-fNRHE0Ai571pAioDeny_mSSrTVQm3OHbTKOhfIEDiKDFM2shZ5zDFLrA/exec';
+        (function () {
+            if (sessionStorage.getItem('2lmf_tracked_tende_landing_view')) return;
+            sessionStorage.setItem('2lmf_tracked_tende_landing_view', 'true');
+            const p = new URLSearchParams({ action: 'log_interaction', module: 'tende-zagreb-cijena', source: 'LocalSEO_Tende_PageView', timestamp: new Date().toISOString() });
+            fetch(_GAS_URL_LANDING + '?' + p.toString(), { method: 'GET', keepalive: true, mode: 'no-cors' }).catch(() => {});
+        })();
+    </script>
+
+    <!-- --- FIRST-CLICK TRACKER (dodatni signal ako netko klikne izvan iframe konfiguratora - hero, FAQ, nav) --- -->
     <script>
         const _GAS_URL = 'https://script.google.com/macros/s/AKfycbx4TQ6cFNr8X-fNRHE0Ai571pAioDeny_mSSrTVQm3OHbTKOhfIEDiKDFM2shZ5zDFLrA/exec';
         document.body.addEventListener('click', function () {
