@@ -97,6 +97,13 @@
         .site-nav-back:hover { color: #E67E22; }
         @media(max-width:600px) { .site-header { padding: 0 16px; } .site-logo-shark img { height: 30px; } .site-logo-2lmf-text { font-size: 11px; } }
 
+        /* --- EMBED MODE (single-module iframe, e.g. za landing stranice) --- */
+        html.embed-mode .site-header,
+        html.embed-mode .v2-navbar,
+        html.embed-mode .mobile-sticky-bar { display: none !important; }
+        html.embed-mode .recap-sidebar { top: 12px; }
+        html.embed-mode .master-layout { padding-top: 1.25rem; }
+
         /* Hide input arrows */
         input::-webkit-outer-spin-button,
         input::-webkit-inner-spin-button {
@@ -970,6 +977,12 @@
 </head>
 
 <body>
+    <script>
+        // Embed mode: ?embed=1 sakriva header/nav (koristi se u iframe-u na landing stranicama)
+        if (new URLSearchParams(window.location.search).has('embed')) {
+            document.documentElement.classList.add('embed-mode');
+        }
+    </script>
     <header class="site-header">
         <div class="site-header-inner">
             <div class="site-logos">
@@ -4214,6 +4227,24 @@
         </div>
         <button class="sticky-btn" onclick="scrollToContact()">ZATRAŽI PONUDU</button>
     </div>
+
+    <script>
+        // Embed mode: javi roditeljskoj stranici (iframe) trenutnu visinu da se iframe može auto-resizeati.
+        // Ne dira ništa izvan embed-mode — normalan kalkulator.html je potpuno nedirnut.
+        if (document.documentElement.classList.contains('embed-mode') && window.parent !== window) {
+            let lastHeight = 0;
+            const reportHeight = () => {
+                const h = document.documentElement.scrollHeight;
+                if (h !== lastHeight) {
+                    lastHeight = h;
+                    window.parent.postMessage({ type: '2lmf-embed-resize', height: h }, '*');
+                }
+            };
+            reportHeight();
+            setInterval(reportHeight, 400);
+            window.addEventListener('load', reportHeight);
+        }
+    </script>
 
 </body>
 
