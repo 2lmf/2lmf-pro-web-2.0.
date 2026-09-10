@@ -74,6 +74,7 @@ const TRANSLATIONS = {
         set_about: "O Aplikaciji",
         stats_title: "Tvoj Cloud Dnevnik",
         stats_target: "Tvoj dnevni cilj (TDEE):",
+        stats_target_lbl: "Tvoj dnevni cilj",
         stats_history: "Kronološki ispisi obroka",
         inst_title: "Instaliraj CalorieShark!",
         inst_body: "Dodaj aplikaciju na početni zaslon svog mobitela za brzi pristup, Kameru, Mikrofon i Offline rad.",
@@ -99,6 +100,8 @@ const TRANSLATIONS = {
         weight_need_more: "Zabilježi težinu barem 2 dana da se prikaže trend.",
         weight_scale: "Vaga",
         weight_trend_line: "Trend (izglađeno)",
+        adaptive_on: "Cilj prilagođen tvom trendu — održavanje ~{maint} kcal",
+        adaptive_off: "Cilj po formuli. Redovito se važi (~2 tjedna) da se počne prilagođavati tvom tijelu.",
         mod_steps_title: "Zabilježi Korake",
         mod_steps_count: "Broj koraka:",
         mod_steps_kcal: "Potrošene kalorije:",
@@ -184,6 +187,7 @@ const TRANSLATIONS = {
         set_about: "About App",
         stats_title: "Your Cloud Diary",
         stats_target: "Your daily goal (TDEE):",
+        stats_target_lbl: "Your daily goal",
         stats_history: "Chronological meal logs",
         inst_title: "Install CalorieShark!",
         inst_body: "Add the app to your home screen for quick access, Camera, Microphone and Offline work.",
@@ -209,6 +213,8 @@ const TRANSLATIONS = {
         weight_need_more: "Log your weight on at least 2 days to see a trend.",
         weight_scale: "Scale",
         weight_trend_line: "Trend (smoothed)",
+        adaptive_on: "Target adapted to your trend — maintenance ~{maint} kcal",
+        adaptive_off: "Formula-based target. Weigh in regularly (~2 weeks) so it starts adapting to your body.",
         mod_steps_title: "Log Steps",
         mod_steps_count: "Step count:",
         mod_steps_kcal: "Calories burned:",
@@ -1425,27 +1431,110 @@ function updateStepsPreview() {
 
 // --- CORE LOGIC ---
 const ACTIVITY_MULT = { sedentary: 1.20, light: 1.375, moderate: 1.55, active: 1.725 };
+const KCAL_PER_KG = 7700; // energetski ekvivalent 1 kg tjelesne mase
 
-function calculateTDEE() {
-    // 1) BMR — Mifflin-St Jeor
+function _clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+
+function computeBMR() {
     let bmr = (10 * userProfile.weight) + (6.25 * userProfile.height) - (5 * userProfile.age);
     bmr += (userProfile.gender === 'male') ? 5 : -161;
+    return bmr;
+}
 
-    // 2) Održavanje = BMR × faktor aktivnosti
-    const mult = ACTIVITY_MULT[userProfile.activity] || ACTIVITY_MULT.light;
-    const maintenance = bmr * mult;
-    userProfile.maintenanceKcal = Math.round(maintenance);
+// Održavanje po formuli (BMR × aktivnost)
+function formulaMaintenance() {
+    return computeBMR() * (ACTIVITY_MULT[userProfile.activity] || ACTIVITY_MULT.light);
+}
 
-    // 3) Dnevni CILJ = održavanje ± prilagodba prema cilju
+// Dnevni CILJ = održavanje ± prilagodba prema cilju
+function targetFromMaintenance(maintenance) {
+    const bmr = computeBMR();
     let target = maintenance;
     if (userProfile.goal === 'lose') {
-        // umjereni deficit ~18%, ali nikad agresivnije od -750 kcal ni ispod (BMR + 100)
         target = Math.max(maintenance * 0.82, maintenance - 750, bmr + 100);
     } else if (userProfile.goal === 'gain') {
-        // umjereni suficit ~12%, kapiran na +500 kcal
         target = Math.min(maintenance * 1.12, maintenance + 500);
     }
-    userProfile.tdee = Math.round(target);
+    return Math.round(target);
+}
+
+function calculateTDEE() {
+    const fm = formulaMaintenance();
+    // adaptiveAdjust je omjer (naučeno održavanje / formula); prati promjene težine
+    const adj = userProfile.adaptiveAdjust || 1;
+    userProfile.maintenanceKcal = Math.round(fm * adj);
+    userProfile.tdee = targetFromMaintenance(userProfile.maintenanceKcal);
+}
+
+// 'YYYY-MM-DD' + n dana
+function addDaysKey(key, n) {
+    const d = new Date(key + 'T00:00:00');
+    d.setDate(d.getDate() + n);
+    return d.toISOString().slice(0, 10);
+}
+// 'dd.MM.yyyy' -> 'YYYY-MM-DD'
+function dmyToKey(dmy) {
+    const p = String(dmy).split('.').map(s => s.trim()).filter(Boolean);
+    if (p.length < 3) return null;
+    return `${p[2]}-${p[1].padStart(2, '0')}-${p[0].padStart(2, '0')}`;
+}
+
+// Adaptivni TDEE: usporedi stvarni trend težine s onim koji predviđa zabilježeni unos,
+// pa nježno korigiraj procjenu održavanja. Vraća sažetak ili null ako nema dovoljno podataka.
+function computeAdaptiveTDEE(meals) {
+    const log = Array.isArray(userProfile.weightLog) ? userProfile.weightLog : [];
+    if (log.length < 8) return null;
+
+    const trendAll = computeWeightTrend(log);
+    const lastP = trendAll[trendAll.length - 1];
+    const cutoff = addDaysKey(lastP.d, -28);
+    const win = trendAll.filter(p => p.d >= cutoff);
+    if (win.length < 6) return null;
+
+    const startP = win[0];
+    const days = daysBetweenKeys(startP.d, lastP.d);
+    if (days < 12) return null;
+
+    const weightChangeKg = lastP.trend - startP.trend;
+
+    // net kcal po danu (obroci minus trening; trening je već negativan u totals.kcal)
+    const byDay = {};
+    (meals || []).forEach(m => {
+        const k = dmyToKey(m.date);
+        if (!k || k < startP.d || k > lastP.d) return;
+        byDay[k] = (byDay[k] || 0) + (m.totals ? m.totals.kcal : 0);
+    });
+    const kcalDays = Object.keys(byDay);
+    if (kcalDays.length < Math.ceil(days * 0.55)) return null; // premalo zabilježenih dana
+
+    const avgIntake = kcalDays.reduce((s, k) => s + byDay[k], 0) / kcalDays.length;
+
+    const fm = formulaMaintenance();
+    const curMaint = userProfile.maintenanceKcal || fm;
+
+    const expectedChangeKg = ((avgIntake - curMaint) * days) / KCAL_PER_KG;
+    const errKcalPerDay = ((weightChangeKg - expectedChangeKg) * KCAL_PER_KG) / days;
+
+    // err > 0: manje smršavio / više udebljao nego predviđeno -> stvarno održavanje NIŽE
+    // err < 0: više smršavio nego predviđeno -> stvarno održavanje VIŠE
+    let newMaint = curMaint - errKcalPerDay * 0.5; // damping
+
+    // tjedna korekcija max ±8%, apsolut max ±25% od formule
+    newMaint = _clamp(newMaint, curMaint * 0.92, curMaint * 1.08);
+    newMaint = _clamp(newMaint, fm * 0.75, fm * 1.25);
+
+    userProfile.adaptiveAdjust = newMaint / fm;
+    userProfile.adaptiveActive = true;
+    userProfile.adaptiveUpdated = getTodayKey();
+    calculateTDEE();
+    saveProfile();
+
+    return {
+        maintenance: userProfile.maintenanceKcal,
+        target: userProfile.tdee,
+        weeklyChangeKg: Math.round((weightChangeKg / days * 7) * 100) / 100,
+        days: days
+    };
 }
 
 // --- POVIJEST VAGANJA + TREND ---
@@ -2989,8 +3078,23 @@ function renderWeightTrend() {
     });
 }
 
+// Napomena o statusu cilja (formula vs adaptivno)
+function renderAdaptiveNote() {
+    const el = document.getElementById('adaptiveNote');
+    if (!el) return;
+    if (userProfile.adaptiveActive && userProfile.adaptiveAdjust) {
+        const pct = Math.round((userProfile.adaptiveAdjust - 1) * 100);
+        const dir = pct === 0 ? '' : (pct > 0 ? ` (+${pct}%)` : ` (${pct}%)`);
+        el.innerHTML = '<i class="fas fa-wand-magic-sparkles" style="color:var(--accent-cyan);"></i> ' +
+            i18n('adaptive_on', { maint: userProfile.maintenanceKcal }) + dir;
+    } else {
+        el.textContent = i18n('adaptive_off');
+    }
+}
+
 async function fetchAndRenderHistory() {
     renderWeightTrend();
+    renderAdaptiveNote();
     const listEl = document.getElementById('cloudMealsList');
     listEl.innerHTML = `<div class="empty-state" style="color:var(--accent-cyan);"><i class="fas fa-spinner fa-spin"></i><p>Povlačim podatke s Clouda...</p></div>`;
 
@@ -3034,6 +3138,15 @@ function renderStatsUI(meals) {
         if (kcalChartInstance) kcalChartInstance.destroy();
         return;
     }
+
+    // Adaptivni TDEE — jednom dnevno, na temelju punog meal historyja + trenda težine
+    try {
+        if (userProfile.adaptiveUpdated !== getTodayKey()) {
+            const a = computeAdaptiveTDEE(meals);
+            if (a && typeof updateDashboardUI === 'function') updateDashboardUI();
+        }
+        renderAdaptiveNote();
+    } catch (e) { console.warn('Adaptive TDEE skip:', e); }
 
     // 1. Grupiranje kalorija po datumima za Chart.js
     const dailySums = {};
