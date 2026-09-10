@@ -28,6 +28,11 @@ const TRANSLATIONS = {
         goal_lose: "MRŠAVLJENJE",
         goal_maintain: "ODRŽAVANJE",
         goal_gain: "MASA",
+        onb_activity: "Razina aktivnosti",
+        act_sedentary: "SJEDILAČKI",
+        act_light: "LAGANO",
+        act_moderate: "UMJERENO",
+        act_active: "AKTIVNO",
         diet_gf: "Bez Glutena",
         onb_start: "ZAPOČNI",
         set_save: "SPREMI PROMJENE",
@@ -126,6 +131,11 @@ const TRANSLATIONS = {
         goal_lose: "WEIGHT LOSS",
         goal_maintain: "MAINTENANCE",
         goal_gain: "MUSCLE GAIN",
+        onb_activity: "Activity level",
+        act_sedentary: "SEDENTARY",
+        act_light: "LIGHT",
+        act_moderate: "MODERATE",
+        act_active: "ACTIVE",
         diet_gf: "Gluten Free",
         onb_start: "START",
         set_save: "SAVE CHANGES",
@@ -277,8 +287,10 @@ let userProfile = {
     favorites: [],
     height: 180,
     weight: 85,
-    tdee: 2500,
+    tdee: 2500,          // dnevni CILJ kalorija (održavanje ± prilagodba prema cilju)
+    maintenanceKcal: 2500, // procijenjeno održavanje (bez deficita/suficita)
     goal: 'lose',
+    activity: 'light',   // sedentary | light | moderate | active
     dietPrefs: {
         vege: false,
         vegan: false,
@@ -675,6 +687,17 @@ function loadProfile() {
         userProfile = JSON.parse(saved);
         if (!userProfile.favorites) userProfile.favorites = [];
 
+        // Migracija starih profila: razina aktivnosti + preračun cilja
+        if (!userProfile.activity) userProfile.activity = 'light';
+        if (typeof userProfile.maintenanceKcal === 'undefined') {
+            calculateTDEE(); // preračunaj po novoj logici (održavanje ± cilj)
+        }
+
+        // Populate active activity toggles
+        document.querySelectorAll('#activityToggleGroup .toggle-btn, #activityToggleGroupSettings .toggle-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.activity === userProfile.activity);
+        });
+
         // Populate inputs for onboarding
         document.getElementById('inpUsername').value = userProfile.username || '';
         document.getElementById('inpEmail').value = userProfile.email || '';
@@ -904,6 +927,17 @@ function bindEvents() {
         });
     });
 
+    // Activity Toggles (razina aktivnosti)
+    const actBtns = document.querySelectorAll('#activityToggleGroup .toggle-btn, #activityToggleGroupSettings .toggle-btn');
+    actBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const group = e.currentTarget.parentElement;
+            group.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+            e.currentTarget.classList.add('active');
+            userProfile.activity = e.currentTarget.dataset.activity;
+        });
+    });
+
     // Goal Toggles
     const goalBtns = document.querySelectorAll('#goalToggleGroup .toggle-btn, #goalToggleGroupSettings .toggle-btn');
     goalBtns.forEach(btn => {
@@ -947,6 +981,10 @@ function bindEvents() {
             // Save Goal
             const activeGoalBtn = document.querySelector('#goalToggleGroup .toggle-btn.active');
             userProfile.goal = activeGoalBtn ? activeGoalBtn.dataset.goal : 'lose';
+
+            // Save Activity level
+            const activeActBtn = document.querySelector('#activityToggleGroup .toggle-btn.active');
+            userProfile.activity = activeActBtn ? activeActBtn.dataset.activity : 'light';
 
             calculateTDEE();
             saveProfile();
@@ -1051,6 +1089,12 @@ function bindEvents() {
             }
         });
 
+        // Pre-fill activity level in settings
+        const actToggleBtns = document.querySelectorAll('#activityToggleGroupSettings .toggle-btn');
+        actToggleBtns.forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.activity === (userProfile.activity || 'light'));
+        });
+
         showScreen('settings');
     });
 
@@ -1098,6 +1142,10 @@ function bindEvents() {
             // Save Goal from settings
             const agg = document.querySelector('#goalToggleGroupSettings .toggle-btn.active');
             userProfile.goal = agg ? agg.dataset.goal : 'lose';
+
+            // Save Activity level from settings
+            const aga = document.querySelector('#activityToggleGroupSettings .toggle-btn.active');
+            userProfile.activity = aga ? aga.dataset.activity : 'light';
 
             calculateTDEE();
             saveProfile(); // Use the standard saveProfile function
@@ -1335,13 +1383,28 @@ function updateStepsPreview() {
 }
 
 // --- CORE LOGIC ---
+const ACTIVITY_MULT = { sedentary: 1.20, light: 1.375, moderate: 1.55, active: 1.725 };
+
 function calculateTDEE() {
-    // Mifflin-St Jeor Equation
+    // 1) BMR — Mifflin-St Jeor
     let bmr = (10 * userProfile.weight) + (6.25 * userProfile.height) - (5 * userProfile.age);
     bmr += (userProfile.gender === 'male') ? 5 : -161;
 
-    // Light activity multiplier as default for modern office workers
-    userProfile.tdee = Math.round(bmr * 1.375);
+    // 2) Održavanje = BMR × faktor aktivnosti
+    const mult = ACTIVITY_MULT[userProfile.activity] || ACTIVITY_MULT.light;
+    const maintenance = bmr * mult;
+    userProfile.maintenanceKcal = Math.round(maintenance);
+
+    // 3) Dnevni CILJ = održavanje ± prilagodba prema cilju
+    let target = maintenance;
+    if (userProfile.goal === 'lose') {
+        // umjereni deficit ~18%, ali nikad agresivnije od -750 kcal ni ispod (BMR + 100)
+        target = Math.max(maintenance * 0.82, maintenance - 750, bmr + 100);
+    } else if (userProfile.goal === 'gain') {
+        // umjereni suficit ~12%, kapiran na +500 kcal
+        target = Math.min(maintenance * 1.12, maintenance + 500);
+    }
+    userProfile.tdee = Math.round(target);
 }
 
 function showScreen(screenId) {

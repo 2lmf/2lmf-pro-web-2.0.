@@ -108,6 +108,18 @@
                 <input type="number" id="inpWeight" value="85" min="30" max="200" step="0.1">
             </div>
 
+            <!-- ACTIVITY LEVEL (Onboarding) -->
+            <div class="input-group" style="margin-top: 20px;">
+                <label style="color: var(--accent-cyan);"><i class="fas fa-person-running"></i> <span
+                        data-i18n="onb_activity">Razina aktivnosti</span></label>
+                <div class="toggle-group" id="activityToggleGroup" style="grid-template-columns: 1fr 1fr;">
+                    <button class="toggle-btn" data-activity="sedentary" data-i18n="act_sedentary">SJEDILAČKI</button>
+                    <button class="toggle-btn active" data-activity="light" data-i18n="act_light">LAGANO</button>
+                    <button class="toggle-btn" data-activity="moderate" data-i18n="act_moderate">UMJERENO</button>
+                    <button class="toggle-btn" data-activity="active" data-i18n="act_active">AKTIVNO</button>
+                </div>
+            </div>
+
             <!-- DIETARY PREFERENCES (Onboarding) -->
             <div class="input-group" style="margin-top: 20px;">
                 <label style="color: var(--accent-cyan);"><i class="fas fa-bullseye"></i> <span
@@ -192,6 +204,18 @@
             <div class="input-group" style="margin-top: 15px;">
                 <label data-i18n="onb_weight">Trenutna težina (kg)</label>
                 <input type="number" id="inpSettingsWeight" value="85" min="30" max="200" step="0.1">
+            </div>
+
+            <!-- ACTIVITY LEVEL (Settings) -->
+            <div class="input-group" style="margin-top: 20px;">
+                <label style="color: var(--accent-cyan);"><i class="fas fa-person-running"></i> <span
+                        data-i18n="onb_activity">Razina aktivnosti</span></label>
+                <div class="toggle-group" id="activityToggleGroupSettings" style="grid-template-columns: 1fr 1fr;">
+                    <button class="toggle-btn" data-activity="sedentary" data-i18n="act_sedentary">SJEDILAČKI</button>
+                    <button class="toggle-btn active" data-activity="light" data-i18n="act_light">LAGANO</button>
+                    <button class="toggle-btn" data-activity="moderate" data-i18n="act_moderate">UMJERENO</button>
+                    <button class="toggle-btn" data-activity="active" data-i18n="act_active">AKTIVNO</button>
+                </div>
             </div>
 
             <!-- DIETARY PREFERENCES -->
@@ -792,14 +816,14 @@
     <script type="module" src="firebase-core.js"></script>
 
     <!-- Core Databases -->
-    <script src="food_database.js?v=70"></script>
-    <script src="food_categories.js?v=70"></script>
-    <script src="food_categories_2.js?v=70"></script>
-    <script src="food_categories_3.js?v=70"></script>
-    <script src="exercise_database.js?v=70"></script>
-    <script src="advisor_database.js?v=70"></script>
-    <script src="app_v36.js?v=70"></script>
-    <link rel="stylesheet" href="styles.css?v=70">
+    <script src="food_database.js?v=71"></script>
+    <script src="food_categories.js?v=71"></script>
+    <script src="food_categories_2.js?v=71"></script>
+    <script src="food_categories_3.js?v=71"></script>
+    <script src="exercise_database.js?v=71"></script>
+    <script src="advisor_database.js?v=71"></script>
+    <script src="app_v36.js?v=71"></script>
+    <link rel="stylesheet" href="styles.css?v=71">
 </body>
 
 </html>
