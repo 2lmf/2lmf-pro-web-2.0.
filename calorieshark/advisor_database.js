@@ -235,13 +235,13 @@ const sharkAdvisorPhrases = {
             "Vidi se trud. Nastavi tako i možda ćeš se zapravo vidjeti u ogledalu."
         ],
         mid: [
-            "Polovica dana je gotova. Nemoj sada pokleknuti pred onim keksom.",
+            "Polovica dnevnog budžeta je potrošena. Ostatak dana drži se pod kontrolom.",
             "Solidno držiš liniju. Ali pazi, ormar ti i dalje ne oprašta grijehe.",
             "Umjereno i pametno. Skoro pa sam ponosan na tebe."
         ],
         high: [
-            "Približavamo se opasnoj zoni. Je li ta torta stvarno bila vrijedna?",
-            "Skoro si dosegao dno... odnosno vrh budžeta. Koči malo!",
+            "Približavamo se dnevnom limitu. Sve dodatno danas ide protiv tebe.",
+            "Skoro si dosegao vrh budžeta za danas. Koči malo do večeri.",
             "Tvoj deficit se topi brže nego sladoled na suncu. Stani!"
         ],
         over: [

@@ -873,6 +873,35 @@ const extendedFoodDB_3 = [
         macrosPer100g: { carbs: 40, protein: 3.5, fat: 6 },
         standardUnits: { "zlicica": 5, "porcija": 10 },
         note: "Vrlo mala količina uz sushi."
+    },
+
+    // === DODANO NAKNADNO ===
+    {
+        name: "Salata od hobotnice",
+        name_en: "Octopus Salad",
+        keywords: ["salata od hobotnice", "hobotnica salata", "dalmatinska salata od hobotnice", "octopus salad"],
+        kcalPer100g: 150,
+        macrosPer100g: { carbs: 4, protein: 13, fat: 9 },
+        standardUnits: { "porcija": 200, "predjelo": 150, "zdjelica": 200 },
+        note: "Hobotnica je nemasna (~85 kcal); kalorije uglavnom dolaze od maslinovog ulja. Restoranska porcija ≈ 200g."
+    },
+    {
+        name: "Palačinke sa sladoledom",
+        name_en: "Pancakes with Ice Cream",
+        keywords: ["palacinke sa sladoledom", "palacinka sladoled", "palacinke i sladoled", "pancakes ice cream"],
+        kcalPer100g: 215,
+        macrosPer100g: { carbs: 30, protein: 5, fat: 9 },
+        standardUnits: { "kom": 130, "porcija": 260 },
+        note: "1 palačinka + kuglica sladoleda ≈ 130g. Porcija = 2 komada."
+    },
+    {
+        name: "Jagode sa šlagom",
+        name_en: "Strawberries with Whipped Cream",
+        keywords: ["jagode sa slagom", "jagode slag", "jagode i slag", "strawberries whipped cream"],
+        kcalPer100g: 120,
+        macrosPer100g: { carbs: 10, protein: 1.5, fat: 8 },
+        standardUnits: { "zdjelica": 200, "porcija": 200 },
+        note: "Omjer ≈ 150g jagoda + 50g šlaga. Šlag nosi većinu kalorija."
     }
 
 ];
