@@ -90,6 +90,15 @@ const TRANSLATIONS = {
         adv_fav_title: "Moj Favorit",
         set_logout: "ODJAVI SE",
         dash_steps: "KORACI",
+        dash_weight: "TEŽINA",
+        weight_prompt: "Upiši današnju težinu (kg):",
+        weight_saved: "Težina spremljena: {kg} kg",
+        weight_invalid: "Neispravna težina. Upiši broj između 25 i 400.",
+        weight_trend_title: "Trend težine",
+        weight_trend_now: "Trend: {kg} kg",
+        weight_need_more: "Zabilježi težinu barem 2 dana da se prikaže trend.",
+        weight_scale: "Vaga",
+        weight_trend_line: "Trend (izglađeno)",
         mod_steps_title: "Zabilježi Korake",
         mod_steps_count: "Broj koraka:",
         mod_steps_kcal: "Potrošene kalorije:",
@@ -191,6 +200,15 @@ const TRANSLATIONS = {
         adv_fav_title: "My Favorite",
         set_logout: "LOG OUT",
         dash_steps: "STEPS",
+        dash_weight: "WEIGHT",
+        weight_prompt: "Enter today's weight (kg):",
+        weight_saved: "Weight saved: {kg} kg",
+        weight_invalid: "Invalid weight. Enter a number between 25 and 400.",
+        weight_trend_title: "Weight trend",
+        weight_trend_now: "Trend: {kg} kg",
+        weight_need_more: "Log your weight on at least 2 days to see a trend.",
+        weight_scale: "Scale",
+        weight_trend_line: "Trend (smoothed)",
         mod_steps_title: "Log Steps",
         mod_steps_count: "Step count:",
         mod_steps_kcal: "Calories burned:",
@@ -291,6 +309,7 @@ let userProfile = {
     maintenanceKcal: 2500, // procijenjeno održavanje (bez deficita/suficita)
     goal: 'lose',
     activity: 'light',   // sedentary | light | moderate | active
+    weightLog: [],       // [{ d: 'YYYY-MM-DD', kg: Number }] - povijest vaganja
     dietPrefs: {
         vege: false,
         vegan: false,
@@ -691,6 +710,11 @@ function loadProfile() {
         if (!userProfile.activity) userProfile.activity = 'light';
         if (typeof userProfile.maintenanceKcal === 'undefined') {
             calculateTDEE(); // preračunaj po novoj logici (održavanje ± cilj)
+        }
+        // Migracija: povijest vaganja — sjemenka s trenutnom težinom
+        if (!Array.isArray(userProfile.weightLog)) userProfile.weightLog = [];
+        if (userProfile.weightLog.length === 0 && userProfile.weight) {
+            userProfile.weightLog.push({ d: getTodayKey(), kg: userProfile.weight });
         }
 
         // Populate active activity toggles
@@ -1271,6 +1295,23 @@ function setupStepsEvents() {
         });
     }
 
+    const btnLogWeight = document.getElementById('btnLogWeight');
+    if (btnLogWeight) {
+        btnLogWeight.addEventListener('click', () => {
+            const cur = userProfile.weight || 80;
+            const input = prompt(i18n('weight_prompt'), String(cur));
+            if (input === null) return;
+            if (logWeight(input)) {
+                if (typeof updateDashboardUI === 'function') updateDashboardUI();
+                const s = getWeightTrendSummary();
+                const extra = s ? ` (${i18n('weight_trend_now', { kg: s.trendKg.toFixed(1) })})` : '';
+                alert(i18n('weight_saved', { kg: parseFloat(String(input).replace(',', '.')).toFixed(1) }) + extra);
+            } else {
+                alert(i18n('weight_invalid'));
+            }
+        });
+    }
+
     if (btnCancelSteps) {
         btnCancelSteps.addEventListener('click', () => stepsModal.classList.add('hidden'));
     }
@@ -1405,6 +1446,64 @@ function calculateTDEE() {
         target = Math.min(maintenance * 1.12, maintenance + 500);
     }
     userProfile.tdee = Math.round(target);
+}
+
+// --- POVIJEST VAGANJA + TREND ---
+function daysBetweenKeys(a, b) {
+    // 'YYYY-MM-DD' -> broj dana (b - a)
+    const da = new Date(a + 'T00:00:00');
+    const db = new Date(b + 'T00:00:00');
+    return Math.round((db - da) / 86400000);
+}
+
+// Zabilježi težinu (jedan unos po danu; ponovni unos istog dana ga prepisuje)
+function logWeight(kg) {
+    kg = parseFloat(String(kg).replace(',', '.'));
+    if (!kg || kg < 25 || kg > 400) return false;
+
+    if (!Array.isArray(userProfile.weightLog)) userProfile.weightLog = [];
+    const today = getTodayKey();
+    const existing = userProfile.weightLog.find(w => w.d === today);
+    if (existing) existing.kg = kg;
+    else userProfile.weightLog.push({ d: today, kg: kg });
+
+    userProfile.weightLog.sort((a, b) => (a.d < b.d ? -1 : 1));
+    if (userProfile.weightLog.length > 400) {
+        userProfile.weightLog = userProfile.weightLog.slice(-400);
+    }
+
+    userProfile.weight = kg;   // zadnja izmjerena
+    calculateTDEE();           // preračunaj cilj s novom težinom
+    saveProfile();
+    return true;
+}
+
+// Eksponencijalno izglađen trend (alpha ~0.25 => ~8-dnevni "half-life", MacroFactor stil)
+function computeWeightTrend(log, alpha) {
+    alpha = alpha || 0.25;
+    if (!Array.isArray(log) || log.length === 0) return [];
+    const sorted = [...log].sort((a, b) => (a.d < b.d ? -1 : 1));
+    let t = sorted[0].kg;
+    return sorted.map((w, i) => {
+        t = (i === 0) ? w.kg : t + alpha * (w.kg - t);
+        return { d: w.d, kg: w.kg, trend: Math.round(t * 100) / 100 };
+    });
+}
+
+// Sažetak: trend težine + promjena po tjednu (na temelju zadnjih ~8 unosa)
+function getWeightTrendSummary() {
+    const tr = computeWeightTrend(userProfile.weightLog);
+    if (tr.length < 2) return null;
+    const last = tr[tr.length - 1];
+    const prev = tr[Math.max(0, tr.length - 8)];
+    const days = Math.max(1, daysBetweenKeys(prev.d, last.d));
+    const perWeek = ((last.trend - prev.trend) / days) * 7;
+    return {
+        trendKg: last.trend,
+        scaleKg: last.kg,
+        deltaPerWeek: Math.round(perWeek * 100) / 100,
+        days: days
+    };
 }
 
 function showScreen(screenId) {
@@ -2816,8 +2915,82 @@ function renderFavoritesList() {
 // CLOUD STATISTIKA I GRAFOVI
 // ==========================================
 let kcalChartInstance = null;
+let weightChartInstance = null;
+
+// Nacrtaj trend težine na stats ekranu (linija: stvarna mjerenja + izglađen trend)
+function renderWeightTrend() {
+    const card = document.getElementById('weightTrendCard');
+    const summaryEl = document.getElementById('weightTrendSummary');
+    const canvas = document.getElementById('weightChart');
+    if (!card || !canvas) return;
+
+    const tr = computeWeightTrend(userProfile.weightLog);
+
+    if (tr.length < 2) {
+        summaryEl.textContent = i18n('weight_need_more');
+        if (weightChartInstance) { weightChartInstance.destroy(); weightChartInstance = null; }
+        return;
+    }
+
+    // Zadnjih 60 unosa
+    const view = tr.slice(-60);
+    const labels = view.map(p => p.d.slice(5).replace('-', '.') + '.');
+    const scale = view.map(p => p.kg);
+    const trend = view.map(p => p.trend);
+
+    const s = getWeightTrendSummary();
+    if (s) {
+        const sign = s.deltaPerWeek > 0 ? '+' : '';
+        const col = s.deltaPerWeek > 0.05 ? '#FF2A2A' : (s.deltaPerWeek < -0.05 ? '#00D084' : 'var(--accent-cyan)');
+        summaryEl.innerHTML = i18n('weight_trend_now', { kg: s.trendKg.toFixed(1) }) +
+            ` &nbsp;<strong style="color:${col};">${sign}${s.deltaPerWeek.toFixed(2)} kg/tj</strong>`;
+    }
+
+    const ctx = canvas.getContext('2d');
+    if (weightChartInstance) weightChartInstance.destroy();
+
+    Chart.defaults.color = '#7f8c8d';
+    Chart.defaults.font.family = "'Orbitron', sans-serif";
+
+    weightChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: i18n('weight_scale'),
+                    data: scale,
+                    borderColor: 'rgba(127,140,141,0.35)',
+                    backgroundColor: 'rgba(127,140,141,0.15)',
+                    borderWidth: 1,
+                    pointRadius: 2,
+                    pointBackgroundColor: 'rgba(127,140,141,0.6)',
+                    tension: 0
+                },
+                {
+                    label: i18n('weight_trend_line'),
+                    data: trend,
+                    borderColor: '#00A8B5',
+                    backgroundColor: 'transparent',
+                    borderWidth: 3,
+                    pointRadius: 0,
+                    tension: 0.35
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { display: true, labels: { boxWidth: 12, font: { size: 10 } } } },
+            scales: {
+                y: { ticks: { callback: v => v + ' kg' } },
+                x: { ticks: { maxTicksLimit: 8, autoSkip: true } }
+            }
+        }
+    });
+}
 
 async function fetchAndRenderHistory() {
+    renderWeightTrend();
     const listEl = document.getElementById('cloudMealsList');
     listEl.innerHTML = `<div class="empty-state" style="color:var(--accent-cyan);"><i class="fas fa-spinner fa-spin"></i><p>Povlačim podatke s Clouda...</p></div>`;
 

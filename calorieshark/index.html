@@ -387,6 +387,10 @@
                         style="background: rgba(230, 126, 34, 0.1); color: var(--accent-orange); border: 1px solid var(--accent-orange); padding: 8px 16px; border-radius: 20px; font-weight: bold; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 8px;">
                         <i class="fas fa-shoe-prints"></i> <span data-i18n="dash_steps">KORACI</span>
                     </button>
+                    <button id="btnLogWeight"
+                        style="background: rgba(0, 168, 181, 0.1); color: var(--accent-cyan); border: 1px solid var(--accent-cyan); padding: 8px 16px; border-radius: 20px; font-weight: bold; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-weight-scale"></i> <span data-i18n="dash_weight">TEŽINA</span>
+                    </button>
                 </div>
             </div>
 
@@ -575,6 +579,16 @@
                 Tvoj dnevni cilj (TDEE): <strong style="color:var(--accent-orange);" id="lblStatsTDEE">0</strong> kcal
             </div>
             <canvas id="kcalChart" width="400" height="200"></canvas>
+        </div>
+
+        <!-- WEIGHT TREND CARD -->
+        <div id="weightTrendCard"
+            style="background: var(--bg-card); border-radius: 12px; padding: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px;">
+            <h3 style="color:var(--text-main); margin-bottom:5px; text-align:center;"><i class="fas fa-weight-scale"
+                    style="color:var(--accent-cyan);"></i> <span data-i18n="weight_trend_title">Trend težine</span></h3>
+            <div id="weightTrendSummary"
+                style="text-align:center; font-size:0.85rem; color:var(--text-muted); margin-bottom:15px;"></div>
+            <canvas id="weightChart" width="400" height="180"></canvas>
         </div>
 
         <h4 style="color:var(--text-muted); margin-bottom:10px;" data-i18n="stats_history">Kronološki ispisi obroka</h4>
@@ -816,14 +830,14 @@
     <script type="module" src="firebase-core.js"></script>
 
     <!-- Core Databases -->
-    <script src="food_database.js?v=71"></script>
-    <script src="food_categories.js?v=71"></script>
-    <script src="food_categories_2.js?v=71"></script>
-    <script src="food_categories_3.js?v=71"></script>
-    <script src="exercise_database.js?v=71"></script>
-    <script src="advisor_database.js?v=71"></script>
-    <script src="app_v36.js?v=71"></script>
-    <link rel="stylesheet" href="styles.css?v=71">
+    <script src="food_database.js?v=72"></script>
+    <script src="food_categories.js?v=72"></script>
+    <script src="food_categories_2.js?v=72"></script>
+    <script src="food_categories_3.js?v=72"></script>
+    <script src="exercise_database.js?v=72"></script>
+    <script src="advisor_database.js?v=72"></script>
+    <script src="app_v36.js?v=72"></script>
+    <link rel="stylesheet" href="styles.css?v=72">
 </body>
 
 </html>
