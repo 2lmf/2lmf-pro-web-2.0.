@@ -102,6 +102,7 @@ const TRANSLATIONS = {
         weight_trend_line: "Trend (izglađeno)",
         adaptive_on: "Cilj prilagođen tvom trendu — održavanje ~{maint} kcal",
         adaptive_off: "Cilj po formuli. Redovito se važi (~2 tjedna) da se počne prilagođavati tvom tijelu.",
+        streak_days: "dana zaredom",
         mod_steps_title: "Zabilježi Korake",
         mod_steps_count: "Broj koraka:",
         mod_steps_kcal: "Potrošene kalorije:",
@@ -215,6 +216,7 @@ const TRANSLATIONS = {
         weight_trend_line: "Trend (smoothed)",
         adaptive_on: "Target adapted to your trend — maintenance ~{maint} kcal",
         adaptive_off: "Formula-based target. Weigh in regularly (~2 weeks) so it starts adapting to your body.",
+        streak_days: "day streak",
         mod_steps_title: "Log Steps",
         mod_steps_count: "Step count:",
         mod_steps_kcal: "Calories burned:",
@@ -316,6 +318,7 @@ let userProfile = {
     goal: 'lose',
     activity: 'light',   // sedentary | light | moderate | active
     weightLog: [],       // [{ d: 'YYYY-MM-DD', kg: Number }] - povijest vaganja
+    streak: { count: 0, lastDay: null, best: 0 },
     dietPrefs: {
         vege: false,
         vegan: false,
@@ -1763,6 +1766,10 @@ function updateDashboardUI() {
     renderSharkPersona();
     renderSharkAdvisor();
 
+    // Streak + brzi unos (favoriti)
+    renderStreakBadge();
+    renderQuickFavs();
+
     // Obavezno iscrtaj povijest
     renderDailyMeals();
 }
@@ -2735,8 +2742,76 @@ function applyMealToDashboard(items, totals, id = null) {
     document.getElementById('lblProtein').textContent = Math.round(dailyData.protein) + "g";
     document.getElementById('lblFat').textContent = Math.round(dailyData.fat) + "g";
 
+    updateStreak();
     saveDailyData();
     updateDashboardUI();
+}
+
+// --- STREAK (uzastopni dani s barem jednim unosom) ---
+function updateStreak() {
+    const today = getTodayKey();
+    if (!userProfile.streak || typeof userProfile.streak !== 'object') {
+        userProfile.streak = { count: 0, lastDay: null, best: 0 };
+    }
+    const s = userProfile.streak;
+    if (s.lastDay === today) return; // već brojano danas
+    s.count = (s.lastDay === addDaysKey(today, -1)) ? (s.count || 0) + 1 : 1;
+    s.lastDay = today;
+    if (s.count > (s.best || 0)) s.best = s.count;
+    saveProfile();
+}
+
+function getStreakCount() {
+    const s = userProfile.streak;
+    if (!s || !s.lastDay) return 0;
+    const today = getTodayKey();
+    // Streak vrijedi ako je zadnji unos danas ili jučer, inače je prekinut
+    return (s.lastDay === today || s.lastDay === addDaysKey(today, -1)) ? (s.count || 0) : 0;
+}
+
+function renderStreakBadge() {
+    const el = document.getElementById('streakBadge');
+    if (!el) return;
+    const n = getStreakCount();
+    if (n >= 2) {
+        el.textContent = `🔥 ${n} ${i18n('streak_days')}`;
+        el.hidden = false;
+    } else {
+        el.hidden = true;
+    }
+}
+
+// --- BRZI UNOS: čipovi favorita na dashboardu ---
+function renderQuickFavs() {
+    const row = document.getElementById('quickFavRow');
+    if (!row) return;
+    const favs = Array.isArray(userProfile.favorites) ? userProfile.favorites.filter(f => f && f.name) : [];
+    if (favs.length === 0) { row.style.display = 'none'; return; }
+
+    row.style.display = 'flex';
+    row.innerHTML = favs.slice(0, 12).map((f, i) =>
+        `<button class="quick-fav-chip" data-idx="${i}">
+            <i class="fas fa-bolt" style="font-size:0.7rem;opacity:0.7;"></i> ${f.name}
+        </button>`
+    ).join('');
+
+    row.querySelectorAll('.quick-fav-chip').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const f = favs[parseInt(e.currentTarget.getAttribute('data-idx'))];
+            if (!f) return;
+            currentUnsavedMeal = {
+                items: [{
+                    name: f.name,
+                    estimatedWeightG: (f.standardUnits && f.standardUnits.porcija) || 100,
+                    kcalPer100g: f.kcalPer100g,
+                    macrosPer100g: f.macrosPer100g || null
+                }]
+            };
+            editingMealIndex = null;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            drawPendingMealUI();
+        });
+    });
 }
 
 function renderSharkPersona() {

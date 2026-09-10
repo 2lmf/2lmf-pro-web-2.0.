@@ -484,6 +484,26 @@ body {
     background: rgba(0, 168, 181, 0.08);
 }
 
+/* Quick re-log favorite chips (dashboard) */
+.quick-fav-chip {
+    flex: 0 0 auto;
+    white-space: nowrap;
+    padding: 8px 14px;
+    border-radius: 18px;
+    border: 1px solid var(--accent-orange);
+    background: rgba(230, 126, 34, 0.08);
+    color: var(--accent-orange);
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.quick-fav-chip:hover,
+.quick-fav-chip:active {
+    background: rgba(230, 126, 34, 0.2);
+}
+
 /* Scanner Animations */
 @keyframes scanLine {
     0% {

@@ -376,8 +376,11 @@
 
         <div class="dashboard-header">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <div id="lblDateToday" class="date-display" style="margin-bottom: 0;" data-i18n="dash_today">DANAS, 24.
-                    VELJAČE</div>
+                <div>
+                    <div id="lblDateToday" class="date-display" style="margin-bottom: 0;" data-i18n="dash_today">DANAS, 24.
+                        VELJAČE</div>
+                    <div id="streakBadge" style="font-size:0.8rem; font-weight:700; color:var(--accent-orange); margin-top:4px;" hidden></div>
+                </div>
                 <div style="display: flex; flex-direction: column; gap: 8px;">
                     <button id="btnAddExercise"
                         style="background: rgba(0,242,255,0.1); color: var(--accent-cyan); border: 1px solid var(--accent-cyan); padding: 8px 16px; border-radius: 20px; font-weight: bold; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 8px;">
@@ -506,6 +509,10 @@
                 </div>
             </div>
         </div>
+
+        <!-- QUICK RE-LOG: favorite chips -->
+        <div id="quickFavRow"
+            style="display:none; gap:8px; overflow-x:auto; padding:4px 2px 12px; -webkit-overflow-scrolling:touch;"></div>
 
         <div class="meals-list" id="mealsList">
             <!-- Dinamički obroci će se pojavljivati ovdje -->
@@ -832,14 +839,14 @@
     <script type="module" src="firebase-core.js"></script>
 
     <!-- Core Databases -->
-    <script src="food_database.js?v=73"></script>
-    <script src="food_categories.js?v=73"></script>
-    <script src="food_categories_2.js?v=73"></script>
-    <script src="food_categories_3.js?v=73"></script>
-    <script src="exercise_database.js?v=73"></script>
-    <script src="advisor_database.js?v=73"></script>
-    <script src="app_v36.js?v=73"></script>
-    <link rel="stylesheet" href="styles.css?v=73">
+    <script src="food_database.js?v=74"></script>
+    <script src="food_categories.js?v=74"></script>
+    <script src="food_categories_2.js?v=74"></script>
+    <script src="food_categories_3.js?v=74"></script>
+    <script src="exercise_database.js?v=74"></script>
+    <script src="advisor_database.js?v=74"></script>
+    <script src="app_v36.js?v=74"></script>
+    <link rel="stylesheet" href="styles.css?v=74">
 </body>
 
 </html>
