@@ -463,6 +463,27 @@ body {
     opacity: 0.5;
 }
 
+/* Portion size chips (AI meal review) */
+.portion-chip {
+    flex: 1;
+    padding: 9px 4px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    background: #FAFCFF;
+    color: #2C3E50;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.portion-chip:hover,
+.portion-chip:active {
+    border-color: var(--accent-cyan);
+    color: var(--accent-cyan);
+    background: rgba(0, 168, 181, 0.08);
+}
+
 /* Scanner Animations */
 @keyframes scanLine {
     0% {

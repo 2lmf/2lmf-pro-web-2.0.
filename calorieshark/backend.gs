@@ -36,15 +36,19 @@ function doPost(e) {
     const action = data.action;
 
     if (action === "analyzeMeal" || action === "analyzeImage") {
+      // Server-side dnevni limit (ne može se zaobići brisanjem localStorage-a u pregledniku)
+      checkQuota_(data.username || "Gost");
+
       const result = analyzeWithGemini({
         imageBase64: data.imageBase64,
         textDescription: data.textDescription,
         userGoal: data.userGoal,
-        userStatus: data.userStatus
+        userStatus: data.userStatus,
+        language: data.language || "hr"
       });
       return ContentService.createTextOutput(JSON.stringify({ status: "success", data: result }))
         .setMimeType(ContentService.MimeType.JSON);
-    } 
+    }
     
     if (action === "saveMeal") {
       const result = saveMealLog(data.mealData, data.userInfo, data.username);
@@ -71,24 +75,77 @@ function doPost(e) {
   }
 }
 
-function analyzeWithGemini(params) {
-  const apiKey = PropertiesService.getScriptProperties().getProperty("GEMINI_API_KEY");
-  if (!apiKey) throw new Error("Nedostaje GEMINI_API_KEY.");
+// ==========================================
+// SERVER-SIDE DNEVNI LIMIT AI ANALIZA
+// ==========================================
+// Prava zaštita zajedničke Gemini kvote - "vision energy" munje u pregledniku
+// se zaobiđu brisanjem localStorage-a ili novim usernameom.
+const QUOTA_PER_USER_DAY = 40;   // koliko AI analiza jedan korisnik smije dnevno
+const QUOTA_GLOBAL_DAY   = 1200; // ukupni dnevni strop za sve korisnike
 
-  // Prema listModels rezultatu, koristimo gemini-2.5-flash na v1beta
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+function checkQuota_(username) {
+  const lock = LockService.getScriptLock();
+  try {
+    lock.waitLock(5000);
+  } catch (e) {
+    return; // ne dobijemo lock -> radije pusti zahtjev nego blokiraj korisnika
+  }
+
+  try {
+    const props = PropertiesService.getScriptProperties();
+    const day = Utilities.formatDate(new Date(), "Europe/Zagreb", "yyyy-MM-dd");
+
+    const gKey = "q_g_" + day;
+    const gCount = Number(props.getProperty(gKey) || 0);
+    if (gCount >= QUOTA_GLOBAL_DAY) {
+      throw new Error("QUOTA_GLOBAL: dnevna AI kvota za sve korisnike je potrošena.");
+    }
+
+    const uKey = "q_" + day + "_" + String(username).toLowerCase().substring(0, 40);
+    const uCount = Number(props.getProperty(uKey) || 0);
+    if (uCount >= QUOTA_PER_USER_DAY) {
+      throw new Error("QUOTA_USER: potrošen je dnevni limit AI analiza za ovog korisnika.");
+    }
+
+    props.setProperty(gKey, String(gCount + 1));
+    props.setProperty(uKey, String(uCount + 1));
+
+    if (Math.random() < 0.03) {
+      const all = props.getProperties();
+      Object.keys(all).forEach(function (k) {
+        if (k.indexOf("q_") === 0 && k.indexOf(day) === -1) props.deleteProperty(k);
+      });
+    }
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+function analyzeWithGemini(params) {
+  const nameRule = (params.language === "en")
+    ? 'Item names (the "name" field) MUST be written in ENGLISH.'
+    : 'Imena namirnica (polje "name") MORAJU BITI NA HRVATSKOM.';
 
   const systemInstruction = `
     TI SI "SHARK ADVISOR" ZA CALORIESHARK. Tvoj ton je BRUTALAN, DUHOVIT i ISKREN. Javi se kao CalorieShark. Nemaš dlake na jeziku.
     Ako korisnik jede nešto nezdravo, a želi smršaviti, prozovi ga. Ako jede dobro, daj mu priznanje, ali uz dozu sarkazma.
-    
+
     Zadatak ti je analizirati sliku/tekst i vratiti STROGI JSON.
-    Imena namirnica MORAJU BITI NA HRVATSKOM.
-    
-    KONTEKST KORISNIKA: 
-    Cilj: ${params.userGoal || 'mršavljenje'}. 
+    ${nameRule}
+
+    KONTEKST KORISNIKA:
+    Cilj: ${params.userGoal || 'mršavljenje'}.
     Status: ${params.userStatus || 'nepoznato'}.
-    
+
+    PREPOZNAVANJE NEUSPJEHA:
+    Ako slika NE sadrži prepoznatljivu hranu ili piće (prazan tanjur, osoba, tekst, dokument, ekran, previše mutna ili tamna slika), vrati TOČNO ovo i ništa drugo:
+    {"items": []}
+
+    Za SVAKU stavku OBAVEZNO dodaj polje "confidence" s vrijednošću "high", "medium" ili "low":
+    - "high"   = namirnica je jasno prepoznata i procjena gramaže je pouzdana
+    - "medium" = namirnica je prepoznata, ali je gramaža gruba procjena
+    - "low"    = mutna slika, izmiješana hrana, skriveni sastojci ili čisto nagađanje
+
     MORAŠ vratiti isključivo JSON format BEZ markdown blokova:
     {
       "items": [
@@ -96,6 +153,7 @@ function analyzeWithGemini(params) {
           "name": "Ime na HR",
           "estimatedWeightG": broj,
           "kcalPer100g": broj,
+          "confidence": "high" | "medium" | "low",
           "macrosPer100g": {"carbs": broj, "protein": broj, "fat": broj}
         }
       ],
@@ -104,46 +162,107 @@ function analyzeWithGemini(params) {
   `;
 
   let parts = [{ text: systemInstruction }];
-  
+
   if (params.imageBase64) {
     const cleanBase64 = params.imageBase64.replace(/^data:image\/(png|jpeg|webp);base64,/, "");
-    parts.push({
-      inlineData: {
-        mimeType: "image/jpeg",
-        data: cleanBase64
-      }
-    });
+    parts.push({ inlineData: { mimeType: "image/jpeg", data: cleanBase64 } });
   }
 
   if (params.textDescription) {
     parts.push({ text: "Korisnikov opis: " + params.textDescription });
   }
 
-  const options = {
-    method: "POST",
-    contentType: "application/json",
-    payload: JSON.stringify({
-      contents: [{ parts: parts }],
-      generationConfig: {
-        temperature: 0.7,
-        responseMimeType: "application/json",
-        thinkingConfig: { thinkingBudget: 0 }
-      }
-    }),
-    muteHttpExceptions: true
+  const requestBody = {
+    contents: [{ parts: parts }],
+    generationConfig: {
+      temperature: 0.7,
+      responseMimeType: "application/json",
+      thinkingConfig: { thinkingBudget: 0 }
+    }
   };
 
-  const response = UrlFetchApp.fetch(url, options);
-  const responseData = JSON.parse(response.getContentText());
+  // Prvi pokušaj; ako JSON dođe neispravan, jedan "repair" pokušaj s oštrijom uputom
+  try {
+    return callGemini_(requestBody);
+  } catch (e1) {
+    if (String(e1).indexOf("AI_BADJSON") === -1) throw e1;
+    requestBody.contents[0].parts.push({
+      text: "PODSJETNIK: Vrati ISKLJUČIVO čisti, validan JSON objekt kako je opisano. Bez markdowna, bez komentara, bez ičega izvan JSON-a."
+    });
+    return callGemini_(requestBody);
+  }
+}
 
-  if (response.getResponseCode() !== 200 || responseData.error) {
-    throw new Error("Gemini Error: " + (responseData.error ? responseData.error.message : response.getResponseCode()));
+// Jedan poziv na Gemini + robusna obrada odgovora
+function callGemini_(requestBody) {
+  const apiKey = PropertiesService.getScriptProperties().getProperty("GEMINI_API_KEY");
+  if (!apiKey) throw new Error("Nedostaje GEMINI_API_KEY.");
+
+  const url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + apiKey;
+
+  const response = UrlFetchApp.fetch(url, {
+    method: "POST",
+    contentType: "application/json",
+    payload: JSON.stringify(requestBody),
+    muteHttpExceptions: true
+  });
+
+  const code = response.getResponseCode();
+  const raw = response.getContentText();
+
+  let responseData;
+  try {
+    responseData = JSON.parse(raw);
+  } catch (e) {
+    throw new Error("AI_EMPTY: neispravan odgovor servera (HTTP " + code + ")");
   }
 
-  const responsePart = responseData.candidates[0].content.parts.find(p => !p.thought);
-  const aiText = responsePart ? responsePart.text : responseData.candidates[0].content.parts[0].text;
-  let cleanedText = aiText.replace(/```json/g, "").replace(/```/g, "").trim();
-  return JSON.parse(cleanedText);
+  if (code === 429) throw new Error("QUOTA_GEMINI: Gemini kvota je trenutno potrošena.");
+  if (code !== 200 || responseData.error) {
+    throw new Error("Gemini Error: " + (responseData.error ? responseData.error.message : ("HTTP " + code)));
+  }
+
+  return extractGeminiJson_(responseData);
+}
+
+// Sigurno izvuci JSON iz Gemini odgovora (hvata safety-block, prazan candidate, thought-dijelove, markdown omot)
+function extractGeminiJson_(responseData) {
+  if (responseData.promptFeedback && responseData.promptFeedback.blockReason) {
+    throw new Error("AI_BLOCKED: " + responseData.promptFeedback.blockReason);
+  }
+
+  const cand = responseData.candidates && responseData.candidates[0];
+  if (!cand) throw new Error("AI_EMPTY: nema kandidata u odgovoru");
+
+  if (cand.finishReason === "SAFETY" || cand.finishReason === "RECITATION" || cand.finishReason === "PROHIBITED_CONTENT") {
+    throw new Error("AI_BLOCKED: " + cand.finishReason);
+  }
+
+  const allParts = (cand.content && cand.content.parts) || [];
+  const realParts = allParts.filter(function (p) { return !p.thought && p.text; });
+
+  let text = "";
+  if (realParts.length) {
+    text = realParts.map(function (p) { return p.text; }).join("");
+  } else if (allParts.length && allParts[0].text) {
+    text = allParts[0].text;
+  }
+
+  text = String(text).replace(/```json/gi, "").replace(/```/g, "").trim();
+  if (!text) throw new Error("AI_EMPTY: prazan tekst u odgovoru");
+
+  try {
+    return JSON.parse(text);
+  } catch (e) {
+    const s = text.indexOf("{");
+    const end = text.lastIndexOf("}");
+    if (s !== -1 && end !== -1 && end > s) {
+      try {
+        return JSON.parse(text.substring(s, end + 1));
+      } catch (e2) { /* padamo na grešku ispod */ }
+    }
+    throw new Error("AI_BADJSON: " + text.substring(0, 120));
+  }
 }
 
 function saveMealLog(mealData, userInfo, username) {

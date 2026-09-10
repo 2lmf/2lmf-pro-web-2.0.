@@ -92,7 +92,20 @@ const TRANSLATIONS = {
         btn_edit: "Uredi",
         btn_delete: "Izbriši",
         meal_del_confirm: "Jeste li sigurni da želite obrisati ovaj obrok?",
-        ex_del_confirm: "Jeste li sigurni da želite obrisati ovaj trening?"
+        ex_del_confirm: "Jeste li sigurni da želite obrisati ovaj trening?",
+        crop_hint: "Prstima zumiraj i izreži jelo. Ostavi rub tanjura ili pribor u kadru — pomaže AI-ju procijeniti veličinu porcije.",
+        meal_no_food: "Ne vidim hranu na slici. 🦈 Munja ti je vraćena — probaj jasniju sliku ili upiši obrok ručno.",
+        meal_quota_user: "Potrošio si današnji limit AI analiza. Upiši obrok ručno ili probaj sutra.",
+        meal_quota_global: "Shark je danas potrošila dnevnu AI kvotu za sve korisnike. Upiši ručno ili probaj sutra.",
+        meal_ai_blocked: "AI trenutno ne može analizirati ovu sliku. Probaj drugu fotografiju ili upiši ručno.",
+        meal_estimate_note: "AI procjena, nije mjerenje — provjeri gramažu prije spremanja.",
+        meal_portion_q: "Kolika je bila porcija?",
+        portion_small: "Manja",
+        portion_normal: "Normalna",
+        portion_large: "Veća",
+        conf_high: "Sigurno",
+        conf_medium: "Približno",
+        conf_low: "Nesigurno"
     },
     en: {
         onb_lang_select: "SELECT LANGUAGE",
@@ -173,7 +186,20 @@ const TRANSLATIONS = {
         btn_edit: "Edit",
         btn_delete: "Delete",
         meal_del_confirm: "Are you sure you want to delete this meal?",
-        ex_del_confirm: "Are you sure you want to delete this workout?"
+        ex_del_confirm: "Are you sure you want to delete this workout?",
+        crop_hint: "Pinch to zoom and crop the dish. Keep the plate edge or cutlery in frame — it helps the AI judge portion size.",
+        meal_no_food: "I don't see any food in this photo. 🦈 Your charge was refunded — try a clearer picture or type the meal manually.",
+        meal_quota_user: "You've used today's AI analysis limit. Type the meal manually or try again tomorrow.",
+        meal_quota_global: "Shark has used up today's shared AI quota. Type manually or try again tomorrow.",
+        meal_ai_blocked: "The AI can't analyse this image right now. Try another photo or type it manually.",
+        meal_estimate_note: "AI estimate, not a measurement — check the weight before saving.",
+        meal_portion_q: "How big was the portion?",
+        portion_small: "Smaller",
+        portion_normal: "Normal",
+        portion_large: "Larger",
+        conf_high: "Confident",
+        conf_medium: "Approximate",
+        conf_low: "Unsure"
     }
 };
 
@@ -323,57 +349,58 @@ const btnConfirmCrop = document.getElementById('btnConfirmCrop');
 let cropperInstance = null;
 
 // --- API RATE LIMITING ---
+// Prava zaštita kvote je server-side (backend.gs checkQuota_). Ovo je samo
+// kratka blokada da se ne pošalje isti zahtjev dvaput uzastopno.
+const COOLDOWN_SECONDS = 3;
 let isCooldown = false;
+let cooldownTimer = null;
 
-function startCooldown() {
+function _setInputLocked(locked) {
+    const pe = locked ? 'none' : 'auto';
+    const op = locked ? '0.5' : '1';
+    btnSendText.disabled = locked;    btnSendText.style.pointerEvents = pe;
+    btnConfirmCrop.disabled = locked; btnConfirmCrop.style.pointerEvents = pe;
+    btnVoice.disabled = locked;       btnVoice.style.pointerEvents = pe; btnVoice.style.opacity = op;
+    inpTextMeal.disabled = locked;
+    inpCamera.disabled = locked;
+    fabMain.style.pointerEvents = pe; fabMain.style.opacity = op;
+}
+
+// Zovi ČIM krene AI zahtjev: zaključa unos bez odbrojavanja
+function beginAIRequest() {
     isCooldown = true;
-    let timeLeft = 15;
+    if (cooldownTimer) { clearInterval(cooldownTimer); cooldownTimer = null; }
+    _setInputLocked(true);
+}
 
-    // Spremi originalne izglede
+// Zovi nakon GREŠKE ili praznog rezultata: odmah otključaj (korisnik nije ništa dobio)
+function endAIRequest() {
+    isCooldown = false;
+    if (cooldownTimer) { clearInterval(cooldownTimer); cooldownTimer = null; }
+    _setInputLocked(false);
+}
+
+// Zovi nakon USPJEŠNE analize: kratko odbrojavanje pa otključaj
+function startCooldown(seconds) {
+    let timeLeft = seconds || COOLDOWN_SECONDS;
+    isCooldown = true;
+    _setInputLocked(true);
+
     const origPlaceholder = inpTextMeal.placeholder;
     const origCropBtnHtml = btnConfirmCrop.innerHTML;
+    if (cooldownTimer) clearInterval(cooldownTimer);
 
-    // Zaključaj tipke i postavi sivilo/neklikanje
-    btnSendText.disabled = true;
-    btnSendText.style.pointerEvents = 'none';
-    btnConfirmCrop.disabled = true;
-    btnConfirmCrop.style.pointerEvents = 'none';
-    btnVoice.disabled = true;
-    btnVoice.style.opacity = '0.5';
-    btnVoice.style.pointerEvents = 'none';
-    inpTextMeal.disabled = true;
-    inpCamera.disabled = true;
-    fabMain.style.opacity = '0.5';
-    fabMain.style.pointerEvents = 'none';
-
-    // Prvi render tick
-    inpTextMeal.placeholder = `Hlađenje sustava: ${timeLeft}s...`;
-    btnConfirmCrop.innerHTML = `<i class="fas fa-snowflake"></i> HLAĐENJE <span style="color:#FF2A2A;">${timeLeft}s</span>`;
-
-    const timer = setInterval(() => {
+    cooldownTimer = setInterval(() => {
         timeLeft--;
         if (timeLeft <= 0) {
-            clearInterval(timer);
+            clearInterval(cooldownTimer);
+            cooldownTimer = null;
             isCooldown = false;
-
-            // Otključaj tipke
-            btnSendText.disabled = false;
-            btnSendText.style.pointerEvents = 'auto';
-            btnConfirmCrop.disabled = false;
-            btnConfirmCrop.style.pointerEvents = 'auto';
-            btnVoice.disabled = false;
-            btnVoice.style.opacity = '1';
-            btnVoice.style.pointerEvents = 'auto';
-            inpTextMeal.disabled = false;
-            inpCamera.disabled = false;
-            fabMain.style.opacity = '1';
-            fabMain.style.pointerEvents = 'auto';
-
+            _setInputLocked(false);
             inpTextMeal.placeholder = origPlaceholder;
             btnConfirmCrop.innerHTML = origCropBtnHtml;
         } else {
-            inpTextMeal.placeholder = `Hlađenje sustava: ${timeLeft}s...`;
-            btnConfirmCrop.innerHTML = `<i class="fas fa-snowflake"></i> HLAĐENJE <span style="color:#FF2A2A;">${timeLeft}s</span>`;
+            inpTextMeal.placeholder = `Još ${timeLeft}s...`;
         }
     }, 1000);
 }
@@ -529,6 +556,29 @@ function useVisionEnergy() {
 function saveVisionEnergy() {
     if (!userProfile.username) return;
     safeLocalStorage.setItem('calorieShark_vision_energy_' + userProfile.username, JSON.stringify(visionEnergy));
+}
+
+// Vrati potrošenu munju (npr. AI nije prepoznao hranu ili je pao zahtjev - nije korisnikova krivnja)
+function refundVisionEnergy() {
+    visionEnergy.charges = Math.min(3, (visionEnergy.charges || 0) + 1);
+    if (visionEnergy.charges >= 3) visionEnergy.lastUsed = null;
+    saveVisionEnergy();
+    saveProfile();
+    renderVisionEnergy();
+}
+
+// Pretvori tehničku poruku greške iz backenda u ljudsku rečenicu
+function mapAIError(msg) {
+    msg = String(msg || '');
+    if (msg.indexOf('QUOTA_USER') !== -1) return i18n('meal_quota_user');
+    if (msg.indexOf('QUOTA_GLOBAL') !== -1) return i18n('meal_quota_global');
+    if (msg.indexOf('QUOTA_GEMINI') !== -1 || msg.indexOf('429') !== -1 ||
+        msg.toLowerCase().indexOf('quota') !== -1 || msg.toLowerCase().indexOf('limit') !== -1) {
+        return i18n('meal_quota_error');
+    }
+    if (msg.indexOf('AI_BLOCKED') !== -1) return i18n('meal_ai_blocked');
+    if (msg.indexOf('AI_EMPTY') !== -1 || msg.indexOf('AI_BADJSON') !== -1) return i18n('meal_ai_blocked');
+    return i18n('meal_ai_error', { errorMsg: msg });
 }
 
 function renderVisionEnergy() {
@@ -1716,8 +1766,8 @@ btnConfirmCrop.addEventListener('click', async () => {
     mealsList.innerHTML = `<div class="empty-state" style="color:var(--accent-cyan);"><i class="fas fa-spinner fa-spin"></i><p>Šaljem izrezanu sliku na AI analizu...</p></div>`;
     window.scrollTo({ top: 0, behavior: 'smooth' });
 
-    // Prekidač za hlađenje prije slanja na API
-    startCooldown();
+    // Zaključaj unos dok zahtjev traje
+    beginAIRequest();
 
     try {
         const response = await fetch(API_URL, {
@@ -1730,7 +1780,9 @@ btnConfirmCrop.addEventListener('click', async () => {
                 action: 'analyzeImage',
                 imageBase64: croppedBase64, // Šaljemo izrezani base64 umjesto originala
                 userGoal: userProfile.goal || 'lose',
-                userStatus: generateCurrentStatusText()
+                userStatus: generateCurrentStatusText(),
+                language: currentLang,
+                username: (userProfile.username || 'Gost')
             })
         });
 
@@ -1743,18 +1795,27 @@ btnConfirmCrop.addEventListener('click', async () => {
         }
 
         if (result.status === 'success') {
+            const items = (result.data && result.data.items) || [];
+            if (items.length === 0) {
+                // AI nije prepoznao hranu -> vrati munju, ne pokreći cooldown
+                refundVisionEnergy();
+                endAIRequest();
+                mealsList.innerHTML = `<div class="empty-state" style="color:var(--accent-orange);"><i class="fas fa-question-circle"></i><p>${i18n('meal_no_food')}</p></div>`;
+                return;
+            }
+            result.data.source = 'photo';
             renderAIResult(result.data);
+            startCooldown();
         } else {
             throw new Error(result.message || "Nepoznata greska s API-ja");
         }
 
     } catch (err) {
         console.error("Greska pri uploadu okrnjene slike:", err);
-        let errorMsg = err.message;
-        if (errorMsg.includes("quota") || errorMsg.includes("limit") || errorMsg.includes("429")) {
-            errorMsg = "Gemini API limit! 🦈 Shark je trenutno prezauzeta analizom (kvota potrošena). Pokušaj ponovno za koju minutu.";
-        }
-        mealsList.innerHTML = `<div class="empty-state" style="color:#FF2A2A;"><i class="fas fa-exclamation-triangle"></i><p>Greška: ${errorMsg}</p></div>`;
+        // Zahtjev je pao -> korisnik nije ništa dobio, vrati munju i otključaj odmah
+        refundVisionEnergy();
+        endAIRequest();
+        mealsList.innerHTML = `<div class="empty-state" style="color:#FF2A2A;"><i class="fas fa-exclamation-triangle"></i><p>${mapAIError(err.message)}</p></div>`;
     }
 });
 
@@ -1805,7 +1866,7 @@ function renderLocalPickerUI(hits, originalText) {
 
     document.getElementById('btnPickerCallAI').addEventListener('click', async () => {
         mealsList.innerHTML = `<div class="empty-state" style="color:var(--accent-cyan);"><i class="fas fa-spinner fa-spin"></i><p>${i18n('meal_ai_analyzing', { text: originalText })}</p></div>`;
-        startCooldown();
+        beginAIRequest();
         try {
             const response = await fetch(API_URL, {
                 method: 'POST',
@@ -1815,6 +1876,7 @@ function renderLocalPickerUI(hits, originalText) {
                     action: 'analyzeMeal',
                     textDescription: originalText + (currentLang === 'en' ? " (Please respond in English)" : ""),
                     language: currentLang,
+                    username: (userProfile.username || 'Gost'),
                     userGoal: userProfile.goal || 'lose',
                     userStatus: generateCurrentStatusText()
                 })
@@ -1824,13 +1886,14 @@ function renderLocalPickerUI(hits, originalText) {
             try { result = JSON.parse(responseText); } catch (e) { throw new Error("Losa struktura odgovora: " + responseText.substring(0, 100)); }
             if (result.status === 'success') {
                 renderAIResult(result.data);
+                const gotItems = result.data && result.data.items && result.data.items.length > 0;
+                if (gotItems) { startCooldown(); } else { endAIRequest(); }
             } else {
                 throw new Error(result.message || "Nepoznata greska s API-ja");
             }
         } catch (err) {
-            let errorMsg = err.message;
-            if (errorMsg.includes("quota") || errorMsg.includes("limit") || errorMsg.includes("429")) errorMsg = i18n('meal_quota_error');
-            mealsList.innerHTML = `<div class="empty-state" style="color:#FF2A2A;"><i class="fas fa-exclamation-triangle"></i><p>${i18n('meal_ai_error', { errorMsg: errorMsg })}</p></div>`;
+            endAIRequest();
+            mealsList.innerHTML = `<div class="empty-state" style="color:#FF2A2A;"><i class="fas fa-exclamation-triangle"></i><p>${mapAIError(err.message)}</p></div>`;
         }
     });
 }
@@ -1879,8 +1942,8 @@ async function handleTextUpload(text) {
     // Scrolaj na vrh
     window.scrollTo({ top: 0, behavior: 'smooth' });
 
-    // Prekidač za hlađenje SAMO ako idemo na Google API
-    startCooldown();
+    // Zaključaj unos dok zahtjev traje (SAMO ako idemo na Google API)
+    beginAIRequest();
 
     try {
         const response = await fetch(API_URL, {
@@ -1893,6 +1956,7 @@ async function handleTextUpload(text) {
                 action: 'analyzeMeal',
                 textDescription: text + (currentLang === 'en' ? " (Please respond in English)" : ""),
                 language: currentLang,
+                username: (userProfile.username || 'Gost'),
                 userGoal: userProfile.goal || 'lose',
                 userStatus: generateCurrentStatusText()
             })
@@ -1908,17 +1972,16 @@ async function handleTextUpload(text) {
 
         if (result.status === 'success') {
             renderAIResult(result.data);
+            const gotItems = result.data && result.data.items && result.data.items.length > 0;
+            if (gotItems) { startCooldown(); } else { endAIRequest(); }
         } else {
             throw new Error(result.message || "Nepoznata greska s API-ja");
         }
 
     } catch (err) {
         console.error("Greska pri uploadu teksta:", err);
-        let errorMsg = err.message;
-        if (errorMsg.includes("quota") || errorMsg.includes("limit") || errorMsg.includes("429")) {
-            errorMsg = i18n('meal_quota_error');
-        }
-        mealsList.innerHTML = `<div class="empty-state" style="color:#FF2A2A;"><i class="fas fa-exclamation-triangle"></i><p>${i18n('meal_ai_error', { errorMsg: errorMsg })}</p></div>`;
+        endAIRequest();
+        mealsList.innerHTML = `<div class="empty-state" style="color:#FF2A2A;"><i class="fas fa-exclamation-triangle"></i><p>${mapAIError(err.message)}</p></div>`;
     }
 }
 
@@ -2008,9 +2071,20 @@ function generateCurrentStatusText() {
     return `Korisnik želi ${goal}. Do sada je pojeo ${Math.round(eaten)} kcal od ${Math.round(target)} kcal. Preostalo mu je još ${Math.round(remaining)} kcal.`;
 }
 
+const CONFIDENCE_UI = {
+    high:   { color: '#00A86B', key: 'conf_high' },
+    medium: { color: '#E67E22', key: 'conf_medium' },
+    low:    { color: '#E74C3C', key: 'conf_low' }
+};
+
 function drawPendingMealUI() {
     let html = '';
     let totalKcal = 0;
+
+    // Zapamti originalnu AI procjenu gramaže po stavci (za "porcija" gumbe da se ne zbrajaju)
+    currentUnsavedMeal.items.forEach(it => {
+        if (typeof it._baseWeightG === 'undefined') it._baseWeightG = it.estimatedWeightG;
+    });
 
     currentUnsavedMeal.items.forEach((item, index) => {
         // Izračun trenutnih kalorija i makrosa na bazi procijenjene gramaže
@@ -2027,13 +2101,21 @@ function drawPendingMealUI() {
         if (!userProfile.favorites) userProfile.favorites = [];
         const isFav = userProfile.favorites.some(f => f && f.name === item.name);
 
+        // Oznaka koliko je AI siguran (samo za hranu, ne za trening)
+        const conf = String(item.confidence || '').toLowerCase();
+        const cu = CONFIDENCE_UI[conf];
+        const confBadge = (cu && item.kcalPer100g > 0)
+            ? `<span title="${i18n('meal_estimate_note')}" style="font-size:0.65rem; font-weight:bold; padding:2px 8px; border-radius:10px; white-space:nowrap; background:${cu.color}22; color:${cu.color}; border:1px solid ${cu.color}55;">${i18n(cu.key)}</span>`
+            : '';
+
         html += `
         <div class="meal-item-editor" style="background: rgba(255,255,255,0.05); padding:15px; border-radius:8px; margin-bottom:10px; border-left: 3px solid var(--accent-orange);">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; gap:8px;">
                 <div style="font-weight:bold; font-size:1.1rem; color:var(--text-main); text-align:left; flex-grow:1;">
                     ${item.name}
                 </div>
-                <button class="icon-btn btn-toggle-user-fav" data-index="${index}" style="font-size:1.3rem; color:${isFav ? 'var(--accent-orange)' : '#ccc'}; border:none; background:transparent; margin-left:10px;">
+                ${confBadge}
+                <button class="icon-btn btn-toggle-user-fav" data-index="${index}" style="font-size:1.3rem; color:${isFav ? 'var(--accent-orange)' : '#ccc'}; border:none; background:transparent; margin-left:4px;">
                     <i class="${isFav ? 'fas' : 'far'} fa-star"></i>
                 </button>
             </div>
@@ -2066,15 +2148,39 @@ function drawPendingMealUI() {
         sharkComment = getDynamicSharkComment(totalKcal);
     }
 
+    // "Kolika je bila porcija" gumbi: kad je obrok sa slike ili je AI negdje nesiguran
+    const hasUncertain = currentUnsavedMeal.items.some(it => {
+        const c = String(it.confidence || '').toLowerCase();
+        return c === 'low' || c === 'medium';
+    });
+    const showPortion = !isExercise && (currentUnsavedMeal.source === 'photo' || hasUncertain);
+    const portionHtml = showPortion ? `
+        <div style="margin: 4px 0 16px;">
+            <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:6px;">${i18n('meal_portion_q')}</div>
+            <div style="display:flex; gap:8px;">
+                <button class="portion-chip" data-factor="0.7">${i18n('portion_small')}</button>
+                <button class="portion-chip" data-factor="1">${i18n('portion_normal')}</button>
+                <button class="portion-chip" data-factor="1.4">${i18n('portion_large')}</button>
+            </div>
+        </div>` : '';
+
+    const estimateNote = !isExercise ? `
+        <p style="font-size:0.78rem; color:var(--text-muted); font-style:italic; margin:-6px 0 14px;">
+            <i class="fas fa-circle-info"></i> ${i18n('meal_estimate_note')}
+        </p>` : '';
+
     // Ubacujemo dinamični naslov na dno nakon zbrajanja
     let finalHtml = `<div class="pending-meal">
         <h3 style="color:${isExercise ? '#00D084' : 'var(--accent-cyan)'}; margin-bottom:15px;"><i class="fas ${headerIcon}"></i> ${headerTitle}</h3>
+        ${estimateNote}
         ${html}
-        
+
         <div class="shark-inline-bubble">
             <i class="fas fa-shark"></i>
             <p id="sharkPendingMessage">${sharkComment}</p>
         </div>
+
+        ${portionHtml}
 
         <div style="display:flex; flex-direction:column; gap:10px; margin: 20px 0; padding-top:15px; border-top: 1px solid var(--border-color);">
             <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -2102,6 +2208,29 @@ function drawPendingMealUI() {
             drawPendingMealUI(); // Re-render to update calculations
         });
     });
+
+    // "Kolika je bila porcija" gumbi: skaliraju SVE gramaže od originalne AI procjene
+    document.querySelectorAll('.portion-chip').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const f = parseFloat(e.currentTarget.getAttribute('data-factor')) || 1;
+            currentUnsavedMeal.items.forEach(it => {
+                const base = (typeof it._baseWeightG === 'number') ? it._baseWeightG : it.estimatedWeightG;
+                it.estimatedWeightG = Math.max(1, Math.round(base * f));
+            });
+            currentUnsavedMeal.sharkComment = null;
+            drawPendingMealUI();
+        });
+    });
+
+    // Ako je AI negdje "nesiguran", jednom fokusiraj prvo takvo polje za gramažu
+    if (!currentUnsavedMeal._focusedLow) {
+        const lowIdx = currentUnsavedMeal.items.findIndex(it => String(it.confidence || '').toLowerCase() === 'low');
+        if (lowIdx > -1) {
+            const el = document.querySelector(`.gram-input[data-index="${lowIdx}"]`);
+            if (el) { el.focus(); el.select(); }
+        }
+        currentUnsavedMeal._focusedLow = true;
+    }
 
     // Attach Listeners za Favorites zvijezdu
     document.querySelectorAll('.btn-toggle-user-fav').forEach(btn => {
@@ -2183,6 +2312,8 @@ async function handleMissingItemAdd() {
             body: JSON.stringify({
                 action: 'analyzeMeal',
                 textDescription: itemName,
+                language: currentLang,
+                username: (userProfile.username || 'Gost'),
                 userGoal: userProfile.goal || 'lose',
                 userStatus: generateCurrentStatusText()
             })
@@ -2212,6 +2343,9 @@ async function saveMealToServer() {
         btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> SPREMAM...`;
         btn.disabled = true;
     }
+
+    // Očisti pomoćna polja iz UI-ja (ne šaljemo ih u bazu ni u offline "učenje")
+    currentUnsavedMeal.items.forEach(item => { delete item._baseWeightG; });
 
     // Preracunavanje totala makrosa
     let totals = { kcal: 0, carbs: 0, protein: 0, fat: 0 };
