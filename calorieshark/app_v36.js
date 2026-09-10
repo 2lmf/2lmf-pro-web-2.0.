@@ -103,6 +103,11 @@ const TRANSLATIONS = {
         adaptive_on: "Cilj prilagođen tvom trendu — održavanje ~{maint} kcal",
         adaptive_off: "Cilj po formuli. Redovito se važi (~2 tjedna) da se počne prilagođavati tvom tijelu.",
         streak_days: "dana zaredom",
+        week_title: "Zadnjih 7 dana",
+        week_avg: "Prosjek unosa",
+        week_target: "cilj",
+        week_logged: "Dana zabilježeno",
+        week_weight: "Promjena težine (trend)",
         mod_steps_title: "Zabilježi Korake",
         mod_steps_count: "Broj koraka:",
         mod_steps_kcal: "Potrošene kalorije:",
@@ -217,6 +222,11 @@ const TRANSLATIONS = {
         adaptive_on: "Target adapted to your trend — maintenance ~{maint} kcal",
         adaptive_off: "Formula-based target. Weigh in regularly (~2 weeks) so it starts adapting to your body.",
         streak_days: "day streak",
+        week_title: "Last 7 days",
+        week_avg: "Avg intake",
+        week_target: "target",
+        week_logged: "Days logged",
+        week_weight: "Weight change (trend)",
         mod_steps_title: "Log Steps",
         mod_steps_count: "Step count:",
         mod_steps_kcal: "Calories burned:",
@@ -3153,6 +3163,58 @@ function renderWeightTrend() {
     });
 }
 
+// Tjedni sažetak (zadnjih 7 dana) + Shark komentar
+function renderWeeklySummary(meals) {
+    const card = document.getElementById('weeklySummaryCard');
+    const body = document.getElementById('weeklySummaryBody');
+    const roastEl = document.getElementById('weeklySummaryRoast');
+    if (!card || !body) return;
+
+    const today = getTodayKey();
+    const from = addDaysKey(today, -6);
+
+    const byDay = {};
+    (meals || []).forEach(m => {
+        const k = dmyToKey(m.date);
+        if (!k || k < from || k > today) return;
+        byDay[k] = (byDay[k] || 0) + (m.totals ? m.totals.kcal : 0);
+    });
+    const daysLogged = Object.keys(byDay).length;
+    if (daysLogged === 0) { card.style.display = 'none'; return; }
+
+    const avg = Math.round(Object.values(byDay).reduce((s, v) => s + v, 0) / daysLogged);
+    const target = userProfile.tdee || 2000;
+    const diff = avg - target;
+
+    let weightLine = '';
+    const tr = computeWeightTrend(userProfile.weightLog);
+    const inWin = tr.filter(p => p.d >= from && p.d <= today);
+    if (inWin.length >= 2) {
+        const d = inWin[inWin.length - 1].trend - inWin[0].trend;
+        const sign = d > 0 ? '+' : '';
+        const col = d > 0.05 ? '#FF2A2A' : (d < -0.05 ? '#00D084' : 'var(--text-muted)');
+        weightLine = `<div>${i18n('week_weight')}: <strong style="color:${col};">${sign}${d.toFixed(1)} kg</strong></div>`;
+    }
+
+    const diffCol = diff > 50 ? '#FF2A2A' : (diff < -50 ? '#00D084' : 'var(--accent-cyan)');
+    body.innerHTML =
+        `<div>${i18n('week_avg')}: <strong>${avg} kcal</strong> / ${i18n('week_target')} ${target}` +
+        ` &nbsp;<strong style="color:${diffCol};">${diff > 0 ? '+' : ''}${diff}</strong></div>` +
+        `<div>${i18n('week_logged')}: <strong>${daysLogged}/7</strong></div>` +
+        weightLine;
+
+    if (roastEl) {
+        const pct = avg / target;
+        let cat = 'low';
+        if (pct >= 1.1) cat = 'over'; else if (pct >= 0.9) cat = 'high'; else if (pct >= 0.6) cat = 'mid';
+        const goal = userProfile.goal || 'lose';
+        const phrases = (typeof sharkAdvisorPhrases !== 'undefined' && sharkAdvisorPhrases[goal] && sharkAdvisorPhrases[goal][cat]) || [];
+        roastEl.textContent = phrases.length ? '🦈 ' + phrases[Math.floor(Math.random() * phrases.length)] : '';
+    }
+
+    card.style.display = 'block';
+}
+
 // Napomena o statusu cilja (formula vs adaptivno)
 function renderAdaptiveNote() {
     const el = document.getElementById('adaptiveNote');
@@ -3221,7 +3283,8 @@ function renderStatsUI(meals) {
             if (a && typeof updateDashboardUI === 'function') updateDashboardUI();
         }
         renderAdaptiveNote();
-    } catch (e) { console.warn('Adaptive TDEE skip:', e); }
+        renderWeeklySummary(meals);
+    } catch (e) { console.warn('Adaptive TDEE / weekly summary skip:', e); }
 
     // 1. Grupiranje kalorija po datumima za Chart.js
     const dailySums = {};
