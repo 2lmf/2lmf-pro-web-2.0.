@@ -83,6 +83,10 @@ function doPost(e) {
 const QUOTA_PER_USER_DAY = 40;   // koliko AI analiza jedan korisnik smije dnevno
 const QUOTA_GLOBAL_DAY   = 1200; // ukupni dnevni strop za sve korisnike
 
+// Primarni model + lakši fallback ako je primarni preopterećen ("high demand" / 503)
+const MODEL_PRIMARY  = "gemini-2.5-flash";
+const MODEL_FALLBACK = "gemini-2.5-flash-lite";
+
 function checkQuota_(username) {
   const lock = LockService.getScriptLock();
   try {
@@ -181,48 +185,85 @@ function analyzeWithGemini(params) {
     }
   };
 
-  // Prvi pokušaj; ako JSON dođe neispravan, jedan "repair" pokušaj s oštrijom uputom
+  // 1) primarni model (s "repair" pokušajem ako JSON dođe neispravan)
+  // 2) ako je primarni preopterećen ("high demand" / 503), probaj lakši fallback model
   try {
-    return callGemini_(requestBody);
+    return runModel_(requestBody, MODEL_PRIMARY);
   } catch (e1) {
-    if (String(e1).indexOf("AI_BADJSON") === -1) throw e1;
-    requestBody.contents[0].parts.push({
-      text: "PODSJETNIK: Vrati ISKLJUČIVO čisti, validan JSON objekt kako je opisano. Bez markdowna, bez komentara, bez ičega izvan JSON-a."
-    });
-    return callGemini_(requestBody);
+    if (String(e1).indexOf("AI_OVERLOAD") !== -1) {
+      return runModel_(requestBody, MODEL_FALLBACK);
+    }
+    throw e1;
   }
 }
 
-// Jedan poziv na Gemini + robusna obrada odgovora
-function callGemini_(requestBody) {
+// Poziv jednog modela + jedan "repair" pokušaj ako JSON dođe neispravan
+function runModel_(requestBody, model) {
+  try {
+    return callGemini_(requestBody, model);
+  } catch (e) {
+    if (String(e).indexOf("AI_BADJSON") === -1) throw e;
+    var parts = requestBody.contents[0].parts;
+    var hasReminder = parts.some(function (p) { return p.text && p.text.indexOf("PODSJETNIK:") === 0; });
+    if (!hasReminder) {
+      parts.push({ text: "PODSJETNIK: Vrati ISKLJUČIVO čisti, validan JSON objekt kako je opisano. Bez markdowna, bez komentara, bez ičega izvan JSON-a." });
+    }
+    return callGemini_(requestBody, model);
+  }
+}
+
+// Jedan poziv na Gemini s internim retryjem na PROLAZNE greške (503/500/overload) + robusna obrada
+function callGemini_(requestBody, model) {
   const apiKey = PropertiesService.getScriptProperties().getProperty("GEMINI_API_KEY");
   if (!apiKey) throw new Error("Nedostaje GEMINI_API_KEY.");
 
-  const url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + apiKey;
+  model = model || MODEL_PRIMARY;
+  const url = "https://generativelanguage.googleapis.com/v1beta/models/" + model + ":generateContent?key=" + apiKey;
 
-  const response = UrlFetchApp.fetch(url, {
-    method: "POST",
-    contentType: "application/json",
-    payload: JSON.stringify(requestBody),
-    muteHttpExceptions: true
-  });
+  const backoffs = [0, 1200, 2500, 4500]; // ms pauze prije svakog pokušaja
+  let lastErr = null;
 
-  const code = response.getResponseCode();
-  const raw = response.getContentText();
+  for (let attempt = 0; attempt < backoffs.length; attempt++) {
+    if (backoffs[attempt]) Utilities.sleep(backoffs[attempt]);
 
-  let responseData;
-  try {
-    responseData = JSON.parse(raw);
-  } catch (e) {
-    throw new Error("AI_EMPTY: neispravan odgovor servera (HTTP " + code + ")");
+    const response = UrlFetchApp.fetch(url, {
+      method: "POST",
+      contentType: "application/json",
+      payload: JSON.stringify(requestBody),
+      muteHttpExceptions: true
+    });
+
+    const code = response.getResponseCode();
+    const raw = response.getContentText();
+
+    let responseData;
+    try {
+      responseData = JSON.parse(raw);
+    } catch (e) {
+      lastErr = new Error("AI_OVERLOAD: neispravan/prazan odgovor servera (HTTP " + code + ")");
+      continue; // često prolazno -> probaj opet
+    }
+
+    if (code === 200 && !responseData.error) {
+      return extractGeminiJson_(responseData);
+    }
+
+    const errMsg = responseData.error ? (responseData.error.message || "") : ("HTTP " + code);
+
+    // Prolazne greške (Googleov kapacitet) -> ponovi
+    if (code === 503 || code === 500 || /overload|unavailable|try again|internal error/i.test(errMsg)) {
+      lastErr = new Error("AI_OVERLOAD: " + errMsg);
+      continue;
+    }
+
+    // Kvota / rate limit -> nema smisla odmah ponavljati
+    if (code === 429) throw new Error("QUOTA_GEMINI: Gemini kvota/limit trenutno potrošen.");
+
+    // Ostalo (npr. 400 loš zahtjev) -> odustani odmah
+    throw new Error("Gemini Error: " + errMsg);
   }
 
-  if (code === 429) throw new Error("QUOTA_GEMINI: Gemini kvota je trenutno potrošena.");
-  if (code !== 200 || responseData.error) {
-    throw new Error("Gemini Error: " + (responseData.error ? responseData.error.message : ("HTTP " + code)));
-  }
-
-  return extractGeminiJson_(responseData);
+  throw lastErr || new Error("AI_OVERLOAD: Gemini nedostupan nakon više pokušaja.");
 }
 
 // Sigurno izvuci JSON iz Gemini odgovora (hvata safety-block, prazan candidate, thought-dijelove, markdown omot)

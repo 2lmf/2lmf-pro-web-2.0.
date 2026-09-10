@@ -95,6 +95,8 @@ const TRANSLATIONS = {
         ex_del_confirm: "Jeste li sigurni da želite obrisati ovaj trening?",
         crop_hint: "Prstima zumiraj i izreži jelo. Ostavi rub tanjura ili pribor u kadru — pomaže AI-ju procijeniti veličinu porcije.",
         meal_no_food: "Ne vidim hranu na slici. 🦈 Munja ti je vraćena — probaj jasniju sliku ili upiši obrok ručno.",
+        meal_ai_overloaded: "Gemini je trenutno preopterećen (velika potražnja). Pričekaj koji trenutak pa pokušaj ponovno.",
+        btn_retry: "Pokušaj ponovno",
         meal_quota_user: "Potrošio si današnji limit AI analiza. Upiši obrok ručno ili probaj sutra.",
         meal_quota_global: "Shark je danas potrošila dnevnu AI kvotu za sve korisnike. Upiši ručno ili probaj sutra.",
         meal_ai_blocked: "AI trenutno ne može analizirati ovu sliku. Probaj drugu fotografiju ili upiši ručno.",
@@ -189,6 +191,8 @@ const TRANSLATIONS = {
         ex_del_confirm: "Are you sure you want to delete this workout?",
         crop_hint: "Pinch to zoom and crop the dish. Keep the plate edge or cutlery in frame — it helps the AI judge portion size.",
         meal_no_food: "I don't see any food in this photo. 🦈 Your charge was refunded — try a clearer picture or type the meal manually.",
+        meal_ai_overloaded: "Gemini is overloaded right now (high demand). Wait a moment and try again.",
+        btn_retry: "Try again",
         meal_quota_user: "You've used today's AI analysis limit. Type the meal manually or try again tomorrow.",
         meal_quota_global: "Shark has used up today's shared AI quota. Type manually or try again tomorrow.",
         meal_ai_blocked: "The AI can't analyse this image right now. Try another photo or type it manually.",
@@ -572,6 +576,10 @@ function mapAIError(msg) {
     msg = String(msg || '');
     if (msg.indexOf('QUOTA_USER') !== -1) return i18n('meal_quota_user');
     if (msg.indexOf('QUOTA_GLOBAL') !== -1) return i18n('meal_quota_global');
+    if (msg.indexOf('AI_OVERLOAD') !== -1 || /overload|unavailable|503|high demand/i.test(msg) ||
+        msg.toLowerCase().indexOf('failed to fetch') !== -1 || msg.toLowerCase().indexOf('networkerror') !== -1) {
+        return i18n('meal_ai_overloaded');
+    }
     if (msg.indexOf('QUOTA_GEMINI') !== -1 || msg.indexOf('429') !== -1 ||
         msg.toLowerCase().indexOf('quota') !== -1 || msg.toLowerCase().indexOf('limit') !== -1) {
         return i18n('meal_quota_error');
@@ -579,6 +587,20 @@ function mapAIError(msg) {
     if (msg.indexOf('AI_BLOCKED') !== -1) return i18n('meal_ai_blocked');
     if (msg.indexOf('AI_EMPTY') !== -1 || msg.indexOf('AI_BADJSON') !== -1) return i18n('meal_ai_blocked');
     return i18n('meal_ai_error', { errorMsg: msg });
+}
+
+// Prikaži AI grešku + gumb "Pokušaj ponovno" (retryFn se pozove na klik)
+function renderAIError(msg, retryFn) {
+    mealsList.innerHTML = `
+        <div class="empty-state" style="color:#FF2A2A;">
+            <i class="fas fa-exclamation-triangle"></i>
+            <p>${msg}</p>
+            ${retryFn ? `<button id="btnRetryAI" class="secondary-btn" style="margin-top:12px; border:1px solid var(--accent-cyan); color:var(--accent-cyan);"><i class="fas fa-rotate-right"></i> ${i18n('btn_retry')}</button>` : ''}
+        </div>`;
+    if (retryFn) {
+        const b = document.getElementById('btnRetryAI');
+        if (b) b.addEventListener('click', retryFn, { once: true });
+    }
 }
 
 function renderVisionEnergy() {
@@ -1762,6 +1784,11 @@ btnConfirmCrop.addEventListener('click', async () => {
     cropperInstance.destroy();
     inpCamera.value = '';
 
+    runImageAnalyze(croppedBase64);
+});
+
+// Slanje slike na AI + obrada. Izdvojeno da se može ponoviti bez novog izrezivanja.
+async function runImageAnalyze(croppedBase64) {
     // Skeleton loading UI
     mealsList.innerHTML = `<div class="empty-state" style="color:var(--accent-cyan);"><i class="fas fa-spinner fa-spin"></i><p>Šaljem izrezanu sliku na AI analizu...</p></div>`;
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1815,9 +1842,19 @@ btnConfirmCrop.addEventListener('click', async () => {
         // Zahtjev je pao -> korisnik nije ništa dobio, vrati munju i otključaj odmah
         refundVisionEnergy();
         endAIRequest();
-        mealsList.innerHTML = `<div class="empty-state" style="color:#FF2A2A;"><i class="fas fa-exclamation-triangle"></i><p>${mapAIError(err.message)}</p></div>`;
+        // Ponuda ponovnog pokušaja. Munja se naplati, ali se odmah vrati ako i ovaj pokušaj padne
+        // (pa je stvarni trošak samo kad retry USPIJE).
+        const retryImage = () => {
+            if (!useVisionEnergy()) {
+                alert("Shark Energy Low! 🦈⚡ Ponestalo ti je munja. Pričekaj 20 minuta ili unesi tekstualno.");
+                renderAIError(mapAIError(err.message), retryImage);
+                return;
+            }
+            runImageAnalyze(croppedBase64);
+        };
+        renderAIError(mapAIError(err.message), retryImage);
     }
-});
+}
 
 
 
@@ -1864,37 +1901,9 @@ function renderLocalPickerUI(hits, originalText) {
         });
     });
 
-    document.getElementById('btnPickerCallAI').addEventListener('click', async () => {
-        mealsList.innerHTML = `<div class="empty-state" style="color:var(--accent-cyan);"><i class="fas fa-spinner fa-spin"></i><p>${i18n('meal_ai_analyzing', { text: originalText })}</p></div>`;
-        beginAIRequest();
-        try {
-            const response = await fetch(API_URL, {
-                method: 'POST',
-                mode: 'cors',
-                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                body: JSON.stringify({
-                    action: 'analyzeMeal',
-                    textDescription: originalText + (currentLang === 'en' ? " (Please respond in English)" : ""),
-                    language: currentLang,
-                    username: (userProfile.username || 'Gost'),
-                    userGoal: userProfile.goal || 'lose',
-                    userStatus: generateCurrentStatusText()
-                })
-            });
-            const responseText = await response.text();
-            let result;
-            try { result = JSON.parse(responseText); } catch (e) { throw new Error("Losa struktura odgovora: " + responseText.substring(0, 100)); }
-            if (result.status === 'success') {
-                renderAIResult(result.data);
-                const gotItems = result.data && result.data.items && result.data.items.length > 0;
-                if (gotItems) { startCooldown(); } else { endAIRequest(); }
-            } else {
-                throw new Error(result.message || "Nepoznata greska s API-ja");
-            }
-        } catch (err) {
-            endAIRequest();
-            mealsList.innerHTML = `<div class="empty-state" style="color:#FF2A2A;"><i class="fas fa-exclamation-triangle"></i><p>${mapAIError(err.message)}</p></div>`;
-        }
+    document.getElementById('btnPickerCallAI').addEventListener('click', () => {
+        // Ista logika kao tekstualni unos (spinner, retry gumb na grešci, itd.)
+        sendTextAnalyze(originalText);
     });
 }
 
@@ -1937,9 +1946,12 @@ async function handleTextUpload(text) {
     }
 
     // --- GOOGLE GEMINI AI (Ako lokalna baza ne zna što je to) ---
-    mealsList.innerHTML = `<div class="empty-state" style="color:var(--accent-cyan);"><i class="fas fa-spinner fa-spin"></i><p>${i18n('meal_ai_analyzing', { text: text })}</p></div>`;
+    sendTextAnalyze(text);
+}
 
-    // Scrolaj na vrh
+// Slanje teksta na AI + obrada. Izdvojeno da se može ponoviti bez ponovne provjere lokalne baze.
+async function sendTextAnalyze(text) {
+    mealsList.innerHTML = `<div class="empty-state" style="color:var(--accent-cyan);"><i class="fas fa-spinner fa-spin"></i><p>${i18n('meal_ai_analyzing', { text: text })}</p></div>`;
     window.scrollTo({ top: 0, behavior: 'smooth' });
 
     // Zaključaj unos dok zahtjev traje (SAMO ako idemo na Google API)
@@ -1981,7 +1993,7 @@ async function handleTextUpload(text) {
     } catch (err) {
         console.error("Greska pri uploadu teksta:", err);
         endAIRequest();
-        mealsList.innerHTML = `<div class="empty-state" style="color:#FF2A2A;"><i class="fas fa-exclamation-triangle"></i><p>${mapAIError(err.message)}</p></div>`;
+        renderAIError(mapAIError(err.message), () => sendTextAnalyze(text));
     }
 }
 
