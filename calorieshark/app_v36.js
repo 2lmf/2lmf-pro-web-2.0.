@@ -108,6 +108,7 @@ const TRANSLATIONS = {
         week_target: "cilj",
         week_logged: "Dana zabilježeno",
         week_weight: "Promjena težine (trend)",
+        hist_no_items: "Bez detalja o sastojcima",
         mod_steps_title: "Zabilježi Korake",
         mod_steps_count: "Broj koraka:",
         mod_steps_kcal: "Potrošene kalorije:",
@@ -227,6 +228,7 @@ const TRANSLATIONS = {
         week_target: "target",
         week_logged: "Days logged",
         week_weight: "Weight change (trend)",
+        hist_no_items: "No ingredient details",
         mod_steps_title: "Log Steps",
         mod_steps_count: "Step count:",
         mod_steps_kcal: "Calories burned:",
@@ -3442,7 +3444,10 @@ function renderStatsUI(meals) {
             currentDateDivider = meal.date;
         }
 
-        let mealDesc = meal.items.map(i => `${i.name} (${i.estimatedWeightG}g)`).join(', ');
+        // Obrana od korumpiranih/starih redaka u Sheetu (items mora biti niz)
+        if (!Array.isArray(meal.items)) meal.items = [];
+
+        let mealDesc = meal.items.map(i => `${i.name} (${i.estimatedWeightG}g)`).join(', ') || i18n('hist_no_items');
 
         // Sumiranje makrosa za povijest
         let pTotal = 0, uTotal = 0, mTotal = 0;

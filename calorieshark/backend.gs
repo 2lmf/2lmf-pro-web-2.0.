@@ -333,10 +333,31 @@ function getMealHistory(username) {
   const logSheet = ss.getSheetByName(SHEET_NAME_LOGS);
   if (!logSheet) return [];
   const data = logSheet.getDataRange().getValues();
-  return data.filter(r => String(r[3]).toLowerCase() === String(username).toLowerCase()).map(r => ({
-    id: r[0], date: r[2], items: JSON.parse(r[5] || "[]"),
-    totals: { kcal: r[6], carbs: r[7], protein: r[8], fat: r[9] }
-  }));
+  // Stupci (saveMealLog): 0 ID, 1 timestamp, 2 datum, 3 username, 4 email,
+  // 5 userInfo(JSON), 6 items(JSON), 7 kcal, 8 carbs, 9 protein, 10 fat
+  const out = [];
+  data.forEach(r => {
+    if (String(r[3]).toLowerCase() !== String(username).toLowerCase()) return;
+    let items;
+    try {
+      items = JSON.parse(r[6] || "[]");
+      if (!Array.isArray(items)) items = [];
+    } catch (e) {
+      items = []; // korumpiran/stari redak - preskoči stavke, ne ruši cijelu povijest
+    }
+    out.push({
+      id: r[0],
+      date: r[2],
+      items: items,
+      totals: {
+        kcal: Number(r[7]) || 0,
+        carbs: Number(r[8]) || 0,
+        protein: Number(r[9]) || 0,
+        fat: Number(r[10]) || 0
+      }
+    });
+  });
+  return out;
 }
 
 function deleteMealLog(id, username) {
