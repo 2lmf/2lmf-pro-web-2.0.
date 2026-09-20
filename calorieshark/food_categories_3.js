@@ -902,6 +902,42 @@ const extendedFoodDB_3 = [
         macrosPer100g: { carbs: 10, protein: 1.5, fat: 8 },
         standardUnits: { "zdjelica": 200, "porcija": 200 },
         note: "Omjer ≈ 150g jagoda + 50g šlaga. Šlag nosi većinu kalorija."
+    },
+    {
+        name: "Patka pečena s mlincima",
+        name_en: "Roast Duck with Mlinci",
+        keywords: ["patka s mlincima", "pecena patka mlinci", "patka mlinci", "roast duck mlinci"],
+        kcalPer100g: 290,
+        macrosPer100g: { carbs: 18, protein: 14, fat: 18 },
+        standardUnits: { "porcija": 400, "tanjur": 400 },
+        note: "Masno blagdansko jelo — pačji sok natapa mlince. Restoranska porcija (meso + mlinci) ≈ 400g."
+    },
+    {
+        name: "Purica pečena s mlincima",
+        name_en: "Roast Turkey with Mlinci",
+        keywords: ["purica s mlincima", "pecena purica mlinci", "purica mlinci", "pura s mlincima", "roast turkey mlinci"],
+        kcalPer100g: 230,
+        macrosPer100g: { carbs: 20, protein: 16, fat: 11 },
+        standardUnits: { "porcija": 400, "tanjur": 400 },
+        note: "Puretina je posnija od patke. Porcija (meso + mlinci) ≈ 400g."
+    },
+    {
+        name: "Pile pečeno s mlincima",
+        name_en: "Roast Chicken with Mlinci",
+        keywords: ["pile s mlincima", "peceno pile mlinci", "pile mlinci", "piletina s mlincima", "roast chicken mlinci"],
+        kcalPer100g: 220,
+        macrosPer100g: { carbs: 20, protein: 15, fat: 10 },
+        standardUnits: { "porcija": 400, "tanjur": 400 },
+        note: "Najlakša varijanta od tri. Porcija (meso + mlinci) ≈ 400g."
+    },
+    {
+        name: "Grah s tijestom",
+        name_en: "Bean and Pasta Stew",
+        keywords: ["grah s tijestom", "grah s rezancima", "grah i tjestenina", "pasta fažol", "bean pasta stew"],
+        kcalPer100g: 130,
+        macrosPer100g: { carbs: 21, protein: 6, fat: 3 },
+        standardUnits: { "porcija": 400, "tanjur": 400, "zdjelica": 250 },
+        note: "Varivo od graha s dodanom tjesteninom/rezancima umjesto kobasice. 1 duboki tanjur ≈ 400g."
     }
 
 ];
