@@ -8,7 +8,7 @@
     <meta name="description" content="LiFePO₄ baterije i solarni paneli za kampiste, nautičare i vikendice. Energy Advisor izračuna točan sustav za tvoje uređaje. DDP dostava uključena.">
     <meta property="og:title" content="Prijenosne elektrane za kampere — 2LMF PRO Energy">
     <meta property="og:description" content="Tjedan dana bez priključka. LiFePO₄ elektrane i solar paneli — Energy Advisor izračuna točan sustav za tvoje potrebe.">
-    <meta property="og:image" content="https://2lmf-pro.hr/assets/pecron-hero-2.jpg">
+    <meta property="og:image" content="https://2lmf-pro.hr/assets/aferiy-expedition.png">
     <meta property="og:url" content="https://2lmf-pro.hr/energy.html">
     <link rel="icon" type="image/png" href="/icons/icon-192.png">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
@@ -370,7 +370,7 @@
             </a>
             <!-- Nautičar -->
             <a class="seg-card" href="#advisor">
-                <div class="seg-bg" style="background-image:url('assets/pecron-yacht.png'); background-color:#0a1628;"></div>
+                <div class="seg-bg" style="background-color:#0a1628; background-image:linear-gradient(160deg,#17314f,#0a1628);"></div>
                 <div class="seg-overlay"></div>
                 <div class="seg-content">
                     <div class="seg-badge">⚓ Nautičar</div>
@@ -381,7 +381,7 @@
             </a>
             <!-- Vikendica -->
             <a class="seg-card" href="#advisor">
-                <div class="seg-bg" style="background-image:url('assets/pecron-e1500.webp'); background-color:#0d1a2e; background-position: center 40%;"></div>
+                <div class="seg-bg" style="background-color:#0d1a2e; background-image:linear-gradient(160deg,#1c3454,#0d1a2e);"></div>
                 <div class="seg-overlay"></div>
                 <div class="seg-content">
                     <div class="seg-badge">🏡 Vikendica</div>
@@ -550,7 +550,7 @@
             </div>
             <div class="faq-item">
                 <div class="faq-q">Mogu li solar panel koristiti s bilo kojom stanicom? <i class="fas fa-plus"></i></div>
-                <div class="faq-a">Naši Aferiy solar paneli koriste XT60 konektor koji je kompatibilan s Aferiy i Pecron stanicama iz naše ponude. U bundle paketima koje preporučuje Advisor, kompatibilnost je 100% zajamčena — kupujete sustav, ne komponente koje treba testirati.</div>
+                <div class="faq-a">Naši Aferiy solar paneli koriste XT60 konektor koji je kompatibilan sa svim Aferiy stanicama iz naše ponude. U bundle paketima koje preporučuje Advisor, kompatibilnost je 100% zajamčena — kupujete sustav, ne komponente koje treba testirati.</div>
             </div>
         </div>
     </div>
@@ -626,11 +626,6 @@
     const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx4TQ6cFNr8X-fNRHE0Ai571pAioDeny_mSSrTVQm3OHbTKOhfIEDiKDFM2shZ5zDFLrA/exec";
 
     const ENERGY_PRODUCTS = [
-        { sku:'5001', brand:'Pecron', type:'battery', name:'Pecron E600LFP (V2)',   sub:'614 Wh / 600W',   wh:614,  img:'assets/pecron-e600.webp' },
-        { sku:'5002', brand:'Pecron', type:'battery', name:'Pecron E1500LFP',       sub:'1440 Wh / 1500W', wh:1440, img:'assets/pecron-e1500.webp' },
-        { sku:'5003', brand:'Pecron', type:'battery', name:'Pecron E2400LFP',       sub:'2048 Wh / 2400W', wh:2048, img:'assets/pecron-e2400.jpg' },
-        { sku:'5004', brand:'Pecron', type:'battery', name:'Pecron E3600LFP',       sub:'3072 Wh / 3600W', wh:3072, img:'assets/pecron-e3600.jpg' },
-        { sku:'5005', brand:'Pecron', type:'battery', name:'Pecron E3000LFP',       sub:'3096 Wh / 3000W', wh:3096, img:'assets/pecron-e3000.jpg' },
         { sku:'5007', brand:'Aferiy', type:'battery', name:'Aferiy Nano 100',       sub:'64 Wh / 100W',    wh:64,   img:'assets/aferiy-nano100.jpg' },
         { sku:'5008', brand:'Aferiy', type:'battery', name:'Aferiy P040',           sub:'256 Wh / 400W',   wh:256,  img:'assets/aferiy-p040.webp' },
         { sku:'5009', brand:'Aferiy', type:'battery', name:'Aferiy P010',           sub:'512 Wh / 800W',   wh:512,  img:'assets/aferiy-p010.webp' },
@@ -690,19 +685,16 @@
         { maxWh:300,      sku:'5008', label:'Aferiy P040 (256Wh)' },
         { maxWh:550,      sku:'5009', label:'Aferiy P010 (512Wh)' },
         { maxWh:1100,     sku:'5027', label:'Aferiy Nomad1800 P180 Pro (1024Wh)' },
-        { maxWh:1400,     sku:'5001', label:'Pecron E600LFP (614Wh)' },
-        { maxWh:1900,     sku:'5002', label:'Pecron E1500LFP (1440Wh)' },
         { maxWh:2400,     sku:'5012', label:'Aferiy P210 (2048Wh)' },
-        { maxWh:3200,     sku:'5003', label:'Pecron E2400LFP (2048Wh)' },
         { maxWh:Infinity, sku:'5015', label:'Aferiy P310 (3840Wh)' },
     ];
 
     const BUNDLE_SOLAR = {
         '5007':'5017', '5008':'5017',
-        '5009':'5018', '5001':'5018',
-        '5027':'5019', '5002':'5019',
-        '5012':'5019', '5013':'5019', '5003':'5019',
-        '5004':'5019', '5005':'5019', '5015':'5019',
+        '5009':'5018',
+        '5027':'5019',
+        '5012':'5019', '5013':'5019',
+        '5015':'5019',
     };
     const SOLAR_W = { '5017':100, '5018':200, '5019':400 };
 

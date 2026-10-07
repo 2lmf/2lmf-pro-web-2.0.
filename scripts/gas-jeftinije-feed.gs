@@ -32,43 +32,6 @@ const FU_KAMP_OPR  = 'Sport i rekreacija - Kampiranje - Oprema za kampiranje';
 // groupId — expansion baterije i matična jedinica dijele isti groupId
 // Proizvodi bez varijanti imaju prazan groupId.
 const PRODUCTS = [
-  // ── PECRON ────────────────────────────────────────────────────────────────
-  { sku:'5001', groupId:'',              brand:'Pecron', fileUnder:FU_ELECTRANE,
-    name:'Pecron E600LFP (V2), prijenosna elektrana, 614 Wh, 600W AC, LiFePO4',
-    img:'assets/pecron-e600.webp',
-    desc:'Pecron E600LFP V2 — prijenosna solarna elektrana 614 Wh / 600W AC (1200W peak). LiFePO4 baterija s više od 3.500 ciklusa. Težina 9,4 kg. Maksimalno solarno punjenje 350W. Idealna za kampiranje, plovidbu i hitnu pričuvu struje kod kuće.',
-    specs:[['Kapacitet','614 Wh'],['Snaga AC','600W / 1200W peak'],['Baterija','LiFePO₄ — 3.500+ ciklusa'],['Težina','9,4 kg'],['Max. solarno punjenje','350W']] },
-
-  { sku:'5002', groupId:'',              brand:'Pecron', fileUnder:FU_ELECTRANE,
-    name:'Pecron E1500LFP, prijenosna elektrana, 1440 Wh, 2200W AC, LiFePO4, proširivo do 18 kWh',
-    img:'assets/pecron-e1500.webp',
-    desc:'Pecron E1500LFP — prijenosna elektrana 1440 Wh / 2200W AC (4400W peak). LiFePO4, 3.500+ ciklusa, max. solar 800W. Punjenje za 1,8h. Proširivo do 18.432 Wh.',
-    specs:[['Kapacitet','1440 Wh'],['Snaga AC','2200W / 4400W peak'],['Baterija','LiFePO₄ — 3.500+ ciklusa'],['Max. solar','800W'],['Punjenje AC','1,8 h'],['Proširivost','do 18.432 Wh']] },
-
-  { sku:'5003', groupId:'',              brand:'Pecron', fileUnder:FU_ELECTRANE,
-    name:'Pecron E2400LFP, prijenosna elektrana, 2048 Wh, 2400W AC, LiFePO4',
-    img:'assets/pecron-e2400.jpg',
-    desc:'Pecron E2400LFP — 2048 Wh, 2400W AC (4000W peak). LiFePO4, punjenje za 1,5h. Max. solar 800W.',
-    specs:[['Kapacitet','2048 Wh'],['Snaga AC','2400W / 4000W peak'],['Max. solar','800W'],['Punjenje AC','1,5 h']] },
-
-  { sku:'5004', groupId:'',              brand:'Pecron', fileUnder:FU_ELECTRANE,
-    name:'Pecron E3600LFP, prijenosna elektrana, 3072 Wh, 3600W AC, LiFePO4, proširivo',
-    img:'assets/pecron-e3600.jpg',
-    desc:'Pecron E3600LFP — 3072 Wh, 3600W AC (7200W peak). Max. solar 2400W. Punjenje za 1,3h. Proširivo do 18.432 Wh.',
-    specs:[['Kapacitet','3072 Wh'],['Snaga AC','3600W / 7200W peak'],['Max. solar','2400W'],['Punjenje AC','1,3 h'],['Proširivost','do 18.432 Wh']] },
-
-  { sku:'5005', groupId:'G-PECRON-E3000', brand:'Pecron', fileUnder:FU_ELECTRANE,
-    name:'Pecron E3000LFP, prijenosna elektrana, 3096 Wh, 3000W AC, LiFePO4',
-    img:'assets/pecron-e3000.jpg',
-    desc:'Pecron E3000LFP — 3096 Wh, 3000W AC. LiFePO4 baterija, 3.500+ ciklusa.',
-    specs:[['Kapacitet','3096 Wh'],['Snaga AC','3000W'],['Baterija','LiFePO₄ — 3.500+ ciklusa']] },
-
-  { sku:'5006', groupId:'G-PECRON-E3000', brand:'Pecron', fileUnder:FU_ELECTRANE,
-    name:'Pecron E3000LFP Expansion Battery, 3072 Wh, 48V',
-    img:'assets/pecron-e3000-exp.jpg',
-    desc:'Expansion baterija za Pecron E3000LFP. Kapacitet 3072 Wh, napon 48V. Proširuje kapacitet elektrane.',
-    specs:[['Kapacitet','3072 Wh'],['Kompatibilno s','Pecron E3000LFP'],['Napon','48V']] },
-
   // ── AFERIY ────────────────────────────────────────────────────────────────
   { sku:'5007', groupId:'',              brand:'Aferiy', fileUnder:FU_ELECTRANE,
     name:'Aferiy Nano 100, prijenosna elektrana, 64 Wh, 100W AC, LiFePO4, ultra kompaktna',
