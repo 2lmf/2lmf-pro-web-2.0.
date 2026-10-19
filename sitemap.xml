@@ -17,11 +17,6 @@
     <priority>0.95</priority>
   </url>
   <url>
-    <loc>https://2lmf-pro.hr/tende-zagreb-cijena.html</loc>
-    <lastmod>2026-09-07</lastmod>
-    <priority>0.95</priority>
-  </url>
-  <url>
     <loc>https://2lmf-pro.hr/architects_blueprint.html</loc>
     <lastmod>2026-03-29</lastmod>
     <priority>0.8</priority>
@@ -133,10 +128,5 @@
     <loc>https://2lmf-pro.hr/blog/vikendica-bez-struje.html</loc>
     <lastmod>2026-05-25</lastmod>
     <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://2lmf-pro.hr/blog/hella-tende-zastita-od-sunca.html</loc>
-    <lastmod>2026-09-07</lastmod>
-    <priority>0.65</priority>
   </url>
 </urlset>
