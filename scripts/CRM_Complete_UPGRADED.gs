@@ -649,8 +649,11 @@ function onOpen() {
       .addSeparator()
       .addItem('🏙️ Obračunaj Loko Vožnju (0.50€)', 'calculateLokoTrips')
       .addItem('📥 Pošalji Loko na AI Skeniranje', 'syncLokoToAiFolder')
-      .addSeparator()
       .addItem('🤖 Pokreni AI skeniranje (SVI DOKUMENTI)', 'processNewInvoices')
+      .addSeparator()
+      .addItem('🏦 Proknjiži mjesečni izvod', 'processBankStatements')
+      .addItem('📤 Proknjiži izlazne račune (IRA)', 'processOutgoingInvoices')
+      .addItem('📁 Prebaci TEST tab u službeni Dnevnik', 'archiveOldAndActivateNewDnevnik')
       .addSeparator()
       .addItem('🤖 Pokreni AI skeniranje (PDV/EU računi)', 'processPdvInvoices')
       .addItem('✅ Potvrdi označeni redak (PDV)', 'confirmPdvRow')
@@ -2129,7 +2132,526 @@ function pdvPeriodFromDatum(datumStr) {
   return Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "MM.yyyy");
 }
 
-// --- 4c. RUČNA POTVRDA PDV REDAKA ---
+// --- 4c. OBRADA MJESEČNIH BANKOVNIH IZVODA (PBZ IZVADAK) ---
+
+function processBankStatements() {
+  var folderInId = SCRIPT_PROP.getProperty("FOLDER_IN_ID") || "1kpBzqrSHVWTaBi8kKIUXknKhRtoUEy5g";
+  var folderOutId = SCRIPT_PROP.getProperty("FOLDER_OUT_ID") || "1N7XfCy5s0XnLrCJaBB2QxhJ3gH6eya_a";
+
+  var folderIn, folderOut;
+  try {
+    folderIn = DriveApp.getFolderById(folderInId);
+    folderOut = DriveApp.getFolderById(folderOutId);
+  } catch(e) {
+    if(SpreadsheetApp.getUi) SpreadsheetApp.getUi().alert("Greška: Nije pronađen Google Drive folder za izvode. Provjerite FOLDER_IN_ID (" + folderInId + ").");
+    return;
+  }
+
+  var sheetId = SCRIPT_PROP.getProperty("SHEET_ID") || "1YmRZMeomWxAmfi6rsLN6qKrHrrAeHOnGVbnfsZXP3w4";
+  var ss = SpreadsheetApp.openById(sheetId);
+
+  // Ciljani tab: ako postoji "Dnevnik knjiženja TEST", knjiži u njega;
+  // ako je preimenovan ili postoji samo "Dnevnik knjiženja", knjiži u službeni "Dnevnik knjiženja"!
+  var sheetTarget = ss.getSheetByName("Dnevnik knjiženja TEST") || ss.getSheetByName("Dnevnik knjiženja");
+  if (!sheetTarget) {
+    sheetTarget = ss.insertSheet("Dnevnik knjiženja");
+    sheetTarget.appendRow(["Datum", "Vrsta dokumenta", "Stranka", "Opis", "Dokument", "Konto", "Naziv konta", "Duguje", "Potrazuje", "saldo"]);
+    sheetTarget.getRange("A1:J1").setFontWeight("bold").setBackground("#d9ead3");
+    sheetTarget.setFrozenRows(1);
+  }
+
+  var files = folderIn.getFiles();
+  var count = 0;
+  var totalTxCount = 0;
+
+  while (files.hasNext() && count < 10) {
+    var file = files.next();
+
+    // 1. OCR ekstrakcija teksta putem Google Drive API
+    var text = null;
+    try {
+      var token = ScriptApp.getOAuthToken();
+      var copyUrl = "https://www.googleapis.com/drive/v3/files/" + file.getId() + "/copy";
+      var options = {
+        method: "POST",
+        headers: {"Authorization": "Bearer " + token},
+        contentType: "application/json",
+        payload: JSON.stringify({ mimeType: "application/vnd.google-apps.document" }),
+        muteHttpExceptions: true
+      };
+      var copyRes = UrlFetchApp.fetch(copyUrl, options);
+      if (copyRes.getResponseCode() == 200) {
+        var docId = JSON.parse(copyRes.getContentText()).id;
+        var doc = DocumentApp.openById(docId);
+        text = doc.getBody().getText();
+        DriveApp.getFileById(docId).setTrashed(true);
+      }
+    } catch(ocrErr) {
+      console.log("OCR Error: " + ocrErr);
+    }
+
+    if (!text || text.trim().length < 20) {
+      console.log("Preskačem " + file.getName() + " - nema teksta.");
+      continue;
+    }
+
+    // 2. OpenAI struktura za bankovni izvod
+    var apiKey = PropertiesService.getScriptProperties().getProperty("OPENAI_API_KEY");
+    if (!apiKey) {
+      if(SpreadsheetApp.getUi) SpreadsheetApp.getUi().alert("Greška: Nije postavljen OPENAI_API_KEY u Script Properties.");
+      return;
+    }
+
+    var prompt = "Ti si vrhunski računovođa za hrvatska poduzeća (d.o.o. / j.d.o.o.) prema RRIF kontnom planu.\n" +
+      "Analiziraj tekst ovog bankovnog izvatka (PBZ izvadak po transakcijskom računu) i vrati čisti JSON sa svim transakcijama.\n\n" +
+      "KRITIČNA PRAVILA ZA TRANSAKCIJE:\n" +
+      "- STUPAC UPLATA vs. ISPLATA: Pažljivo gledaj u koji stupac je upisan iznos - 'Isplata (Duguje)' ili 'Uplata (Potražuje)'!\n" +
+      "- AKO JE IZNOS U STUPCU 'Uplata (Potražuje)' (novac ulazi na račun): to je UVIJEK kategorija 'UPLATA_KUPCA' (tip: 'uplata', konto: '1200'), NIKADA 'DOBAVLJAC_TROSAK'!\n" +
+      "  Čak i ako u opisu piše naziv artikla (npr. 'Ogradni paneli i stupovi'), ako je iznos pod Uplata, to znači da je KUPAC uplatio taj iznos za tu robu!\n" +
+      "- KARTIČNA PLAĆANJA U STRANOJ VALUTI: npr. 'POS ANTHROPIC 25,00 (840)' - broj 25 je USD, a u stupcu Isplata piše stvarni EUR iznos (22,17). UVIJEK uzmi iznos u EUR (22.17), a NIKADA iznos u stranoj valuti iz opisa!\n" +
+      "- KONTROLA ZBROJA: Zbroj svih isplata mora u cent odgovarati polju 'Ukupni dugovni promet', a zbroj uplata polju 'Ukupni potražni promet'!\n\n" +
+      "Pravila za klasifikaciju i konta:\n" +
+      "1. NAKNADA_BANKE: naknada za usluge platnog prometa, članarina Sinergo, vođenje računa. Broj računa izvuci iz poziva na broj ako postoji (npr. 2340-xxxxxxx), a ako ne onda 'PBZ-naknada'. Konto troška: 4650 (Troškovi platnog prometa).\n" +
+      "2. DOBAVLJAC_TROSAK: plaćanje robe ili usluga dobavljačima (npr. SMIND d.o.o., Njuškalo, Ravago, kartične POS pretplate Anthropic Claude, OpenAI, softver itd.).\n" +
+      "   - Ako je softver / IT / pretplate / licence: konto 4100 (Troškovi usluga)\n" +
+      "   - Ako je roba / materijal: konto 4000 (Trošak nabavne vrijednosti robe)\n" +
+      "   - Ostale usluge: konto 4100 (Troškovi usluga)\n" +
+      "   - Broj dokumenta: izvuci broj računa iz opisa plaćanja (npr. 1-1-1666) ili poziva na broj.\n" +
+      "3. PLACA: isplata plaće zaposlenicima (npr. Karlo Fantoni, Josipa Anić Milić). Konto obveze: 2310 (Obveze za neto plaće).\n" +
+      "4. DOPRINOS_HZZO: Hrvatski zavod za zdravstveno osiguranje (doprinos za zdravstvo). Konto: 2330 (Obveze za doprinose za zdravstveno osiguranje).\n" +
+      "5. DOPRINOS_MIO1: Mirovinsko osiguranje I. stup (Državni proračun RH). Konto: 2320 (Obveze za mirovinsko osiguranje).\n" +
+      "6. DOPRINOS_MIO2: Mirovinsko osiguranje II. stup (individualna kapitalizirana štednja). Konto: 2320 (Obveze za mirovinsko osiguranje).\n" +
+      "7. POREZ_DOHODAK: Predujam poreza na dohodak / prirez (Porez na dohodak Zagreb). Konto: 2350 (Obveze za porez na dohodak).\n" +
+      "8. UPLATA_KUPCA: priljev na žiro račun (uplata po ponudi ili računu). Konto potražuje: 1200 (Kupci u zemlji).\n" +
+      "9. POZAJMICA: uplata ili povrat pozajmice vlasnika. Konto: 2134 (Pozajmica).\n\n" +
+      "Vrati točno ovaj JSON format:\n" +
+      "{\n" +
+      "  \"broj_izvatka\": \"string (npr. 009)\",\n" +
+      "  \"datum_izvatka\": \"DD.MM.YYYY\",\n" +
+      "  \"ukupno_isplate\": float,\n" +
+      "  \"ukupno_uplate\": float,\n" +
+      "  \"novo_stanje\": float,\n" +
+      "  \"transakcije\": [\n" +
+      "    {\n" +
+      "      \"rbr\": integer,\n" +
+      "      \"datum\": \"DD.MM.YYYY\",\n" +
+      "      \"tip\": \"isplata\" ili \"uplata\",\n" +
+      "      \"partner\": \"Naziv pravne ili fizičke osobe\",\n" +
+      "      \"opis\": \"Opis plaćanja\",\n" +
+      "      \"broj_dokumenta\": \"Broj računa ili opis dokumenta\",\n" +
+      "      \"iznos\": float,\n" +
+      "      \"kategorija\": \"NAKNADA_BANKE\" | \"DOBAVLJAC_TROSAK\" | \"PLACA\" | \"DOPRINOS_HZZO\" | \"DOPRINOS_MIO1\" | \"DOPRINOS_MIO2\" | \"POREZ_DOHODAK\" | \"UPLATA_KUPCA\" | \"POZAJMICA\",\n" +
+      "      \"konto\": \"string\",\n" +
+      "      \"naziv_konta\": \"string\"\n" +
+      "    }\n" +
+      "  ]\n" +
+      "}\n\nTekst izvatka:\n" + text;
+
+    var payload = {
+      model: "gpt-4o-mini",
+      response_format: { "type": "json_object" },
+      messages: [
+        { role: "system", content: "Ti si stručni računovodstveni asistent za hrvatska poduzeća. Vraćaš isključivo čisti JSON sukladno uputama." },
+        { role: "user", content: prompt }
+      ],
+      temperature: 0.1
+    };
+
+    var data = null;
+    try {
+      var res = UrlFetchApp.fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Authorization": "Bearer " + apiKey,
+          "Content-Type": "application/json"
+        },
+        payload: JSON.stringify(payload),
+        muteHttpExceptions: true
+      });
+      if (res.getResponseCode() == 200) {
+        var json = JSON.parse(res.getContentText());
+        data = JSON.parse(json.choices[0].message.content);
+      } else {
+        console.log("OpenAI Error: " + res.getContentText());
+      }
+    } catch(aiErr) {
+      console.log("AI Parsing Error: " + aiErr);
+    }
+
+    if (!data || !data.transakcije || data.transakcije.length === 0) {
+      console.log("OpenAI nije uspio parsirati transakcije za " + file.getName());
+      continue;
+    }
+
+    var docBroj = "Izvod " + (data.broj_izvatka || "Auto");
+
+    // 3. Knjiženje transakcija u ciljani tab
+    data.transakcije.forEach(function(tx) {
+      var iznos = parseFloat(tx.iznos) || 0;
+      if (iznos <= 0) return;
+
+      var txDatum = tx.datum || data.datum_izvatka || Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "dd.MM.yyyy");
+      var partner = tx.partner || "Banka / Partner";
+      var opis = tx.opis || "Transakcija po izvodu";
+      var brDok = tx.broj_dokumenta || docBroj;
+
+      if (tx.kategorija === "DOBAVLJAC_TROSAK" || tx.kategorija === "NAKNADA_BANKE") {
+        // GENERIRAMO 4 RETKA (URA + IZVOD):
+        var kontoTroska = tx.konto || (tx.kategorija === "NAKNADA_BANKE" ? "4650" : "4100");
+        var nazivTroska = tx.naziv_konta || (tx.kategorija === "NAKNADA_BANKE" ? "Troškovi platnog prometa" : "Troškovi usluga");
+
+        // 1 & 2: URA
+        recordDnevnikEntryToSheet(sheetTarget, txDatum, "URA", partner, opis, brDok, [
+          { konto: kontoTroska, nazivKonta: nazivTroska, duguje: iznos, potrazuje: 0 },
+          { konto: "2200", nazivKonta: "Dobavljači u zemlji", duguje: 0, potrazuje: iznos }
+        ]);
+
+        // 3 & 4: IZVOD (zatvaranje dobavljača i odljev s banke)
+        recordDnevnikEntryToSheet(sheetTarget, txDatum, "IZVOD", partner, "Plaćanje: " + opis, docBroj, [
+          { konto: "2200", nazivKonta: "Dobavljači u zemlji", duguje: iznos, potrazuje: 0 }
+        ]);
+        recordDnevnikEntryToSheet(sheetTarget, txDatum, "IZVOD", "ŽR", "Odljev sa žiro-računa", docBroj, [
+          { konto: "1000", nazivKonta: "Žiro račun", duguje: 0, potrazuje: iznos }
+        ]);
+
+      } else if (tx.kategorija === "PLACA") {
+        // GENERIRAMO 2 RETKA (IZVOD):
+        recordDnevnikEntryToSheet(sheetTarget, txDatum, "IZVOD", partner, opis, docBroj, [
+          { konto: "2310", nazivKonta: "Obveze za neto plaće", duguje: iznos, potrazuje: 0 }
+        ]);
+        recordDnevnikEntryToSheet(sheetTarget, txDatum, "IZVOD", "ŽR", "Odljev sa žiro-računa", docBroj, [
+          { konto: "1000", nazivKonta: "Žiro račun", duguje: 0, potrazuje: iznos }
+        ]);
+
+      } else if (tx.kategorija === "DOPRINOS_HZZO" || tx.kategorija === "DOPRINOS_MIO1" || tx.kategorija === "DOPRINOS_MIO2") {
+        // GENERIRAMO 2 RETKA (IZVOD):
+        var kontoDopr = (tx.kategorija === "DOPRINOS_HZZO") ? "2330" : "2320";
+        var nazivDopr = tx.naziv_konta || "Obveze za doprinose";
+        recordDnevnikEntryToSheet(sheetTarget, txDatum, "IZVOD", partner, opis, docBroj, [
+          { konto: kontoDopr, nazivKonta: nazivDopr, duguje: iznos, potrazuje: 0 }
+        ]);
+        recordDnevnikEntryToSheet(sheetTarget, txDatum, "IZVOD", "ŽR", "Odljev sa žiro-računa", docBroj, [
+          { konto: "1000", nazivKonta: "Žiro račun", duguje: 0, potrazuje: iznos }
+        ]);
+
+      } else if (tx.kategorija === "POREZ_DOHODAK") {
+        // GENERIRAMO 2 RETKA (IZVOD):
+        recordDnevnikEntryToSheet(sheetTarget, txDatum, "IZVOD", partner, opis, docBroj, [
+          { konto: "2350", nazivKonta: "Obveze za porez na dohodak", duguje: iznos, potrazuje: 0 }
+        ]);
+        recordDnevnikEntryToSheet(sheetTarget, txDatum, "IZVOD", "ŽR", "Odljev sa žiro-računa", docBroj, [
+          { konto: "1000", nazivKonta: "Žiro račun", duguje: 0, potrazuje: iznos }
+        ]);
+
+      } else if (tx.tip === "uplata" || tx.kategorija === "UPLATA_KUPCA") {
+        // GENERIRAMO 2 RETKA (PRILJEV NA ŽIRO RAČUN):
+        recordDnevnikEntryToSheet(sheetTarget, txDatum, "IZVOD", "ŽR", "Priljev na žiro-račun", docBroj, [
+          { konto: "1000", nazivKonta: "Žiro račun", duguje: iznos, potrazuje: 0 }
+        ]);
+        recordDnevnikEntryToSheet(sheetTarget, txDatum, "IZVOD", partner, opis, docBroj, [
+          { konto: "1200", nazivKonta: "Kupci u zemlji", duguje: 0, potrazuje: iznos }
+        ]);
+
+      } else {
+        // DEFAULT ISPLATA (OSTALO - 2 RETKA):
+        recordDnevnikEntryToSheet(sheetTarget, txDatum, "IZVOD", partner, opis, docBroj, [
+          { konto: tx.konto || "4690", nazivKonta: tx.naziv_konta || "Ostali troškovi", duguje: iznos, potrazuje: 0 }
+        ]);
+        recordDnevnikEntryToSheet(sheetTarget, txDatum, "IZVOD", "ŽR", "Odljev sa žiro-računa", docBroj, [
+          { konto: "1000", nazivKonta: "Žiro račun", duguje: 0, potrazuje: iznos }
+        ]);
+      }
+
+      totalTxCount++;
+    });
+
+    // 4. Premjesti datoteku u proknjižene
+    file.moveTo(folderOut);
+    count++;
+  }
+
+  if (SpreadsheetApp.getUi) {
+    if (count > 0) {
+      SpreadsheetApp.getUi().alert("✅ Uspješno proknjiženo " + count + " izvadaka (" + totalTxCount + " transakcija) u tab '" + sheetTarget.getName() + "'!");
+    } else {
+      SpreadsheetApp.getUi().alert("ℹ️ Nema novih izvadaka u mapi za knjiženje.");
+    }
+  }
+}
+
+function recordDnevnikEntryToSheet(sheetObj, date, vrstaDokumenta, stranka, opis, dokument, entries) {
+  entries.forEach(function(entry) {
+    var formatDuguje = entry.duguje || 0;
+    var formatPotrazuje = entry.potrazuje || 0;
+    var saldoFormula = '=INDIRECT("H"&ROW()) - INDIRECT("I"&ROW())';
+
+    sheetObj.appendRow([
+      date,
+      vrstaDokumenta,
+      stranka,
+      opis,
+      dokument,
+      entry.konto,
+      entry.nazivKonta,
+      formatDuguje,
+      formatPotrazuje,
+      ""
+    ]);
+
+    var lastRow = sheetObj.getLastRow();
+    sheetObj.getRange(lastRow, 10).setFormula(saldoFormula);
+  });
+}
+
+function archiveOldAndActivateNewDnevnik() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheetOld = ss.getSheetByName("Dnevnik knjiženja");
+  var sheetTest = ss.getSheetByName("Dnevnik knjiženja TEST");
+
+  var ui = SpreadsheetApp.getUi();
+
+  if (!sheetTest) {
+    ui.alert("Informacija", "Tab 'Dnevnik knjiženja TEST' nije pronađen. Možda je već preimenovan u 'Dnevnik knjiženja'?", ui.ButtonSet.OK);
+    return;
+  }
+
+  var confirm = ui.alert(
+    "Preimenovanje i Arhiviranje",
+    "Želite li postojeći tab 'Dnevnik knjiženja' preimenovati u Arhivu, a 'Dnevnik knjiženja TEST' postaviti kao službeni 'Dnevnik knjiženja'?",
+    ui.ButtonSet.YES_NO
+  );
+
+  if (confirm !== ui.Button.YES) return;
+
+  if (sheetOld) {
+    var timestamp = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "yyyyMMdd");
+    var archiveName = "Dnevnik knjiženja (Arhiva " + timestamp + ")";
+    var count = 1;
+    while (ss.getSheetByName(archiveName)) {
+      archiveName = "Dnevnik knjiženja (Arhiva " + timestamp + "_" + count + ")";
+      count++;
+    }
+    sheetOld.setName(archiveName);
+  }
+
+  sheetTest.setName("Dnevnik knjiženja");
+  ui.alert("✅ Uspješno preimenovano!\nStari tab je sačuvan kao arhiva, a novi tab je sada službeni 'Dnevnik knjiženja'!");
+}
+
+
+// --- 4d. OBRADA IZLAZNIH RAČUNA (IRA - KUPCI I PRIHODI) ---
+
+function processOutgoingInvoices() {
+  var ui = (typeof SpreadsheetApp !== 'undefined' && SpreadsheetApp.getUi) ? SpreadsheetApp.getUi() : null;
+  var ss = (typeof SpreadsheetApp !== 'undefined') ? SpreadsheetApp.getActiveSpreadsheet() : null;
+  if (!ss) return;
+
+  var sheetTarget = ss.getSheetByName("Dnevnik knjiženja") || ss.getSheetByName("Dnevnik knjiženja TEST");
+  if (!sheetTarget) {
+    if (ui) ui.alert("Greška: Nije pronađen tab 'Dnevnik knjiženja'.");
+    return;
+  }
+
+  // 1. Pronađi mapu 'Izlazni računi' na Google Driveu
+  var folderIn = null;
+  var folderOut = null;
+  var folderIraId = SCRIPT_PROP.getProperty("FOLDER_IRA_ID");
+
+  if (folderIraId) {
+    try { folderIn = DriveApp.getFolderById(folderIraId); } catch(e) {}
+  }
+
+  if (!folderIn) {
+    var parentName = "2LMF Računovodstvo";
+    var rootFolders = DriveApp.getFoldersByName(parentName);
+    var targetParent = rootFolders.hasNext() ? rootFolders.next() : DriveApp.getRootFolder();
+    var folders = targetParent.getFoldersByName("Izlazni računi");
+    if (folders.hasNext()) {
+      folderIn = folders.next();
+    } else {
+      var anyFolders = DriveApp.getFoldersByName("Izlazni računi");
+      if (anyFolders.hasNext()) folderIn = anyFolders.next();
+    }
+  }
+
+  if (!folderIn) {
+    if (ui) ui.alert("Greška: Nije pronađena mapa 'Izlazni računi' unutar '2LMF Računovodstvo'.");
+    return;
+  }
+
+  // Podmapa za arhiviranje proknjiženih računa
+  var subFolders = folderIn.getFoldersByName("Proknjiženo");
+  if (subFolders.hasNext()) {
+    folderOut = subFolders.next();
+  } else {
+    folderOut = folderIn.createFolder("Proknjiženo");
+  }
+
+  // 2. Učitaj već proknjižene dokumente iz Dnevnika radi zaštite od duplikata
+  var lastRow = sheetTarget.getLastRow();
+  var existingDocs = {};
+  if (lastRow > 1) {
+    var docColValues = sheetTarget.getRange(2, 5, lastRow - 1, 1).getValues(); // Stupac E = Dokument
+    for (var i = 0; i < docColValues.length; i++) {
+      var val = String(docColValues[i][0]).trim().toLowerCase();
+      if (val) {
+        existingDocs[val] = true;
+        existingDocs[val.replace(/^račun\s*/i, '')] = true;
+      }
+    }
+  }
+
+  var apiKey = PropertiesService.getScriptProperties().getProperty("OPENAI_API_KEY");
+  if (!apiKey) {
+    if (ui) ui.alert("Greška: Nije postavljen OPENAI_API_KEY u Script Properties.");
+    return;
+  }
+
+  var files = folderIn.getFiles();
+  var count = 0;
+  var skippedCount = 0;
+
+  while (files.hasNext() && count < 15) {
+    var file = files.next();
+    var fileName = file.getName();
+    if (!fileName.toLowerCase().endsWith(".pdf")) {
+      continue;
+    }
+
+    // OCR ekstrakcija teksta putem Google Drive API
+    var text = null;
+    try {
+      var token = ScriptApp.getOAuthToken();
+      var copyUrl = "https://www.googleapis.com/drive/v3/files/" + file.getId() + "/copy";
+      var options = {
+        method: "POST",
+        headers: {"Authorization": "Bearer " + token},
+        contentType: "application/json",
+        payload: JSON.stringify({ mimeType: "application/vnd.google-apps.document" }),
+        muteHttpExceptions: true
+      };
+      var copyRes = UrlFetchApp.fetch(copyUrl, options);
+      if (copyRes.getResponseCode() == 200) {
+        var docId = JSON.parse(copyRes.getContentText()).id;
+        var doc = DocumentApp.openById(docId);
+        text = doc.getBody().getText();
+        DriveApp.getFileById(docId).setTrashed(true);
+      }
+    } catch(ocrErr) {
+      console.log("OCR Error za " + fileName + ": " + ocrErr);
+    }
+
+    if (!text || text.trim().length < 20) {
+      console.log("Preskačem " + fileName + " - nema teksta.");
+      continue;
+    }
+
+    // OpenAI ekstrakcija podataka s izlaznog računa
+    var prompt = "Ti si računovodstveni asistent za hrvatska poduzeća (2LMF PRO j.d.o.o.).\n" +
+      "Analiziraj tekst ovog izdanog računa kupcu i vrati isključivo čisti JSON sa sljedećim poljima:\n" +
+      "- broj_racuna: string (samo oznaka broja, npr. '1-1-1' ili '4-1-1' bez riječi Račun)\n" +
+      "- datum: string u formatu DD.MM.YYYY (datum izdavanja računa)\n" +
+      "- kupac: string (naziv kupca, obrta ili ime i prezime kupca)\n" +
+      "- ukupno: float (ukupni konačni iznos računa u EUR)\n" +
+      "- vrsta_prodaje: 'roba' ili 'usluga' (prema stavkama na računu)\n\n" +
+      "Format JSON odgovora:\n" +
+      "{\n" +
+      "  \"broj_racuna\": \"1-1-1\",\n" +
+      "  \"datum\": \"17.07.2026\",\n" +
+      "  \"kupac\": \"Obrt PRAVI SAVJET\",\n" +
+      "  \"ukupno\": 504.00,\n" +
+      "  \"vrsta_prodaje\": \"roba\"\n" +
+      "}\n\nTekst računa:\n" + text;
+
+    var payload = {
+      model: "gpt-4o-mini",
+      response_format: { "type": "json_object" },
+      messages: [
+        { role: "system", content: "Ti si stručni računovodstveni asistent. Vraćaš isključivo čisti JSON." },
+        { role: "user", content: prompt }
+      ],
+      temperature: 0.1
+    };
+
+    var invData = null;
+    try {
+      var res = UrlFetchApp.fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Authorization": "Bearer " + apiKey,
+          "Content-Type": "application/json"
+        },
+        payload: JSON.stringify(payload),
+        muteHttpExceptions: true
+      });
+      if (res.getResponseCode() == 200) {
+        var jsonRes = JSON.parse(res.getContentText());
+        invData = JSON.parse(jsonRes.choices[0].message.content);
+      } else {
+        console.log("OpenAI Error: " + res.getContentText());
+      }
+    } catch(aiErr) {
+      console.log("AI Error za " + fileName + ": " + aiErr);
+    }
+
+    if (!invData || !invData.broj_racuna || !invData.ukupno) {
+      console.log("Neuspješno parsiranje računa za " + fileName);
+      continue;
+    }
+
+    var cleanBroj = String(invData.broj_racuna).replace(/^račun\s*/i, '').trim();
+    var docBroj = "Račun " + cleanBroj;
+    var docKey = docBroj.toLowerCase();
+
+    // Provjera duplikata - ako je već u Dnevniku, samo arhiviramo i preskačemo
+    if (existingDocs[docKey] || existingDocs[cleanBroj.toLowerCase()]) {
+      console.log("Račun " + docBroj + " već postoji u Dnevniku. Preskačem.");
+      file.moveTo(folderOut);
+      skippedCount++;
+      continue;
+    }
+
+    var datum = invData.datum || Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "dd.MM.yyyy");
+    var kupac = invData.kupac || "Kupac u zemlji";
+    var iznos = parseFloat(invData.ukupno) || 0;
+    var opisKupca = "Potraživanje od kupca";
+    var isUsluga = (invData.vrsta_prodaje === "usluga");
+    var opisPrihoda = isUsluga ? "Račun za pružene usluge" : "Račun za prodanu robu";
+    var nazivKonta = isUsluga ? "Prihodi od prodaje usluga" : "Prihodi od prodaje robe";
+
+    // 1. Redak: Potraživanje od kupca (Konto 1200 Duguje)
+    recordDnevnikEntryToSheet(sheetTarget, datum, "IRA", kupac, opisKupca, docBroj, [
+      { konto: "1200", nazivKonta: "Kupci u zemlji", duguje: iznos, potrazuje: 0 }
+    ]);
+
+    // 2. Redak: Prihod od prodaje (Konto 7600 Potražuje)
+    recordDnevnikEntryToSheet(sheetTarget, datum, "IRA", "Prihod", opisPrihoda, docBroj, [
+      { konto: "7600", nazivKonta: nazivKonta, duguje: 0, potrazuje: iznos }
+    ]);
+
+    existingDocs[docKey] = true;
+    existingDocs[cleanBroj.toLowerCase()] = true;
+    file.moveTo(folderOut);
+    count++;
+  }
+
+  if (ui) {
+    if (count > 0) {
+      var alertMsg = "✅ Uspješno proknjiženo " + count + " izlaznih računa (IRA) u Dnevnik knjiženja!";
+      if (skippedCount > 0) {
+        alertMsg += "\n(" + skippedCount + " računa preskočeno jer su već ranije bili proknjiženi).";
+      }
+      ui.alert("Knjiženje IRA", alertMsg, ui.ButtonSet.OK);
+    } else if (skippedCount > 0) {
+      ui.alert("Knjiženje IRA", "ℹ️ Nema novih računa za knjiženje. " + skippedCount + " računa je već ranije proknjiženo.", ui.ButtonSet.OK);
+    } else {
+      ui.alert("Knjiženje IRA", "ℹ️ Nema novih PDF računa u mapi 'Izlazni računi'.", ui.ButtonSet.OK);
+    }
+  }
+}
+
+
+// --- 4d. RUČNA POTVRDA PDV REDAKA ---
 
 function confirmPdvRow() {
   var ui = SpreadsheetApp.getUi();
