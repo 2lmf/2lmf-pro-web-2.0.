@@ -836,6 +836,7 @@
         .cat-pack { font-size: 11px; color: var(--muted); }
         .cat-price { font-size: 20px; font-weight: 700; color: var(--accent); margin-top: 4px; }
         .cat-price small { font-size: 11px; font-weight: 400; color: var(--muted); }
+        .anchor-price { font-size: 11px; font-weight: 400; color: var(--muted); margin-top: 2px; }
         .cat-footer { padding: 10px 14px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 8px; }
         .cat-qty-row { display: flex; align-items: center; gap: 3px; }
         .cat-qty-btn { width: 28px; height: 28px; border: 1.5px solid var(--border); border-radius: 7px; background: var(--bg); font-size: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; font-family: 'Outfit', sans-serif; }
@@ -1422,6 +1423,7 @@
                             <div class="adv-bundle-price-total" id="advBundlePriceTotal"></div>
                             <div class="adv-bundle-price-label">EUR · paket</div>
                         </div>
+                        <div class="anchor-price" id="advBundleAnchor"></div>
                         <div class="adv-bundle-perks">
                             <div class="adv-bundle-perk"><i class="fas fa-truck"></i> Besplatna DDP dostava do vrata</div>
                             <div class="adv-bundle-perk"><i class="fas fa-circle-check"></i> Kompatibilnost zajamčena</div>
@@ -1457,6 +1459,7 @@
                     if (LIVE_PRICES && LIVE_PRICES.prices) {
                         // 1. Update the price lookup map
                         Object.assign(LIVE_PRICES.prices, livePrices);
+                        if (liveData.anchors) LIVE_PRICES.anchors = liveData.anchors;
 
                         // 2. Update catalog prices AND units from live sheet data
                         if (liveCatalog && liveCatalog.length > 0) {
@@ -1494,6 +1497,25 @@
             } catch (e) {
                 console.error("❌ Live fetch failed:", e);
             }
+        }
+
+        // Sidrena cijena (obveza od 17.11.2026.): cijena na referentni dan, ističe se uz svaku cijenu.
+        // Skalira se omjerom sidrena/trenutna, pa radi i kad je prikazana cijena po drugoj jedinici.
+        function anchorPriceFor(sku, shownPrice) {
+            const a = LIVE_PRICES && LIVE_PRICES.anchors && LIVE_PRICES.anchors[sku];
+            const cur = LIVE_PRICES && LIVE_PRICES.prices && LIVE_PRICES.prices[sku];
+            if (!a || !cur || shownPrice == null) return null;
+            return { price: shownPrice * a.p / cur, date: a.d };
+        }
+
+        function anchorText(date, price, unit) {
+            const n = new Intl.NumberFormat('hr-HR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(price);
+            return `Cijena na ${date}.: ${n} €${unit ? ' / ' + unit : ''}`;
+        }
+
+        function anchorHtml(sku, shownPrice, unit) {
+            const a = anchorPriceFor(sku, shownPrice);
+            return a ? `<div class="anchor-price">${anchorText(a.date, a.price, unit)}</div>` : '';
         }
 
         function showLiveIndicator() {
@@ -1996,6 +2018,7 @@
                         <div style="flex:1;">
                             <div class="name">${it.name}${removeBtn}</div>
                             <div class="details">${displayQty}${displayUnit ? ' ' + displayUnit : ''} × ${format(it.price)} € / ${it.unit}</div>
+                            ${it.sku ? anchorHtml(it.sku, it.price, it.unit) : ''}
                         </div>
                         <div class="price">${format(itemTotal)} €</div>
                     </div>`;
@@ -2800,6 +2823,7 @@
                             <div class="cat-name">${p.name}</div>
                             ${packInfo}
                             <div class="cat-price">${fmt(price)} <small>€ / ${uMeta.unit}</small></div>
+                            ${anchorHtml(p.sku, price, uMeta.unit)}
                         </div>
                         <div class="cat-footer">
                             <div class="cat-qty-row">
@@ -3204,10 +3228,10 @@
                     const price = livePrice !== undefined ? livePrice : null;
                     const isBundle = p.type === 'bundle';
                     const priceHtml = price !== null
-                        ? `<div class="e-price">${fmt(price)} <small style="font-size:11px;font-weight:400;color:var(--muted);">€ / paket</small></div>`
+                        ? `<div class="e-price">${fmt(price)} <small style="font-size:11px;font-weight:400;color:var(--muted);">€ / paket</small></div>${anchorHtml(p.sku, price, 'paket')}`
                         : `<div class="e-price" style="font-size:14px;color:var(--muted);">Na upit</div>`;
                     const regularPriceHtml = price !== null
-                        ? `<div class="e-price">${fmt(price)} <small style="font-size:11px;font-weight:400;color:var(--muted);">€ / kom</small></div>`
+                        ? `<div class="e-price">${fmt(price)} <small style="font-size:11px;font-weight:400;color:var(--muted);">€ / kom</small></div>${anchorHtml(p.sku, price, 'kom')}`
                         : `<div class="e-price" style="font-size:14px;color:var(--muted);">Na upit</div>`;
                     const badge = isBundle
                         ? `<div class="e-badge" style="background:linear-gradient(135deg,#e67e22,#f39c12);">🎁 Paket</div>`
@@ -3344,6 +3368,10 @@
                 const solPrice = LIVE_PRICES.prices[solarSku] || 0;
                 const totalPrice = batPrice + solPrice;
                 advBundlePriceTotal.textContent = totalPrice > 0 ? fmtAdv(totalPrice) : '—';
+                const batAnchor = anchorPriceFor(advRecommendedSku, batPrice);
+                const solAnchor = anchorPriceFor(solarSku, solPrice);
+                view.querySelector('#advBundleAnchor').textContent = (totalPrice > 0 && batAnchor && (solAnchor || !solPrice))
+                    ? anchorText(batAnchor.date, batAnchor.price + (solAnchor ? solAnchor.price : 0), 'paket') : '';
 
                 // Recharge time
                 const solW = SOLAR_W[solarSku] || 0;
@@ -3429,6 +3457,7 @@
                     <div class="eq-sp-name" style="margin:4px 0 2px">${p.name}</div>
                     <div class="eq-sp-sub">${p.sub}</div>
                     <div class="eq-sp-price" style="margin-top:6px">${priceStr}</div>
+                    ${livePrice !== undefined ? anchorHtml(sku, livePrice, '') : ''}
                 </div>
                 <div class="eq-sp-grid">
                     <div><div class="eq-col-h">Specifikacije</div><table class="eq-specs">${specsHtml}</table></div>

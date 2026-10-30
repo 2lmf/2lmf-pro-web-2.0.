@@ -158,6 +158,7 @@
         .adv-bundle-price-row { display: flex; align-items: baseline; gap: 8px; margin-bottom: 10px; }
         .adv-bundle-price-total { font-size: 28px; font-weight: 700; color: var(--accent); }
         .adv-bundle-price-label { font-size: 12px; color: rgba(255,255,255,0.4); }
+        .anchor-price { font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 2px; }
         .adv-bundle-perks { display: flex; flex-direction: column; gap: 5px; margin-bottom: 14px; }
         .adv-bundle-perk { font-size: 11px; color: rgba(255,255,255,0.6); display: flex; align-items: center; gap: 7px; }
         .adv-bundle-perk i { color: var(--accent); width: 13px; text-align: center; }
@@ -421,6 +422,7 @@
                         <div class="adv-bundle-price-total" id="advBundlePriceTotal"></div>
                         <div class="adv-bundle-price-label">EUR · paket</div>
                     </div>
+                    <div class="anchor-price" id="advBundleAnchor"></div>
                     <div class="adv-bundle-perks">
                         <div class="adv-bundle-perk"><i class="fas fa-truck"></i> Besplatna DDP dostava do vrata</div>
                         <div class="adv-bundle-perk"><i class="fas fa-circle-check"></i> Kompatibilnost zajamčena</div>
@@ -698,7 +700,7 @@
     };
     const SOLAR_W = { '5017':100, '5018':200, '5019':400 };
 
-    let LIVE_PRICES = { prices: {} };
+    let LIVE_PRICES = { prices: {}, anchors: {} };
 
     async function initPriceFetch() {
         try {
@@ -706,7 +708,16 @@
             const data = await r.json();
             const prices = data.prices || data;
             Object.assign(LIVE_PRICES.prices, prices);
+            if (data.anchors) LIVE_PRICES.anchors = data.anchors;
         } catch(e) { /* prices remain empty — shows 'Na upit' */ }
+    }
+
+    // Sidrena cijena (obveza od 17.11.2026.): cijena na referentni dan, ističe se uz svaku cijenu.
+    function anchorPriceFor(sku, shownPrice) {
+        const a = LIVE_PRICES.anchors[sku];
+        const cur = LIVE_PRICES.prices[sku];
+        if (!a || !cur || shownPrice == null) return null;
+        return { price: shownPrice * a.p / cur, date: a.d };
     }
     initPriceFetch();
 
@@ -807,6 +818,10 @@
         const solPrice = LIVE_PRICES.prices[solarSku] || 0;
         const totalPrice = batPrice + solPrice;
         advBundlePriceTotal.textContent = totalPrice > 0 ? fmtN(totalPrice) : '—';
+        const batAnchor = anchorPriceFor(advRecommendedSku, batPrice);
+        const solAnchor = anchorPriceFor(solarSku, solPrice);
+        document.getElementById('advBundleAnchor').textContent = (totalPrice > 0 && batAnchor && (solAnchor || !solPrice))
+            ? `Cijena na ${batAnchor.date}.: ${fmtN(batAnchor.price + (solAnchor ? solAnchor.price : 0))} € / paket` : '';
 
         const solW = SOLAR_W[solarSku] || 0;
         const batWh = batProd ? batProd.wh : 0;
